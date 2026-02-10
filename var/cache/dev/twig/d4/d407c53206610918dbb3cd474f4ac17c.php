@@ -167,6 +167,6 @@ class __TwigTemplate_8356f59076f0e8520c380c668d4a1d21 extends Template
 
     {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', {link: profiler_url}) }}
 {% endblock %}
-", "@WebProfiler/Profiler/cancel.html.twig", "/var/www/app/vendor/symfony/web-profiler-bundle/Resources/views/Profiler/cancel.html.twig");
+", "@WebProfiler/Profiler/cancel.html.twig", "/var/www/vendor/symfony/web-profiler-bundle/Resources/views/Profiler/cancel.html.twig");
     }
 }

@@ -2219,6 +2219,6 @@ class __TwigTemplate_6f0b66d964deffdd2e663573e5c20316 extends Template
         </tbody>
     </table>
 {% endmacro %}
-", "@WebProfiler/Collector/form.html.twig", "/var/www/app/vendor/symfony/web-profiler-bundle/Resources/views/Collector/form.html.twig");
+", "@WebProfiler/Collector/form.html.twig", "/var/www/vendor/symfony/web-profiler-bundle/Resources/views/Collector/form.html.twig");
     }
 }

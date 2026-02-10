@@ -240,6 +240,6 @@ class __TwigTemplate_52435b9beb8d2cd1ed2e3b412d1925a5 extends Template
         {% block body %}{% endblock %}
     </body>
 </html>
-", "base.html.twig", "/var/www/app/templates/base.html.twig");
+", "base.html.twig", "/var/www/templates/base.html.twig");
     }
 }

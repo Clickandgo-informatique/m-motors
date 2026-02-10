@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
   <parameters>
-    <parameter key="kernel.project_dir">/var/www/app</parameter>
+    <parameter key="kernel.project_dir">/var/www</parameter>
     <parameter key="kernel.environment">dev</parameter>
     <parameter key="kernel.runtime_environment">%env(default:kernel.environment:APP_RUNTIME_ENV)%</parameter>
     <parameter key="kernel.runtime_mode">%env(query_string:default:container.runtime_mode:APP_RUNTIME_MODE)%</parameter>
@@ -9,9 +9,9 @@
     <parameter key="kernel.runtime_mode.cli">%env(not:default:kernel.runtime_mode.web:)%</parameter>
     <parameter key="kernel.runtime_mode.worker">%env(bool:default::key:worker:default:kernel.runtime_mode:)%</parameter>
     <parameter key="kernel.debug">true</parameter>
-    <parameter key="kernel.build_dir">/var/www/app/var/cache/dev</parameter>
-    <parameter key="kernel.cache_dir">/var/www/app/var/cache/dev</parameter>
-    <parameter key="kernel.logs_dir">/var/www/app/var/log</parameter>
+    <parameter key="kernel.build_dir">/var/www/var/cache/dev</parameter>
+    <parameter key="kernel.cache_dir">/var/www/var/cache/dev</parameter>
+    <parameter key="kernel.logs_dir">/var/www/var/log</parameter>
     <parameter key="kernel.bundles" type="collection">
       <parameter key="FrameworkBundle">Symfony\Bundle\FrameworkBundle\FrameworkBundle</parameter>
       <parameter key="DoctrineBundle">Doctrine\Bundle\DoctrineBundle\DoctrineBundle</parameter>
@@ -25,66 +25,71 @@
       <parameter key="SecurityBundle">Symfony\Bundle\SecurityBundle\SecurityBundle</parameter>
       <parameter key="MonologBundle">Symfony\Bundle\MonologBundle\MonologBundle</parameter>
       <parameter key="MakerBundle">Symfony\Bundle\MakerBundle\MakerBundle</parameter>
+      <parameter key="DoctrineFixturesBundle">Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle</parameter>
     </parameter>
     <parameter key="kernel.bundles_metadata" type="collection">
       <parameter key="FrameworkBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/symfony/framework-bundle</parameter>
+        <parameter key="path">/var/www/vendor/symfony/framework-bundle</parameter>
         <parameter key="namespace">Symfony\Bundle\FrameworkBundle</parameter>
       </parameter>
       <parameter key="DoctrineBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/doctrine/doctrine-bundle</parameter>
+        <parameter key="path">/var/www/vendor/doctrine/doctrine-bundle</parameter>
         <parameter key="namespace">Doctrine\Bundle\DoctrineBundle</parameter>
       </parameter>
       <parameter key="DoctrineMigrationsBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/doctrine/doctrine-migrations-bundle</parameter>
+        <parameter key="path">/var/www/vendor/doctrine/doctrine-migrations-bundle</parameter>
         <parameter key="namespace">Doctrine\Bundle\MigrationsBundle</parameter>
       </parameter>
       <parameter key="DebugBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/symfony/debug-bundle</parameter>
+        <parameter key="path">/var/www/vendor/symfony/debug-bundle</parameter>
         <parameter key="namespace">Symfony\Bundle\DebugBundle</parameter>
       </parameter>
       <parameter key="TwigBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/symfony/twig-bundle</parameter>
+        <parameter key="path">/var/www/vendor/symfony/twig-bundle</parameter>
         <parameter key="namespace">Symfony\Bundle\TwigBundle</parameter>
       </parameter>
       <parameter key="WebProfilerBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/symfony/web-profiler-bundle</parameter>
+        <parameter key="path">/var/www/vendor/symfony/web-profiler-bundle</parameter>
         <parameter key="namespace">Symfony\Bundle\WebProfilerBundle</parameter>
       </parameter>
       <parameter key="StimulusBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/symfony/stimulus-bundle</parameter>
+        <parameter key="path">/var/www/vendor/symfony/stimulus-bundle</parameter>
         <parameter key="namespace">Symfony\UX\StimulusBundle</parameter>
       </parameter>
       <parameter key="TurboBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/symfony/ux-turbo</parameter>
+        <parameter key="path">/var/www/vendor/symfony/ux-turbo</parameter>
         <parameter key="namespace">Symfony\UX\Turbo</parameter>
       </parameter>
       <parameter key="TwigExtraBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/twig/extra-bundle</parameter>
+        <parameter key="path">/var/www/vendor/twig/extra-bundle</parameter>
         <parameter key="namespace">Twig\Extra\TwigExtraBundle</parameter>
       </parameter>
       <parameter key="SecurityBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/symfony/security-bundle</parameter>
+        <parameter key="path">/var/www/vendor/symfony/security-bundle</parameter>
         <parameter key="namespace">Symfony\Bundle\SecurityBundle</parameter>
       </parameter>
       <parameter key="MonologBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/symfony/monolog-bundle/src</parameter>
+        <parameter key="path">/var/www/vendor/symfony/monolog-bundle/src</parameter>
         <parameter key="namespace">Symfony\Bundle\MonologBundle</parameter>
       </parameter>
       <parameter key="MakerBundle" type="collection">
-        <parameter key="path">/var/www/app/vendor/symfony/maker-bundle</parameter>
+        <parameter key="path">/var/www/vendor/symfony/maker-bundle</parameter>
         <parameter key="namespace">Symfony\Bundle\MakerBundle</parameter>
+      </parameter>
+      <parameter key="DoctrineFixturesBundle" type="collection">
+        <parameter key="path">/var/www/vendor/doctrine/doctrine-fixtures-bundle</parameter>
+        <parameter key="namespace">Doctrine\Bundle\FixturesBundle</parameter>
       </parameter>
     </parameter>
     <parameter key="kernel.charset">UTF-8</parameter>
     <parameter key="kernel.container_class">App_KernelDevDebugContainer</parameter>
-    <parameter key="kernel.share_dir">/var/www/app/var/share/dev</parameter>
+    <parameter key="kernel.share_dir">/var/www/var/cache/dev</parameter>
     <parameter key=".container.known_envs" type="collection">
       <parameter>dev</parameter>
       <parameter>test</parameter>
       <parameter>prod</parameter>
     </parameter>
-    <parameter key=".kernel.config_dir">/var/www/app/config</parameter>
+    <parameter key=".kernel.config_dir">/var/www/config</parameter>
     <parameter key=".kernel.bundles_definition" type="collection">
       <parameter key="Symfony\Bundle\FrameworkBundle\FrameworkBundle" type="collection">
         <parameter key="all">true</parameter>
@@ -122,6 +127,10 @@
       </parameter>
       <parameter key="Symfony\Bundle\MakerBundle\MakerBundle" type="collection">
         <parameter key="dev">true</parameter>
+      </parameter>
+      <parameter key="Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle" type="collection">
+        <parameter key="dev">true</parameter>
+        <parameter key="test">true</parameter>
       </parameter>
     </parameter>
     <parameter key="event_dispatcher.event_aliases" type="collection">
@@ -162,19 +171,19 @@
     <parameter key="asset.request_context.base_path">null</parameter>
     <parameter key="asset.request_context.secure">null</parameter>
     <parameter key="translator.logging">false</parameter>
-    <parameter key="translator.default_path">/var/www/app/translations</parameter>
+    <parameter key="translator.default_path">/var/www/translations</parameter>
     <parameter key="debug.error_handler.throw_at">-1</parameter>
-    <parameter key="debug.container.dump">/var/www/app/var/cache/dev/App_KernelDevDebugContainer.xml</parameter>
+    <parameter key="debug.container.dump">/var/www/var/cache/dev/App_KernelDevDebugContainer.xml</parameter>
     <parameter key="router.request_context.host">localhost</parameter>
     <parameter key="router.request_context.scheme">http</parameter>
     <parameter key="router.request_context.base_url"/>
     <parameter key="router.resource">kernel::loadRoutes</parameter>
-    <parameter key="router.cache_dir">/var/www/app/var/cache/dev</parameter>
+    <parameter key="router.cache_dir">/var/www/var/cache/dev</parameter>
     <parameter key="request_listener.http_port">80</parameter>
     <parameter key="request_listener.https_port">443</parameter>
-    <parameter key="serializer.mapping.cache.file">/var/www/app/var/cache/dev/serialization.php</parameter>
+    <parameter key="serializer.mapping.cache.file">/var/www/var/cache/dev/serialization.php</parameter>
     <parameter key=".serializer.named_serializers" type="collection"/>
-    <parameter key="cache.prefix.seed">_/var/www/app.App_KernelDevDebugContainer</parameter>
+    <parameter key="cache.prefix.seed">_/var/www.App_KernelDevDebugContainer</parameter>
     <parameter key="session.metadata.storage_key">_sf2_meta</parameter>
     <parameter key="session.storage.options" type="collection">
       <parameter key="cache_limiter" type="string">0</parameter>
@@ -190,11 +199,11 @@
       <parameter key="data-controller">csrf-protection</parameter>
     </parameter>
     <parameter key=".form.type_extension.csrf.token_id">submit</parameter>
-    <parameter key="validator.mapping.cache.file">/var/www/app/var/cache/dev/validation.php</parameter>
+    <parameter key="validator.mapping.cache.file">/var/www/var/cache/dev/validation.php</parameter>
     <parameter key="validator.translation_domain">validators</parameter>
     <parameter key="profiler_listener.only_exceptions">false</parameter>
     <parameter key="profiler_listener.only_main_requests">false</parameter>
-    <parameter key="profiler.storage.dsn">file:/var/www/app/var/cache/dev/profiler</parameter>
+    <parameter key="profiler.storage.dsn">file:/var/www/var/cache/dev/profiler</parameter>
     <parameter key="doctrine.entity_managers" type="collection">
       <parameter key="default">doctrine.orm.default_entity_manager</parameter>
     </parameter>
@@ -220,7 +229,7 @@
     <parameter key="twig.form.resources" type="collection">
       <parameter>form_div_layout.html.twig</parameter>
     </parameter>
-    <parameter key="twig.default_path">/var/www/app/templates</parameter>
+    <parameter key="twig.default_path">/var/www/templates</parameter>
     <parameter key="web_profiler.debug_toolbar.intercept_redirects">false</parameter>
     <parameter key="web_profiler.debug_toolbar.mode">2</parameter>
     <parameter key="security.role_hierarchy.roles" type="collection"/>
@@ -361,6 +370,32 @@
         <argument type="service" id=".service_locator.TJNRSaV.App\Controller\HomeController"/>
       </call>
     </service>
+    <service id="App\Controller\SecurityController" class="App\Controller\SecurityController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="routing.controller"/>
+      <tag name="container.service_subscriber"/>
+      <call method="setContainer">
+        <argument type="service" id=".service_locator.TJNRSaV.App\Controller\SecurityController"/>
+      </call>
+    </service>
+    <service id="App\DataFixtures\AppFixtures" class="App\DataFixtures\AppFixtures" autowire="true" autoconfigure="true">
+      <tag name="doctrine.fixture.orm"/>
+    </service>
+    <service id="App\DataFixtures\UserFixtures" class="App\DataFixtures\UserFixtures" autowire="true" autoconfigure="true">
+      <tag name="doctrine.fixture.orm"/>
+      <argument type="service" id="security.user_password_hasher"/>
+    </service>
+    <service id="App\Entity\User" class="App\Entity\User" autowire="true" autoconfigure="true">
+      <tag name="container.excluded" source="because it's a Doctrine entity"/>
+      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
+    </service>
+    <service id="App\Repository\UserRepository" class="App\Repository\UserRepository" autowire="true" autoconfigure="true">
+      <tag name="doctrine.repository_service"/>
+      <argument type="service" id="doctrine"/>
+    </service>
+    <service id="App\Security\LoginFormAuthenticator" class="App\Security\LoginFormAuthenticator" autowire="true" autoconfigure="true">
+      <argument type="service" id="router.default"/>
+    </service>
     <service id="argument_metadata_factory" class="Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactory"/>
     <service id="argument_resolver.backed_enum_resolver" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\BackedEnumValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\BackedEnumValueResolver" priority="100">controller.argument_value_resolver</tag>
@@ -389,7 +424,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" priority="-50">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.8JS6QTA"/>
+      <argument type="service" id=".service_locator.mBM_5PR"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" priority="-100">controller.argument_value_resolver</tag>
@@ -483,7 +518,7 @@
       </argument>
     </service>
     <service id="http_cache.store" class="Symfony\Component\HttpKernel\HttpCache\Store">
-      <argument>/var/www/app/var/share/dev/http_cache</argument>
+      <argument>/var/www/var/cache/dev/http_cache</argument>
     </service>
     <service id="url_helper" class="Symfony\Component\HttpFoundation\UrlHelper">
       <argument type="service" id="request_stack"/>
@@ -493,7 +528,7 @@
       <tag name="container.no_preload"/>
       <argument type="tagged_iterator" tag="kernel.cache_warmer"/>
       <argument>true</argument>
-      <argument>/var/www/app/var/cache/dev/App_KernelDevDebugContainerDeprecations.log</argument>
+      <argument>/var/www/var/cache/dev/App_KernelDevDebugContainerDeprecations.log</argument>
     </service>
     <service id="cache_clearer" class="Symfony\Component\HttpKernel\CacheClearer\ChainCacheClearer">
       <argument type="tagged_iterator" tag="kernel.cache_clearer"/>
@@ -557,6 +592,7 @@
         <argument key="cache.security_is_csrf_token_valid_attribute_expression_language" type="service" id="cache.security_is_csrf_token_valid_attribute_expression_language" on-invalid="ignore_uninitialized"/>
         <argument key="debug.security.access.decision_manager" type="service" id="debug.security.access.decision_manager" on-invalid="ignore_uninitialized"/>
         <argument key="debug.security.firewall" type="service" id="debug.security.firewall" on-invalid="ignore_uninitialized"/>
+        <argument key="cache.security_token_verifier" type="service" id="cache.security_token_verifier" on-invalid="ignore_uninitialized"/>
         <argument key="debug.security.firewall.authenticator.main" type="service" id="debug.security.firewall.authenticator.main" on-invalid="ignore_uninitialized"/>
         <argument key="monolog.handler.main" type="service" id="monolog.handler.main" on-invalid="ignore_uninitialized"/>
         <argument key="monolog.handler.console" type="service" id="monolog.handler.console" on-invalid="ignore_uninitialized"/>
@@ -676,6 +712,9 @@
         <argument key="debug.security.firewall" type="collection">
           <argument>reset</argument>
         </argument>
+        <argument key="cache.security_token_verifier" type="collection">
+          <argument>reset</argument>
+        </argument>
         <argument key="debug.security.firewall.authenticator.main" type="collection">
           <argument>reset</argument>
         </argument>
@@ -783,7 +822,7 @@
       </argument>
       <argument>UTF-8</argument>
       <argument type="service" id="debug.file_link_formatter" on-invalid="null"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <argument type="service">
         <service>
           <argument type="service" id="request_stack"/>
@@ -826,7 +865,7 @@
       <tag name="console.command"/>
       <tag name="container.no_preload"/>
       <argument type="service" id="filesystem"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <call method="setName">
         <argument>assets:install</argument>
       </call>
@@ -865,6 +904,7 @@
         <argument>cache.security_expression_language</argument>
         <argument>cache.security_is_granted_attribute_expression_language</argument>
         <argument>cache.security_is_csrf_token_valid_attribute_expression_language</argument>
+        <argument>cache.security_token_verifier</argument>
       </argument>
       <call method="setName">
         <argument>cache:pool:clear</argument>
@@ -914,6 +954,7 @@
         <argument>cache.security_expression_language</argument>
         <argument>cache.security_is_granted_attribute_expression_language</argument>
         <argument>cache.security_is_csrf_token_valid_attribute_expression_language</argument>
+        <argument>cache.security_token_verifier</argument>
       </argument>
       <call method="setName">
         <argument>cache:pool:delete</argument>
@@ -940,6 +981,7 @@
         <argument>cache.security_expression_language</argument>
         <argument>cache.security_is_granted_attribute_expression_language</argument>
         <argument>cache.security_is_csrf_token_valid_attribute_expression_language</argument>
+        <argument>cache.security_token_verifier</argument>
       </argument>
       <call method="setName">
         <argument>cache:pool:list</argument>
@@ -1015,7 +1057,7 @@
       <tag name="console.command"/>
       <tag name="container.no_preload"/>
       <argument>dev</argument>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <call method="setName">
         <argument>debug:dotenv</argument>
       </call>
@@ -1043,7 +1085,6 @@
       <argument type="service" id="debug.event_dispatcher"/>
       <argument type="service" id="monolog.logger.messenger" on-invalid="null"/>
       <argument type="collection">
-        <argument>async</argument>
         <argument>failed</argument>
       </argument>
       <argument type="service" id="messenger.listener.reset_services" on-invalid="null"/>
@@ -1064,7 +1105,6 @@
       <tag name="container.no_preload"/>
       <argument type="service" id="messenger.receiver_locator"/>
       <argument type="collection">
-        <argument>async</argument>
         <argument>failed</argument>
       </argument>
       <call method="setName">
@@ -1206,7 +1246,6 @@
       <tag name="container.no_preload"/>
       <argument type="service" id="messenger.receiver_locator"/>
       <argument type="collection">
-        <argument>async</argument>
         <argument>failed</argument>
       </argument>
       <call method="setName">
@@ -1257,16 +1296,16 @@
       <argument type="service" id="translator.data_collector"/>
       <argument type="service" id="translation.reader"/>
       <argument type="service" id="translation.extractor"/>
-      <argument>/var/www/app/translations</argument>
-      <argument>/var/www/app/templates</argument>
+      <argument>/var/www/translations</argument>
+      <argument>/var/www/templates</argument>
       <argument type="collection">
-        <argument>/var/www/app/vendor/symfony/validator/Resources/translations</argument>
-        <argument>/var/www/app/vendor/symfony/form/Resources/translations</argument>
-        <argument>/var/www/app/vendor/symfony/security-core/Resources/translations</argument>
+        <argument>/var/www/vendor/symfony/validator/Resources/translations</argument>
+        <argument>/var/www/vendor/symfony/form/Resources/translations</argument>
+        <argument>/var/www/vendor/symfony/security-core/Resources/translations</argument>
       </argument>
       <argument type="collection">
-        <argument>/var/www/app/vendor/symfony/twig-bridge/Resources/views/Email</argument>
-        <argument>/var/www/app/vendor/symfony/twig-bridge/Resources/views/Form</argument>
+        <argument>/var/www/vendor/symfony/twig-bridge/Resources/views/Email</argument>
+        <argument>/var/www/vendor/symfony/twig-bridge/Resources/views/Form</argument>
       </argument>
       <argument type="collection"/>
       <call method="setName">
@@ -1283,16 +1322,16 @@
       <argument type="service" id="translation.reader"/>
       <argument type="service" id="translation.extractor"/>
       <argument>en</argument>
-      <argument>/var/www/app/translations</argument>
-      <argument>/var/www/app/templates</argument>
+      <argument>/var/www/translations</argument>
+      <argument>/var/www/templates</argument>
       <argument type="collection">
-        <argument>/var/www/app/vendor/symfony/validator/Resources/translations</argument>
-        <argument>/var/www/app/vendor/symfony/form/Resources/translations</argument>
-        <argument>/var/www/app/vendor/symfony/security-core/Resources/translations</argument>
+        <argument>/var/www/vendor/symfony/validator/Resources/translations</argument>
+        <argument>/var/www/vendor/symfony/form/Resources/translations</argument>
+        <argument>/var/www/vendor/symfony/security-core/Resources/translations</argument>
       </argument>
       <argument type="collection">
-        <argument>/var/www/app/vendor/symfony/twig-bridge/Resources/views/Email</argument>
-        <argument>/var/www/app/vendor/symfony/twig-bridge/Resources/views/Form</argument>
+        <argument>/var/www/vendor/symfony/twig-bridge/Resources/views/Email</argument>
+        <argument>/var/www/vendor/symfony/twig-bridge/Resources/views/Form</argument>
       </argument>
       <argument type="collection"/>
       <call method="setName">
@@ -1575,7 +1614,7 @@
       <argument/>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>/var/www/app/var/cache/dev/pools/system</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -1594,7 +1633,7 @@
       <tag name="monolog.logger" channel="cache"/>
       <argument/>
       <argument>0</argument>
-      <argument>/var/www/app/var/share/dev/pools/app</argument>
+      <argument>/var/www/var/cache/dev/pools/app</argument>
       <argument type="service" id="cache.default_marshaller" on-invalid="ignore"/>
       <call method="setLogger">
         <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
@@ -1695,6 +1734,7 @@
         <argument key="cache.security_expression_language" type="service" id="cache.security_expression_language" on-invalid="ignore_uninitialized"/>
         <argument key="cache.security_is_granted_attribute_expression_language" type="service" id="cache.security_is_granted_attribute_expression_language" on-invalid="ignore_uninitialized"/>
         <argument key="cache.security_is_csrf_token_valid_attribute_expression_language" type="service" id="cache.security_is_csrf_token_valid_attribute_expression_language" on-invalid="ignore_uninitialized"/>
+        <argument key="cache.security_token_verifier" type="service" id="cache.security_token_verifier" on-invalid="ignore_uninitialized"/>
       </argument>
     </service>
     <service id="cache.global_clearer" class="Symfony\Component\HttpKernel\CacheClearer\Psr6CacheClearer" public="true">
@@ -1714,6 +1754,7 @@
         <argument key="cache.security_expression_language" type="service" id="cache.security_expression_language" on-invalid="ignore_uninitialized"/>
         <argument key="cache.security_is_granted_attribute_expression_language" type="service" id="cache.security_is_granted_attribute_expression_language" on-invalid="ignore_uninitialized"/>
         <argument key="cache.security_is_csrf_token_valid_attribute_expression_language" type="service" id="cache.security_is_csrf_token_valid_attribute_expression_language" on-invalid="ignore_uninitialized"/>
+        <argument key="cache.security_token_verifier" type="service" id="cache.security_token_verifier" on-invalid="ignore_uninitialized"/>
       </argument>
     </service>
     <service id="identity_translator" class="Symfony\Component\Translation\IdentityTranslator"/>
@@ -1765,16 +1806,16 @@
     <service id="asset_mapper.cached_mapped_asset_factory" class="Symfony\Component\AssetMapper\Factory\CachedMappedAssetFactory">
       <tag name="container.decorator" id="asset_mapper.mapped_asset_factory" inner="asset_mapper.cached_mapped_asset_factory.inner"/>
       <argument type="service" id="asset_mapper.cached_mapped_asset_factory.inner"/>
-      <argument>/var/www/app/var/cache/dev/asset_mapper</argument>
+      <argument>/var/www/var/cache/dev/asset_mapper</argument>
       <argument>true</argument>
     </service>
     <service id="asset_mapper.repository" class="Symfony\Component\AssetMapper\AssetMapperRepository">
       <argument type="collection">
-        <argument key="/var/www/app/vendor/symfony/ux-turbo/src/DependencyInjection/../../assets/dist">@symfony/ux-turbo</argument>
-        <argument key="/var/www/app/vendor/symfony/stimulus-bundle/src/DependencyInjection/../../assets/dist">@symfony/stimulus-bundle</argument>
+        <argument key="/var/www/vendor/symfony/ux-turbo/src/DependencyInjection/../../assets/dist">@symfony/ux-turbo</argument>
+        <argument key="/var/www/vendor/symfony/stimulus-bundle/src/DependencyInjection/../../assets/dist">@symfony/stimulus-bundle</argument>
         <argument key="assets/"/>
       </argument>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <argument type="collection">
         <argument>#^(?=[^\.]).*\.d\.ts$#</argument>
         <argument>#^(?=[^\.])/?(?=[^\.]).*.*/(?=[^\.])controllers\.json$#</argument>
@@ -1786,10 +1827,10 @@
       <argument>/assets/</argument>
     </service>
     <service id="asset_mapper.local_public_assets_filesystem" class="Symfony\Component\AssetMapper\Path\LocalPublicAssetsFilesystem">
-      <argument>/var/www/app/public</argument>
+      <argument>/var/www/public</argument>
     </service>
     <service id="asset_mapper.compiled_asset_mapper_config_reader" class="Symfony\Component\AssetMapper\CompiledAssetMapperConfigReader">
-      <argument>/var/www/app/public/assets</argument>
+      <argument>/var/www/public/assets</argument>
     </service>
     <service id="asset_mapper.asset_package" class="Symfony\Component\AssetMapper\MapperAwareAssetPackage">
       <tag name="container.decorator" id="assets._default_package" inner="asset_mapper.asset_package.inner"/>
@@ -1813,7 +1854,7 @@
       <argument type="service" id="asset_mapper"/>
       <argument type="service" id="asset_mapper.importmap.generator"/>
       <argument type="service" id="asset_mapper.local_public_assets_filesystem"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <argument>true</argument>
       <argument type="service" id="debug.event_dispatcher" on-invalid="null"/>
       <call method="setName">
@@ -1828,7 +1869,7 @@
       <tag name="container.no_preload"/>
       <argument type="service" id="asset_mapper"/>
       <argument type="service" id="asset_mapper.repository"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <call method="setName">
         <argument>debug:asset-map</argument>
       </call>
@@ -1857,7 +1898,7 @@
       <argument type="service" id="monolog.logger.asset_mapper"/>
     </service>
     <service id="asset_mapper.importmap.config_reader" class="Symfony\Component\AssetMapper\ImportMap\ImportMapConfigReader">
-      <argument>/var/www/app/importmap.php</argument>
+      <argument>/var/www/importmap.php</argument>
       <argument type="service" id="asset_mapper.importmap.remote_package_storage"/>
     </service>
     <service id="asset_mapper.importmap.manager" class="Symfony\Component\AssetMapper\ImportMap\ImportMapManager">
@@ -1872,7 +1913,7 @@
       <argument type="service" id="asset_mapper.importmap.config_reader"/>
     </service>
     <service id="asset_mapper.importmap.remote_package_storage" class="Symfony\Component\AssetMapper\ImportMap\RemotePackageStorage">
-      <argument>/var/www/app/assets/vendor</argument>
+      <argument>/var/www/assets/vendor</argument>
     </service>
     <service id="asset_mapper.importmap.remote_package_downloader" class="Symfony\Component\AssetMapper\ImportMap\RemotePackageDownloader">
       <argument type="service" id="asset_mapper.importmap.remote_package_storage"/>
@@ -1909,7 +1950,7 @@
       <tag name="container.no_preload"/>
       <argument type="service" id="asset_mapper.importmap.manager"/>
       <argument type="service" id="asset_mapper.importmap.version_checker"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <call method="setName">
         <argument>importmap:require</argument>
       </call>
@@ -1944,7 +1985,7 @@
       <tag name="console.command"/>
       <tag name="container.no_preload"/>
       <argument type="service" id="asset_mapper.importmap.remote_package_downloader"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <call method="setName">
         <argument>importmap:install</argument>
       </call>
@@ -2162,312 +2203,313 @@
         </argument>
       </argument>
       <argument type="collection">
-        <argument key="cache_dir">/var/www/app/var/cache/dev/translations</argument>
+        <argument key="cache_dir">/var/www/var/cache/dev/translations</argument>
         <argument key="debug">true</argument>
         <argument key="resource_files" type="collection">
           <argument key="af" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.af.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.af.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.af.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.af.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.af.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.af.xlf</argument>
           </argument>
           <argument key="ar" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.ar.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.ar.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.ar.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.ar.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.ar.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.ar.xlf</argument>
           </argument>
           <argument key="az" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.az.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.az.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.az.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.az.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.az.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.az.xlf</argument>
           </argument>
           <argument key="be" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.be.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.be.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.be.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.be.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.be.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.be.xlf</argument>
           </argument>
           <argument key="bg" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.bg.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.bg.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.bg.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.bg.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.bg.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.bg.xlf</argument>
           </argument>
           <argument key="bs" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.bs.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.bs.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.bs.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.bs.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.bs.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.bs.xlf</argument>
           </argument>
           <argument key="ca" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.ca.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.ca.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.ca.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.ca.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.ca.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.ca.xlf</argument>
           </argument>
           <argument key="cs" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.cs.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.cs.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.cs.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.cs.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.cs.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.cs.xlf</argument>
           </argument>
           <argument key="cy" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.cy.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.cy.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.cy.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.cy.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.cy.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.cy.xlf</argument>
           </argument>
           <argument key="da" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.da.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.da.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.da.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.da.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.da.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.da.xlf</argument>
           </argument>
           <argument key="de" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.de.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.de.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.de.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.de.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.de.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.de.xlf</argument>
           </argument>
           <argument key="el" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.el.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.el.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.el.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.el.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.el.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.el.xlf</argument>
           </argument>
           <argument key="en" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.en.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.en.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.en.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.en.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.en.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.en.xlf</argument>
           </argument>
           <argument key="es" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.es.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.es.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.es.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.es.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.es.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.es.xlf</argument>
           </argument>
           <argument key="et" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.et.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.et.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.et.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.et.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.et.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.et.xlf</argument>
           </argument>
           <argument key="eu" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.eu.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.eu.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.eu.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.eu.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.eu.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.eu.xlf</argument>
           </argument>
           <argument key="fa" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.fa.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.fa.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.fa.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.fa.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.fa.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.fa.xlf</argument>
           </argument>
           <argument key="fi" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.fi.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.fi.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.fi.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.fi.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.fi.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.fi.xlf</argument>
           </argument>
           <argument key="fr" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.fr.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.fr.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.fr.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.fr.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.fr.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.fr.xlf</argument>
           </argument>
           <argument key="gl" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.gl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.gl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.gl.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.gl.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.gl.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.gl.xlf</argument>
           </argument>
           <argument key="he" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.he.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.he.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.he.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.he.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.he.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.he.xlf</argument>
           </argument>
           <argument key="hr" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.hr.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.hr.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.hr.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.hr.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.hr.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.hr.xlf</argument>
           </argument>
           <argument key="hu" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.hu.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.hu.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.hu.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.hu.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.hu.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.hu.xlf</argument>
           </argument>
           <argument key="hy" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.hy.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.hy.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.hy.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.hy.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.hy.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.hy.xlf</argument>
           </argument>
           <argument key="id" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.id.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.id.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.id.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.id.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.id.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.id.xlf</argument>
           </argument>
           <argument key="it" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.it.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.it.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.it.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.it.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.it.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.it.xlf</argument>
           </argument>
           <argument key="ja" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.ja.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.ja.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.ja.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.ja.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.ja.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.ja.xlf</argument>
           </argument>
           <argument key="lb" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.lb.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.lb.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.lb.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.lb.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.lb.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.lb.xlf</argument>
           </argument>
           <argument key="lt" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.lt.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.lt.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.lt.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.lt.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.lt.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.lt.xlf</argument>
           </argument>
           <argument key="lv" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.lv.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.lv.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.lv.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.lv.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.lv.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.lv.xlf</argument>
           </argument>
           <argument key="mk" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.mk.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.mk.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.mk.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.mk.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.mk.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.mk.xlf</argument>
           </argument>
           <argument key="mn" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.mn.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.mn.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.mn.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.mn.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.mn.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.mn.xlf</argument>
           </argument>
           <argument key="my" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.my.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.my.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.my.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.my.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.my.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.my.xlf</argument>
           </argument>
           <argument key="nb" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.nb.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.nb.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.nb.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.nb.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.nb.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.nb.xlf</argument>
           </argument>
           <argument key="nl" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.nl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.nl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.nl.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.nl.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.nl.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.nl.xlf</argument>
           </argument>
           <argument key="nn" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.nn.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.nn.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.nn.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.nn.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.nn.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.nn.xlf</argument>
           </argument>
           <argument key="no" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.no.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.no.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.no.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.no.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.no.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.no.xlf</argument>
           </argument>
           <argument key="pl" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.pl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.pl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.pl.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.pl.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.pl.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.pl.xlf</argument>
           </argument>
           <argument key="pt" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.pt.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.pt.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.pt.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.pt.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.pt.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.pt.xlf</argument>
           </argument>
           <argument key="pt_BR" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.pt_BR.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.pt_BR.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.pt_BR.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.pt_BR.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.pt_BR.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.pt_BR.xlf</argument>
           </argument>
           <argument key="ro" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.ro.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.ro.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.ro.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.ro.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.ro.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.ro.xlf</argument>
           </argument>
           <argument key="ru" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.ru.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.ru.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.ru.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.ru.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.ru.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.ru.xlf</argument>
           </argument>
           <argument key="sk" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.sk.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.sk.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.sk.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.sk.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.sk.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.sk.xlf</argument>
           </argument>
           <argument key="sl" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.sl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.sl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.sl.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.sl.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.sl.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.sl.xlf</argument>
           </argument>
           <argument key="sq" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.sq.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.sq.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.sq.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.sq.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.sq.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.sq.xlf</argument>
           </argument>
           <argument key="sr_Cyrl" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.sr_Cyrl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.sr_Cyrl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.sr_Cyrl.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.sr_Cyrl.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.sr_Cyrl.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.sr_Cyrl.xlf</argument>
           </argument>
           <argument key="sr_Latn" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.sr_Latn.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.sr_Latn.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.sr_Latn.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.sr_Latn.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.sr_Latn.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.sr_Latn.xlf</argument>
           </argument>
           <argument key="sv" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.sv.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.sv.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.sv.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.sv.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.sv.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.sv.xlf</argument>
           </argument>
           <argument key="th" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.th.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.th.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.th.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.th.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.th.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.th.xlf</argument>
           </argument>
           <argument key="tl" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.tl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.tl.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.tl.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.tl.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.tl.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.tl.xlf</argument>
           </argument>
           <argument key="tr" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.tr.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.tr.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.tr.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.tr.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.tr.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.tr.xlf</argument>
           </argument>
           <argument key="uk" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.uk.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.uk.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.uk.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.uk.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.uk.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.uk.xlf</argument>
           </argument>
           <argument key="ur" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.ur.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.ur.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.ur.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.ur.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.ur.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.ur.xlf</argument>
           </argument>
           <argument key="uz" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.uz.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.uz.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.uz.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.uz.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.uz.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.uz.xlf</argument>
           </argument>
           <argument key="vi" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.vi.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.vi.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.vi.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.vi.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.vi.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.vi.xlf</argument>
           </argument>
           <argument key="zh_CN" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.zh_CN.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.zh_CN.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.zh_CN.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.zh_CN.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.zh_CN.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.zh_CN.xlf</argument>
           </argument>
           <argument key="zh_TW" type="collection">
-            <argument>/var/www/app/vendor/symfony/validator/Resources/translations/validators.zh_TW.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/form/Resources/translations/validators.zh_TW.xlf</argument>
-            <argument>/var/www/app/vendor/symfony/security-core/Resources/translations/security.zh_TW.xlf</argument>
+            <argument>/var/www/vendor/symfony/validator/Resources/translations/validators.zh_TW.xlf</argument>
+            <argument>/var/www/vendor/symfony/form/Resources/translations/validators.zh_TW.xlf</argument>
+            <argument>/var/www/vendor/symfony/security-core/Resources/translations/security.zh_TW.xlf</argument>
           </argument>
         </argument>
         <argument key="scanned_directories" type="collection">
-          <argument>/var/www/app/vendor/symfony/validator/Resources/translations</argument>
-          <argument>/var/www/app/vendor/symfony/form/Resources/translations</argument>
-          <argument>/var/www/app/vendor/symfony/security-core/Resources/translations</argument>
-          <argument>/var/www/app/translations</argument>
-          <argument>/var/www/app/vendor/symfony/framework-bundle/translations</argument>
-          <argument>/var/www/app/vendor/doctrine/doctrine-bundle/translations</argument>
-          <argument>/var/www/app/vendor/doctrine/doctrine-migrations-bundle/translations</argument>
-          <argument>/var/www/app/vendor/symfony/debug-bundle/translations</argument>
-          <argument>/var/www/app/vendor/symfony/twig-bundle/translations</argument>
-          <argument>/var/www/app/vendor/symfony/web-profiler-bundle/translations</argument>
-          <argument>/var/www/app/vendor/symfony/stimulus-bundle/translations</argument>
-          <argument>/var/www/app/vendor/symfony/ux-turbo/translations</argument>
-          <argument>/var/www/app/vendor/twig/extra-bundle/translations</argument>
-          <argument>/var/www/app/vendor/symfony/security-bundle/translations</argument>
-          <argument>/var/www/app/vendor/symfony/monolog-bundle/src/translations</argument>
-          <argument>/var/www/app/vendor/symfony/maker-bundle/translations</argument>
+          <argument>/var/www/vendor/symfony/validator/Resources/translations</argument>
+          <argument>/var/www/vendor/symfony/form/Resources/translations</argument>
+          <argument>/var/www/vendor/symfony/security-core/Resources/translations</argument>
+          <argument>/var/www/translations</argument>
+          <argument>/var/www/vendor/symfony/framework-bundle/translations</argument>
+          <argument>/var/www/vendor/doctrine/doctrine-bundle/translations</argument>
+          <argument>/var/www/vendor/doctrine/doctrine-migrations-bundle/translations</argument>
+          <argument>/var/www/vendor/symfony/debug-bundle/translations</argument>
+          <argument>/var/www/vendor/symfony/twig-bundle/translations</argument>
+          <argument>/var/www/vendor/symfony/web-profiler-bundle/translations</argument>
+          <argument>/var/www/vendor/symfony/stimulus-bundle/translations</argument>
+          <argument>/var/www/vendor/symfony/ux-turbo/translations</argument>
+          <argument>/var/www/vendor/twig/extra-bundle/translations</argument>
+          <argument>/var/www/vendor/symfony/security-bundle/translations</argument>
+          <argument>/var/www/vendor/symfony/monolog-bundle/src/translations</argument>
+          <argument>/var/www/vendor/symfony/maker-bundle/translations</argument>
+          <argument>/var/www/vendor/doctrine/doctrine-fixtures-bundle/translations</argument>
         </argument>
         <argument key="cache_vary" type="collection">
           <argument key="scanned_directories" type="collection">
@@ -2487,6 +2529,7 @@
             <argument>vendor/symfony/security-bundle/translations</argument>
             <argument>vendor/symfony/monolog-bundle/src/translations</argument>
             <argument>vendor/symfony/maker-bundle/translations</argument>
+            <argument>vendor/doctrine/doctrine-fixtures-bundle/translations</argument>
           </argument>
         </argument>
       </argument>
@@ -2825,7 +2868,7 @@
     <service id="debug.file_link_formatter" class="Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter">
       <argument>%env(default::SYMFONY_IDE)%</argument>
       <argument type="service" id="request_stack" on-invalid="ignore"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <argument type="service_closure" id="debug.file_link_formatter.url_format"/>
     </service>
     <service id="debug.stopwatch" class="Symfony\Component\Stopwatch\Stopwatch" public="true">
@@ -3412,6 +3455,14 @@
         <argument>0</argument>
       </call>
       <call method="addListener">
+        <argument>kernel.response</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="security.rememberme.response_listener"/>
+          <argument>onKernelResponse</argument>
+        </argument>
+        <argument>0</argument>
+      </call>
+      <call method="addListener">
         <argument>console.command</argument>
         <argument type="collection">
           <argument type="service_closure" id="monolog.handler.console"/>
@@ -3481,7 +3532,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.8JS6QTA"/>
+      <argument type="service" id=".service_locator.mBM_5PR"/>
     </service>
     <service id="debug.log_processor" class="Symfony\Bridge\Monolog\Processor\DebugProcessor">
       <tag name="kernel.reset" method="reset"/>
@@ -3564,6 +3615,7 @@
       <tag name="routing.loader" priority="-10"/>
       <argument type="collection">
         <argument>App\Controller\HomeController</argument>
+        <argument>App\Controller\SecurityController</argument>
       </argument>
     </service>
     <service id="routing.loader.attribute.directory" class="Symfony\Component\Routing\Loader\AttributeDirectoryLoader">
@@ -3593,7 +3645,7 @@
       <argument type="service" id=".service_locator.xdLQ5FJ.router.default"/>
       <argument>kernel::loadRoutes</argument>
       <argument type="collection">
-        <argument key="cache_dir">/var/www/app/var/cache/dev</argument>
+        <argument key="cache_dir">/var/www/var/cache/dev</argument>
         <argument key="debug">true</argument>
         <argument key="generator_class">Symfony\Component\Routing\Generator\CompiledUrlGenerator</argument>
         <argument key="generator_dumper_class">Symfony\Component\Routing\Generator\Dumper\CompiledUrlGeneratorDumper</argument>
@@ -3644,7 +3696,7 @@
       <argument type="service" id="request_stack"/>
       <argument type="service" id="router.request_context" on-invalid="ignore"/>
       <argument type="service" id="monolog.logger.request" on-invalid="ignore"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <argument>true</argument>
     </service>
     <service id="Symfony\Bundle\FrameworkBundle\Controller\RedirectController" class="Symfony\Bundle\FrameworkBundle\Controller\RedirectController" public="true">
@@ -3671,7 +3723,7 @@
       <argument type="service" id="property_info.reflection_extractor" on-invalid="null"/>
     </service>
     <service id="secrets.vault" class="Symfony\Bundle\FrameworkBundle\Secrets\SodiumVault">
-      <argument>/var/www/app/config/secrets/%env(default:kernel.environment:APP_RUNTIME_ENV)%</argument>
+      <argument>/var/www/config/secrets/%env(default:kernel.environment:APP_RUNTIME_ENV)%</argument>
       <argument type="service" id="secrets.decryption_key" on-invalid="ignore"/>
       <argument>APP_SECRET</argument>
     </service>
@@ -3684,7 +3736,7 @@
       <argument>base64:default::SYMFONY_DECRYPTION_SECRET</argument>
     </service>
     <service id="secrets.local_vault" class="Symfony\Bundle\FrameworkBundle\Secrets\DotenvVault">
-      <argument>/var/www/app/.env.dev.local</argument>
+      <argument>/var/www/.env.dev.local</argument>
     </service>
     <service id="serializer.mapping.class_discriminator_resolver" class="Symfony\Component\Serializer\Mapping\ClassDiscriminatorFromClassMetadata">
       <argument type="service" id="serializer.mapping.class_metadata_factory"/>
@@ -3794,10 +3846,10 @@
       <argument type="collection">
         <argument type="service" id="serializer.mapping.attribute_loader"/>
       </argument>
-      <argument>/var/www/app/var/cache/dev/serialization.php</argument>
+      <argument>/var/www/var/cache/dev/serialization.php</argument>
     </service>
     <service id="serializer.mapping.cache.symfony" class="Psr\Cache\CacheItemPoolInterface">
-      <argument>/var/www/app/var/cache/dev/serialization.php</argument>
+      <argument>/var/www/var/cache/dev/serialization.php</argument>
       <argument type="service" id="cache.serializer"/>
       <factory class="Symfony\Component\Cache\Adapter\PhpArrayAdapter" method="create"/>
     </service>
@@ -4019,7 +4071,7 @@
       <argument>true</argument>
     </service>
     <service id="session.storage.factory.mock_file" class="Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorageFactory">
-      <argument>/var/www/app/var/cache/dev/sessions</argument>
+      <argument>/var/www/var/cache/dev/sessions</argument>
       <argument>MOCKSESSID</argument>
       <argument type="service">
         <service class="Symfony\Component\HttpFoundation\Session\Storage\MetadataBag">
@@ -4248,10 +4300,10 @@
     <service id="validator.mapping.cache_warmer" class="Symfony\Bundle\FrameworkBundle\CacheWarmer\ValidatorCacheWarmer">
       <tag name="kernel.cache_warmer"/>
       <argument type="service" id="validator.builder"/>
-      <argument>/var/www/app/var/cache/dev/validation.php</argument>
+      <argument>/var/www/var/cache/dev/validation.php</argument>
     </service>
     <service id="validator.mapping.cache.adapter" class="Symfony\Component\Cache\Adapter\PhpArrayAdapter" constructor="create">
-      <argument>/var/www/app/var/cache/dev/validation.php</argument>
+      <argument>/var/www/var/cache/dev/validation.php</argument>
       <argument type="service" id="cache.validator"/>
     </service>
     <service id="validator.validator_factory" class="Symfony\Component\Validator\ContainerConstraintValidatorFactory">
@@ -4578,18 +4630,8 @@
       <tag name="validator.attribute_metadata"/>
     </service>
     <service id="messenger.senders_locator" class="Symfony\Component\Messenger\Transport\Sender\SendersLocator">
-      <argument type="collection">
-        <argument key="Symfony\Component\Mailer\Messenger\SendEmailMessage" type="collection">
-          <argument>async</argument>
-        </argument>
-        <argument key="Symfony\Component\Notifier\Message\ChatMessage" type="collection">
-          <argument>async</argument>
-        </argument>
-        <argument key="Symfony\Component\Notifier\Message\SmsMessage" type="collection">
-          <argument>async</argument>
-        </argument>
-      </argument>
-      <argument type="service" id=".service_locator.Oqd5g0t"/>
+      <argument type="collection"/>
+      <argument type="service" id=".service_locator.NEsmXhs"/>
     </service>
     <service id="messenger.middleware.send_message" class="Symfony\Component\Messenger\Middleware\SendMessageMiddleware" abstract="true">
       <tag name="monolog.logger" channel="messenger"/>
@@ -4658,8 +4700,6 @@
     <service id="messenger.receiver_locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="messenger.transport.async" type="service_closure" id="messenger.transport.async"/>
-        <argument key="async" type="service_closure" id="messenger.transport.async"/>
         <argument key="messenger.transport.failed" type="service_closure" id="messenger.transport.failed"/>
         <argument key="failed" type="service_closure" id="messenger.transport.failed"/>
       </argument>
@@ -4687,7 +4727,6 @@
     <service id="messenger.retry_strategy_locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="async" type="service_closure" id="messenger.retry.multiplier_retry_strategy.async"/>
         <argument key="failed" type="service_closure" id="messenger.retry.multiplier_retry_strategy.failed"/>
       </argument>
     </service>
@@ -4701,7 +4740,7 @@
     <service id="messenger.retry.send_failed_message_for_retry_listener" class="Symfony\Component\Messenger\EventListener\SendFailedMessageForRetryListener">
       <tag name="monolog.logger" channel="messenger"/>
       <tag name="kernel.event_subscriber"/>
-      <argument type="service" id=".service_locator.Oqd5g0t"/>
+      <argument type="service" id=".service_locator.NEsmXhs"/>
       <argument type="service" id="messenger.retry_strategy_locator"/>
       <argument type="service" id="monolog.logger.messenger" on-invalid="ignore"/>
       <argument type="service" id="debug.event_dispatcher"/>
@@ -4712,7 +4751,7 @@
     <service id="messenger.failure.send_failed_message_to_failure_transport_listener" class="Symfony\Component\Messenger\EventListener\SendFailedMessageToFailureTransportListener">
       <tag name="monolog.logger" channel="messenger"/>
       <tag name="kernel.event_subscriber"/>
-      <argument type="service" id=".service_locator.UoTJz6S"/>
+      <argument type="service" id=".service_locator.iU9im4e"/>
       <argument type="service" id="monolog.logger.messenger" on-invalid="ignore"/>
     </service>
     <service id="messenger.listener.dispatch_pcntl_signal_listener" class="Symfony\Component\Messenger\EventListener\DispatchPcntlSignalListener">
@@ -4741,29 +4780,13 @@
       <tag name="messenger.message_handler"/>
       <argument type="service" id="debug.traced.messenger.bus.default"/>
     </service>
-    <service id="messenger.transport.async" class="Symfony\Component\Messenger\Transport\TransportInterface">
-      <tag name="messenger.receiver" alias="async" is_failure_transport="false"/>
-      <argument>%env(MESSENGER_TRANSPORT_DSN)%</argument>
-      <argument type="collection">
-        <argument key="transport_name">async</argument>
-      </argument>
-      <argument type="service" id=".signing.messenger.default_serializer"/>
-      <factory service="messenger.transport_factory" method="createTransport"/>
-    </service>
-    <service id="messenger.retry.multiplier_retry_strategy.async" class="Symfony\Component\Messenger\Retry\MultiplierRetryStrategy">
-      <argument>3</argument>
-      <argument>1000</argument>
-      <argument>2</argument>
-      <argument>0</argument>
-      <argument>0.1</argument>
-    </service>
     <service id="messenger.transport.failed" class="Symfony\Component\Messenger\Transport\TransportInterface">
       <tag name="messenger.receiver" alias="failed" is_failure_transport="true"/>
       <argument>doctrine://default?queue_name=failed</argument>
       <argument type="collection">
         <argument key="transport_name">failed</argument>
       </argument>
-      <argument type="service" id=".signing.messenger.default_serializer"/>
+      <argument type="service" id="messenger.transport.native_php_serializer"/>
       <factory service="messenger.transport_factory" method="createTransport"/>
     </service>
     <service id="messenger.retry.multiplier_retry_strategy.failed" class="Symfony\Component\Messenger\Retry\MultiplierRetryStrategy">
@@ -4773,19 +4796,16 @@
       <argument>0</argument>
       <argument>0.1</argument>
     </service>
-    <service id=".service_locator.Oqd5g0t" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.NEsmXhs" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="async" type="service_closure" id="messenger.transport.async"/>
         <argument key="failed" type="service_closure" id="messenger.transport.failed"/>
-        <argument key="messenger.transport.async" type="service_closure" id="messenger.transport.async"/>
         <argument key="messenger.transport.failed" type="service_closure" id="messenger.transport.failed"/>
       </argument>
     </service>
-    <service id=".service_locator.UoTJz6S" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.iU9im4e" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="async" type="service_closure" id="messenger.transport.failed"/>
         <argument key="failed" type="service_closure" id="messenger.transport.failed"/>
       </argument>
     </service>
@@ -4977,7 +4997,7 @@
       </call>
     </service>
     <service id="profiler.storage" class="Symfony\Component\HttpKernel\Profiler\FileProfilerStorage">
-      <argument>file:/var/www/app/var/cache/dev/profiler</argument>
+      <argument>file:/var/www/var/cache/dev/profiler</argument>
     </service>
     <service id="profiler_listener" class="Symfony\Component\HttpKernel\EventListener\ProfilerListener">
       <tag name="kernel.reset" method="?reset"/>
@@ -5058,7 +5078,7 @@
       <tag name="monolog.logger" channel="profiler"/>
       <tag name="data_collector" template="@WebProfiler/Collector/logger.html.twig" id="logger" priority="300"/>
       <argument type="service" id="monolog.logger.profiler" on-invalid="ignore"/>
-      <argument>/var/www/app/var/cache/dev/App_KernelDevDebugContainer</argument>
+      <argument>/var/www/var/cache/dev/App_KernelDevDebugContainer</argument>
       <argument type="service" id=".virtual_request_stack" on-invalid="ignore"/>
     </service>
     <service id="data_collector.time" class="Symfony\Component\HttpKernel\DataCollector\TimeDataCollector">
@@ -5134,6 +5154,10 @@
       <call method="addInstance">
         <argument>cache.security_is_csrf_token_valid_attribute_expression_language</argument>
         <argument type="service" id="cache.security_is_csrf_token_valid_attribute_expression_language"/>
+      </call>
+      <call method="addInstance">
+        <argument>cache.security_token_verifier</argument>
+        <argument type="service" id="cache.security_token_verifier"/>
       </call>
     </service>
     <service id="cache_pool_clearer.cache_warmer" class="Symfony\Bundle\FrameworkBundle\CacheWarmer\CachePoolClearerCacheWarmer">
@@ -5451,7 +5475,7 @@
     <service id="doctrine.orm.configuration" class="Doctrine\ORM\Configuration" abstract="true"/>
     <service id="doctrine.orm.entity_manager.abstract" class="Doctrine\ORM\EntityManager" lazy="true" abstract="true"/>
     <service id="doctrine.orm.container_repository_factory" class="Doctrine\Bundle\DoctrineBundle\Repository\ContainerRepositoryFactory">
-      <argument type="service" id=".service_locator.dpiLQ5O"/>
+      <argument type="service" id=".service_locator.pL.xV9Q"/>
     </service>
     <service id="doctrine.orm.manager_configurator.abstract" class="Doctrine\Bundle\DoctrineBundle\ManagerConfigurator" abstract="true">
       <argument type="collection"/>
@@ -5699,7 +5723,7 @@
     </service>
     <service id="doctrine.orm.default_attribute_metadata_driver" class="Doctrine\ORM\Mapping\Driver\AttributeDriver">
       <argument type="collection">
-        <argument>/var/www/app/src/Entity</argument>
+        <argument>/var/www/src/Entity</argument>
       </argument>
     </service>
     <service id="cache.doctrine.orm.default.metadata" class="Symfony\Component\Cache\Adapter\ArrayAdapter"/>
@@ -5764,7 +5788,7 @@
     <service id="doctrine.migrations.configuration" class="Doctrine\Migrations\Configuration\Configuration">
       <call method="addMigrationsDirectory">
         <argument>DoctrineMigrations</argument>
-        <argument>/var/www/app/migrations</argument>
+        <argument>/var/www/migrations</argument>
       </call>
       <call method="setAllOrNothing">
         <argument>false</argument>
@@ -5996,7 +6020,7 @@
         <argument key="source" type="service">
           <service class="Symfony\Component\VarDumper\Dumper\ContextProvider\SourceContextProvider">
             <argument>UTF-8</argument>
-            <argument>/var/www/app</argument>
+            <argument>/var/www</argument>
             <argument type="service" id="debug.file_link_formatter" on-invalid="null"/>
           </service>
         </argument>
@@ -6018,7 +6042,7 @@
         <argument key="source" type="service">
           <service class="Symfony\Component\VarDumper\Dumper\ContextProvider\SourceContextProvider">
             <argument>UTF-8</argument>
-            <argument>/var/www/app</argument>
+            <argument>/var/www</argument>
             <argument type="service" id="debug.file_link_formatter" on-invalid="null"/>
           </service>
         </argument>
@@ -6083,7 +6107,7 @@
       <tag name="kernel.reset" method="resetGlobals"/>
       <argument type="service" id="twig.loader.native_filesystem"/>
       <argument type="collection">
-        <argument key="cache">/var/www/app/var/cache/dev/twig</argument>
+        <argument key="cache">/var/www/var/cache/dev/twig</argument>
         <argument key="charset">UTF-8</argument>
         <argument key="debug">true</argument>
         <argument key="strict_variables">true</argument>
@@ -6208,10 +6232,10 @@
     <service id="twig.template_iterator" class="Symfony\Bundle\TwigBundle\TemplateIterator">
       <argument type="service" id="kernel"/>
       <argument type="collection">
-        <argument key="/var/www/app/vendor/symfony/twig-bridge/Resources/views/Email">email</argument>
-        <argument key="/var/www/app/vendor/symfony/twig-bridge/Resources/views/Form">null</argument>
+        <argument key="/var/www/vendor/symfony/twig-bridge/Resources/views/Email">email</argument>
+        <argument key="/var/www/vendor/symfony/twig-bridge/Resources/views/Form">null</argument>
       </argument>
-      <argument>/var/www/app/templates</argument>
+      <argument>/var/www/templates</argument>
       <argument type="collection">
         <argument>*.twig</argument>
       </argument>
@@ -6226,76 +6250,76 @@
     <service id="twig.loader.native_filesystem" class="Twig\Loader\FilesystemLoader">
       <tag name="twig.loader"/>
       <argument type="collection"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <call method="addPath">
-        <argument>/var/www/app/vendor/doctrine/doctrine-bundle/templates</argument>
+        <argument>/var/www/vendor/doctrine/doctrine-bundle/templates</argument>
         <argument>Doctrine</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/doctrine/doctrine-bundle/templates</argument>
+        <argument>/var/www/vendor/doctrine/doctrine-bundle/templates</argument>
         <argument>!Doctrine</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/doctrine/doctrine-migrations-bundle/templates</argument>
+        <argument>/var/www/vendor/doctrine/doctrine-migrations-bundle/templates</argument>
         <argument>DoctrineMigrations</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/doctrine/doctrine-migrations-bundle/templates</argument>
+        <argument>/var/www/vendor/doctrine/doctrine-migrations-bundle/templates</argument>
         <argument>!DoctrineMigrations</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/debug-bundle/Resources/views</argument>
+        <argument>/var/www/vendor/symfony/debug-bundle/Resources/views</argument>
         <argument>Debug</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/debug-bundle/Resources/views</argument>
+        <argument>/var/www/vendor/symfony/debug-bundle/Resources/views</argument>
         <argument>!Debug</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/web-profiler-bundle/Resources/views</argument>
+        <argument>/var/www/vendor/symfony/web-profiler-bundle/Resources/views</argument>
         <argument>WebProfiler</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/web-profiler-bundle/Resources/views</argument>
+        <argument>/var/www/vendor/symfony/web-profiler-bundle/Resources/views</argument>
         <argument>!WebProfiler</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/ux-turbo/templates</argument>
+        <argument>/var/www/vendor/symfony/ux-turbo/templates</argument>
         <argument>Turbo</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/ux-turbo/templates</argument>
+        <argument>/var/www/vendor/symfony/ux-turbo/templates</argument>
         <argument>!Turbo</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/security-bundle/Resources/views</argument>
+        <argument>/var/www/vendor/symfony/security-bundle/Resources/views</argument>
         <argument>Security</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/security-bundle/Resources/views</argument>
+        <argument>/var/www/vendor/symfony/security-bundle/Resources/views</argument>
         <argument>!Security</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/maker-bundle/templates</argument>
+        <argument>/var/www/vendor/symfony/maker-bundle/templates</argument>
         <argument>Maker</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/maker-bundle/templates</argument>
+        <argument>/var/www/vendor/symfony/maker-bundle/templates</argument>
         <argument>!Maker</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/templates</argument>
+        <argument>/var/www/templates</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/twig-bridge/Resources/views/Email</argument>
+        <argument>/var/www/vendor/symfony/twig-bridge/Resources/views/Email</argument>
         <argument>email</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/twig-bridge/Resources/views/Email</argument>
+        <argument>/var/www/vendor/symfony/twig-bridge/Resources/views/Email</argument>
         <argument>!email</argument>
       </call>
       <call method="addPath">
-        <argument>/var/www/app/vendor/symfony/twig-bridge/Resources/views/Form</argument>
+        <argument>/var/www/vendor/symfony/twig-bridge/Resources/views/Form</argument>
       </call>
     </service>
     <service id="twig.loader.chain" class="Twig\Loader\ChainLoader"/>
@@ -6408,9 +6432,9 @@
       <tag name="console.command"/>
       <tag name="container.no_preload"/>
       <argument type="service" id="twig"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <argument>%kernel.bundles_metadata%</argument>
-      <argument>/var/www/app/templates</argument>
+      <argument>/var/www/templates</argument>
       <argument type="service" id="debug.file_link_formatter" on-invalid="null"/>
       <call method="setName">
         <argument>debug:twig</argument>
@@ -6459,7 +6483,7 @@
       <argument type="service" id="twig"/>
       <argument>%data_collector.templates%</argument>
       <argument type="service" id="web_profiler.csp.handler"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
     </service>
     <service id="web_profiler.controller.router" class="Symfony\Bundle\WebProfilerBundle\Controller\RouterController" public="true">
       <argument type="service" id="profiler" on-invalid="null"/>
@@ -6502,7 +6526,7 @@
     <service id="twig.extension.code" class="Symfony\Bundle\WebProfilerBundle\Profiler\CodeExtension">
       <tag name="twig.extension"/>
       <argument type="service" id="debug.file_link_formatter"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <argument>UTF-8</argument>
     </service>
     <service id="web_profiler.debug_toolbar" class="Symfony\Bundle\WebProfilerBundle\EventListener\WebDebugToolbarListener">
@@ -6525,7 +6549,7 @@
       <argument type="service" id="stimulus.helper"/>
     </service>
     <service id="stimulus.asset_mapper.ux_package_reader" class="Symfony\UX\StimulusBundle\Ux\UxPackageReader">
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
     </service>
     <service id="stimulus.ux_controllers_twig_extension" class="Symfony\UX\StimulusBundle\Twig\UxControllersTwigExtension">
       <tag name="twig.extension"/>
@@ -6535,15 +6559,15 @@
       <argument type="service" id="stimulus.asset_mapper.controllers_map_generator"/>
       <argument type="service" id="asset_mapper"/>
       <argument type="service" id="stimulus.asset_mapper.ux_package_reader"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
     </service>
     <service id="stimulus.asset_mapper.controllers_map_generator" class="Symfony\UX\StimulusBundle\AssetMapper\ControllersMapGenerator">
       <argument type="service" id="asset_mapper"/>
       <argument type="service" id="stimulus.asset_mapper.ux_package_reader"/>
       <argument type="collection">
-        <argument>/var/www/app/assets/controllers</argument>
+        <argument>/var/www/assets/controllers</argument>
       </argument>
-      <argument>/var/www/app/assets/controllers.json</argument>
+      <argument>/var/www/assets/controllers.json</argument>
       <argument type="service" id="stimulus.asset_mapper.auto_import_locator" on-invalid="null"/>
     </service>
     <service id="stimulus.asset_mapper.auto_import_locator" class="Symfony\UX\StimulusBundle\AssetMapper\AutoImportLocator">
@@ -6602,7 +6626,7 @@
       <argument type="service" id=".service_locator.rAuPNI6"/>
       <argument type="collection">
         <argument key="dev">null</argument>
-        <argument key="main">null</argument>
+        <argument key="main" type="service" id=".service_locator.IWkvA16"/>
       </argument>
     </service>
     <service id="security.user_value_resolver" class="Symfony\Component\Security\Http\Controller\UserValueResolver">
@@ -6698,6 +6722,14 @@
       <argument type="service" id="request_stack" on-invalid="null"/>
       <argument type="service" id="router.default" on-invalid="null"/>
       <argument type="service" id="security.token_storage" on-invalid="null"/>
+      <call method="registerListener">
+        <argument>main</argument>
+        <argument>app_logout</argument>
+        <argument>logout</argument>
+        <argument>_csrf_token</argument>
+        <argument>null</argument>
+        <argument>null</argument>
+      </call>
     </service>
     <service id="security.route_loader.logout" class="Symfony\Bundle\SecurityBundle\Routing\LogoutRouteLoader">
       <tag name="routing.route_loader"/>
@@ -6812,7 +6844,7 @@
       <tag name="monolog.logger" channel="security"/>
       <argument type="service" id="security.untracked_token_storage"/>
       <argument type="iterator">
-        <argument type="service" id="security.user.provider.concrete.users_in_memory"/>
+        <argument type="service" id="security.user.provider.concrete.app_user_provider"/>
       </argument>
       <argument type="abstract">Provider Key</argument>
       <argument type="service" id="monolog.logger.security" on-invalid="null"/>
@@ -6938,7 +6970,7 @@
     </service>
     <service id="security.listener.user_provider" class="Symfony\Component\Security\Http\EventListener\UserProviderListener">
       <tag name="kernel.event_listener" event="Symfony\Component\Security\Http\Event\CheckPassportEvent" priority="1024" method="checkPassport"/>
-      <argument type="service" id="security.user.provider.concrete.users_in_memory"/>
+      <argument type="service" id="security.user.provider.concrete.app_user_provider"/>
     </service>
     <service id="security.listener.user_provider.abstract" class="Symfony\Component\Security\Http\EventListener\UserProviderListener" abstract="true">
       <argument type="abstract">user provider</argument>
@@ -7166,7 +7198,10 @@
       <argument type="service" id=".service_locator.Bz.C4As"/>
       <argument type="service" id=".service_locator.GW5y7PS"/>
       <argument type="collection">
-        <argument key="main" type="collection"/>
+        <argument key="main" type="collection">
+          <argument type="service" id="debug.App\Security\LoginFormAuthenticator"/>
+          <argument type="service" id="debug.security.authenticator.remember_me.main"/>
+        </argument>
       </argument>
       <argument>false</argument>
       <call method="setName">
@@ -7176,8 +7211,11 @@
         <argument>Display information about your security firewall(s)</argument>
       </call>
     </service>
-    <service id="security.user.provider.concrete.users_in_memory" class="Symfony\Component\Security\Core\User\InMemoryUserProvider">
-      <argument type="collection"/>
+    <service id="security.user.provider.concrete.app_user_provider" class="Symfony\Bridge\Doctrine\Security\User\EntityUserProvider">
+      <argument type="service" id="doctrine"/>
+      <argument>App\Entity\User</argument>
+      <argument>email</argument>
+      <argument>null</argument>
     </service>
     <service id="security.firewall.map.config.dev" class="Symfony\Bundle\SecurityBundle\Security\FirewallConfig">
       <argument>dev</argument>
@@ -7214,18 +7252,30 @@
       <argument>null</argument>
       <argument>true</argument>
       <argument>false</argument>
-      <argument>security.user.provider.concrete.users_in_memory</argument>
+      <argument>security.user.provider.concrete.app_user_provider</argument>
       <argument>main</argument>
+      <argument>App\Security\LoginFormAuthenticator</argument>
       <argument>null</argument>
       <argument>null</argument>
+      <argument type="collection">
+        <argument>remember_me</argument>
+        <argument>App\Security\LoginFormAuthenticator</argument>
+      </argument>
       <argument>null</argument>
-      <argument type="collection"/>
-      <argument>null</argument>
-      <argument>null</argument>
+      <argument type="collection">
+        <argument key="path">app_logout</argument>
+        <argument key="enable_csrf">null</argument>
+        <argument key="csrf_token_id">logout</argument>
+        <argument key="csrf_parameter">_csrf_token</argument>
+        <argument key="target">/</argument>
+        <argument key="invalidate_session">true</argument>
+        <argument key="clear_site_data" type="collection"/>
+        <argument key="delete_cookies" type="collection"/>
+      </argument>
     </service>
     <service id="security.listener.main.user_provider" class="Symfony\Component\Security\Http\EventListener\UserProviderListener">
       <tag name="kernel.event_listener" dispatcher="debug.security.event_dispatcher.main" event="Symfony\Component\Security\Http\Event\CheckPassportEvent" priority="2048" method="checkPassport"/>
-      <argument type="service" id="security.user.provider.concrete.users_in_memory"/>
+      <argument type="service" id="security.user.provider.concrete.app_user_provider"/>
     </service>
     <service id="security.user_checker.chain.main" class="Symfony\Component\Security\Core\User\ChainUserChecker">
       <argument type="tagged_iterator" tag="security.user_checker.main"/>
@@ -7235,7 +7285,7 @@
       <tag name="container.hot_path"/>
       <argument type="service" id="security.untracked_token_storage"/>
       <argument type="iterator">
-        <argument type="service" id="security.user.provider.concrete.users_in_memory"/>
+        <argument type="service" id="security.user.provider.concrete.app_user_provider"/>
       </argument>
       <argument>main</argument>
       <argument type="service" id="monolog.logger.security" on-invalid="null"/>
@@ -7250,9 +7300,143 @@
       <tag name="kernel.event_subscriber" dispatcher="debug.security.event_dispatcher.main"/>
       <argument type="service" id="security.authentication.session_strategy"/>
     </service>
+    <service id="security.logout_listener.main" class="Symfony\Component\Security\Http\Firewall\LogoutListener">
+      <argument type="service" id="security.token_storage"/>
+      <argument type="service" id="security.http_utils"/>
+      <argument type="service" id="debug.security.event_dispatcher.main"/>
+      <argument type="collection">
+        <argument key="csrf_parameter">_csrf_token</argument>
+        <argument key="csrf_token_id">logout</argument>
+        <argument key="logout_path">app_logout</argument>
+      </argument>
+    </service>
+    <service id="security.logout.listener.default.main" class="Symfony\Component\Security\Http\EventListener\DefaultLogoutListener">
+      <tag name="kernel.event_subscriber" dispatcher="debug.security.event_dispatcher.main"/>
+      <argument type="service" id="security.http_utils"/>
+      <argument>/</argument>
+    </service>
+    <service id="security.logout.listener.session.main" class="Symfony\Component\Security\Http\EventListener\SessionLogoutListener">
+      <tag name="kernel.event_subscriber" dispatcher="debug.security.event_dispatcher.main"/>
+    </service>
+    <service id="security.rememberme.response_listener" class="Symfony\Component\Security\Http\RememberMe\ResponseListener">
+      <tag name="kernel.event_subscriber"/>
+      <tag name="container.hot_path"/>
+    </service>
+    <service id="security.authenticator.remember_me_signature_hasher" class="Symfony\Component\Security\Core\Signature\SignatureHasher">
+      <argument type="service" id="property_accessor"/>
+      <argument type="abstract">signature properties</argument>
+      <argument>%kernel.secret%</argument>
+      <argument>null</argument>
+      <argument>null</argument>
+    </service>
+    <service id="security.authenticator.signature_remember_me_handler" class="Symfony\Component\Security\Http\RememberMe\SignatureRememberMeHandler" abstract="true">
+      <tag name="monolog.logger" channel="security"/>
+      <argument type="abstract">signature hasher</argument>
+      <argument type="abstract">user provider</argument>
+      <argument type="service" id="request_stack"/>
+      <argument type="abstract">options</argument>
+      <argument type="service" id="monolog.logger.security" on-invalid="null"/>
+    </service>
+    <service id="security.authenticator.persistent_remember_me_handler" class="Symfony\Component\Security\Http\RememberMe\PersistentRememberMeHandler" abstract="true">
+      <tag name="monolog.logger" channel="security"/>
+      <argument type="abstract">token provider</argument>
+      <argument type="abstract">user provider</argument>
+      <argument type="service" id="request_stack"/>
+      <argument type="abstract">options</argument>
+      <argument type="service" id="monolog.logger.security" on-invalid="null"/>
+      <argument type="abstract">token verifier</argument>
+    </service>
+    <service id="security.authenticator.firewall_aware_remember_me_handler" class="Symfony\Bundle\SecurityBundle\RememberMe\FirewallAwareRememberMeHandler">
+      <argument type="service" id="security.firewall.map"/>
+      <argument type="service" id=".service_locator.WYl0woh"/>
+      <argument type="service" id="request_stack"/>
+    </service>
+    <service id="security.listener.check_remember_me_conditions" class="Symfony\Component\Security\Http\EventListener\CheckRememberMeConditionsListener" abstract="true">
+      <argument type="abstract">options</argument>
+      <argument type="service" id="monolog.logger" on-invalid="null"/>
+    </service>
+    <service id="security.listener.remember_me" class="Symfony\Component\Security\Http\EventListener\RememberMeListener" abstract="true">
+      <tag name="monolog.logger" channel="security"/>
+      <argument type="abstract">remember me handler</argument>
+      <argument type="service" id="monolog.logger.security" on-invalid="null"/>
+    </service>
+    <service id="security.authenticator.remember_me" class="Symfony\Component\Security\Http\Authenticator\RememberMeAuthenticator" abstract="true">
+      <tag name="monolog.logger" channel="security"/>
+      <argument type="abstract">remember me handler</argument>
+      <argument type="service" id="security.token_storage"/>
+      <argument type="abstract">options</argument>
+      <argument type="service" id="monolog.logger.security" on-invalid="null"/>
+    </service>
+    <service id="cache.security_token_verifier" class="Symfony\Component\Cache\Adapter\TraceableAdapter">
+      <tag name="cache.pool" pruneable="false"/>
+      <tag name="kernel.reset" method="reset"/>
+      <argument type="service" id="cache.security_token_verifier.recorder_inner"/>
+      <argument type="service" id="profiler.is_disabled_state_checker" on-invalid="ignore"/>
+    </service>
+    <service id="security.authenticator.remember_me_signature_hasher.main" class="Symfony\Component\Security\Core\Signature\SignatureHasher">
+      <argument type="service" id="property_accessor"/>
+      <argument type="collection">
+        <argument>password</argument>
+      </argument>
+      <argument>%env(APP_SECRET)%</argument>
+      <argument>null</argument>
+      <argument>null</argument>
+    </service>
+    <service id="security.authenticator.remember_me_handler.main" class="Symfony\Component\Security\Http\RememberMe\SignatureRememberMeHandler">
+      <tag name="security.remember_me_handler" firewall="main"/>
+      <argument type="service" id="security.authenticator.remember_me_signature_hasher.main"/>
+      <argument type="service" id="security.user.provider.concrete.app_user_provider"/>
+      <argument type="service" id="request_stack"/>
+      <argument type="collection">
+        <argument key="secret">%env(APP_SECRET)%</argument>
+        <argument key="lifetime">604800</argument>
+        <argument key="path">/</argument>
+        <argument key="user_providers" type="collection"/>
+        <argument key="catch_exceptions">true</argument>
+        <argument key="signature_properties" type="collection">
+          <argument>password</argument>
+        </argument>
+        <argument key="name">REMEMBERME</argument>
+        <argument key="domain">null</argument>
+        <argument key="secure">false</argument>
+        <argument key="httponly">true</argument>
+        <argument key="samesite">null</argument>
+        <argument key="always_remember_me">false</argument>
+        <argument key="remember_me_parameter">_remember_me</argument>
+      </argument>
+      <argument type="service" id="monolog.logger.security" on-invalid="null"/>
+    </service>
+    <service id="security.listener.check_remember_me_conditions.main" class="Symfony\Component\Security\Http\EventListener\CheckRememberMeConditionsListener">
+      <tag name="kernel.event_subscriber" dispatcher="debug.security.event_dispatcher.main"/>
+      <argument type="collection">
+        <argument key="always_remember_me">false</argument>
+        <argument key="remember_me_parameter">_remember_me</argument>
+      </argument>
+      <argument type="service" id="monolog.logger" on-invalid="null"/>
+    </service>
+    <service id="security.listener.remember_me.main" class="Symfony\Component\Security\Http\EventListener\RememberMeListener">
+      <tag name="kernel.event_subscriber" dispatcher="debug.security.event_dispatcher.main"/>
+      <argument type="service" id="security.authenticator.remember_me_handler.main"/>
+      <argument type="service" id="monolog.logger.security" on-invalid="null"/>
+    </service>
+    <service id="security.authenticator.remember_me.main" class="Symfony\Component\Security\Http\Authenticator\RememberMeAuthenticator">
+      <argument type="service" id="security.authenticator.remember_me_handler.main"/>
+      <argument type="service" id="security.token_storage"/>
+      <argument>REMEMBERME</argument>
+      <argument type="service" id="monolog.logger.security" on-invalid="null"/>
+    </service>
+    <service id="debug.App\Security\LoginFormAuthenticator" class="Symfony\Component\Security\Http\Authenticator\Debug\TraceableAuthenticator">
+      <argument type="service" id="App\Security\LoginFormAuthenticator"/>
+    </service>
+    <service id="debug.security.authenticator.remember_me.main" class="Symfony\Component\Security\Http\Authenticator\Debug\TraceableAuthenticator">
+      <argument type="service" id="security.authenticator.remember_me.main"/>
+    </service>
     <service id="security.authenticator.manager.main" class="Symfony\Component\Security\Http\Authentication\AuthenticatorManager">
       <tag name="monolog.logger" channel="security"/>
-      <argument type="collection"/>
+      <argument type="collection">
+        <argument type="service" id="debug.App\Security\LoginFormAuthenticator"/>
+        <argument type="service" id="debug.security.authenticator.remember_me.main"/>
+      </argument>
       <argument type="service" id="security.token_storage"/>
       <argument type="service" id="debug.security.event_dispatcher.main"/>
       <argument>main</argument>
@@ -7275,11 +7459,18 @@
       <argument type="service" id="security.authentication.trust_resolver"/>
       <argument type="service" id="security.http_utils"/>
       <argument>main</argument>
-      <argument>null</argument>
+      <argument type="service" id="App\Security\LoginFormAuthenticator"/>
       <argument>null</argument>
       <argument>null</argument>
       <argument type="service" id="monolog.logger.security" on-invalid="null"/>
       <argument>false</argument>
+    </service>
+    <service id=".service_locator.IWkvA16" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="App\Security\LoginFormAuthenticator" type="service_closure" id="App\Security\LoginFormAuthenticator"/>
+        <argument key="security.authenticator.remember_me.main" type="service_closure" id="security.authenticator.remember_me.main"/>
+      </argument>
     </service>
     <service id="security.firewall.map.context.main" class="Symfony\Bundle\SecurityBundle\Security\LazyFirewallContext">
       <argument type="iterator">
@@ -7289,7 +7480,7 @@
         <argument type="service" id="security.access_listener"/>
       </argument>
       <argument type="service" id="security.exception_listener.main"/>
-      <argument>null</argument>
+      <argument type="service" id="security.logout_listener.main"/>
       <argument type="service" id="security.firewall.map.config.main"/>
       <argument type="service" id="security.untracked_token_storage"/>
     </service>
@@ -7362,7 +7553,7 @@
     <service id="monolog.processor.psr_log_message" class="Monolog\Processor\PsrLogMessageProcessor"/>
     <service id="monolog.handler.main" class="Monolog\Handler\StreamHandler">
       <tag name="kernel.reset" method="reset"/>
-      <argument>/var/www/app/var/log/dev.log</argument>
+      <argument>/var/www/var/log/dev.log</argument>
       <argument>debug</argument>
       <argument>true</argument>
       <argument>null</argument>
@@ -7385,8 +7576,8 @@
       <argument type="service" id="filesystem"/>
       <argument type="service" id="maker.autoloader_util"/>
       <argument type="service" id="maker.file_link_formatter"/>
-      <argument>/var/www/app</argument>
-      <argument>/var/www/app/templates</argument>
+      <argument>/var/www</argument>
+      <argument>/var/www/templates</argument>
     </service>
     <service id="maker.autoloader_finder" class="Symfony\Bundle\MakerBundle\Util\ComposerAutoloaderFinder">
       <argument>App</argument>
@@ -7563,7 +7754,7 @@
     </service>
     <service id="maker.maker.make_migration" class="Symfony\Bundle\MakerBundle\Maker\MakeMigration">
       <tag name="maker.command"/>
-      <argument>/var/www/app</argument>
+      <argument>/var/www</argument>
       <argument type="service" id="maker.file_link_formatter"/>
     </service>
     <service id="maker.maker.make_stimulus_controller" class="Symfony\Bundle\MakerBundle\Maker\MakeStimulusController">
@@ -7585,10 +7776,51 @@
       <argument type="service" id="maker.file_manager"/>
       <argument type="service" id="maker.generator"/>
     </service>
+    <service id="doctrine.fixtures_load_command" class="Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand">
+      <tag name="console.command" command="doctrine:fixtures:load"/>
+      <tag name="container.no_preload"/>
+      <argument type="service" id="doctrine.fixtures.loader"/>
+      <argument type="service" id="doctrine"/>
+      <argument type="collection">
+        <argument key="default" type="service" id="doctrine.fixtures.purger.orm_purger_factory"/>
+      </argument>
+      <call method="setName">
+        <argument>doctrine:fixtures:load</argument>
+      </call>
+    </service>
+    <service id="doctrine.fixtures.loader" class="Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader">
+      <call method="addFixtures">
+        <argument type="collection">
+          <argument type="collection">
+            <argument key="fixture" type="service" id="App\DataFixtures\AppFixtures"/>
+            <argument key="groups" type="collection"/>
+          </argument>
+          <argument type="collection">
+            <argument key="fixture" type="service" id="App\DataFixtures\UserFixtures"/>
+            <argument key="groups" type="collection"/>
+          </argument>
+        </argument>
+      </call>
+    </service>
+    <service id="doctrine.fixtures.purger.orm_purger_factory" class="Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory">
+      <tag name="doctrine.fixtures.purger_factory" alias="default"/>
+    </service>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\HomeController" class="App\Controller\HomeController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\HomeController" class="App\Controller\HomeController" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Controller\HomeController.0.App\Controller\HomeController" class="App\Controller\HomeController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\HomeController" class="App\Controller\HomeController" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" abstract="true"/>
+    <service id=".instanceof.App\Controller\SecurityController.0.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Doctrine\Bundle\FixturesBundle\ORMFixtureInterface.0.App\DataFixtures\AppFixtures" class="App\DataFixtures\AppFixtures" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\DataFixtures\AppFixtures" class="App\DataFixtures\AppFixtures" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Doctrine\Bundle\FixturesBundle\ORMFixtureInterface.0.App\DataFixtures\UserFixtures" class="App\DataFixtures\UserFixtures" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\DataFixtures\UserFixtures" class="App\DataFixtures\UserFixtures" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.App\Entity\User.0.App\Entity\User" class="App\Entity\User" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Entity\User" class="App\Entity\User" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\UserRepository" class="App\Repository\UserRepository" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Repository\UserRepository" class="App\Repository\UserRepository" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".service_locator.ryAvHi4" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -7637,6 +7869,62 @@
         <argument type="collection">
           <argument type="service_closure" id="security.listener.session.main"/>
           <argument>onSuccessfulLogin</argument>
+        </argument>
+        <argument>0</argument>
+      </call>
+      <call method="addListener">
+        <argument>Symfony\Component\Security\Http\Event\LogoutEvent</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="security.logout.listener.default.main"/>
+          <argument>onLogout</argument>
+        </argument>
+        <argument>64</argument>
+      </call>
+      <call method="addListener">
+        <argument>Symfony\Component\Security\Http\Event\LogoutEvent</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="security.logout.listener.session.main"/>
+          <argument>onLogout</argument>
+        </argument>
+        <argument>0</argument>
+      </call>
+      <call method="addListener">
+        <argument>Symfony\Component\Security\Http\Event\LoginSuccessEvent</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="security.listener.check_remember_me_conditions.main"/>
+          <argument>onSuccessfulLogin</argument>
+        </argument>
+        <argument>-32</argument>
+      </call>
+      <call method="addListener">
+        <argument>Symfony\Component\Security\Http\Event\LoginSuccessEvent</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="security.listener.remember_me.main"/>
+          <argument>onSuccessfulLogin</argument>
+        </argument>
+        <argument>-64</argument>
+      </call>
+      <call method="addListener">
+        <argument>Symfony\Component\Security\Http\Event\LoginFailureEvent</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="security.listener.remember_me.main"/>
+          <argument>clearCookie</argument>
+        </argument>
+        <argument>0</argument>
+      </call>
+      <call method="addListener">
+        <argument>Symfony\Component\Security\Http\Event\LogoutEvent</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="security.listener.remember_me.main"/>
+          <argument>clearCookie</argument>
+        </argument>
+        <argument>0</argument>
+      </call>
+      <call method="addListener">
+        <argument>Symfony\Component\Security\Http\Event\TokenDeauthenticatedEvent</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="security.listener.remember_me.main"/>
+          <argument>clearCookie</argument>
         </argument>
         <argument>0</argument>
       </call>
@@ -8107,15 +8395,29 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.1vYpZ1B" method="withContext"/>
     </service>
-    <service id=".service_locator.8JS6QTA" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.0MQaTBY" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="authenticationUtils" type="service_closure" id="security.authentication_utils"/>
+      </argument>
+    </service>
+    <service id=".service_locator.0MQaTBY.App\Controller\SecurityController::login()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\SecurityController::login()"/>
+      <argument>App\Controller\SecurityController::login()</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.0MQaTBY" method="withContext"/>
+    </service>
+    <service id=".service_locator.mBM_5PR" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="App\Kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
         <argument key="App\Kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
+        <argument key="App\Controller\SecurityController::login" type="service_closure" id=".service_locator.0MQaTBY.App\Controller\SecurityController::login()"/>
         <argument key="kernel:registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="kernel:loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
+        <argument key="App\Controller\SecurityController:login" type="service_closure" id=".service_locator.0MQaTBY.App\Controller\SecurityController::login()"/>
       </argument>
     </service>
     <service id=".service_locator.S9tnIXR" class="Symfony\Component\DependencyInjection\ServiceLocator">
@@ -8345,12 +8647,6 @@
         <argument key="messenger.bus.default" type="service_closure" id="debug.traced.messenger.bus.default"/>
       </argument>
     </service>
-    <service id=".service_locator.iU9im4e" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator"/>
-      <argument type="collection">
-        <argument key="failed" type="service_closure" id="messenger.transport.failed"/>
-      </argument>
-    </service>
     <service id=".messenger.handler_descriptor.Die6Bxe" class="Symfony\Component\Messenger\Handler\HandlerDescriptor">
       <argument type="service" id="process.messenger.process_message_handler"/>
       <argument type="collection">
@@ -8390,19 +8686,6 @@
     <service id=".messenger.handler_descriptor.Dkv9sRY" class="Symfony\Component\Messenger\Handler\HandlerDescriptor">
       <argument type="service" id="texter.messenger.desktop_handler"/>
       <argument type="collection"/>
-    </service>
-    <service id=".signing.messenger.default_serializer" class="Symfony\Component\Messenger\Transport\Serialization\SigningSerializer">
-      <argument type="service" id="messenger.transport.native_php_serializer"/>
-      <argument type="service">
-        <service class="string">
-          <argument type="service_closure" id=".messenger.signing_serializer.signing_key"/>
-          <factory class="Symfony\Component\String\LazyString" method="fromCallable"/>
-        </service>
-      </argument>
-      <argument type="collection">
-        <argument>Symfony\Component\Process\Messenger\RunProcessMessage</argument>
-        <argument>Symfony\Component\Console\Messenger\RunCommandMessage</argument>
-      </argument>
     </service>
     <service id="messenger.bus.default.messenger.handlers_locator" class="Symfony\Component\Messenger\Handler\HandlersLocator">
       <argument type="collection">
@@ -8452,9 +8735,11 @@
         <argument key="turbo.doctrine.event_listener" type="service_closure" id="turbo.doctrine.event_listener"/>
       </argument>
     </service>
-    <service id=".service_locator.dpiLQ5O" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.pL.xV9Q" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
-      <argument type="collection"/>
+      <argument type="collection">
+        <argument key="App\Repository\UserRepository" type="service_closure" id="App\Repository\UserRepository"/>
+      </argument>
     </service>
     <service id=".service_locator.W55Po6X" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
@@ -8728,6 +9013,12 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.TJNRSaV" method="withContext"/>
     </service>
+    <service id=".service_locator.TJNRSaV.App\Controller\SecurityController" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\SecurityController"/>
+      <argument>App\Controller\SecurityController</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.TJNRSaV" method="withContext"/>
+    </service>
     <service id=".service_locator.TJNRSaV.controller.helper" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="controller.helper"/>
       <argument>controller.helper</argument>
@@ -8806,6 +9097,10 @@
       <argument type="collection">
         <argument key="reverse_container" type="service_closure" id="reverse_container" on-invalid="ignore_uninitialized"/>
       </argument>
+    </service>
+    <service id=".service_locator.dpiLQ5O" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection"/>
     </service>
     <service id=".service_locator.6eloqTE" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
@@ -8891,6 +9186,12 @@
         <argument key="security.csrf.token_manager" type="service_closure" id="security.csrf.same_origin_token_manager" on-invalid="ignore"/>
       </argument>
     </service>
+    <service id=".service_locator.WYl0woh" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="main" type="service_closure" id="security.authenticator.remember_me_handler.main"/>
+      </argument>
+    </service>
     <service id="debug.validator.inner" class="Symfony\Component\Validator\Validator\ValidatorInterface">
       <factory service="validator.builder" method="getValidator"/>
     </service>
@@ -8903,7 +9204,7 @@
     <service id="asset_mapper.cached_mapped_asset_factory.inner" class="Symfony\Component\AssetMapper\Factory\MappedAssetFactory">
       <argument type="service" id="asset_mapper.public_assets_path_resolver"/>
       <argument type="service" id="asset_mapper_compiler"/>
-      <argument>/var/www/app/assets/vendor</argument>
+      <argument>/var/www/assets/vendor</argument>
     </service>
     <service id="asset_mapper.asset_package.inner" class="Symfony\Component\Asset\PathPackage">
       <argument/>
@@ -8924,6 +9225,7 @@
         <argument type="collection">
           <argument>App\Kernel</argument>
           <argument>App\Controller\HomeController</argument>
+          <argument>App\Controller\SecurityController</argument>
           <argument>Doctrine\Bundle\DoctrineBundle\Controller\ProfilerController</argument>
         </argument>
       </call>
@@ -9870,7 +10172,7 @@
     </service>
     <service id="console.command_loader" class="Symfony\Component\Console\CommandLoader\ContainerCommandLoader" public="true">
       <tag name="container.no_preload"/>
-      <argument type="service" id=".service_locator.qtNDmJa"/>
+      <argument type="service" id=".service_locator.y.Xa4f4"/>
       <argument type="collection">
         <argument key="about">console.command.about</argument>
         <argument key="assets:install">console.command.assets_install</argument>
@@ -9964,6 +10266,7 @@
         <argument key="debug:firewall">security.command.debug_firewall</argument>
         <argument key="security:hash-password">security.command.user_password_hash</argument>
         <argument key="debug:security:role-hierarchy">security.command.role_hierarchy_dump</argument>
+        <argument key="doctrine:fixtures:load">doctrine.fixtures_load_command</argument>
         <argument key="make:auth">maker.auto_command.make_auth</argument>
         <argument key="make:command">maker.auto_command.make_command</argument>
         <argument key="make:twig-component">maker.auto_command.make_twig_component</argument>
@@ -9996,7 +10299,7 @@
         <argument key="make:webhook">maker.auto_command.make_webhook</argument>
       </argument>
     </service>
-    <service id=".service_locator.qtNDmJa" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.y.Xa4f4" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="console.command.about" type="service_closure" id=".console.command.about.lazy"/>
@@ -10091,6 +10394,7 @@
         <argument key="security.command.debug_firewall" type="service_closure" id=".security.command.debug_firewall.lazy"/>
         <argument key="security.command.user_password_hash" type="service_closure" id=".security.command.user_password_hash.lazy"/>
         <argument key="security.command.role_hierarchy_dump" type="service_closure" id=".security.command.role_hierarchy_dump.lazy"/>
+        <argument key="doctrine.fixtures_load_command" type="service_closure" id="doctrine.fixtures_load_command"/>
         <argument key="maker.auto_command.make_auth" type="service_closure" id=".maker.auto_command.make_auth.lazy"/>
         <argument key="maker.auto_command.make_command" type="service_closure" id=".maker.auto_command.make_command.lazy"/>
         <argument key="maker.auto_command.make_twig_component" type="service_closure" id=".maker.auto_command.make_twig_component.lazy"/>
@@ -10121,103 +10425,111 @@
       </argument>
     </service>
     <service id="cache.app.recorder_inner" class="Symfony\Component\Cache\Adapter\FilesystemAdapter">
-      <argument>p3vaMiyHhM</argument>
+      <argument>LuAv8pQCYe</argument>
       <argument>0</argument>
-      <argument>/var/www/app/var/share/dev/pools/app</argument>
+      <argument>/var/www/var/cache/dev/pools/app</argument>
       <argument type="service" id="cache.default_marshaller" on-invalid="ignore"/>
       <call method="setLogger">
         <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       </call>
     </service>
     <service id="cache.system.recorder_inner" class="Symfony\Component\Cache\Adapter\AdapterInterface">
-      <argument>5A3vb0ytfe</argument>
+      <argument>bccsZj9nKy</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>/var/www/app/var/cache/dev/pools/system</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.validator.recorder_inner" class="Symfony\Component\Cache\Adapter\AdapterInterface">
-      <argument>+bKNVc6Vk2</argument>
+      <argument>z74AzGDfgU</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>/var/www/app/var/cache/dev/pools/system</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.serializer.recorder_inner" class="Symfony\Component\Cache\Adapter\AdapterInterface">
-      <argument>uqjnIzgOhB</argument>
+      <argument>j+ucIwYDJv</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>/var/www/app/var/cache/dev/pools/system</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.property_info.recorder_inner" class="Symfony\Component\Cache\Adapter\AdapterInterface">
-      <argument>maNQFjhdPJ</argument>
+      <argument>d1r-ZqWbcx</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>/var/www/app/var/cache/dev/pools/system</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.asset_mapper.recorder_inner" class="Symfony\Component\Cache\Adapter\AdapterInterface">
-      <argument>bz71w673Xl</argument>
+      <argument>-w48t0USll</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>/var/www/app/var/cache/dev/pools/system</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.messenger.restart_workers_signal.recorder_inner" class="Symfony\Component\Cache\Adapter\FilesystemAdapter">
-      <argument>X0bz3ky1Sv</argument>
+      <argument>lo0YAfmZ9t</argument>
       <argument>0</argument>
-      <argument>/var/www/app/var/share/dev/pools/app</argument>
+      <argument>/var/www/var/cache/dev/pools/app</argument>
       <argument type="service" id="cache.default_marshaller" on-invalid="ignore"/>
       <call method="setLogger">
         <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       </call>
     </service>
     <service id="cache.http_client.pool.recorder_inner" class="Symfony\Component\Cache\Adapter\FilesystemAdapter">
-      <argument>2v2jndPoID</argument>
+      <argument>GROEaohitj</argument>
       <argument>0</argument>
-      <argument>/var/www/app/var/share/dev/pools/app</argument>
+      <argument>/var/www/var/cache/dev/pools/app</argument>
       <argument type="service" id="cache.default_marshaller" on-invalid="ignore"/>
       <call method="setLogger">
         <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       </call>
     </service>
     <service id="cache.validator_expression_language.recorder_inner" class="Symfony\Component\Cache\Adapter\AdapterInterface">
-      <argument>JIVHhtTsOA</argument>
+      <argument>uYiPz0fBTy</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>/var/www/app/var/cache/dev/pools/system</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.doctrine.orm.default.result.recorder_inner" class="Symfony\Component\Cache\Adapter\ArrayAdapter"/>
     <service id="cache.doctrine.orm.default.query.recorder_inner" class="Symfony\Component\Cache\Adapter\ArrayAdapter"/>
     <service id="cache.security_expression_language.recorder_inner" class="Symfony\Component\Cache\Adapter\AdapterInterface">
-      <argument>sBDkEjwmgq</argument>
+      <argument>IJ8J10xtQu</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>/var/www/app/var/cache/dev/pools/system</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.security_is_granted_attribute_expression_language.recorder_inner" class="Symfony\Component\Cache\Adapter\AdapterInterface">
-      <argument>HAs2JwpNar</argument>
+      <argument>858OCmE5L8</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>/var/www/app/var/cache/dev/pools/system</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
     <service id="cache.security_is_csrf_token_valid_attribute_expression_language.recorder_inner" class="Symfony\Component\Cache\Adapter\AdapterInterface">
-      <argument>Gae5yjTbRl</argument>
+      <argument>HoF3waJReW</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>/var/www/app/var/cache/dev/pools/system</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
+      <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
+      <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
+    </service>
+    <service id="cache.security_token_verifier.recorder_inner" class="Symfony\Component\Cache\Adapter\AdapterInterface">
+      <argument>Qs5QTp7jK6</argument>
+      <argument>0</argument>
+      <argument>%container.build_id%</argument>
+      <argument>/var/www/var/cache/dev/pools/system</argument>
       <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -10331,8 +10643,8 @@
     <service id="form.choice_list_factory" alias="form.choice_list_factory.cached"/>
     <service id="Symfony\Component\Validator\Validator\ValidatorInterface" alias="debug.validator"/>
     <service id="validator.mapping.class_metadata_factory" alias="debug.validator"/>
-    <service id="messenger.default_serializer" alias=".signing.messenger.default_serializer"/>
-    <service id="Symfony\Component\Messenger\Transport\Serialization\SerializerInterface" alias=".signing.messenger.default_serializer"/>
+    <service id="messenger.default_serializer" alias="messenger.transport.native_php_serializer"/>
+    <service id="Symfony\Component\Messenger\Transport\Serialization\SerializerInterface" alias="messenger.transport.native_php_serializer"/>
     <service id="messenger.default_bus" alias="debug.traced.messenger.bus.default" public="true"/>
     <service id="Symfony\Component\Messenger\MessageBusInterface" alias="debug.traced.messenger.bus.default"/>
     <service id="messenger.failure_transports.default" alias="messenger.transport.failed"/>
@@ -10373,17 +10685,19 @@
     <service id="Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface" alias="security.user_password_hasher"/>
     <service id="Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface" alias="security.user_authenticator"/>
     <service id="security.firewall" alias="debug.security.firewall"/>
-    <service id="security.user_providers" alias="security.user.provider.concrete.users_in_memory"/>
-    <service id="Symfony\Component\Security\Core\User\UserProviderInterface" alias="security.user.provider.concrete.users_in_memory"/>
+    <service id="security.user_providers" alias="security.user.provider.concrete.app_user_provider"/>
+    <service id="Symfony\Component\Security\Core\User\UserProviderInterface" alias="security.user.provider.concrete.app_user_provider"/>
     <service id="security.authentication.session_strategy.main" alias="security.authentication.session_strategy"/>
+    <service id="Symfony\Component\Security\Http\RememberMe\RememberMeHandlerInterface" alias="security.authenticator.firewall_aware_remember_me_handler"/>
     <service id="security.user_checker.main" alias="security.user_checker"/>
     <service id="security.firewall.context_locator" alias=".service_locator.Bz.C4As"/>
     <service id="Symfony\Component\Security\Core\User\UserCheckerInterface" alias="security.user_checker"/>
     <service id="logger" alias="monolog.logger"/>
     <service id="Psr\Log\LoggerInterface" alias="monolog.logger"/>
+    <service id="doctrine.fixtures.provider" alias="doctrine.fixtures.loader"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.ryAvHi4" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.8JS6QTA"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.mBM_5PR"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.W55Po6X"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id=".Psr\Log\LoggerInterface $request.logger" alias="monolog.logger.request"/>
@@ -10418,8 +10732,8 @@
     <service id="Psr\Log\LoggerInterface $securityLogger" alias="monolog.logger.security"/>
     <service id=".Psr\Log\LoggerInterface $deprecation.logger" alias="monolog.logger.deprecation"/>
     <service id="Psr\Log\LoggerInterface $deprecationLogger" alias="monolog.logger.deprecation"/>
-    <service id=".service_locator.O8.cMm9" alias="messenger.receiver_locator"/>
-    <service id=".service_locator.oeWXF0n" alias="messenger.retry_strategy_locator"/>
+    <service id=".service_locator.n4WDTB7" alias="messenger.receiver_locator"/>
+    <service id=".service_locator.uGaMm9T" alias="messenger.retry_strategy_locator"/>
     <service id="validator" alias="debug.validator"/>
     <service id="http_client" alias="http_client.uri_template"/>
     <service id="http_client.uri_template.inner" alias=".debug.http_client"/>
@@ -10438,9 +10752,9 @@
     <service id="security.firewall.authenticator.main" alias="debug.security.firewall.authenticator.main"/>
     <service id="security.event_dispatcher.main" alias="debug.security.event_dispatcher.main"/>
     <service id="messenger.bus.default" alias="debug.traced.messenger.bus.default"/>
-    <service id=".signing.messenger.default_serializer.inner" alias="messenger.transport.native_php_serializer"/>
     <service id="doctrine.orm.default_metadata_driver" alias=".doctrine.orm.default_metadata_driver"/>
     <service id=".service_locator.c0wzfI4" alias=".service_locator.1vYpZ1B"/>
+    <service id=".service_locator.uBwBrvQ" alias=".service_locator.0MQaTBY"/>
     <service id=".service_locator.D6tJ4Px" alias=".service_locator.TJNRSaV"/>
   </services>
 </container>

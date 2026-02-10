@@ -4004,6 +4004,6 @@ body.width-full .container {
 @media (min-width: 1200px) {
     body.width-full .container { margin: 0 30px; }
 }
-", "@WebProfiler/Profiler/profiler.css.twig", "/var/www/app/vendor/symfony/web-profiler-bundle/Resources/views/Profiler/profiler.css.twig");
+", "@WebProfiler/Profiler/profiler.css.twig", "/var/www/vendor/symfony/web-profiler-bundle/Resources/views/Profiler/profiler.css.twig");
     }
 }

@@ -528,6 +528,6 @@ class __TwigTemplate_885c9b6211de8798ad4b90735a6c898f extends Template
         {% endfor %}
     </table>
 {% endmacro %}
-", "@WebProfiler/Collector/events.html.twig", "/var/www/app/vendor/symfony/web-profiler-bundle/Resources/views/Collector/events.html.twig");
+", "@WebProfiler/Collector/events.html.twig", "/var/www/vendor/symfony/web-profiler-bundle/Resources/views/Collector/events.html.twig");
     }
 }

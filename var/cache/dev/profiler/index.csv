@@ -2,3 +2,13 @@
 863062,172.18.0.1,GET,http://localhost:8080/,1769431136,,200,request
 866d1e,172.18.0.1,GET,http://localhost:8080/,1769431213,,200,request
 b5b86f,172.18.0.1,GET,http://localhost:8080/,1769434026,,200,request
+ed6cc8,172.18.0.1,GET,http://localhost:8080/,1770725346,,200,request
+8f0b1a,172.18.0.1,GET,http://localhost:8080/login,1770725362,,200,request
+0244a5,172.18.0.1,GET,http://localhost:8080/login,1770727638,d502cd,500,request
+d502cd,172.18.0.1,POST,http://localhost:8080/login,1770727638,,500,request
+f367ef,172.18.0.1,GET,http://localhost:8080/login,1770727748,,200,request
+00caaa,172.18.0.1,GET,http://localhost:8080/logout,1770728054,,302,request
+ce2dad,172.18.0.1,GET,http://localhost:8080/,1770728054,,200,request
+6baa3c,172.18.0.1,GET,http://localhost:8080/login,1770728065,,200,request
+60e698,172.18.0.1,POST,http://localhost:8080/login,1770728089,,302,request
+ae1e01,172.18.0.1,GET,http://localhost:8080/,1770728089,,200,request

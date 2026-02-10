@@ -836,6 +836,6 @@ class __TwigTemplate_7b105535825388c065452cf6a0bf4c64 extends Template
         {% endif %}
     </div>
 {% endblock %}
-", "@WebProfiler/Collector/command.html.twig", "/var/www/app/vendor/symfony/web-profiler-bundle/Resources/views/Collector/command.html.twig");
+", "@WebProfiler/Collector/command.html.twig", "/var/www/vendor/symfony/web-profiler-bundle/Resources/views/Collector/command.html.twig");
     }
 }

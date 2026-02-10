@@ -233,6 +233,6 @@ class __TwigTemplate_47963a6701413bc6c2bcc2f37fe38be5 extends Template
     word-wrap: break-word;
     word-break: break-all;
 }
-", "@WebProfiler/Profiler/open.css.twig", "/var/www/app/vendor/symfony/web-profiler-bundle/Resources/views/Profiler/open.css.twig");
+", "@WebProfiler/Profiler/open.css.twig", "/var/www/vendor/symfony/web-profiler-bundle/Resources/views/Profiler/open.css.twig");
     }
 }

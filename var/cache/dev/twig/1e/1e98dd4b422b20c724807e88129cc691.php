@@ -141,6 +141,6 @@ class __TwigTemplate_61b2859901c60091863e285153bd1a8d extends Template
 {% block body %}
 <h1 class=\"text-center\">Page d'accueil M-Motors</h1>
 {% endblock %}
-", "home/index.html.twig", "/var/www/app/templates/home/index.html.twig");
+", "home/index.html.twig", "/var/www/templates/home/index.html.twig");
     }
 }
