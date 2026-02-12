@@ -1,0 +1,95 @@
+/* ========================================================= */
+/* ZONE CONNECTION */
+/* ========================================================= */
+
+.connection {
+  background: var(--surface-1);
+  padding: var(--space-s) var(--space-m);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+}
+
+.connection p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.connection a {
+  text-decoration: none;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ========================================================= */
+/* NAVBAR LINKS */
+/* ========================================================= */
+
+.navbar-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-l);
+  padding: var(--space-s) var(--space-m);
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border-light);
+}
+.navbar-links ul {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-l);
+}
+.navbar-links li {
+  list-style: none;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  color: var(--text-primary);
+  padding: var(--space-xs) var(--space-s);
+  border-radius: var(--radius-small);
+  transition: background 0.2s ease;
+}
+
+.navbar-links a:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Lien actif */
+.navbar-links a.active {
+  background: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+/* Mode sombre */
+:root.dark .navbar-links a:hover {
+  background: var(--surface-2);
+}
+
+:root.dark .navbar-links a.active {
+  background: var(--color-primary-hover);
+  color: var(--text-inverse);
+}
+/* ========================================================= */
+/* NAVBAR — RESPONSIVE */
+/* ========================================================= */
+
+@media (max-width: 768px) {
+  /* Par défaut : navbar cachée */
+  .navbar-links {
+    display: none;
+    width: 100%;
+  }
+
+  /* Quand on clique sur le hamburger */
+  .navbar-links.open {
+    display: block;
+  }
+
+  .navbar-links ul {
+    flex-direction: column;
+    gap: var(--space-m);
+    padding: var(--space-m);
+  }
+}

@@ -1,34 +1,59 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Connexion
+{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
-        </div>
-    {% endif %}
+	<form method="post">
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+		{% if error %}
+			<div class="alert alert-danger">
+				{{ error.messageKey|trans(error.messageData, 'security') }}
+			</div>
+		{% endif %}
 
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Remember me
-        </label>
-    </div>
+		{% if app.user %}
+			<div class="mb-3">
+				Vous êtes connecté en tant que
+				{{ app.user.userIdentifier }},
+				<a href="{{ logout_path() }}">Déconnexion</a>
+			</div>
+		{% endif %}
 
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
+		<h1>Connexion</h1>
+
+		<fieldset>
+			<legend>Identifiants</legend>
+
+			<div class="form-row">
+				<label for="inputEmail">Email</label>
+				<div>
+					<input type="email" id="inputEmail" name="email" value="{{ last_username }}" autocomplete="email" required autofocus>
+				</div>
+			</div>
+
+			<div class="form-row">
+				<label for="inputPassword">Mot de passe</label>
+				<div>
+					<input type="password" id="inputPassword" name="password" autocomplete="current-password" required>
+				</div>
+			</div>
+
+			<input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+		</fieldset>
+
+		<fieldset>
+			<legend>Options</legend>
+
+			<div class="form-row checkbox-row">
+				<input type="checkbox" id="remember_me" name="_remember_me">
+				<label for="remember_me">Se souvenir de moi</label>
+			</div>
+		</fieldset>
+
+		<button type="submit">Se connecter</button>
+
+	</form>
+
 {% endblock %}

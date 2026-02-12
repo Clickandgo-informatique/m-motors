@@ -1,4 +1,41 @@
+@import "./variables.css";
 @import "./reset.css";
+@import "./typography.css";
+@import "./layout.css";
+@import "./form.css";
+@import "./button.css";
+@import "./checkbox.css";
+@import "./header.css";
+@import "./navbar.css";
+
+/* ========================================================= */
+/* BASE GLOBALE (ne doit PAS écraser les variables) */
+/* ========================================================= */
+
+html,
 body {
-    background-color: #ffff;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  /* Utilise la police du design system */
+  font-family: var(--font-family);
+
+  /* Utilise le fond du design system */
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.text-center {
+  text-align: center;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--space-m);
+  margin: var(--space-m);
+  justify-content: center;
+  align-items: center;
 }
