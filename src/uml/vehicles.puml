@@ -1,0 +1,137 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' ===========================
+'        ENTITÉS
+' ===========================
+
+class Brand {
+  +id : int
+  +name : string
+}
+
+class Model {
+  +id : int
+  +brand_id : int
+  +name : string
+}
+
+class Gear {
+  +id : int
+  +type : string
+}
+
+class FuelType {
+  +id : int
+  +name : string
+}
+
+class BodyType {
+  +id : int
+  +name : string
+}
+
+class Supplier {
+  +id : int
+  +name : string
+  +address : string
+  +contact : string
+}
+
+class Vehicle {
+  +id : int
+  +brand_id : int
+  +model_id : int
+  +gear_id : int
+  +fuel_id : int
+  +body_type_id : int
+  +supplier_id : int
+  +year : int
+  +mileage : int
+  +color : string
+  +price : decimal
+  +vin : string
+}
+
+class Feature {
+  +id : int
+  +name : string
+}
+
+class VehicleFeature {
+  +vehicle_id : int
+  +feature_id : int
+}
+
+class Customer {
+  +id : int
+  +firstname : string
+  +lastname : string
+  +email : string
+  +phone : string
+}
+
+class Sale {
+  +id : int
+  +vehicle_id : int
+  +customer_id : int
+  +price : decimal
+  +date : date
+}
+
+class Rental {
+  +id : int
+  +vehicle_id : int
+  +customer_id : int
+  +start_date : date
+  +end_date : date
+  +daily_rate : decimal
+}
+
+class Maintenance {
+  +id : int
+  +vehicle_id : int
+  +description : string
+  +date : date
+  +cost : decimal
+}
+class Variant {
+  +id : int
+  +model_id : int
+  +name : string
+  +release_year : int
+}
+
+
+
+
+' ===========================
+'        RELATIONS
+' ===========================
+
+Model "1" --> "N" Variant
+Variant "1" --> "N" Vehicle
+
+Brand "1" --> "N" Model
+Brand "1" --> "N" Vehicle
+Model "1" --> "N" Vehicle
+
+Gear "1" --> "N" Vehicle
+FuelType "1" --> "N" Vehicle
+BodyType "1" --> "N" Vehicle
+Supplier "1" --> "N" Vehicle
+
+Vehicle "1" --> "N" Maintenance
+
+Customer "1" --> "N" Sale
+Customer "1" --> "N" Rental
+
+Vehicle "1" --> "1" Sale
+Vehicle "1" --> "N" Rental
+
+' Many-to-many
+Vehicle "N" -- "N" Feature : has >
+VehicleFeature .. Vehicle
+VehicleFeature .. Feature
+
+@enduml
