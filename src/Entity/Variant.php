@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\VariantRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VariantRepository::class)]
@@ -16,11 +18,19 @@ class Variant
     #[ORM\ManyToOne(inversedBy: 'variants')]
     private ?Model $model = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'text')]
     private ?string $name = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $release_year = null;
+
+    #[ORM\OneToMany(mappedBy: 'variant', targetEntity: VehicleModel::class)]
+    private Collection $vehicleModels;
+
+    public function __construct()
+    {
+        $this->vehicleModels = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -35,7 +45,6 @@ class Variant
     public function setModel(?Model $model): static
     {
         $this->model = $model;
-
         return $this;
     }
 
@@ -47,7 +56,6 @@ class Variant
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -59,7 +67,11 @@ class Variant
     public function setReleaseYear(?int $release_year): static
     {
         $this->release_year = $release_year;
-
         return $this;
+    }
+
+    public function getVehicleModels(): Collection
+    {
+        return $this->vehicleModels;
     }
 }

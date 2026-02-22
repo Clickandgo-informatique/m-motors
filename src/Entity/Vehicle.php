@@ -16,6 +16,10 @@ class Vehicle
     #[ORM\Column]
     private ?int $id = null;
 
+    /* -------------------------
+     *   RELATIONS EXISTANTES
+     * ------------------------- */
+
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Brand $brand = null;
@@ -26,6 +30,39 @@ class Vehicle
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Supplier $supplier = null;
 
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?FuelType $fuel_type = null;
+
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    private ?BodyType $body_type = null;
+
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    private ?Color $color = null;
+
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    private ?Feature $feature = null;
+
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Model $model = null;
+
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Variant $variant = null;
+
+    /* -----------------------------------------
+     *   NOUVELLE RELATION : VEHICLE MODEL UTAC
+     * ----------------------------------------- */
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?VehicleModel $vehicleModel = null;
+
+    /* -------------------------
+     *   CHAMPS DU VEHICULE RÉEL
+     * ------------------------- */
+
     #[ORM\Column]
     private ?int $year = null;
 
@@ -34,6 +71,10 @@ class Vehicle
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0, nullable: true)]
     private ?string $price = null;
+
+    /* -------------------------
+     *   RELATIONS OPÉRATIONNELLES
+     * ------------------------- */
 
     /**
      * @var Collection<int, Maintenance>
@@ -53,25 +94,16 @@ class Vehicle
     #[ORM\OneToMany(targetEntity: Rental::class, mappedBy: 'vehicle')]
     private Collection $rentals;
 
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?FuelType $fuel_type = null;
-
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?BodyType $body_type = null;
-
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?Color $color = null;
-
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?Feature $feature = null;
-
     public function __construct()
     {
         $this->maintenances = new ArrayCollection();
         $this->sales = new ArrayCollection();
         $this->rentals = new ArrayCollection();
     }
+
+    /* -------------------------
+     *   GETTERS / SETTERS
+     * ------------------------- */
 
     public function getId(): ?int
     {
@@ -86,7 +118,6 @@ class Vehicle
     public function setBrand(?Brand $brand): static
     {
         $this->brand = $brand;
-
         return $this;
     }
 
@@ -98,7 +129,6 @@ class Vehicle
     public function setGear(?Gear $gear): static
     {
         $this->gear = $gear;
-
         return $this;
     }
 
@@ -110,133 +140,6 @@ class Vehicle
     public function setSupplier(?Supplier $supplier): static
     {
         $this->supplier = $supplier;
-
-        return $this;
-    }
-
-    public function getYear(): ?int
-    {
-        return $this->year;
-    }
-
-    public function setYear(int $year): static
-    {
-        $this->year = $year;
-
-        return $this;
-    }
-
-    public function getMileage(): ?int
-    {
-        return $this->mileage;
-    }
-
-    public function setMileage(?int $mileage): static
-    {
-        $this->mileage = $mileage;
-
-        return $this;
-    }
-
-    public function getPrice(): ?string
-    {
-        return $this->price;
-    }
-
-    public function setPrice(?string $price): static
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Maintenance>
-     */
-    public function getMaintenances(): Collection
-    {
-        return $this->maintenances;
-    }
-
-    public function addMaintenance(Maintenance $maintenance): static
-    {
-        if (!$this->maintenances->contains($maintenance)) {
-            $this->maintenances->add($maintenance);
-            $maintenance->setVehicle($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMaintenance(Maintenance $maintenance): static
-    {
-        if ($this->maintenances->removeElement($maintenance)) {
-            // set the owning side to null (unless already changed)
-            if ($maintenance->getVehicle() === $this) {
-                $maintenance->setVehicle(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Sale>
-     */
-    public function getSales(): Collection
-    {
-        return $this->sales;
-    }
-
-    public function addSale(Sale $sale): static
-    {
-        if (!$this->sales->contains($sale)) {
-            $this->sales->add($sale);
-            $sale->setVehicle($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSale(Sale $sale): static
-    {
-        if ($this->sales->removeElement($sale)) {
-            // set the owning side to null (unless already changed)
-            if ($sale->getVehicle() === $this) {
-                $sale->setVehicle(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Rental>
-     */
-    public function getRentals(): Collection
-    {
-        return $this->rentals;
-    }
-
-    public function addRental(Rental $rental): static
-    {
-        if (!$this->rentals->contains($rental)) {
-            $this->rentals->add($rental);
-            $rental->setVehicle($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRental(Rental $rental): static
-    {
-        if ($this->rentals->removeElement($rental)) {
-            // set the owning side to null (unless already changed)
-            if ($rental->getVehicle() === $this) {
-                $rental->setVehicle(null);
-            }
-        }
-
         return $this;
     }
 
@@ -248,7 +151,6 @@ class Vehicle
     public function setFuelType(?FuelType $fuel_type): static
     {
         $this->fuel_type = $fuel_type;
-
         return $this;
     }
 
@@ -260,7 +162,6 @@ class Vehicle
     public function setBodyType(?BodyType $body_type): static
     {
         $this->body_type = $body_type;
-
         return $this;
     }
 
@@ -272,7 +173,6 @@ class Vehicle
     public function setColor(?Color $color): static
     {
         $this->color = $color;
-
         return $this;
     }
 
@@ -284,7 +184,72 @@ class Vehicle
     public function setFeature(?Feature $feature): static
     {
         $this->feature = $feature;
+        return $this;
+    }
 
+    public function getModel(): ?Model
+    {
+        return $this->model;
+    }
+
+    public function setModel(?Model $model): static
+    {
+        $this->model = $model;
+        return $this;
+    }
+
+    public function getVariant(): ?Variant
+    {
+        return $this->variant;
+    }
+
+    public function setVariant(?Variant $variant): static
+    {
+        $this->variant = $variant;
+        return $this;
+    }
+
+    public function getVehicleModel(): ?VehicleModel
+    {
+        return $this->vehicleModel;
+    }
+
+    public function setVehicleModel(?VehicleModel $vehicleModel): static
+    {
+        $this->vehicleModel = $vehicleModel;
+        return $this;
+    }
+
+    public function getYear(): ?int
+    {
+        return $this->year;
+    }
+
+    public function setYear(int $year): static
+    {
+        $this->year = $year;
+        return $this;
+    }
+
+    public function getMileage(): ?int
+    {
+        return $this->mileage;
+    }
+
+    public function setMileage(?int $mileage): static
+    {
+        $this->mileage = $mileage;
+        return $this;
+    }
+
+    public function getPrice(): ?string
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?string $price): static
+    {
+        $this->price = $price;
         return $this;
     }
 }

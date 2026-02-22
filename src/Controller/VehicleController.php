@@ -1,21 +1,29 @@
 <?php
-// src/Controller/VehicleController.php
+
 namespace App\Controller;
 
-use App\Repository\BrandRepository;
+use App\Repository\VehicleModelRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class VehicleController extends AbstractController
 {
-    #[Route('/vehicles', name: 'vehicles_index')]
-    public function index(BrandRepository $brandRepository): Response
+    #[Route('/vehicles/models', name: 'vehicles_models')]
+    public function index(Request $request, VehicleModelRepository $repo, PaginatorInterface $paginator): Response
     {
-        $brands = $brandRepository->findBy([], ['name' => 'ASC']);
+        $query = $repo->findAllWithRelations();
+        
+        $vehicles = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            20
+        );
 
-        return $this->render('vehicles/index.html.twig', [
-            'brands' => $brands,
+        return $this->render('vehicles/vehicles_models.html.twig', [
+            'vehicles' => $vehicles,
         ]);
     }
 }

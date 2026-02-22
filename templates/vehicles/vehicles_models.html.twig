@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue officiel des véhicules
+{% endblock %}
+
+{% block body %}
+
+	<h1>Catalogue des véhicules</h1>
+
+	<p>Total modèles :
+		{{ vehicles.getTotalItemCount }}</p>
+<div class="pagination-info">
+    Page {{ vehicles.currentPageNumber }} de {{ vehicles.pageCount }}
+</div>
+
+	{{ knp_pagination_render(vehicles) }}
+
+	<table class="table-utac">
+    <thead>
+        <tr>
+            <th>Marque</th>
+            <th>Modèle</th>
+            <th>Variante</th>
+            <th>CNIT</th>
+            <th>CO₂</th>
+            <th>Masse min</th>
+            <th>Masse max</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in vehicles %}
+            <tr>
+                <td data-label="Marque">{{ v.brand.name }}</td>
+                <td data-label="Modèle">{{ v.model.name }}</td>
+                <td data-label="Variante">{{ v.variant.name }}</td>
+                <td data-label="CNIT">{{ v.cnit }}</td>
+                <td data-label="CO₂">{{ v.co2 }}</td>
+                <td data-label="Masse min">{{ v.massMin }}</td>
+                <td data-label="Masse max">{{ v.massMax }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+	{{ knp_pagination_render(vehicles) }}
+
+{% endblock %}

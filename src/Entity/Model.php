@@ -15,17 +15,13 @@ class Model
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 60)]
-    private ?string $name = null;
-
     #[ORM\ManyToOne(inversedBy: 'models')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Brand $brand = null;
 
-    /**
-     * @var Collection<int, Variant>
-     */
-    #[ORM\OneToMany(targetEntity: Variant::class, mappedBy: 'model')]
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    #[ORM\OneToMany(mappedBy: 'model', targetEntity: Variant::class)]
     private Collection $variants;
 
     public function __construct()
@@ -36,17 +32,6 @@ class Model
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-        return $this;
     }
 
     public function getBrand(): ?Brand
@@ -60,32 +45,19 @@ class Model
         return $this;
     }
 
-    /**
-     * @return Collection<int, Variant>
-     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+        return $this;
+    }
+
     public function getVariants(): Collection
     {
         return $this->variants;
-    }
-
-    public function addVariant(Variant $variant): static
-    {
-        if (!$this->variants->contains($variant)) {
-            $this->variants->add($variant);
-            $variant->setModel($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVariant(Variant $variant): static
-    {
-        if ($this->variants->removeElement($variant)) {
-            if ($variant->getModel() === $this) {
-                $variant->setModel(null);
-            }
-        }
-
-        return $this;
     }
 }
