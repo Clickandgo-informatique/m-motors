@@ -10,15 +10,14 @@ if (localStorage.getItem("theme") === "dark") {
 }
 
 // Activer/désactiver le thème
-document.addEventListener("click", e => {
-  const btn = e.target.closest("#theme-toggle");
-  if (!btn) return;
+if (toggleBtn) {
+  toggleBtn.addEventListener("click", () => {
+    document.documentElement.classList.toggle("dark");
 
-  document.documentElement.classList.toggle("dark");
-
-  const isDark = document.documentElement.classList.contains("dark");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-});
+    const isDark = document.documentElement.classList.contains("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
+}
 
 // ===============================
 // MENU HAMBURGER

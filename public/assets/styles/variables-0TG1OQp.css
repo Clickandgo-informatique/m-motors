@@ -1,0 +1,152 @@
+/* ========================================================= */
+/* MODE CLAIR — DESIGN SYSTEM COMPLET */
+/* ========================================================= */
+
+:root {
+  /* ------------------------------ */
+  /* PALETTE PRINCIPALE */
+  /* ------------------------------ */
+
+  /* Couleurs de marque (Facebook) */
+  --color-primary: #1877f2;
+  --color-primary-hover: #166fe5;
+  --color-secondary: #42b72a;
+  --color-accent: #f7b928;
+
+  /* ------------------------------ */
+  /* TEXTE */
+  /* ------------------------------ */
+  --text-primary: #1c1e21; /* Noir Facebook */
+  --text-secondary: #606770; /* Gris foncé */
+  --text-muted: #8a8d91; /* Gris moyen */
+  --text-inverse: #ffffff;
+
+  /* ------------------------------ */
+  /* FONDS */
+  /* ------------------------------ */
+  --bg-primary: #ffffff; /* Blanc pur */
+  --bg-secondary: #f0f2f5; /* Fond Facebook */
+  --bg-tertiary: #e4e6eb; /* Gris clair */
+
+  /* ------------------------------ */
+  /* BORDURES */
+  /* ------------------------------ */
+  --border-color: #ccd0d5; /* Gris bordure */
+  --border-light: #e4e6eb; /* Gris très clair */
+
+  /* ------------------------------ */
+  /* FOCUS */
+  /* ------------------------------ */
+  --focus-bg: #e7f3ff; /* Bleu très pâle */
+  --focus-border: #1877f2; /* Bleu Facebook */
+
+  /* ------------------------------ */
+  /* SURFACES (cartes, fieldsets) */
+  /* ------------------------------ */
+  --surface-1: #ffffff; /* Carte blanche */
+  --surface-2: #f7f8fa; /* Très léger gris */
+  --surface-3: #f0f2f5; /* Fond général */
+
+  /* Fieldset (style Facebook) */
+  --fieldset-bg: #ffffff;
+  --fieldset-border: #e4e6eb;
+  --legend-color: #1c1e21;
+
+  /* ------------------------------ */
+  /* BOUTONS */
+  /* ------------------------------ */
+  --btn-primary-bg: var(--color-primary);
+  --btn-primary-bg-hover: var(--color-primary-hover);
+  --btn-primary-text: var(--text-inverse);
+
+  --btn-secondary-bg: var(--bg-tertiary);
+  --btn-secondary-bg-hover: #d8dadf;
+  --btn-secondary-text: var(--text-primary);
+
+  /* ------------------------------ */
+  /* TYPOGRAPHIE */
+  /* ------------------------------ */
+  --font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-size-base: 16px;
+  --font-size-small: 14px;
+  --font-size-large: 20px;
+
+  /* ------------------------------ */
+  /* RAYONS, OMBRES, ESPACEMENTS */
+  /* ------------------------------ */
+  --radius-small: 6px;
+  --radius: 8px; /* Facebook arrondi */
+  --radius-large: 12px;
+
+  --shadow-light: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.12);
+
+  --space-xs: 4px;
+  --space-s: 8px;
+  --space-m: 16px;
+  --space-l: 24px;
+  --space-xl: 32px;
+
+  /* ------------------------------ */
+  /* BREAKPOINTS */
+  /* ------------------------------ */
+  --bp-mobile: 600px;
+  --bp-tablet: 900px;
+  --bp-desktop: 1200px;
+}
+
+/* ========================================================= */
+/* MODE SOMBRE — DESIGN SYSTEM COMPLET */
+/* ========================================================= */
+
+:root.dark {
+  /* Palette */
+  --color-primary: #4599ff;
+  --color-primary-hover: #3a8af0;
+  --color-secondary: #4cd137;
+  --color-accent: #f7b928;
+
+  /* Texte */
+  --text-primary: #e4e6eb;
+  --text-secondary: #b0b3b8;
+  --text-muted: #8a8d91;
+  --text-inverse: #000;
+
+  /* Fonds */
+  --bg-primary: #18191a;
+  --bg-secondary: #242526;
+  --bg-tertiary: #3a3b3c;
+
+  /* Bordures */
+  --border-color: #3a3b3c;
+  --border-light: #4e4f50;
+
+  /* Focus */
+  --focus-bg: #263952;
+  --focus-border: #4599ff;
+
+  /* Surfaces */
+  --surface-1: #242526;
+  --surface-2: #2f3031;
+  --surface-3: #3a3b3c;
+
+  /* Fieldset */
+  --fieldset-bg: #242526;
+  --fieldset-border: #3a3b3c;
+  --legend-color: #e4e6eb;
+
+  /* Boutons */
+  --btn-primary-bg: var(--color-primary);
+  --btn-primary-bg-hover: var(--color-primary-hover);
+  --btn-primary-text: #000;
+
+  --btn-secondary-bg: #3a3b3c;
+  --btn-secondary-bg-hover: #4e4f50;
+  --btn-secondary-text: var(--text-primary);
+
+  /* Ombres */
+  --shadow-light: 0 1px 2px rgba(255, 255, 255, 0.05);
+  --shadow-medium: 0 2px 4px rgba(255, 255, 255, 0.08);
+}

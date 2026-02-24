@@ -1,0 +1,36 @@
+/* CONTAINER */
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: var(--space-m);
+}
+
+/* CARDS */
+
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: var(--space-m);
+  box-shadow: var(--shadow-light);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+/* SECTIONS */
+
+.section {
+  padding: var(--space-l) 0;
+}
+
+/* HEADER / FOOTER (optionnel) */
+
+header,
+footer {
+  background: var(--surface-2);
+  padding: var(--space-m);
+  border-bottom: 1px solid var(--border-light);
+}

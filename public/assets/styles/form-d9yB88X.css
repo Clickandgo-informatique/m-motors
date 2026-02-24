@@ -82,22 +82,9 @@ form textarea:focus {
   outline: none;
 }
 
-/* Espace entre le texte et les flèches */
-input[type="number"] {
-    padding-right: 10px; /* ajuste selon ton design */
-    box-sizing: border-box;
+.form-row input[type="number"] {
+  padding-right: 5px;
 }
-
-/* Chrome / Edge / Safari : on garde les flèches */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: inner-spin-button; /* important : ne pas les supprimer */
-    margin: 0;
-}
-
-/* Firefox : NE PAS mettre -moz-appearance: textfield; sinon les flèches disparaissent */
-
-
 /* ========================================================= */
 /* CHECKBOX */
 /* ========================================================= */

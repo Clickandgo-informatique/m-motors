@@ -1,0 +1,84 @@
+/* ============================
+   PAGINATION — BASE
+   ============================ */
+
+.pagination {
+  display: flex;
+  gap: var(--space-s);
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-m) 0;
+  font-family: var(--font-family);
+}
+
+/* Neutralise les conteneurs autour des liens */
+.pagination li,
+.pagination span {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+}
+
+/* Le bouton réel */
+.pagination a,
+.pagination .page-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 36px;
+  height: 36px;
+
+  padding: 0 var(--space-s);
+  border-radius: var(--radius-small);
+
+  background: var(--surface-1);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+
+  text-decoration: none;
+  font-size: var(--font-size-small);
+  font-weight: 500;
+
+  box-shadow: var(--shadow-light);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Hover */
+.pagination a:hover,
+.pagination .page-link:hover {
+  background: var(--focus-bg);
+  border-color: var(--focus-border);
+}
+
+/* Active */
+.pagination .active > a,
+.pagination .active > .page-link {
+  background: var(--color-primary);
+  border-color: var(--color-primary-hover);
+  color: var(--text-inverse);
+  font-weight: 600;
+}
+
+/* Disabled */
+.pagination .disabled > a,
+.pagination .disabled > .page-link {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .pagination {
+    gap: var(--space-xs);
+  }
+
+  .pagination a,
+  .pagination .page-link {
+    min-width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+}
