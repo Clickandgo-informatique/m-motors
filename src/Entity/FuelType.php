@@ -42,7 +42,6 @@ class FuelType
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -67,7 +66,6 @@ class FuelType
     public function removeVehicle(Vehicle $vehicle): static
     {
         if ($this->vehicles->removeElement($vehicle)) {
-            // set the owning side to null (unless already changed)
             if ($vehicle->getFuelType() === $this) {
                 $vehicle->setFuelType(null);
             }

@@ -1,55 +1,65 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Catalogue officiel des véhicules
-{% endblock %}
+{% block title %}M-Motors: Catalogue des modèles véhicules{% endblock %}
 
 {% block body %}
 
-	<h1>Catalogue officiel des véhicules</h1>
+<h1>Catalogue des modèles véhicules</h1>
 
-	<p>Total modèles :
-		{{ vm.getTotalItemCount|number_format(0, ',', '.') }}</p>
-<div class="pagination-info">
-    Page {{ vm.currentPageNumber }} de {{ vm.pageCount }}
-</div>
-<div class="pagination">
-	{{ knp_pagination_render(vm) }}
+{# Formulaire de recherche #}
+{% include "Components/Forms/_fetch_form.html.twig" with {
+     action: path('vehicle_model_search'),
+     resultDiv: 'vehicle-model-results',
+     placeholder:"Rechercher par marque ou modèle",
+     itemUrl: path('vehicle_model_edit', { id: '__ID__' }),
+     autocomplete: true
+} %}
 
-</div>
+    <p>Total modèles : {{ vm.getTotalItemCount|number_format(0, ',', '.') }}</p>
 
-    <a class="btn btn-new" href="{{path('vehicle_model_new')}}">Ajouter un nouveau modèle de véhicule</a>
+    <div class="pagination-info">
+        Page {{ vm.currentPageNumber }} de {{ vm.pageCount }}
+    </div>
 
-	<table class="table-utac">
-    <thead>
-        <tr>
-        <th></th>
-            <th>Marque</th>
-            <th>Modèle</th>
-            <th>Variante</th>
-            <th>CNIT</th>
-            <th>CO₂</th>
-            <th>Masse min</th>
-            <th>Masse max</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for vmod in vm %}
+    <div class="pagination">
+        {{ knp_pagination_render(vm) }}
+    </div>
+
+    <a class="btn btn-new" href="{{ path('vehicle_model_new') }}">Ajouter un nouveau modèle de véhicule</a>
+
+    <table class="table-utac">
+        <thead>
             <tr>
-            <td><a href="{{path('vehicle_model_edit',{id:vmod.id})}}">{{vmod.id}}</a></td>
-                <td data-label="Marque">{{ vmod.brand.name }}</td>
-                <td data-label="Modèle">{{ vmod.model.name }}</td>
-                <td data-label="Variante">{{ vmod.variant.name }}</td>
-                <td data-label="CNIT">{{ vmod.cnit }}</td>
-                <td data-label="CO₂">{{ vmod.co2 }}</td>
-                <td data-label="Masse min">{{ vmod.massMin }}</td>
-                <td data-label="Masse max">{{ vmod.massMax }}</td>
+                <th></th>
+                <th>Marque</th>
+                <th>Modèle</th>
+                <th>Variante</th>
+                <th>CNIT</th>
+                <th>CO₂</th>
+                <th>Masse min</th>
+                <th>Masse max</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for vmod in vm %}
+                <tr>
+                    <td><a href="{{ path('vehicle_model_edit', {id: vmod.id}) }}">{{ vmod.id }}</a></td>
+                    <td data-label="Marque">{{ vmod.brand.name }}</td>
+                    <td data-label="Modèle">{{ vmod.model.name }}</td>
+                    <td data-label="Variante">{{ vmod.variant.name }}</td>
+                    <td data-label="CNIT">{{ vmod.cnit }}</td>
+                    <td data-label="CO₂">{{ vmod.co2 }}</td>
+                    <td data-label="Masse min">{{ vmod.massMin }}</td>
+                    <td data-label="Masse max">{{ vmod.massMax }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-<div class="pagination">
-	{{ knp_pagination_render(vm) }}
+    <div class="pagination">
+        {{ knp_pagination_render(vm) }}
+    </div>
+
 </div>
 
 {% endblock %}

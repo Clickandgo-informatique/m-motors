@@ -21,7 +21,7 @@ class Variant
     #[ORM\Column(type: 'text')]
     private ?string $name = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $release_year = null;
 
     #[ORM\OneToMany(mappedBy: 'variant', targetEntity: VehicleModel::class)]

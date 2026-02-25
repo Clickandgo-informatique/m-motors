@@ -16,52 +16,50 @@ class Vehicle
     #[ORM\Column]
     private ?int $id = null;
 
-    /* -------------------------
-     *   RELATIONS EXISTANTES
-     * ------------------------- */
-
+    // Brand possède $vehicles
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Brand $brand = null;
 
+    // Gear possède $vehicles
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Gear $gear = null;
 
+    // Supplier possède $vehicles
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Supplier $supplier = null;
 
+    // FuelType possède $vehicles
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     #[ORM\JoinColumn(nullable: true)]
     private ?FuelType $fuel_type = null;
 
+    // BodyType possède $vehicles
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?BodyType $body_type = null;
 
+    // Color possède $vehicles
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Color $color = null;
 
+    // Feature possède $vehicles
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Feature $feature = null;
 
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    // Model n’a PAS $vehicles → pas d’inversedBy
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
     private ?Model $model = null;
 
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    // Variant n’a PAS $vehicles → pas d’inversedBy
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
     private ?Variant $variant = null;
 
-    /* -----------------------------------------
-     *   NOUVELLE RELATION : VEHICLE MODEL UTAC
-     * ----------------------------------------- */
-
+    // VehicleModel n’a PAS $vehicles → pas d’inversedBy
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
     private ?VehicleModel $vehicleModel = null;
-
-    /* -------------------------
-     *   CHAMPS DU VEHICULE RÉEL
-     * ------------------------- */
 
     #[ORM\Column]
     private ?int $year = null;
@@ -72,25 +70,12 @@ class Vehicle
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0, nullable: true)]
     private ?string $price = null;
 
-    /* -------------------------
-     *   RELATIONS OPÉRATIONNELLES
-     * ------------------------- */
-
-    /**
-     * @var Collection<int, Maintenance>
-     */
     #[ORM\OneToMany(targetEntity: Maintenance::class, mappedBy: 'vehicle')]
     private Collection $maintenances;
 
-    /**
-     * @var Collection<int, Sale>
-     */
     #[ORM\OneToMany(targetEntity: Sale::class, mappedBy: 'vehicle')]
     private Collection $sales;
 
-    /**
-     * @var Collection<int, Rental>
-     */
     #[ORM\OneToMany(targetEntity: Rental::class, mappedBy: 'vehicle')]
     private Collection $rentals;
 
@@ -101,9 +86,9 @@ class Vehicle
         $this->rentals = new ArrayCollection();
     }
 
-    /* -------------------------
-     *   GETTERS / SETTERS
-     * ------------------------- */
+    /* ============================
+       GETTERS / SETTERS
+       ============================ */
 
     public function getId(): ?int
     {
@@ -250,6 +235,85 @@ class Vehicle
     public function setPrice(?string $price): static
     {
         $this->price = $price;
+        return $this;
+    }
+
+    /* ============================
+       COLLECTIONS
+       ============================ */
+
+    /** @return Collection<int, Maintenance> */
+    public function getMaintenances(): Collection
+    {
+        return $this->maintenances;
+    }
+
+    public function addMaintenance(Maintenance $maintenance): static
+    {
+        if (!$this->maintenances->contains($maintenance)) {
+            $this->maintenances->add($maintenance);
+            $maintenance->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeMaintenance(Maintenance $maintenance): static
+    {
+        if ($this->maintenances->removeElement($maintenance)) {
+            if ($maintenance->getVehicle() === $this) {
+                $maintenance->setVehicle(null);
+            }
+        }
+        return $this;
+    }
+
+    /** @return Collection<int, Sale> */
+    public function getSales(): Collection
+    {
+        return $this->sales;
+    }
+
+    public function addSale(Sale $sale): static
+    {
+        if (!$this->sales->contains($sale)) {
+            $this->sales->add($sale);
+            $sale->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeSale(Sale $sale): static
+    {
+        if ($this->sales->removeElement($sale)) {
+            if ($sale->getVehicle() === $this) {
+                $sale->setVehicle(null);
+            }
+        }
+        return $this;
+    }
+
+    /** @return Collection<int, Rental> */
+    public function getRentals(): Collection
+    {
+        return $this->rentals;
+    }
+
+    public function addRental(Rental $rental): static
+    {
+        if (!$this->rentals->contains($rental)) {
+            $this->rentals->add($rental);
+            $rental->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeRental(Rental $rental): static
+    {
+        if ($this->rentals->removeElement($rental)) {
+            if ($rental->getVehicle() === $this) {
+                $rental->setVehicle(null);
+            }
+        }
         return $this;
     }
 }

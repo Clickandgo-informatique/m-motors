@@ -5,13 +5,19 @@ services:
       dockerfile: docker/php/Dockerfile
     container_name: php
     working_dir: /var/www
-    user: "www-data" 
+    user: "www-data"
     volumes:
       - ./:/var/www
     depends_on:
       - db
       - redis
       - mailhog
+    entrypoint: ["/usr/local/bin/entrypoint.sh"]
+    command: ["php-fpm"]
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
 
   nginx:
     image: nginx:latest

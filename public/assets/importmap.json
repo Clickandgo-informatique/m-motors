@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-jDw5fHN.js",
+        "path": "\/assets\/app-r8sTV3V.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,8 +28,20 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-qAA_nKM.css",
+        "path": "\/assets\/styles\/app-QohBO4C.css",
         "type": "css"
+    },
+    "\/assets\/js\/DynamicFormCollection.js": {
+        "path": "\/assets\/js\/DynamicFormCollection-5D650Tv.js",
+        "type": "js"
+    },
+    "\/assets\/js\/FetchForm.js": {
+        "path": "\/assets\/js\/FetchForm-Gzpjb7-.js",
+        "type": "js"
+    },
+    "\/assets\/js\/AjaxManager.js": {
+        "path": "\/assets\/js\/AjaxManager-Mleihdd.js",
+        "type": "js"
     },
     "@hotwired\/stimulus": {
         "path": "\/assets\/vendor\/@hotwired\/stimulus\/stimulus.index-S4zNcea.js",
@@ -41,6 +53,10 @@
     },
     "@hotwired\/turbo": {
         "path": "\/assets\/vendor\/@hotwired\/turbo\/turbo.index-pT15T6h.js",
+        "type": "js"
+    },
+    "FetchForm": {
+        "path": "\/assets\/js\/FetchForm-Gzpjb7-.js",
         "type": "js"
     }
 }

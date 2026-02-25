@@ -10,7 +10,8 @@
 
 		{% block javascripts %}
 			{% block importmap %}
-				{{ importmap('app') }}
+				{{ importmap('app', { defer: true }) }}
+
 			{% endblock %}
 		{% endblock %}
 	</head>
@@ -21,5 +22,19 @@
 			{% block body %}{% endblock %}
 		</main>
 		{{ include("partials/_footer.html.twig") }}
+
+		<!-- MODALE DOIT ÊTRE ICI, DANS LE BODY -->
+    <div id="modal">
+        <div class="modal-backdrop" data-modal-close></div>
+
+        <div id="modal-content">
+            <button class="modal-close" data-modal-close>&times;</button>
+
+            <div id="modal-body">
+                <!-- Le contenu AJAX sera injecté ici -->
+            </div>
+        </div>
+    </div>
+
 	</body>
 </html>

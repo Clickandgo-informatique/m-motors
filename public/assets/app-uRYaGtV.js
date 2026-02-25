@@ -33,7 +33,4 @@ document.addEventListener("visibilitychange", () => {
 // Hack anti-bfcache (optionnel, tu peux le garder)
 window.addEventListener("unload", () => {});
 
-import AjaxManager from "./js/AjaxManager.js";
-document.addEventListener("DOMContentLoaded", () => new AjaxManager());
-
 console.log("This log comes from assets/app.js - welcome to AssetMapper! 🎉");

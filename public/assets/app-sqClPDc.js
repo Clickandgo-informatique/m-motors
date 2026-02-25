@@ -21,19 +21,15 @@ function initFetchForms() {
   });
 }
 
-// 1) Chargement normal
 document.addEventListener("DOMContentLoaded", initFetchForms);
-// 2) Retour arrière (Firefox, Safari, Chrome)
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") {
+
+window.addEventListener("pageshow", event => {
+  if (event.persisted) {
     initFetchForms();
   }
 });
 
 // Hack anti-bfcache (optionnel, tu peux le garder)
 window.addEventListener("unload", () => {});
-
-import AjaxManager from "./js/AjaxManager.js";
-document.addEventListener("DOMContentLoaded", () => new AjaxManager());
 
 console.log("This log comes from assets/app.js - welcome to AssetMapper! 🎉");

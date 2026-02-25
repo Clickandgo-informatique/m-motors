@@ -1,0 +1,126 @@
+/* ================================
+   WRAPPER
+   ================================ */
+.dropdown-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* ================================
+   CONTENEUR DU DROPDOWN
+   ================================ */
+.dropdown-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+
+  background: var(--surface-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-medium);
+
+  max-height: 260px;
+  overflow-y: auto;
+
+  z-index: 9999;
+
+  /* Animation */
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Ouvert */
+.dropdown-results.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ================================
+   ITEMS
+   ================================ */
+.dropdown-item {
+  padding: 0;
+}
+
+/* Lien cliquable */
+.dropdown-link {
+  display: block;
+  padding: 10px 12px;
+  text-decoration: none;
+
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+/* Dernier item sans bordure */
+.dropdown-item:last-child .dropdown-link {
+  border-bottom: none;
+}
+
+/* Hover */
+.dropdown-link:hover {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+/* Item actif (navigation clavier) */
+.dropdown-item.active .dropdown-link {
+  background: var(--focus-bg);
+  color: var(--text-primary);
+}
+
+/* ================================
+   AUCUN RÉSULTAT
+   ================================ */
+.dropdown-no-results {
+  padding: 10px 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ================================
+   SPINNER
+   ================================ */
+.dropdown-spinner {
+  display: none;
+  padding: var(--space-s);
+  text-align: center;
+}
+
+.dropdown-spinner.visible {
+  display: block;
+}
+
+.spinner-circle {
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--border-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ================================
+   COMPTEUR DE RÉSULTATS
+   ================================ */
+.dropdown-count {
+  padding: 8px 12px;
+  font-size: var(--font-size-small);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-light);
+  background: var(--surface-1);
+}
