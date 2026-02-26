@@ -1,6 +1,7 @@
 // assets/js/AjaxManager.js
 
 export default class AjaxManager {
+  // Constructeur
   constructor(options = {}) {
     this.modalSelector = options.modalSelector || "#modal";
     this.modalBody = document.querySelector("#modal-body");
@@ -17,6 +18,7 @@ export default class AjaxManager {
   bindEvents() {
     // Ouverture modale via lien AJAX
     document.addEventListener("click", e => {
+      console.log("lien cliqué : data-ajax-modal");
       const link = e.target.closest("[data-ajax-modal]");
       if (link) {
         e.preventDefault();
@@ -44,10 +46,7 @@ export default class AjaxManager {
 
       const response = await fetch(form.action, {
         method: "POST",
-        body: new FormData(form),
-        headers: {
-          "X-Requested-With": "XMLHttpRequest"
-        }
+        body: new FormData(form)
       });
 
       if (response.ok) {
@@ -80,41 +79,30 @@ export default class AjaxManager {
   }
 
   async loadModal(url) {
-    const response = await fetch(url, {
-      headers: {
-        "X-Requested-With": "XMLHttpRequest"
-      }
-    });
+    const response = await fetch(url);
+    const html = await response.text();
 
-    // Le contrôleur renvoie du JSON : { html: "..." }
-    const data = await response.json();
-
-    this.modalBody.innerHTML = data.html;
+    this.modalBody.innerHTML = html;
     this.modal.classList.add("open");
   }
 
   async submitForm(form) {
     const response = await fetch(form.action, {
       method: form.method,
-      body: new FormData(form),
-      headers: {
-        "X-Requested-With": "XMLHttpRequest"
-      }
+      body: new FormData(form)
     });
 
-    // Si OK → "OK" (texte)
-    // Si erreur de validation → JSON { html: "..." }
-    const contentType = response.headers.get("Content-Type");
+    const html = await response.text();
 
-    if (response.ok && contentType.includes("text/plain")) {
-      // Succès → fermer la modale
+    if (response.ok) {
+      const target = form.dataset.updateTarget;
+      if (target) {
+        document.querySelector(target).outerHTML = html;
+      }
       this.closeModal();
-      return;
+    } else {
+      this.modalBody.innerHTML = html;
     }
-
-    // Sinon → réinjecter le formulaire avec erreurs
-    const data = await response.json();
-    this.modalBody.innerHTML = data.html;
   }
 
   closeModal() {

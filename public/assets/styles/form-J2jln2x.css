@@ -14,11 +14,7 @@ form {
   box-shadow: var(--shadow-light);
   box-sizing: border-box; /* 🔥 important pour éviter le rétrécissement */
 }
-.fetch-form {
-  border: none;
-  box-shadow: none;
-  background: transparent;
-}
+
 /* ========================================================= */
 /* FIELDSET + LEGEND */
 /* ========================================================= */

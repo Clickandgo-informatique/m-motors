@@ -1,0 +1,137 @@
+/* ============================
+   MODALE — CONTENEUR GLOBAL
+   ============================ */
+#modal {
+    position: fixed;
+    inset: 0;
+    display: none; /* cachée par défaut */
+    align-items: center; /* centrage vertical */
+    justify-content: center; /* centrage horizontal */
+    z-index: 1000;
+}
+#modal form {
+    border: none;
+    box-shadow: none;
+}
+
+/* Quand la modale est ouverte */
+#modal.open {
+    display: flex;
+}
+
+/* ============================
+   FOND ASSOMBRI
+   ============================ */
+.modal-backdrop {
+    position: fixed; /* ne perturbe pas le flex */
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000; /* derrière le contenu */
+}
+
+/* ============================
+   CONTENU DE LA MODALE
+   ============================ */
+#modal-content {
+    position: relative;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+
+    width: 800px;
+    max-width: 95%;
+    height: 95%;
+    overflow: auto;
+
+    z-index: 1001; /* devant le backdrop */
+
+    /* Animation */
+    animation: modal-in 0.25s ease-out;
+}
+
+/* ============================
+   CONTENU INTERNE
+   ============================ */
+#modal-body {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+}
+
+/* ============================
+   ANIMATION D’APPARITION
+   ============================ */
+@keyframes modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================
+   BOUTON DE FERMETURE
+   ============================ */
+.modal-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    z-index: 1002; /* AU-DESSUS de tout */
+    line-height: 1;
+}
+/* Animation de fermeture */
+@keyframes modal-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+#modal.closing #modal-content {
+    animation: modal-out 0.25s ease-out forwards;
+}
+
+/* ============================
+   RESPONSIVE — TABLETTES
+   ============================ */
+@media (max-width: 1024px) {
+    #modal-content {
+        width: 90%;
+        height: 90%;
+        padding: 1rem;
+    }
+}
+
+/* ============================
+   RESPONSIVE — SMARTPHONES
+   ============================ */
+@media (max-width: 600px) {
+    #modal {
+        align-items: flex-start; /* modale plus haute */
+        padding-top: 2rem;
+    }
+
+    #modal-content {
+        width: 95%;
+        height: 90%;
+        border-radius: 6px;
+        padding: 1rem;
+    }
+
+    .modal-close {
+        font-size: 1.5rem;
+        top: 0.25rem;
+        right: 0.5rem;
+    }
+}

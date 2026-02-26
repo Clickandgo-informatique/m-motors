@@ -55,4 +55,13 @@ ol li {
 .text-right {
   text-align: right;
 }
-
+a i,button i {
+  margin-right: 10px;
+  font-size: 1.8rem;
+  background: transparent;
+}
+.btn-delete {
+  color: red;
+  font-size: 1.8rem;
+  background-color: transparent;
+}

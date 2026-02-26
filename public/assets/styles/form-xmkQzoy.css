@@ -14,11 +14,7 @@ form {
   box-shadow: var(--shadow-light);
   box-sizing: border-box; /* 🔥 important pour éviter le rétrécissement */
 }
-.fetch-form {
-  border: none;
-  box-shadow: none;
-  background: transparent;
-}
+
 /* ========================================================= */
 /* FIELDSET + LEGEND */
 /* ========================================================= */
@@ -125,7 +121,6 @@ input[type="number"]::-webkit-outer-spin-button {
 .checkbox-row > div {
   flex: 0;
 }
-/* Supprime le sytle par défaut du formulaire dans le cas d'un bouton de suppression */
 .form-delete-btn {
   border: none;
   box-shadow: none;

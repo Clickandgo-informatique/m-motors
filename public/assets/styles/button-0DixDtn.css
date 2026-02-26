@@ -14,6 +14,7 @@ button {
   font-family: var(--font-family);
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
 /* ========================================================= */
@@ -84,7 +85,6 @@ button i {
   margin-right: 10px;
   font-size: 1.8rem;
   background: transparent;
-  text-decoration: none;
 }
 .btn-delete {
   color: red;

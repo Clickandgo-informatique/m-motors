@@ -13,7 +13,7 @@ button {
     box-shadow 0.15s ease;
   font-family: var(--font-family);
   justify-content: center;
-  align-items: center;
+  width: 100%;
 }
 
 /* ========================================================= */
@@ -70,21 +70,15 @@ button:disabled {
   cursor: not-allowed;
 }
 .btn {
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
   padding: 12px 10px;
   margin: 10px;
   text-decoration: none;
-  font-size: 1.2rem;
 }
 a i,
 button i {
   margin-right: 10px;
   font-size: 1.8rem;
   background: transparent;
-  text-decoration: none;
 }
 .btn-delete {
   color: red;

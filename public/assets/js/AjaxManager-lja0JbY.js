@@ -86,10 +86,9 @@ export default class AjaxManager {
       }
     });
 
-    // Le contrôleur renvoie du JSON : { html: "..." }
-    const data = await response.json();
+    const html = await response.text();
 
-    this.modalBody.innerHTML = data.html;
+    this.modalBody.innerHTML = html;
     this.modal.classList.add("open");
   }
 
@@ -102,19 +101,17 @@ export default class AjaxManager {
       }
     });
 
-    // Si OK → "OK" (texte)
-    // Si erreur de validation → JSON { html: "..." }
-    const contentType = response.headers.get("Content-Type");
+    const html = await response.text();
 
-    if (response.ok && contentType.includes("text/plain")) {
-      // Succès → fermer la modale
+    if (response.ok) {
+      const target = form.dataset.updateTarget;
+      if (target) {
+        document.querySelector(target).outerHTML = html;
+      }
       this.closeModal();
-      return;
+    } else {
+      this.modalBody.innerHTML = html;
     }
-
-    // Sinon → réinjecter le formulaire avec erreurs
-    const data = await response.json();
-    this.modalBody.innerHTML = data.html;
   }
 
   closeModal() {

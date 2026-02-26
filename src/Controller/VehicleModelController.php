@@ -23,21 +23,16 @@ class VehicleModelController extends AbstractController
         $limit = 10;
         $offset = ($page - 1) * $limit;
 
-        // Total réel
         $total = $repo->countSearch($q);
-
-        // Page courante (tableaux, pas entités)
         $items = $repo->searchPaginated($q, $limit, $offset);
 
         return $this->json([
-            'items' => $items,   // ✔ tableaux OK
+            'items' => $items,
             'total' => $total,
             'page' => $page,
             'limit' => $limit,
         ]);
     }
-
-
 
     #[Route('/vehicles/models', name: 'vehicles_models', methods: ['GET'])]
     public function index(Request $request, VehicleModelRepository $repo, PaginatorInterface $paginator): Response
@@ -45,17 +40,14 @@ class VehicleModelController extends AbstractController
         $term = $request->query->get('q', '');
 
         if ($term) {
-            // Recherche simple
             $results = $repo->search($term);
 
-            // Pas besoin de pagination pour une recherche
             return $this->render('vehicles/vehicles_models.html.twig', [
                 'vm' => $results,
                 'search' => $term,
             ]);
         }
 
-        // Sinon : liste complète paginée
         $query = $repo->findAllWithRelations();
 
         $vm = $paginator->paginate(
@@ -83,17 +75,37 @@ class VehicleModelController extends AbstractController
             $em->persist($vm);
             $em->flush();
 
-            $this->addFlash('message', 'Le nouveau modèle de véhicule a été enregistré en base avec succès.');
+            $this->addFlash('message', 'Le nouveau modèle de véhicule a été enregistré avec succès.');
+
+            if ($request->isXmlHttpRequest()) {
+                return new Response("OK");
+            }
+
+            return $this->redirectToRoute('vehicles_models');
         }
 
-        return $this->render('vehicles/vehicle_model_form.html.twig', ['form' => $form->createView(), 'vm' => $vm, 'title' => $title]);
+        if ($request->isXmlHttpRequest()) {
+            $html = $this->renderView('vehicles/vehicle_model_form.html.twig', [
+                'form' => $form->createView(),
+                'vm' => $vm,
+                'title' => $title,
+            ]);
+
+            return new JsonResponse(['html' => $html]);
+        }
+
+        return $this->render('vehicles/_vehicle_model.html.twig', [
+            'form' => $form->createView(),
+            'vm' => $vm,
+            'title' => $title,
+        ]);
     }
+
     #[Route('/vehicles/models/{id}/edit', name: 'vehicle_model_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, int $id, EntityManagerInterface $em, VehicleModelRepository $repo): Response
     {
         $vm = $repo->find($id);
         $form = $this->createForm(VehicleModelType::class, $vm);
-
         $title = "Modifier un modèle de véhicule";
 
         $form->handleRequest($request);
@@ -102,9 +114,50 @@ class VehicleModelController extends AbstractController
             $em->persist($vm);
             $em->flush();
 
-            $this->addFlash('message', 'Les changements concernant le modèle de véhicule ont été enregistrés en base avec succès.');
+            $this->addFlash('message', 'Les changements ont été enregistrés avec succès.');
+
+            if ($request->isXmlHttpRequest()) {
+                return new Response("OK");
+            }
+
+            return $this->redirectToRoute('vehicles_models');
         }
 
-        return $this->render('vehicles/vehicle_model_form.html.twig', ['form' => $form->createView(), 'vm' => $vm, 'title' => $title]);
+        if ($request->isXmlHttpRequest()) {
+            $html = $this->renderView('vehicles/_vehicle_model_form.html.twig', [
+                'form' => $form->createView(),
+                'vm' => $vm,
+                'title' => $title,
+            ]);
+
+            return new JsonResponse(['html' => $html]);
+        }
+
+        return $this->render('vehicles/vehicle_model.html.twig', [
+            'form' => $form->createView(),
+            'vm' => $vm,
+            'title' => $title,
+        ]);
+    }
+
+    #[Route('/vehicles/models/{id}/delete', name: 'vehicle_model_delete', methods: ['POST'])]
+    public function delete(Request $request, VehicleModel $vm, EntityManagerInterface $em): Response
+    {
+        $token = $request->request->get('_token');
+
+        if (!$this->isCsrfTokenValid('delete_vehicle_model_' . $vm->getId(), $token)) {
+            return new Response("INVALID_TOKEN", 400);
+        }
+
+        $em->remove($vm);
+        $em->flush();
+
+        $this->addFlash('message', 'Le modèle de véhicule a été supprimé avec succès.');
+
+        if ($request->isXmlHttpRequest()) {
+            return new Response("OK");
+        }
+
+        return $this->redirectToRoute('vehicles_models');
     }
 }

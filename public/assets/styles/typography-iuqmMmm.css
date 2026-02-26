@@ -55,4 +55,7 @@ ol li {
 .text-right {
   text-align: right;
 }
-
+i .fa-solid,
+i .fa-regular {
+  margin-right: 10px;
+}
