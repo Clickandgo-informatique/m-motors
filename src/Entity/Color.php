@@ -6,6 +6,7 @@ use App\Repository\ColorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Vehicle; // ✅ AJOUT IMPORTANT
 
 #[ORM\Entity(repositoryClass: ColorRepository::class)]
 class Color
@@ -21,7 +22,7 @@ class Color
     /**
      * @var Collection<int, Vehicle>
      */
-    #[ORM\OneToMany(targetEntity: Vehicle::class, mappedBy: 'color')]
+    #[ORM\OneToMany(mappedBy: 'color', targetEntity: Vehicle::class)]
     private Collection $vehicles;
 
     public function __construct()
@@ -42,7 +43,6 @@ class Color
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -58,7 +58,7 @@ class Color
     {
         if (!$this->vehicles->contains($vehicle)) {
             $this->vehicles->add($vehicle);
-            $vehicle->setColor($this);
+            $vehicle->setColor($this); // côté propriétaire
         }
 
         return $this;
@@ -67,7 +67,6 @@ class Color
     public function removeVehicle(Vehicle $vehicle): static
     {
         if ($this->vehicles->removeElement($vehicle)) {
-            // set the owning side to null (unless already changed)
             if ($vehicle->getColor() === $this) {
                 $vehicle->setColor(null);
             }

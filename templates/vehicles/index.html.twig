@@ -1,0 +1,63 @@
+<h1>Liste des véhicules</h1>
+
+{% if vehicles is not empty%}
+
+    <div class="pagination-info">
+        {% set start = (vehicles.currentPageNumber - 1) * vehicles.itemNumberPerPage + 1 %}
+        {% set end = start + vehicles|length - 1 %}
+
+        Affichage {{ start }}–{{ end }} sur {{ vehicles.getTotalItemCount }} véhicules
+        <br>
+        Page {{ vehicles.currentPageNumber }} / {{ vehicles.pageCount }}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Etat</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for vehicle in vehicles %}
+            <tr>
+                <td>{{ vehicle.id }}</td>
+                <td>{{ vehicle.name }}</td>
+                <td>
+                    <span class="badge badge-{{ vehicle.status }}">
+                        {{ vehicle.status }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{{ path('vehicle_show', {id: vehicle.id}) }}">Voir</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+
+        {% if vehicles.currentPageNumber > 1 %}
+            <a href="{{ path('vehicle_index', {page: vehicles.currentPageNumber - 1}) }}">
+                ← Précédent
+            </a>
+        {% else %}
+            <span class="disabled">← Précédent</span>
+        {% endif %}
+
+        {% if vehicles.currentPageNumber < vehicles.pageCount %}
+            <a href="{{ path('vehicle_index', {page: vehicles.currentPageNumber + 1}) }}">
+                Suivant →
+            </a>
+        {% else %}
+            <span class="disabled">Suivant →</span>
+        {% endif %}
+
+    </div>
+
+{% else %}
+    <p class="alert">Il n'existe encore aucun véhicule dans la base.</p>
+{% endif %}

@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}M-Motors: Catalogue des modèles véhicules{% endblock %}
 
 {% block body %}
+
 
 <h1>Catalogue des modèles véhicules</h1>
 
@@ -48,8 +48,8 @@
                     <td><a href="{{ path('vehicle_model_edit', {id: vmod.id}) }}" data-ajax-modal><i class="fa-regular fa-pen-to-square">   </i></a></td>
                 <td>{{vmod.id}}</td>
                     <td data-label="Marque">{{ vmod.brand.name }}</td>
-                    <td data-label="Modèle">{{ vmod.model.name }}</td>
-                    <td data-label="Variante">{{ vmod.variant.name }}</td>
+                    <td data-label="Modèle">{{ vmod.variant.model.name ?? '-' }}</td>
+                    <td data-label="Variante">{{ vmod.variant.name ?? '-' }}</td>
                     <td data-label="CNIT">{{ vmod.cnit }}</td>
                     <td data-label="CO₂">{{ vmod.co2 }}</td>
                     <td data-label="Masse min">{{ vmod.massMin }}</td>

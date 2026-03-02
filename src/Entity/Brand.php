@@ -6,8 +6,17 @@ use App\Repository\BrandRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BrandRepository::class)]
+#[UniqueEntity(fields: ['name'], message: 'Cette marque existe déjà dans la base de données.')]
+#[ORM\Table(
+    name: "brand",
+    uniqueConstraints: [
+        new ORM\UniqueConstraint(name: "unique_brand_name", columns: ["name"])
+    ]
+)]
 class Brand
 {
     #[ORM\Id]
@@ -16,24 +25,19 @@ class Brand
     private ?int $id = null;
 
     #[ORM\Column(length: 60)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 60)]
     private ?string $name = null;
 
     /**
-     * @var Collection<int, Model>
+     * @var Collection<int, VehicleModel>
      */
-    #[ORM\OneToMany(targetEntity: Model::class, mappedBy: 'brand', orphanRemoval: false)]
-    private Collection $models;
-
-    /**
-     * @var Collection<int, Vehicle>
-     */
-    #[ORM\OneToMany(targetEntity: Vehicle::class, mappedBy: 'brand')]
-    private Collection $vehicles;
+    #[ORM\OneToMany(mappedBy: 'brand', targetEntity: VehicleModel::class)]
+    private Collection $vehicleModels;
 
     public function __construct()
     {
-        $this->models = new ArrayCollection();
-        $this->vehicles = new ArrayCollection();
+        $this->vehicleModels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -48,62 +52,33 @@ class Brand
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->name = trim($name);
         return $this;
     }
 
     /**
-     * @return Collection<int, Model>
+     * @return Collection<int, VehicleModel>
      */
-    public function getModels(): Collection
+    public function getVehicleModels(): Collection
     {
-        return $this->models;
+        return $this->vehicleModels;
     }
 
-    public function addModel(Model $model): static
+    public function addVehicleModel(VehicleModel $vehicleModel): static
     {
-        if (!$this->models->contains($model)) {
-            $this->models->add($model);
-            $model->setBrand($this);
+        if (!$this->vehicleModels->contains($vehicleModel)) {
+            $this->vehicleModels->add($vehicleModel);
+            $vehicleModel->setBrand($this);
         }
 
         return $this;
     }
 
-    public function removeModel(Model $model): static
+    public function removeVehicleModel(VehicleModel $vehicleModel): static
     {
-        if ($this->models->removeElement($model)) {
-            if ($model->getBrand() === $this) {
-                $model->setBrand(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Vehicle>
-     */
-    public function getVehicles(): Collection
-    {
-        return $this->vehicles;
-    }
-
-    public function addVehicle(Vehicle $vehicle): static
-    {
-        if (!$this->vehicles->contains($vehicle)) {
-            $this->vehicles->add($vehicle);
-            $vehicle->setBrand($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVehicle(Vehicle $vehicle): static
-    {
-        if ($this->vehicles->removeElement($vehicle)) {
-            if ($vehicle->getBrand() === $this) {
-                $vehicle->setBrand(null);
+        if ($this->vehicleModels->removeElement($vehicleModel)) {
+            if ($vehicleModel->getBrand() === $this) {
+                $vehicleModel->setBrand(null);
             }
         }
 

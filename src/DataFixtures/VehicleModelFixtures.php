@@ -35,6 +35,7 @@ class VehicleModelFixtures extends Fixture
         }
 
         $totalLines = $this->countLines($path) - 1;
+
         $output = new ConsoleOutput();
         $progressBar = new ProgressBar($output, $totalLines);
         $progressBar->start();
@@ -48,7 +49,6 @@ class VehicleModelFixtures extends Fixture
 
             $row = str_getcsv($rawLine, ';');
 
-            // Nettoyage UTF‑8
             $row = array_map(
                 fn($v) => $v !== null
                     ? trim(str_replace('""', '"', mb_convert_encoding($v, 'UTF-8', 'auto')), "\" \t\n\r")
@@ -56,71 +56,45 @@ class VehicleModelFixtures extends Fixture
                 $row
             );
 
-            /* ---------------------------------------------------------
-               MAPPING UTAC (corrigé)
-               ---------------------------------------------------------
-               0 = lib_mrq_doss (marque)
-               1 = lib_mod_doss (modèle dossier)
-               2 = mrq_utac (IGNORÉ)
-               3 = mod_utac (variante UTAC)
-               4 = dscom (désignation commerciale → modèle affiché)
-               5 = cnit
-               6 = tvv
-               7 = energ
-               12 = typ_boite_nb_rapp
-               22 = masse_ordma_min
-               23 = masse_ordma_max
-               24 = champ_v9
-               25 = date_maj
-            ---------------------------------------------------------- */
+            $brandName   = $this->normalize($row[0] ?? null);
+            $modelName   = $this->normalize($row[4] ?? null);
+            $variantName = $this->normalize($row[3] ?? null);
 
-            $brandName   = $row[0];  // lib_mrq_doss
-            $modelName   = $row[4];  // dscom (modèle affiché)
-            $variantName = $row[3];  // mod_utac
+            if (!$brandName || !$modelName) {
+                continue;
+            }
 
-            $fuelName    = $row[7];
-            $gearName    = $row[12];
+            $fuelName = $this->normalize($row[7] ?? null);
+            $gearName = $this->normalize($row[12] ?? null);
 
-            $powerFiscal = $this->sanitizeNumber($row[9], 100);
-            $powerHp     = $this->sanitizeNumber($row[10], 2000);
-
-            $consumption = $this->sanitizeNumber($row[15], 50);
-            $co2         = $this->sanitizeNumber($row[16], 2000);
-
-            $massMin     = $this->sanitizeNumber($row[22], 100000);
-            $massMax     = $this->sanitizeNumber($row[23], 100000);
-
-            /* ---------------------------------------------------------
-               ENTITÉS LIÉES
-            ---------------------------------------------------------- */
             $brand   = $this->getBrand($em, $brandName);
             $model   = $this->getModel($em, $brand, $modelName);
             $variant = $this->getVariant($em, $model, $variantName);
-            $fuel    = $this->getFuel($em, $fuelName);
-            $gear    = $this->getGear($em, $gearName);
+            $fuel    = $fuelName ? $this->getFuel($em, $fuelName) : null;
+            $gear    = $gearName ? $this->getGear($em, $gearName) : null;
 
-            /* ---------------------------------------------------------
-               VehicleModel
-            ---------------------------------------------------------- */
             $vm = new VehicleModel();
+
+            // 🔥 IMPORTANT : ordre logique des relations
             $vm->setBrand($brand);
-            $vm->setModel($model);
+            $vm->setModel($model); // ✅ AJOUT CRITIQUE
             $vm->setVariant($variant);
             $vm->setFuelType($fuel);
             $vm->setGear($gear);
 
-            $vm->setPowerHp($powerHp);
-            $vm->setPowerFiscal($powerFiscal);
-            $vm->setConsumption($consumption);
-            $vm->setCo2($co2);
-            $vm->setMassMin($massMin);
-            $vm->setMassMax($massMax);
+            $vm->setPowerHp($this->sanitizeNumber($row[10] ?? null, 2000));
+            $vm->setPowerFiscal($this->sanitizeNumber($row[9] ?? null, 100));
+            $vm->setConsumption($this->sanitizeNumber($row[15] ?? null, 50));
+            $vm->setCo2($this->sanitizeNumber($row[16] ?? null, 2000));
+            $vm->setMassMin($this->sanitizeNumber($row[22] ?? null, 100000));
+            $vm->setMassMax($this->sanitizeNumber($row[23] ?? null, 100000));
 
-            $vm->setCnit($row[5]);
-            $vm->setUtacCode($row[6]);
-            $vm->setEuroNorm($row[24]);
+            $vm->setCnit($row[5] ?? null);
+            $vm->setUtacCode($row[6] ?? null);
+            $vm->setEuroNorm($row[24] ?? null);
 
             $dateString = $row[25] ?? null;
+
             $vm->setHomologationDate(
                 $dateString && strtotime($dateString)
                     ? new \DateTime($dateString)
@@ -148,46 +122,54 @@ class VehicleModelFixtures extends Fixture
         $output->writeln("\nImport terminé !");
     }
 
+    private function normalize(?string $value): ?string
+    {
+        return $value ? mb_strtoupper(trim($value)) : null;
+    }
+
     private function sanitizeNumber($value, $max)
     {
         if (!is_numeric($value)) return null;
+
         $num = (float)$value;
         return $num > $max ? null : $num;
     }
 
     private function resetLocalReferences(): void
     {
-        foreach ($this->brandCache as &$b) $b = null;
-        foreach ($this->modelCache as &$m) $m = null;
-        foreach ($this->variantCache as &$v) $v = null;
-        foreach ($this->fuelCache as &$f) $f = null;
-        foreach ($this->gearCache as &$g) $g = null;
+        $this->brandCache = [];
+        $this->modelCache = [];
+        $this->variantCache = [];
+        $this->fuelCache = [];
+        $this->gearCache = [];
     }
 
     private function countLines(string $path): int
     {
         $lines = 0;
         $file = fopen($path, 'r');
+
         while (!feof($file)) {
             fgets($file);
             $lines++;
         }
+
         fclose($file);
         return $lines;
     }
 
-    /* ---------------------------------------------------------
-       CACHE ENTITÉS
-    ---------------------------------------------------------- */
-
     private function getBrand(ObjectManager $em, string $name): Brand
     {
-        if (isset($this->brandCache[$name])) return $this->brandCache[$name];
+        if (isset($this->brandCache[$name])) {
+            return $this->brandCache[$name];
+        }
 
-        $brand = $em->getRepository(Brand::class)->findOneBy(['name' => $name])
+        $brand = $em->getRepository(Brand::class)
+            ->findOneBy(['name' => $name])
             ?? (new Brand())->setName($name);
 
         $em->persist($brand);
+
         return $this->brandCache[$name] = $brand;
     }
 
@@ -195,47 +177,65 @@ class VehicleModelFixtures extends Fixture
     {
         $key = $brand->getName() . '|' . $name;
 
-        if (isset($this->modelCache[$key])) return $this->modelCache[$key];
+        if (isset($this->modelCache[$key])) {
+            return $this->modelCache[$key];
+        }
 
-        $model = $em->getRepository(Model::class)->findOneBy(['name' => $name, 'brand' => $brand])
+        $model = $em->getRepository(Model::class)
+            ->findOneBy(['name' => $name, 'brand' => $brand])
             ?? (new Model())->setName($name)->setBrand($brand);
 
         $em->persist($model);
+
         return $this->modelCache[$key] = $model;
     }
 
-    private function getVariant(ObjectManager $em, Model $model, string $name): Variant
+    private function getVariant(ObjectManager $em, Model $model, ?string $name): ?Variant
     {
+        if (!$name) return null;
+
         $key = $model->getName() . '|' . $name;
 
-        if (isset($this->variantCache[$key])) return $this->variantCache[$key];
+        if (isset($this->variantCache[$key])) {
+            return $this->variantCache[$key];
+        }
 
-        $variant = $em->getRepository(Variant::class)->findOneBy(['name' => $name, 'model' => $model])
+        $variant = $em->getRepository(Variant::class)
+            ->findOneBy(['name' => $name, 'model' => $model])
             ?? (new Variant())->setName($name)->setModel($model);
 
         $em->persist($variant);
+
         return $this->variantCache[$key] = $variant;
     }
 
     private function getFuel(ObjectManager $em, string $name): FuelType
     {
-        if (isset($this->fuelCache[$name])) return $this->fuelCache[$name];
+        if (isset($this->fuelCache[$name])) {
+            return $this->fuelCache[$name];
+        }
 
-        $fuel = $em->getRepository(FuelType::class)->findOneBy(['name' => $name])
+        $fuel = $em->getRepository(FuelType::class)
+            ->findOneBy(['name' => $name])
             ?? (new FuelType())->setName($name);
 
         $em->persist($fuel);
+
         return $this->fuelCache[$name] = $fuel;
     }
 
     private function getGear(ObjectManager $em, string $type): Gear
     {
-        if (isset($this->gearCache[$type])) return $this->gearCache[$type];
+        if (isset($this->gearCache[$type])) {
+            return $this->gearCache[$type];
+        }
 
-        $gear = $em->getRepository(Gear::class)->findOneBy(['type' => $type])
+        $gear = $em->getRepository(Gear::class)
+            ->findOneBy(['type' => $type])
             ?? (new Gear())->setType($type);
 
         $em->persist($gear);
+
         return $this->gearCache[$type] = $gear;
     }
 }

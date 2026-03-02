@@ -1,0 +1,37 @@
+framework:
+    workflows:
+        rental_state_machine:
+            type: "state_machine"
+
+            supports:
+                - App\Entity\Rental
+
+            marking_store:
+                type: "method"
+                property: "status"
+
+            initial_marking: created
+
+            places:
+                - created
+                - confirmed
+                - active
+                - finished
+                - canceled
+
+            transitions:
+                rental_confirm:
+                    from: created
+                    to: confirmed
+
+                rental_start:
+                    from: confirmed
+                    to: active
+
+                rental_finish:
+                    from: active
+                    to: finished
+
+                rental_cancel:
+                    from: [created, confirmed]
+                    to: canceled

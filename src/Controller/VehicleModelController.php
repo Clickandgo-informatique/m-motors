@@ -6,6 +6,7 @@ use App\Entity\VehicleModel;
 use App\Form\VehicleModelType;
 use App\Repository\VehicleModelRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,30 +36,28 @@ class VehicleModelController extends AbstractController
     }
 
     #[Route('/vehicles/models', name: 'vehicles_models', methods: ['GET'])]
-    public function index(Request $request, VehicleModelRepository $repo, PaginatorInterface $paginator): Response
-    {
-        $term = $request->query->get('q', '');
+    public function index(
+        Request $request,
+        VehicleModelRepository $repo,
+        PaginatorInterface $paginator
+    ): Response {
 
-        if ($term) {
-            $results = $repo->search($term);
+        $term = trim($request->query->get('q', ''));
+        $page = $request->query->getInt('page', 1);
 
-            return $this->render('vehicles/vehicles_models.html.twig', [
-                'vm' => $results,
-                'search' => $term,
-            ]);
-        }
+        $queryBuilder = $term
+            ? $repo->searchQueryBuilder($term)
+            : $repo->findAllWithRelations();
 
-        $query = $repo->findAllWithRelations();
-
-        $vm = $paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1),
+        $vehicleModels = $paginator->paginate(
+            $queryBuilder,
+            $page,
             20
         );
 
         return $this->render('vehicles/vehicles_models.html.twig', [
-            'vm' => $vm,
-            'search' => '',
+            'vm' => $vehicleModels,
+            'search' => $term,
         ]);
     }
 
@@ -85,7 +84,7 @@ class VehicleModelController extends AbstractController
         }
 
         if ($request->isXmlHttpRequest()) {
-            $html = $this->renderView('vehicles/vehicle_model_form.html.twig', [
+            $html = $this->renderView('vehicles/_vehicle_model_form.html.twig', [
                 'form' => $form->createView(),
                 'vm' => $vm,
                 'title' => $title,
@@ -102,16 +101,18 @@ class VehicleModelController extends AbstractController
     }
 
     #[Route('/vehicles/models/{id}/edit', name: 'vehicle_model_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, int $id, EntityManagerInterface $em, VehicleModelRepository $repo): Response
-    {
-        $vm = $repo->find($id);
+    public function edit(
+        Request $request,
+        VehicleModel $vm,
+        EntityManagerInterface $em
+    ): Response {
+
         $form = $this->createForm(VehicleModelType::class, $vm);
         $title = "Modifier un modèle de véhicule";
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($vm);
             $em->flush();
 
             $this->addFlash('message', 'Les changements ont été enregistrés avec succès.');
@@ -141,8 +142,12 @@ class VehicleModelController extends AbstractController
     }
 
     #[Route('/vehicles/models/{id}/delete', name: 'vehicle_model_delete', methods: ['POST'])]
-    public function delete(Request $request, VehicleModel $vm, EntityManagerInterface $em): Response
-    {
+    public function delete(
+        Request $request,
+        VehicleModel $vm,
+        EntityManagerInterface $em
+    ): Response {
+
         $token = $request->request->get('_token');
 
         if (!$this->isCsrfTokenValid('delete_vehicle_model_' . $vm->getId(), $token)) {

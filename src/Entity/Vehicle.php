@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
+use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Color;
+use App\Entity\VehicleModel;
 
 #[ORM\Entity(repositoryClass: VehicleRepository::class)]
 class Vehicle
@@ -16,203 +17,80 @@ class Vehicle
     #[ORM\Column]
     private ?int $id = null;
 
-    // Brand possède $vehicles
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Brand $brand = null;
+    #[ORM\Column(length: 17, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 17, max: 17)]
+    private ?string $vin = null;
 
-    // Gear possède $vehicles
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?Gear $gear = null;
-
-    // Supplier possède $vehicles
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?Supplier $supplier = null;
-
-    // FuelType possède $vehicles
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?FuelType $fuel_type = null;
-
-    // BodyType possède $vehicles
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?BodyType $body_type = null;
-
-    // Color possède $vehicles
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?Color $color = null;
-
-    // Feature possède $vehicles
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?Feature $feature = null;
-
-    // Model n’a PAS $vehicles → pas d’inversedBy
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Model $model = null;
-
-    // Variant n’a PAS $vehicles → pas d’inversedBy
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Variant $variant = null;
-
-    // VehicleModel n’a PAS $vehicles → pas d’inversedBy
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?VehicleModel $vehicleModel = null;
-
-    #[ORM\Column]
-    private ?int $year = null;
+    #[ORM\Column(length: 15, unique: true, nullable: true)]
+    #[Assert\Length(max: 15)]
+    #[Assert\Regex(
+        pattern: '/^[A-Z]{2}-\d{3}-[A-Z]{2}$/',
+        message: 'Format d\'immatriculation invalide (ex: AA-123-AA)'
+    )]
+    private ?string $registrationNumber = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
     private ?int $mileage = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0, nullable: true)]
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $firstRegistrationDate = null;
+
+    #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\Range(min: 1900, max: 2100)]
+    private ?int $year = null;
+
+    #[ORM\ManyToOne(targetEntity: Color::class, inversedBy: 'vehicles')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Color $color = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[Assert\NotBlank]
+    #[Assert\PositiveOrZero]
     private ?string $price = null;
 
-    #[ORM\OneToMany(targetEntity: Maintenance::class, mappedBy: 'vehicle')]
-    private Collection $maintenances;
+    #[ORM\Column(enumType: VehicleStatus::class)]
+    #[Assert\NotNull]
+    private ?VehicleStatus $status = null;
 
-    #[ORM\OneToMany(targetEntity: Sale::class, mappedBy: 'vehicle')]
-    private Collection $sales;
+    /*
+     * RELATION corrigée ici
+     */
+    #[ORM\ManyToOne(targetEntity: VehicleModel::class, inversedBy: 'vehicles')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?VehicleModel $model = null;
 
-    #[ORM\OneToMany(targetEntity: Rental::class, mappedBy: 'vehicle')]
-    private Collection $rentals;
-
-    public function __construct()
-    {
-        $this->maintenances = new ArrayCollection();
-        $this->sales = new ArrayCollection();
-        $this->rentals = new ArrayCollection();
-    }
-
-    /* ============================
-       GETTERS / SETTERS
-       ============================ */
+    /* ================== GETTERS / SETTERS ================== */
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getBrand(): ?Brand
+    public function getVin(): ?string
     {
-        return $this->brand;
+        return $this->vin;
     }
 
-    public function setBrand(?Brand $brand): static
+    public function setVin(string $vin): static
     {
-        $this->brand = $brand;
+        $this->vin = strtoupper(trim($vin));
         return $this;
     }
 
-    public function getGear(): ?Gear
+    public function getRegistrationNumber(): ?string
     {
-        return $this->gear;
+        return $this->registrationNumber;
     }
 
-    public function setGear(?Gear $gear): static
+    public function setRegistrationNumber(?string $registrationNumber): static
     {
-        $this->gear = $gear;
-        return $this;
-    }
+        $this->registrationNumber = $registrationNumber
+            ? strtoupper(trim($registrationNumber))
+            : null;
 
-    public function getSupplier(): ?Supplier
-    {
-        return $this->supplier;
-    }
-
-    public function setSupplier(?Supplier $supplier): static
-    {
-        $this->supplier = $supplier;
-        return $this;
-    }
-
-    public function getFuelType(): ?FuelType
-    {
-        return $this->fuel_type;
-    }
-
-    public function setFuelType(?FuelType $fuel_type): static
-    {
-        $this->fuel_type = $fuel_type;
-        return $this;
-    }
-
-    public function getBodyType(): ?BodyType
-    {
-        return $this->body_type;
-    }
-
-    public function setBodyType(?BodyType $body_type): static
-    {
-        $this->body_type = $body_type;
-        return $this;
-    }
-
-    public function getColor(): ?Color
-    {
-        return $this->color;
-    }
-
-    public function setColor(?Color $color): static
-    {
-        $this->color = $color;
-        return $this;
-    }
-
-    public function getFeature(): ?Feature
-    {
-        return $this->feature;
-    }
-
-    public function setFeature(?Feature $feature): static
-    {
-        $this->feature = $feature;
-        return $this;
-    }
-
-    public function getModel(): ?Model
-    {
-        return $this->model;
-    }
-
-    public function setModel(?Model $model): static
-    {
-        $this->model = $model;
-        return $this;
-    }
-
-    public function getVariant(): ?Variant
-    {
-        return $this->variant;
-    }
-
-    public function setVariant(?Variant $variant): static
-    {
-        $this->variant = $variant;
-        return $this;
-    }
-
-    public function getVehicleModel(): ?VehicleModel
-    {
-        return $this->vehicleModel;
-    }
-
-    public function setVehicleModel(?VehicleModel $vehicleModel): static
-    {
-        $this->vehicleModel = $vehicleModel;
-        return $this;
-    }
-
-    public function getYear(): ?int
-    {
-        return $this->year;
-    }
-
-    public function setYear(int $year): static
-    {
-        $this->year = $year;
         return $this;
     }
 
@@ -227,93 +105,69 @@ class Vehicle
         return $this;
     }
 
+    public function getFirstRegistrationDate(): ?\DateTimeInterface
+    {
+        return $this->firstRegistrationDate;
+    }
+
+    public function setFirstRegistrationDate(?\DateTimeInterface $date): static
+    {
+        $this->firstRegistrationDate = $date;
+        return $this;
+    }
+
+    public function getYear(): ?int
+    {
+        return $this->year;
+    }
+
+    public function setYear(int $year): static
+    {
+        $this->year = $year;
+        return $this;
+    }
+
+    public function getColor(): ?Color
+    {
+        return $this->color;
+    }
+
+    public function setColor(?Color $color): static
+    {
+        $this->color = $color;
+        return $this;
+    }
+
     public function getPrice(): ?string
     {
         return $this->price;
     }
 
-    public function setPrice(?string $price): static
+    public function setPrice(string $price): static
     {
         $this->price = $price;
         return $this;
     }
 
-    /* ============================
-       COLLECTIONS
-       ============================ */
-
-    /** @return Collection<int, Maintenance> */
-    public function getMaintenances(): Collection
+    public function getStatus(): ?VehicleStatus
     {
-        return $this->maintenances;
+        return $this->status;
     }
 
-    public function addMaintenance(Maintenance $maintenance): static
+    public function setStatus(VehicleStatus $status): static
     {
-        if (!$this->maintenances->contains($maintenance)) {
-            $this->maintenances->add($maintenance);
-            $maintenance->setVehicle($this);
-        }
+        $this->status = $status;
         return $this;
     }
 
-    public function removeMaintenance(Maintenance $maintenance): static
+    public function getModel(): ?VehicleModel
     {
-        if ($this->maintenances->removeElement($maintenance)) {
-            if ($maintenance->getVehicle() === $this) {
-                $maintenance->setVehicle(null);
-            }
-        }
-        return $this;
+        return $this->model;
     }
 
-    /** @return Collection<int, Sale> */
-    public function getSales(): Collection
+    public function setModel(?VehicleModel $model): static
     {
-        return $this->sales;
-    }
-
-    public function addSale(Sale $sale): static
-    {
-        if (!$this->sales->contains($sale)) {
-            $this->sales->add($sale);
-            $sale->setVehicle($this);
-        }
-        return $this;
-    }
-
-    public function removeSale(Sale $sale): static
-    {
-        if ($this->sales->removeElement($sale)) {
-            if ($sale->getVehicle() === $this) {
-                $sale->setVehicle(null);
-            }
-        }
-        return $this;
-    }
-
-    /** @return Collection<int, Rental> */
-    public function getRentals(): Collection
-    {
-        return $this->rentals;
-    }
-
-    public function addRental(Rental $rental): static
-    {
-        if (!$this->rentals->contains($rental)) {
-            $this->rentals->add($rental);
-            $rental->setVehicle($this);
-        }
-        return $this;
-    }
-
-    public function removeRental(Rental $rental): static
-    {
-        if ($this->rentals->removeElement($rental)) {
-            if ($rental->getVehicle() === $this) {
-                $rental->setVehicle(null);
-            }
-        }
+        $this->model = $model;
         return $this;
     }
 }

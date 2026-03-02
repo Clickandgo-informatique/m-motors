@@ -2,10 +2,13 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
+use App\Repository\VehicleModelRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: VehicleModelRepository::class)]
+#[ORM\Index(columns: ['cnit'], name: 'idx_cnit')]
+#[ORM\Index(columns: ['utac_code'], name: 'idx_utac_code')]
 class VehicleModel
 {
     #[ORM\Id]
@@ -13,82 +16,133 @@ class VehicleModel
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    /*
+     * =========================
+     * RELATIONS
+     * =========================
+     */
+
+    #[ORM\ManyToOne(inversedBy: 'vehicleModels')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Brand $brand = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'vehicleModels')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Model $model = null;
 
     #[ORM\ManyToOne(inversedBy: 'vehicleModels')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Variant $variant = null;
 
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?FuelType $fuelType = null;
 
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Gear $gear = null;
 
-    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    /*
+     * =========================
+     * DONNÉES TECHNIQUES
+     * =========================
+     */
+
+    #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
     private ?float $powerHp = null;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    private ?int $powerFiscal = null;
+    #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
+    private ?float $powerFiscal = null;
 
-    #[ORM\Column(type: Types::FLOAT, nullable: true)]
-    private ?float $co2 = null;
-
-    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
     private ?float $consumption = null;
 
-    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
+    private ?float $co2 = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
     private ?float $massMin = null;
 
-    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
     private ?float $massMax = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    /*
+     * =========================
+     * IDENTIFIANTS UTAC
+     * =========================
+     */
+
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $cnit = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $utacCode = null;
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $euroNorm = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeInterface $homologationDate = null;
 
-
-    /* ============================
-       GETTERS / SETTERS
-       ============================ */
+    /*
+     * =========================
+     * GETTERS / SETTERS
+     * =========================
+     */
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /*
+     * BRAND
+     */
+
     public function getBrand(): ?Brand
     {
         return $this->brand;
     }
 
-    public function setBrand(?Brand $brand): static
+    public function setBrand(Brand $brand): static
     {
         $this->brand = $brand;
         return $this;
     }
+
+    /*
+     * MODEL
+     */
 
     public function getModel(): ?Model
     {
         return $this->model;
     }
 
-    public function setModel(?Model $model): static
+    public function setModel(Model $model): static
     {
         $this->model = $model;
+
+        // Synchronisation automatique Brand ↔ Model
+        if ($model->getBrand() !== null) {
+            $this->brand = $model->getBrand();
+        }
+
         return $this;
     }
+
+    /*
+     * VARIANT
+     */
 
     public function getVariant(): ?Variant
     {
@@ -101,16 +155,24 @@ class VehicleModel
         return $this;
     }
 
+    /*
+     * FUEL
+     */
+
     public function getFuelType(): ?FuelType
     {
         return $this->fuelType;
     }
 
-    public function setFuelType(?FuelType $fuelType): static
+    public function setFuelType(FuelType $fuelType): static
     {
         $this->fuelType = $fuelType;
         return $this;
     }
+
+    /*
+     * GEAR
+     */
 
     public function getGear(): ?Gear
     {
@@ -123,6 +185,10 @@ class VehicleModel
         return $this;
     }
 
+    /*
+     * TECHNICAL DATA
+     */
+
     public function getPowerHp(): ?float
     {
         return $this->powerHp;
@@ -134,25 +200,14 @@ class VehicleModel
         return $this;
     }
 
-    public function getPowerFiscal(): ?int
+    public function getPowerFiscal(): ?float
     {
         return $this->powerFiscal;
     }
 
-    public function setPowerFiscal(?int $powerFiscal): static
+    public function setPowerFiscal(?float $powerFiscal): static
     {
         $this->powerFiscal = $powerFiscal;
-        return $this;
-    }
-
-    public function getCo2(): ?float
-    {
-        return $this->co2;
-    }
-
-    public function setCo2(?float $co2): static
-    {
-        $this->co2 = $co2;
         return $this;
     }
 
@@ -164,6 +219,17 @@ class VehicleModel
     public function setConsumption(?float $consumption): static
     {
         $this->consumption = $consumption;
+        return $this;
+    }
+
+    public function getCo2(): ?float
+    {
+        return $this->co2;
+    }
+
+    public function setCo2(?float $co2): static
+    {
+        $this->co2 = $co2;
         return $this;
     }
 
@@ -188,6 +254,10 @@ class VehicleModel
         $this->massMax = $massMax;
         return $this;
     }
+
+    /*
+     * UTAC
+     */
 
     public function getCnit(): ?string
     {

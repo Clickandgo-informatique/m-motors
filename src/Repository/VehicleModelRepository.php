@@ -8,6 +8,7 @@ use App\Entity\Variant;
 use App\Entity\VehicleModel;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\QueryBuilder;
 
 class VehicleModelRepository extends ServiceEntityRepository
 {
@@ -18,8 +19,9 @@ class VehicleModelRepository extends ServiceEntityRepository
 
     /**
      * Charge tous les VehicleModel avec leurs relations
+     * (Retourne un QueryBuilder pour KNP)
      */
-    public function findAllWithRelations()
+    public function findAllWithRelations(): QueryBuilder
     {
         return $this->createQueryBuilder('vm')
             ->leftJoin('vm.brand', 'b')->addSelect('b')
@@ -29,15 +31,45 @@ class VehicleModelRepository extends ServiceEntityRepository
             ->leftJoin('vm.gear', 'g')->addSelect('g')
             ->orderBy('b.name', 'ASC')
             ->addOrderBy('m.name', 'ASC')
-            ->addOrderBy('v.name', 'ASC')
-            ->getQuery();
+            ->addOrderBy('v.name', 'ASC');
     }
 
     /**
-     * Trouver un modèle par marque + modèle + variante
+     * Recherche pour pagination KNP
+     * (Retourne un QueryBuilder, PAS un array)
      */
-    public function findOneBySignature(Brand $brand, Model $model, Variant $variant): ?VehicleModel
+    public function searchQueryBuilder(string $term): QueryBuilder
     {
+        $qb = $this->createQueryBuilder('vm')
+            ->leftJoin('vm.brand', 'b')->addSelect('b')
+            ->leftJoin('vm.model', 'm')->addSelect('m')
+            ->leftJoin('vm.variant', 'v')->addSelect('v')
+            ->leftJoin('vm.fuelType', 'f')->addSelect('f')
+            ->leftJoin('vm.gear', 'g')->addSelect('g');
+
+        if (trim($term) !== '') {
+            $qb->andWhere('
+                LOWER(b.name) LIKE :term
+                OR LOWER(m.name) LIKE :term
+                OR LOWER(v.name) LIKE :term
+            ')
+                ->setParameter('term', '%' . strtolower($term) . '%');
+        }
+
+        return $qb
+            ->orderBy('b.name', 'ASC')
+            ->addOrderBy('m.name', 'ASC')
+            ->addOrderBy('v.name', 'ASC');
+    }
+
+    /**
+     * Trouver un modèle par signature unique
+     */
+    public function findOneBySignature(
+        Brand $brand,
+        Model $model,
+        Variant $variant
+    ): ?VehicleModel {
         return $this->createQueryBuilder('vm')
             ->andWhere('vm.brand = :brand')
             ->andWhere('vm.model = :model')
@@ -63,16 +95,18 @@ class VehicleModelRepository extends ServiceEntityRepository
             ->leftJoin('vm.brand', 'b')
             ->leftJoin('vm.model', 'm')
             ->leftJoin('vm.variant', 'v')
-            ->andWhere('LOWER(b.name) LIKE :term 
-                     OR LOWER(m.name) LIKE :term 
-                     OR LOWER(v.name) LIKE :term')
+            ->andWhere('
+                LOWER(b.name) LIKE :term
+                OR LOWER(m.name) LIKE :term
+                OR LOWER(v.name) LIKE :term
+            ')
             ->setParameter('term', '%' . strtolower($term) . '%')
             ->getQuery()
             ->getSingleScalarResult();
     }
 
     /**
-     * Recherche paginée (scroll infini)
+     * Recherche paginée (scroll infini / autocomplete)
      */
     public function searchPaginated(string $term, int $limit, int $offset): array
     {
@@ -81,24 +115,29 @@ class VehicleModelRepository extends ServiceEntityRepository
         }
 
         $qb = $this->createQueryBuilder('vm')
-            ->select('vm.id, b.name AS brand_name, m.name AS model_name, v.name AS variant_name')
+            ->select('
+                vm.id,
+                b.name AS brand_name,
+                m.name AS model_name,
+                v.name AS variant_name
+            ')
             ->leftJoin('vm.brand', 'b')
             ->leftJoin('vm.model', 'm')
             ->leftJoin('vm.variant', 'v')
             ->andWhere('
-            LOWER(b.name) LIKE :contains
-            OR LOWER(m.name) LIKE :contains
-            OR LOWER(v.name) LIKE :contains
-        ')
+                LOWER(b.name) LIKE :contains
+                OR LOWER(m.name) LIKE :contains
+                OR LOWER(v.name) LIKE :contains
+            ')
             ->setParameter('contains', '%' . strtolower($term) . '%')
             ->orderBy('
-            CASE 
-                WHEN LOWER(b.name) LIKE :starts THEN 0
-                WHEN LOWER(m.name) LIKE :starts THEN 0
-                WHEN LOWER(v.name) LIKE :starts THEN 0
-                ELSE 1
-            END
-        ', 'ASC')
+                CASE 
+                    WHEN LOWER(b.name) LIKE :starts THEN 0
+                    WHEN LOWER(m.name) LIKE :starts THEN 0
+                    WHEN LOWER(v.name) LIKE :starts THEN 0
+                    ELSE 1
+                END
+            ', 'ASC')
             ->addOrderBy('b.name', 'ASC')
             ->addOrderBy('m.name', 'ASC')
             ->addOrderBy('v.name', 'ASC')

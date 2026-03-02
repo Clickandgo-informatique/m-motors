@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\RentalStatus;
 use App\Repository\RentalRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -26,6 +27,9 @@ class Rental
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
     private ?string $daily_rate = null;
+
+    #[ORM\Column(enumType: RentalStatus::class)]
+    private RentalStatus $status = RentalStatus::CREATED;
 
     public function getId(): ?int
     {
@@ -76,6 +80,24 @@ class Rental
     public function setDailyRate(string $daily_rate): static
     {
         $this->daily_rate = $daily_rate;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of status
+     */
+    public function getStatus(): RentalStatus
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set the value of status
+     */
+    public function setStatus(RentalStatus $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

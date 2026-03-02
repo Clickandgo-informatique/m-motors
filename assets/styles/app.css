@@ -11,6 +11,7 @@
 @import "./pagination.css";
 @import "./dropdown.css";
 @import "./modal.css";
+@import "./badge.css";
 
 /* ========================================================= */
 /* BASE GLOBALE (ne doit PAS écraser les variables) */
