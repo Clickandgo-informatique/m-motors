@@ -3,98 +3,70 @@
 namespace App\DataFixtures;
 
 use App\Entity\Vehicle;
-use App\Entity\VehicleModel;
-use App\Entity\Color;
 use App\Enum\VehicleStatus;
+use App\Repository\SupplierRepository;
+use App\Repository\VehicleModelRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 
 class VehicleFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function load(ObjectManager $em): void
+    public function __construct(
+        private VehicleModelRepository $vehicleModelRepository,
+        private SupplierRepository $supplierRepository
+    ) {}
+
+    public function load(ObjectManager $manager): void
     {
-        $models = $em->getRepository(VehicleModel::class)->findAll();
-        $colors = $em->getRepository(Color::class)->findAll();
+        $faker = Factory::create('fr_FR');
 
-        if (!$models) {
-            throw new \Exception("Aucun VehicleModel trouvé.");
+        $vehicleModels = $this->vehicleModelRepository->findAll();
+        $suppliers     = $this->supplierRepository->findAll();
+
+        if (empty($vehicleModels)) {
+            throw new \RuntimeException('Aucun VehicleModel trouvé en base.');
         }
 
-        if (!$colors) {
-            throw new \Exception("Aucune couleur trouvée. Charge d'abord ColorFixtures.");
+        if (empty($suppliers)) {
+            throw new \RuntimeException('Aucun Supplier trouvé en base.');
         }
 
-        $batchSize = 100;
-
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 0; $i < 50; $i++) {
 
             $vehicle = new Vehicle();
 
-            $vehicle->setModel($models[array_rand($models)]);
-            $vehicle->setColor($colors[array_rand($colors)]);
-            $vehicle->setRegistrationNumber($this->generateRegistrationNumber());
+            $vehicle->setVin('VIN' . str_pad((string)$i, 14, '0', STR_PAD_LEFT));
+            $vehicle->setRegistrationNumber(
+                $faker->regexify('[A-Z]{2}-[0-9]{3}-[A-Z]{2}')
+            );
+            $vehicle->setMileage($faker->numberBetween(0, 200000));
+            $vehicle->setYear($faker->numberBetween(2005, 2024));
+            $vehicle->setPrice($faker->randomFloat(2, 5000, 60000));
+            $vehicle->setStatus(VehicleStatus::AVAILABLE);
 
+            // VehicleModel aléatoire depuis la base
+            $vehicle->setVehicleModel(
+                $vehicleModels[array_rand($vehicleModels)]
+            );
 
-            $vehicle->setMileage(rand(0, 200000));
-            $vehicle->setYear(rand(2005, 2024));
-            $vehicle->setPrice(rand(5000, 60000));
-            $vehicle->setVin($this->generateVin());
+            // Supplier aléatoire depuis la base
+            $vehicle->setSupplier(
+                $suppliers[array_rand($suppliers)]
+            );
 
-            $vehicle->setStatus($this->randomStatus());
-
-            $em->persist($vehicle);
-
-            if (($i % $batchSize) === 0) {
-                $em->flush();
-                $em->clear();
-
-                // ⚠️ Recharger après clear()
-                $models = $em->getRepository(VehicleModel::class)->findAll();
-                $colors = $em->getRepository(Color::class)->findAll();
-            }
+            $manager->persist($vehicle);
         }
 
-        $em->flush();
-    }
-    private function generateRegistrationNumber(): string
-    {
-        $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-        $firstPart  = $letters[random_int(0, 25)] . $letters[random_int(0, 25)];
-        $numbers    = str_pad((string) random_int(0, 999), 3, '0', STR_PAD_LEFT);
-        $secondPart = $letters[random_int(0, 25)] . $letters[random_int(0, 25)];
-
-        return sprintf('%s-%s-%s', $firstPart, $numbers, $secondPart);
-    }
-    private function generateVin(): string
-    {
-        $chars = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789'; // sans I,O,Q
-
-        $vin = '';
-        for ($i = 0; $i < 17; $i++) {
-            $vin .= $chars[random_int(0, strlen($chars) - 1)];
-        }
-
-        return $vin;
-    }
-    private function randomStatus(): VehicleStatus
-    {
-        $rand = rand(1, 100);
-
-        return match (true) {
-            $rand <= 60 => VehicleStatus::AVAILABLE,
-            $rand <= 75 => VehicleStatus::RENTED,
-            $rand <= 90 => VehicleStatus::SOLD,
-            default => VehicleStatus::MAINTENANCE,
-        };
+        $manager->flush();
     }
 
     public function getDependencies(): array
     {
         return [
             VehicleModelFixtures::class,
-            ColorFixtures::class,
+            SupplierFixtures::class,
         ];
     }
 }

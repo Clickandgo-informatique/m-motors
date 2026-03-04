@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block body %}
+    <h1 class="text-center">{{title}}</h1>
+{{ form_start(form) }}
+
+<div class="form-row">
+    {{ form_label(form.model) }}
+    {{ form_widget(form.model) }}
+    {{ form_errors(form.model) }}
+</div>
+
+<div>
+    {{ form_label(form.vin) }}
+    {{ form_widget(form.vin) }}
+    {{ form_errors(form.vin) }}
+</div>
+
+<div>
+    {{ form_label(form.registrationNumber) }}
+    {{ form_widget(form.registrationNumber) }}
+    {{ form_errors(form.registrationNumber) }}
+</div>
+
+<div class="form-row">
+    {{ form_label(form.year) }}
+    {{ form_widget(form.year) }}
+    {{ form_errors(form.year) }}
+
+    {{ form_label(form.mileage) }}
+    {{ form_widget(form.mileage) }}
+    {{ form_errors(form.mileage) }}
+</div>
+
+<div>
+    {{ form_label(form.firstRegistrationDate) }}
+    {{ form_widget(form.firstRegistrationDate) }}
+    {{ form_errors(form.firstRegistrationDate) }}
+</div>
+
+<div>
+    {{ form_label(form.price) }}
+    {{ form_widget(form.price) }}
+    {{ form_errors(form.price) }}
+</div>
+
+<div>
+    {{ form_label(form.status) }}
+    {{ form_widget(form.status) }}
+    {{ form_errors(form.status) }}
+</div>
+
+<div>
+    {{ form_label(form.color) }}
+    {{ form_widget(form.color) }}
+    {{ form_errors(form.color) }}
+</div>
+
+
+<button type="submit">
+    {{ button_label|default('Enregistrer') }}
+</button>
+
+{{ form_end(form) }}

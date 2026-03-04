@@ -20,14 +20,6 @@ export default class AjaxManager {
       const link = e.target.closest("[data-ajax-modal]");
       if (link) {
         e.preventDefault();
-
-        // 👇 fermer la dropdown autocomplete
-        const dropdown = document.querySelector(".dropdown-results");
-        if (dropdown) {
-          dropdown.classList.remove("active");
-          dropdown.innerHTML = "";
-        }
-
         this.loadModal(link.dataset.ajaxModal);
       }
     });

@@ -76,11 +76,7 @@ class Brand
 
     public function removeVehicleModel(VehicleModel $vehicleModel): static
     {
-        if ($this->vehicleModels->removeElement($vehicleModel)) {
-            if ($vehicleModel->getBrand() === $this) {
-                $vehicleModel->setBrand(null);
-            }
-        }
+        $this->vehicleModels->removeElement($vehicleModel);
 
         return $this;
     }

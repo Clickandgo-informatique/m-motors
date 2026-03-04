@@ -2,19 +2,14 @@
 
 namespace App\Form;
 
-use App\Entity\BodyType;
-use App\Entity\Brand;
 use App\Entity\Color;
-use App\Entity\Feature;
-use App\Entity\FuelType;
-use App\Entity\Gear;
-use App\Entity\Model;
-use App\Entity\Supplier;
-use App\Entity\Variant;
 use App\Entity\Vehicle;
 use App\Entity\VehicleModel;
+use App\Repository\VehicleModelRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -23,50 +18,71 @@ class VehicleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('year')
-            ->add('mileage')
-            ->add('price')
-            ->add('brand', EntityType::class, [
-                'class' => Brand::class,
-                'choice_label' => 'id',
+            ->add('vin', null, [
+                'label' => 'VIN',
+                'attr' => [
+                    'placeholder' => 'Numéro VIN (17 caractères)',
+                ],
             ])
-            ->add('gear', EntityType::class, [
-                'class' => Gear::class,
-                'choice_label' => 'id',
+
+            ->add('registrationNumber', null, [
+                'label' => 'Immatriculation',
+                'attr' => [
+                    'placeholder' => 'AA-123-BB',
+                ],
             ])
-            ->add('supplier', EntityType::class, [
-                'class' => Supplier::class,
-                'choice_label' => 'id',
+
+            ->add('mileage', null, [
+                'label' => 'Kilométrage',
+                'attr' => [
+                    'placeholder' => '150000',
+                ],
             ])
-            ->add('fuel_type', EntityType::class, [
-                'class' => FuelType::class,
-                'choice_label' => 'id',
+
+            ->add('firstRegistrationDate', DateType::class, [
+                'label' => 'Date de première mise en circulation',
+                'widget' => 'single_text',
             ])
-            ->add('body_type', EntityType::class, [
-                'class' => BodyType::class,
-                'choice_label' => 'id',
+
+            ->add('year', null, [
+                'label' => 'Année',
+                'attr' => [
+                    'placeholder' => '2022',
+                ],
             ])
+
+            ->add('price', MoneyType::class, [
+                'label' => 'Prix',
+                'currency' => 'EUR',
+                'attr' => [
+                    'placeholder' => '15000',
+                ],
+            ])
+
+            ->add('status', null, [
+                'label' => 'Statut',
+            ])
+
             ->add('color', EntityType::class, [
                 'class' => Color::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
+                'label' => 'Couleur',
+                'placeholder' => 'Choisir une couleur',
             ])
-            ->add('feature', EntityType::class, [
-                'class' => Feature::class,
-                'choice_label' => 'id',
-            ])
+
             ->add('model', EntityType::class, [
-                'class' => Model::class,
-                'choice_label' => 'id',
-            ])
-            ->add('variant', EntityType::class, [
-                'class' => Variant::class,
-                'choice_label' => 'id',
-            ])
-            ->add('vehicleModel', EntityType::class, [
                 'class' => VehicleModel::class,
-                'choice_label' => 'id',
-            ])
-        ;
+                'choice_label' => function (VehicleModel $vm) {
+                    return $vm->getBrand()?->getName() . ' ' . $vm->getModel()?->getName();
+                },
+                'query_builder' => function (VehicleModelRepository $repo) {
+                    return $repo->createQueryBuilder('vm')
+                        ->leftJoin('vm.brand', 'b')
+                        ->leftJoin('vm.model', 'm')
+                        ->addSelect('b', 'm')
+                        ->orderBy('b.name', 'ASC');
+                }
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -121,10 +121,32 @@ class VehicleModelFixtures extends Fixture
         $progressBar->finish();
         $output->writeln("\nImport terminé !");
     }
-
     private function normalize(?string $value): ?string
     {
-        return $value ? mb_strtoupper(trim($value)) : null;
+        if (!$value) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        // Tout en minuscules d'abord
+        $value = mb_strtolower($value, 'UTF-8');
+
+        // Majuscule à chaque mot
+        $value = mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
+
+        // Corrections spécifiques automobile
+        $replacements = [
+            'Hdi' => 'HDI',
+            'Gti' => 'GTI',
+            'Tdi' => 'TDI',
+            'Dci' => 'DCI',
+            'E-Tech' => 'E-Tech',
+            'Hybrid' => 'Hybrid',
+            '4x4' => '4x4',
+        ];
+
+        return str_replace(array_keys($replacements), array_values($replacements), $value);
     }
 
     private function sanitizeNumber($value, $max)

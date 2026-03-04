@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Color;
 use App\Entity\VehicleModel;
+use App\Entity\Supplier;
 
 #[ORM\Entity(repositoryClass: VehicleRepository::class)]
 class Vehicle
@@ -55,12 +56,16 @@ class Vehicle
     #[Assert\NotNull]
     private ?VehicleStatus $status = null;
 
-    /*
-     * RELATION corrigée ici
-     */
     #[ORM\ManyToOne(targetEntity: VehicleModel::class, inversedBy: 'vehicles')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?VehicleModel $model = null;
+    private ?VehicleModel $vehicleModel = null;
+
+    /*
+     * RELATION vers Supplier
+     */
+    #[ORM\ManyToOne(targetEntity: Supplier::class, inversedBy: 'vehicles')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Supplier $supplier = null;
 
     /* ================== GETTERS / SETTERS ================== */
 
@@ -160,14 +165,25 @@ class Vehicle
         return $this;
     }
 
-    public function getModel(): ?VehicleModel
+    public function getVehicleModel(): ?VehicleModel
     {
-        return $this->model;
+        return $this->vehicleModel;
     }
 
-    public function setModel(?VehicleModel $model): static
+    public function setVehicleModel(?VehicleModel $vehicleModel): static
     {
-        $this->model = $model;
+        $this->vehicleModel = $vehicleModel;
+        return $this;
+    }
+
+    public function getSupplier(): ?Supplier
+    {
+        return $this->supplier;
+    }
+
+    public function setSupplier(?Supplier $supplier): static
+    {
+        $this->supplier = $supplier;
         return $this;
     }
 }

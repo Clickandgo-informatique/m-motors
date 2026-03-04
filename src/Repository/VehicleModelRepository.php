@@ -19,16 +19,16 @@ class VehicleModelRepository extends ServiceEntityRepository
 
     /**
      * Charge tous les VehicleModel avec leurs relations
-     * (Retourne un QueryBuilder pour KNP)
+     * (Retourne un QueryBuilder pour KNP, ne pas ajouter de addSelect() !!!)
      */
     public function findAllWithRelations(): QueryBuilder
     {
         return $this->createQueryBuilder('vm')
-            ->leftJoin('vm.brand', 'b')->addSelect('b')
-            ->leftJoin('vm.model', 'm')->addSelect('m')
-            ->leftJoin('vm.variant', 'v')->addSelect('v')
-            ->leftJoin('vm.fuelType', 'f')->addSelect('f')
-            ->leftJoin('vm.gear', 'g')->addSelect('g')
+            ->leftJoin('vm.brand', 'b')
+            ->leftJoin('vm.model', 'm')
+            ->leftJoin('vm.variant', 'v')
+            ->leftJoin('vm.fuelType', 'f')
+            ->leftJoin('vm.gear', 'g')
             ->orderBy('b.name', 'ASC')
             ->addOrderBy('m.name', 'ASC')
             ->addOrderBy('v.name', 'ASC');

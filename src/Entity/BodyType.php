@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\BodyTypeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BodyTypeRepository::class)]
@@ -17,17 +15,6 @@ class BodyType
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
-
-    /**
-     * @var Collection<int, Vehicle>
-     */
-    #[ORM\OneToMany(targetEntity: Vehicle::class, mappedBy: 'body_type')]
-    private Collection $vehicles;
-
-    public function __construct()
-    {
-        $this->vehicles = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -42,36 +29,6 @@ class BodyType
     public function setName(string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Vehicle>
-     */
-    public function getVehicles(): Collection
-    {
-        return $this->vehicles;
-    }
-
-    public function addVehicle(Vehicle $vehicle): static
-    {
-        if (!$this->vehicles->contains($vehicle)) {
-            $this->vehicles->add($vehicle);
-            $vehicle->setBodyType($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVehicle(Vehicle $vehicle): static
-    {
-        if ($this->vehicles->removeElement($vehicle)) {
-            // set the owning side to null (unless already changed)
-            if ($vehicle->getBodyType() === $this) {
-                $vehicle->setBodyType(null);
-            }
-        }
 
         return $this;
     }

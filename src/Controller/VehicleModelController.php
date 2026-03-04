@@ -6,7 +6,6 @@ use App\Entity\VehicleModel;
 use App\Form\VehicleModelType;
 use App\Repository\VehicleModelRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,7 +24,7 @@ class VehicleModelController extends AbstractController
         $offset = ($page - 1) * $limit;
 
         $total = $repo->countSearch($q);
-        $items = $repo->searchPaginated($q, $limit, $offset);
+        $items = $repo->searchPaginated($q, $limit, $offset);       
 
         return $this->json([
             'items' => $items,
@@ -53,7 +52,7 @@ class VehicleModelController extends AbstractController
             $queryBuilder,
             $page,
             20
-        );
+        );        
 
         return $this->render('vehicles/vehicles_models.html.twig', [
             'vm' => $vehicleModels,

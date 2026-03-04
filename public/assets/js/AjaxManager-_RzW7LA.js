@@ -22,12 +22,11 @@ export default class AjaxManager {
         e.preventDefault();
 
         // 👇 fermer la dropdown autocomplete
-        const dropdown = document.querySelector(".dropdown-results");
+        const dropdown = document.querySelector(".autocomplete-results");
         if (dropdown) {
-          dropdown.classList.remove("active");
           dropdown.innerHTML = "";
+          dropdown.style.display = "none";
         }
-
         this.loadModal(link.dataset.ajaxModal);
       }
     });
