@@ -6,6 +6,7 @@ use App\Repository\FuelTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FuelTypeRepository::class)]
 class FuelType
@@ -15,18 +16,26 @@ class FuelType
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: "Le carburant est obligatoire.")]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "Le carburant doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le carburant ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $name = null;
 
-    /**
-     * @var Collection<int, Vehicle>
-     */
-    #[ORM\OneToMany(targetEntity: Vehicle::class, mappedBy: 'fuel_type')]
+    #[ORM\OneToMany(mappedBy: 'fuelType', targetEntity: Vehicle::class)]
     private Collection $vehicles;
+
+    #[ORM\OneToMany(mappedBy: 'fuelType', targetEntity: VehicleModel::class)]
+    private Collection $vehicleModels;
 
     public function __construct()
     {
         $this->vehicles = new ArrayCollection();
+        $this->vehicleModels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -45,32 +54,13 @@ class FuelType
         return $this;
     }
 
-    /**
-     * @return Collection<int, Vehicle>
-     */
     public function getVehicles(): Collection
     {
         return $this->vehicles;
     }
 
-    public function addVehicle(Vehicle $vehicle): static
+    public function getVehicleModels(): Collection
     {
-        if (!$this->vehicles->contains($vehicle)) {
-            $this->vehicles->add($vehicle);
-            $vehicle->setFuelType($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVehicle(Vehicle $vehicle): static
-    {
-        if ($this->vehicles->removeElement($vehicle)) {
-            if ($vehicle->getFuelType() === $this) {
-                $vehicle->setFuelType(null);
-            }
-        }
-
-        return $this;
+        return $this->vehicleModels;
     }
 }

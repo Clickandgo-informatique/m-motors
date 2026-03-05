@@ -6,6 +6,7 @@ use App\Repository\GearRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: GearRepository::class)]
 class Gear
@@ -15,18 +16,26 @@ class Gear
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $type = null;
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: "La boîte de vitesse est obligatoire.")]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "La boîte doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "La boîte ne peut pas dépasser {{ limit }} caractères."
+    )]
+    private ?string $name = null;
 
-    /**
-     * @var Collection<int, Vehicle>
-     */
-    #[ORM\OneToMany(targetEntity: Vehicle::class, mappedBy: 'gear')]
+    #[ORM\OneToMany(mappedBy: 'gear', targetEntity: Vehicle::class)]
     private Collection $vehicles;
+
+    #[ORM\OneToMany(mappedBy: 'gear', targetEntity: VehicleModel::class)]
+    private Collection $vehicleModels;
 
     public function __construct()
     {
         $this->vehicles = new ArrayCollection();
+        $this->vehicleModels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -34,45 +43,24 @@ class Gear
         return $this->id;
     }
 
-    public function getType(): ?string
+    public function getName(): ?string
     {
-        return $this->type;
+        return $this->name;
     }
 
-    public function setType(string $type): static
+    public function setName(string $name): static
     {
-        $this->type = $type;
-
+        $this->name = $name;
         return $this;
     }
 
-    /**
-     * @return Collection<int, Vehicle>
-     */
     public function getVehicles(): Collection
     {
         return $this->vehicles;
     }
 
-    public function addVehicle(Vehicle $vehicle): static
+    public function getVehicleModels(): Collection
     {
-        if (!$this->vehicles->contains($vehicle)) {
-            $this->vehicles->add($vehicle);
-            $vehicle->setGear($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVehicle(Vehicle $vehicle): static
-    {
-        if ($this->vehicles->removeElement($vehicle)) {
-            // set the owning side to null (unless already changed)
-            if ($vehicle->getGear() === $this) {
-                $vehicle->setGear(null);
-            }
-        }
-
-        return $this;
+        return $this->vehicleModels;
     }
 }

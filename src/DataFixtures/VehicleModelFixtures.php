@@ -6,7 +6,6 @@ use App\Entity\Brand;
 use App\Entity\Model;
 use App\Entity\Variant;
 use App\Entity\FuelType;
-use App\Entity\Gear;
 use App\Entity\VehicleModel;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -19,7 +18,6 @@ class VehicleModelFixtures extends Fixture
     private array $modelCache = [];
     private array $variantCache = [];
     private array $fuelCache = [];
-    private array $gearCache = [];
 
     public function load(ObjectManager $em): void
     {
@@ -65,33 +63,53 @@ class VehicleModelFixtures extends Fixture
             }
 
             $fuelName = $this->normalize($row[7] ?? null);
-            $gearName = $this->normalize($row[12] ?? null);
 
-            $brand   = $this->getBrand($em, $brandName);
-            $model   = $this->getModel($em, $brand, $modelName);
+            $brand = $this->getBrand($em, $brandName);
+            $model = $this->getModel($em, $brand, $modelName);
             $variant = $this->getVariant($em, $model, $variantName);
-            $fuel    = $fuelName ? $this->getFuel($em, $fuelName) : null;
-            $gear    = $gearName ? $this->getGear($em, $gearName) : null;
+            $fuel = $fuelName ? $this->getFuel($em, $fuelName) : null;
 
             $vm = new VehicleModel();
 
-            // 🔥 IMPORTANT : ordre logique des relations
-            $vm->setBrand($brand);
-            $vm->setModel($model); // ✅ AJOUT CRITIQUE
-            $vm->setVariant($variant);
-            $vm->setFuelType($fuel);
-            $vm->setGear($gear);
+            /*
+            ==========================
+            RELATIONS
+            ==========================
+            */          
+
+            if ($variant) {
+                $vm->setVariant($variant);
+            }
+
+            if ($fuel) {
+                $vm->setFuelType($fuel);
+            }
+
+            /*
+            ==========================
+            DONNEES TECHNIQUES
+            ==========================
+            */
 
             $vm->setPowerHp($this->sanitizeNumber($row[10] ?? null, 2000));
             $vm->setPowerFiscal($this->sanitizeNumber($row[9] ?? null, 100));
             $vm->setConsumption($this->sanitizeNumber($row[15] ?? null, 50));
             $vm->setCo2($this->sanitizeNumber($row[16] ?? null, 2000));
-            $vm->setMassMin($this->sanitizeNumber($row[22] ?? null, 100000));
-            $vm->setMassMax($this->sanitizeNumber($row[23] ?? null, 100000));
+
+            /*
+            ==========================
+            IDENTIFIANTS UTAC
+            ==========================
+            */
 
             $vm->setCnit($row[5] ?? null);
             $vm->setUtacCode($row[6] ?? null);
-            $vm->setEuroNorm($row[24] ?? null);
+
+            /*
+            ==========================
+            DATE HOMOLOGATION
+            ==========================
+            */
 
             $dateString = $row[25] ?? null;
 
@@ -103,7 +121,7 @@ class VehicleModelFixtures extends Fixture
 
             $em->persist($vm);
 
-            if (($i % $batchSize) === 0) {
+            if (($i % $batchSize) === 0 && $i !== 0) {
                 $em->flush();
                 $em->clear();
                 $this->resetLocalReferences();
@@ -121,6 +139,7 @@ class VehicleModelFixtures extends Fixture
         $progressBar->finish();
         $output->writeln("\nImport terminé !");
     }
+
     private function normalize(?string $value): ?string
     {
         if (!$value) {
@@ -128,22 +147,14 @@ class VehicleModelFixtures extends Fixture
         }
 
         $value = trim($value);
-
-        // Tout en minuscules d'abord
         $value = mb_strtolower($value, 'UTF-8');
-
-        // Majuscule à chaque mot
         $value = mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
 
-        // Corrections spécifiques automobile
         $replacements = [
             'Hdi' => 'HDI',
             'Gti' => 'GTI',
             'Tdi' => 'TDI',
             'Dci' => 'DCI',
-            'E-Tech' => 'E-Tech',
-            'Hybrid' => 'Hybrid',
-            '4x4' => '4x4',
         ];
 
         return str_replace(array_keys($replacements), array_values($replacements), $value);
@@ -154,6 +165,7 @@ class VehicleModelFixtures extends Fixture
         if (!is_numeric($value)) return null;
 
         $num = (float)$value;
+
         return $num > $max ? null : $num;
     }
 
@@ -163,7 +175,6 @@ class VehicleModelFixtures extends Fixture
         $this->modelCache = [];
         $this->variantCache = [];
         $this->fuelCache = [];
-        $this->gearCache = [];
     }
 
     private function countLines(string $path): int
@@ -177,6 +188,7 @@ class VehicleModelFixtures extends Fixture
         }
 
         fclose($file);
+
         return $lines;
     }
 
@@ -214,7 +226,9 @@ class VehicleModelFixtures extends Fixture
 
     private function getVariant(ObjectManager $em, Model $model, ?string $name): ?Variant
     {
-        if (!$name) return null;
+        if (!$name) {
+            return null;
+        }
 
         $key = $model->getName() . '|' . $name;
 
@@ -244,20 +258,5 @@ class VehicleModelFixtures extends Fixture
         $em->persist($fuel);
 
         return $this->fuelCache[$name] = $fuel;
-    }
-
-    private function getGear(ObjectManager $em, string $type): Gear
-    {
-        if (isset($this->gearCache[$type])) {
-            return $this->gearCache[$type];
-        }
-
-        $gear = $em->getRepository(Gear::class)
-            ->findOneBy(['type' => $type])
-            ?? (new Gear())->setType($type);
-
-        $em->persist($gear);
-
-        return $this->gearCache[$type] = $gear;
     }
 }

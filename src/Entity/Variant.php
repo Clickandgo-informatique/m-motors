@@ -6,6 +6,7 @@ use App\Repository\VariantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VariantRepository::class)]
 class Variant
@@ -15,22 +16,22 @@ class Variant
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'variants')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Model $model = null;
-
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(length: 150)]
+    #[Assert\NotBlank(message: "Le nom de la variante est obligatoire.")]
+    #[Assert\Length(
+        min: 1,
+        max: 150,
+        minMessage: "Le nom doit contenir au moins {{ limit }} caractère.",
+        maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $releaseYear = null;
+    #[ORM\ManyToOne(inversedBy: "variants")]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "Le modèle est obligatoire.")]
+    private ?Model $model = null;
 
-    #[ORM\OneToMany(
-        mappedBy: 'variant',
-        targetEntity: VehicleModel::class,
-        orphanRemoval: true,
-        cascade: ['persist']
-    )]
+    #[ORM\OneToMany(mappedBy: "variant", targetEntity: VehicleModel::class)]
     private Collection $vehicleModels;
 
     public function __construct()
@@ -43,29 +44,6 @@ class Variant
         return $this->id;
     }
 
-    /**
-     * =============================
-     * MODEL
-     * =============================
-     */
-
-    public function getModel(): ?Model
-    {
-        return $this->model;
-    }
-
-    public function setModel(Model $model): static
-    {
-        $this->model = $model;
-        return $this;
-    }
-
-    /**
-     * =============================
-     * INFOS
-     * =============================
-     */
-
     public function getName(): ?string
     {
         return $this->name;
@@ -73,30 +51,21 @@ class Variant
 
     public function setName(string $name): static
     {
-        $this->name = trim($name);
+        $this->name = $name;
         return $this;
     }
 
-    public function getReleaseYear(): ?int
+    public function getModel(): ?Model
     {
-        return $this->releaseYear;
+        return $this->model;
     }
 
-    public function setReleaseYear(?int $releaseYear): static
+    public function setModel(?Model $model): static
     {
-        $this->releaseYear = $releaseYear;
+        $this->model = $model;
         return $this;
     }
 
-    /**
-     * =============================
-     * VEHICLE MODELS
-     * =============================
-     */
-
-    /**
-     * @return Collection<int, VehicleModel>
-     */
     public function getVehicleModels(): Collection
     {
         return $this->vehicleModels;
@@ -105,7 +74,7 @@ class Variant
     public function addVehicleModel(VehicleModel $vehicleModel): static
     {
         if (!$this->vehicleModels->contains($vehicleModel)) {
-            $this->vehicleModels->add($vehicleModel);
+            $this->vehicleModels[] = $vehicleModel;
             $vehicleModel->setVariant($this);
         }
 
@@ -115,8 +84,9 @@ class Variant
     public function removeVehicleModel(VehicleModel $vehicleModel): static
     {
         if ($this->vehicleModels->removeElement($vehicleModel)) {
-            // ❌ NE PAS mettre setVariant(null) si nullable=false
-            // orphanRemoval supprimera l'entité proprement
+            if ($vehicleModel->getVariant() === $this) {
+                $vehicleModel->setVariant(null);
+            }
         }
 
         return $this;

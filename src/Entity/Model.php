@@ -6,23 +6,9 @@ use App\Repository\ModelRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ModelRepository::class)]
-#[ORM\Table(
-    name: "model",
-    uniqueConstraints: [
-        new ORM\UniqueConstraint(
-            name: "unique_brand_model_normalized",
-            columns: ["brand_id", "normalized_name"]
-        )
-    ]
-)]
-#[UniqueEntity(
-    fields: ["brand", "normalizedName"],
-    message: "Ce modèle existe déjà pour cette marque."
-)]
 class Model
 {
     #[ORM\Id]
@@ -30,30 +16,31 @@ class Model
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 100)]
+    #[ORM\Column(length: 120)]
+    #[Assert\NotBlank(message: "Le nom du modèle est obligatoire.")]
+    #[Assert\Length(
+        min: 2,
+        max: 120,
+        minMessage: "Le modèle doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le modèle ne peut dépasser {{ limit }} caractères."
+    )]
     private ?string $name = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $normalizedName = null;
-
-    #[ORM\ManyToOne(inversedBy: 'models')]
+    #[ORM\ManyToOne(inversedBy: "models")]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: "La marque est obligatoire.")]
     private ?Brand $brand = null;
 
-    #[ORM\OneToMany(
-        mappedBy: 'model',
-        targetEntity: Variant::class,
-        orphanRemoval: true,
-        cascade: ['persist']
-    )]
+    #[ORM\OneToMany(mappedBy: "model", targetEntity: Variant::class)]
     private Collection $variants;
+
+    #[ORM\OneToMany(mappedBy: "model", targetEntity: VehicleModel::class)]
+    private Collection $vehicleModels;
 
     public function __construct()
     {
         $this->variants = new ArrayCollection();
+        $this->vehicleModels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -68,17 +55,8 @@ class Model
 
     public function setName(string $name): static
     {
-        $clean = trim($name);
-
-        $this->name = $clean;
-        $this->normalizedName = mb_strtolower($clean);
-
+        $this->name = $name;
         return $this;
-    }
-
-    public function getNormalizedName(): ?string
-    {
-        return $this->normalizedName;
     }
 
     public function getBrand(): ?Brand
@@ -92,35 +70,32 @@ class Model
         return $this;
     }
 
-    /**
-     * =============================
-     * VARIANTS
-     * =============================
-     */
-
-    /**
-     * @return Collection<int, Variant>
-     */
     public function getVariants(): Collection
     {
         return $this->variants;
     }
 
-    public function addVariant(Variant $variant): static
+    public function getVehicleModels(): Collection
     {
-        if (!$this->variants->contains($variant)) {
-            $this->variants->add($variant);
-            $variant->setModel($this);
+        return $this->vehicleModels;
+    }
+
+    public function addVehicleModel(VehicleModel $vehicleModel): static
+    {
+        if (!$this->vehicleModels->contains($vehicleModel)) {
+            $this->vehicleModels[] = $vehicleModel;
+            $vehicleModel->setModel($this);
         }
 
         return $this;
     }
 
-    public function removeVariant(Variant $variant): static
+    public function removeVehicleModel(VehicleModel $vehicleModel): static
     {
-        if ($this->variants->removeElement($variant)) {
-            // ⚠️ NE PAS mettre setModel(null) si nullable=false
-            // Doctrine supprimera grâce à orphanRemoval=true
+        if ($this->vehicleModels->removeElement($vehicleModel)) {
+            if ($vehicleModel->getModel() === $this) {
+                $vehicleModel->setModel(null);
+            }
         }
 
         return $this;

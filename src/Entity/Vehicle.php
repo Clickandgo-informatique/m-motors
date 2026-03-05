@@ -2,16 +2,10 @@
 
 namespace App\Entity;
 
-use App\Entity\Color;
-use App\Entity\Supplier;
-use App\Entity\VehicleModel;
-use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VehicleRepository::class)]
 class Vehicle
@@ -21,126 +15,55 @@ class Vehicle
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 17, unique: true)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 17, max: 17)]
-    private ?string $vin = null;
-
-    #[ORM\Column(length: 15, unique: true, nullable: true)]
-    #[Assert\Length(max: 15)]
-    #[Assert\Regex(
-        pattern: '/^[A-Z]{2}-\d{3}-[A-Z]{2}$/',
-        message: 'Format d\'immatriculation invalide (ex: AA-123-AA)'
-    )]
-    private ?string $registrationNumber = null;
-
-    #[ORM\Column(nullable: true)]
-    #[Assert\PositiveOrZero]
-    private ?int $mileage = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $firstRegistrationDate = null;
-
-    #[ORM\Column]
-    #[Assert\NotBlank]
-    #[Assert\Range(min: 1900, max: 2100)]
-    private ?int $year = null;
-
-    #[ORM\ManyToOne(targetEntity: Color::class, inversedBy: 'vehicles')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Color $color = null;
-
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    #[Assert\NotBlank]
-    #[Assert\PositiveOrZero]
-    private ?string $price = null;
-
-    #[ORM\Column(enumType: VehicleStatus::class)]
-    #[Assert\NotNull]
-    private ?VehicleStatus $status = null;
-
-    #[ORM\ManyToOne(targetEntity: VehicleModel::class, inversedBy: 'vehicles')]
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
     #[ORM\JoinColumn(nullable: false)]
     private ?VehicleModel $vehicleModel = null;
 
-    #[ORM\ManyToMany(targetEntity: Feature::class, inversedBy: 'vehicles')]
-    #[ORM\JoinTable(name: 'vehicle_feature')]
-    private Collection $features;
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    private ?Color $color = null;
 
-    /*
-     * RELATION vers Supplier
-     */
-    #[ORM\ManyToOne(targetEntity: Supplier::class, inversedBy: 'vehicles')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    private ?FuelType $fuelType = null;
+
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
+    private ?Gear $gear = null;
+
+    #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Supplier $supplier = null;
 
-    public function __construct()
-{
-    $this->features = new ArrayCollection();
-}
+    #[ORM\ManyToMany(targetEntity: Feature::class, inversedBy: 'vehicles')]
+    private Collection $features;
 
-    /* ================== GETTERS / SETTERS ================== */
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Maintenance::class)]
+    private Collection $maintenances;
+
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Rental::class)]
+    private Collection $rentals;
+
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Sale::class)]
+    private Collection $sales;
+
+    public function __construct()
+    {
+        $this->features = new ArrayCollection();
+        $this->maintenances = new ArrayCollection();
+        $this->rentals = new ArrayCollection();
+        $this->sales = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getVin(): ?string
+    public function getVehicleModel(): ?VehicleModel
     {
-        return $this->vin;
+        return $this->vehicleModel;
     }
 
-    public function setVin(string $vin): static
+    public function setVehicleModel(?VehicleModel $vehicleModel): static
     {
-        $this->vin = strtoupper(trim($vin));
-        return $this;
-    }
-
-    public function getRegistrationNumber(): ?string
-    {
-        return $this->registrationNumber;
-    }
-
-    public function setRegistrationNumber(?string $registrationNumber): static
-    {
-        $this->registrationNumber = $registrationNumber
-            ? strtoupper(trim($registrationNumber))
-            : null;
-
-        return $this;
-    }
-
-    public function getMileage(): ?int
-    {
-        return $this->mileage;
-    }
-
-    public function setMileage(?int $mileage): static
-    {
-        $this->mileage = $mileage;
-        return $this;
-    }
-
-    public function getFirstRegistrationDate(): ?\DateTimeInterface
-    {
-        return $this->firstRegistrationDate;
-    }
-
-    public function setFirstRegistrationDate(?\DateTimeInterface $date): static
-    {
-        $this->firstRegistrationDate = $date;
-        return $this;
-    }
-
-    public function getYear(): ?int
-    {
-        return $this->year;
-    }
-
-    public function setYear(int $year): static
-    {
-        $this->year = $year;
+        $this->vehicleModel = $vehicleModel;
         return $this;
     }
 
@@ -155,36 +78,25 @@ class Vehicle
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getFuelType(): ?FuelType
     {
-        return $this->price;
+        return $this->fuelType;
     }
 
-    public function setPrice(string $price): static
+    public function setFuelType(?FuelType $fuelType): static
     {
-        $this->price = $price;
+        $this->fuelType = $fuelType;
         return $this;
     }
 
-    public function getStatus(): ?VehicleStatus
+    public function getGear(): ?Gear
     {
-        return $this->status;
+        return $this->gear;
     }
 
-    public function setStatus(VehicleStatus $status): static
+    public function setGear(?Gear $gear): static
     {
-        $this->status = $status;
-        return $this;
-    }
-
-    public function getVehicleModel(): ?VehicleModel
-    {
-        return $this->vehicleModel;
-    }
-
-    public function setVehicleModel(?VehicleModel $vehicleModel): static
-    {
-        $this->vehicleModel = $vehicleModel;
+        $this->gear = $gear;
         return $this;
     }
 
@@ -198,6 +110,7 @@ class Vehicle
         $this->supplier = $supplier;
         return $this;
     }
+
     public function getFeatures(): Collection
     {
         return $this->features;
@@ -207,7 +120,6 @@ class Vehicle
     {
         if (!$this->features->contains($feature)) {
             $this->features->add($feature);
-            $feature->addVehicle($this);
         }
 
         return $this;
@@ -215,10 +127,22 @@ class Vehicle
 
     public function removeFeature(Feature $feature): static
     {
-        if ($this->features->removeElement($feature)) {
-            $feature->removeVehicle($this);
-        }
-
+        $this->features->removeElement($feature);
         return $this;
+    }
+
+    public function getMaintenances(): Collection
+    {
+        return $this->maintenances;
+    }
+
+    public function getRentals(): Collection
+    {
+        return $this->rentals;
+    }
+
+    public function getSales(): Collection
+    {
+        return $this->sales;
     }
 }
