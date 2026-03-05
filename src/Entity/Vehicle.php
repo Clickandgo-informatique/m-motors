@@ -2,13 +2,16 @@
 
 namespace App\Entity;
 
+use App\Entity\Color;
+use App\Entity\Supplier;
+use App\Entity\VehicleModel;
 use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Color;
-use App\Entity\VehicleModel;
-use App\Entity\Supplier;
 
 #[ORM\Entity(repositoryClass: VehicleRepository::class)]
 class Vehicle
@@ -35,7 +38,7 @@ class Vehicle
     #[Assert\PositiveOrZero]
     private ?int $mileage = null;
 
-    #[ORM\Column(type: 'date', nullable: true)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $firstRegistrationDate = null;
 
     #[ORM\Column]
@@ -60,12 +63,21 @@ class Vehicle
     #[ORM\JoinColumn(nullable: false)]
     private ?VehicleModel $vehicleModel = null;
 
+    #[ORM\ManyToMany(targetEntity: Feature::class, inversedBy: 'vehicles')]
+    #[ORM\JoinTable(name: 'vehicle_feature')]
+    private Collection $features;
+
     /*
      * RELATION vers Supplier
      */
     #[ORM\ManyToOne(targetEntity: Supplier::class, inversedBy: 'vehicles')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Supplier $supplier = null;
+
+    public function __construct()
+{
+    $this->features = new ArrayCollection();
+}
 
     /* ================== GETTERS / SETTERS ================== */
 
@@ -184,6 +196,29 @@ class Vehicle
     public function setSupplier(?Supplier $supplier): static
     {
         $this->supplier = $supplier;
+        return $this;
+    }
+    public function getFeatures(): Collection
+    {
+        return $this->features;
+    }
+
+    public function addFeature(Feature $feature): static
+    {
+        if (!$this->features->contains($feature)) {
+            $this->features->add($feature);
+            $feature->addVehicle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFeature(Feature $feature): static
+    {
+        if ($this->features->removeElement($feature)) {
+            $feature->removeVehicle($this);
+        }
+
         return $this;
     }
 }

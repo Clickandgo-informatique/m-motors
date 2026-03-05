@@ -47,8 +47,8 @@
                     </span>
                 </td>
                 <td data-label="Immatriculation">{{ vehicle.registrationNumber }}</td>
-                <td data-label="Marque">{{vehicle.model.brand.name}}</td>
-                <td data-label="Modèle"> {{ vehicle.model.name }}</td>
+                <td data-label="Marque">{{vehicle.vehicleModel.brand.name}}</td>
+                <td data-label="Modèle"> {{ vehicle.vehicleModel.model.name }}</td>
                 <td class="text-right" data-label="Kilomètrage"> {{ vehicle.mileage|number_format(0, ',', '.') }} kms</td>
                 <td class="text-right" data-label="Prix"> {{ vehicle.price|number_format(0, ',', '.') }} €</td>
             </tr>

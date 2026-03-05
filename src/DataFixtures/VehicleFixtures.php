@@ -6,6 +6,7 @@ use App\Entity\Vehicle;
 use App\Enum\VehicleStatus;
 use App\Repository\SupplierRepository;
 use App\Repository\VehicleModelRepository;
+use App\Repository\ColorRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -15,7 +16,8 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 {
     public function __construct(
         private VehicleModelRepository $vehicleModelRepository,
-        private SupplierRepository $supplierRepository
+        private SupplierRepository $supplierRepository,
+        private ColorRepository $colorRepository
     ) {}
 
     public function load(ObjectManager $manager): void
@@ -24,6 +26,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
         $vehicleModels = $this->vehicleModelRepository->findAll();
         $suppliers     = $this->supplierRepository->findAll();
+        $colors = $this->colorRepository->findAll();
 
         if (empty($vehicleModels)) {
             throw new \RuntimeException('Aucun VehicleModel trouvé en base.');
@@ -45,6 +48,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
             $vehicle->setYear($faker->numberBetween(2005, 2024));
             $vehicle->setPrice($faker->randomFloat(2, 5000, 60000));
             $vehicle->setStatus(VehicleStatus::AVAILABLE);
+            $vehicle->setColor($colors[array_rand($colors)]);
 
             // VehicleModel aléatoire depuis la base
             $vehicle->setVehicleModel(
@@ -67,6 +71,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
         return [
             VehicleModelFixtures::class,
             SupplierFixtures::class,
+            ColorFixtures::class
         ];
     }
 }

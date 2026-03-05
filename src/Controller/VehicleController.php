@@ -42,8 +42,8 @@ class VehicleController extends AbstractController
             'results' => array_map(function ($vehicle) {
                 return [
                     'id' => $vehicle->getId(),
-                    'brand' => $vehicle->getModel()?->getBrand()?->getName(),
-                    'model' => $vehicle->getModel()?->getModel()?->getName(),
+                    'brand' => $vehicle->getVehicleModel()?->getBrand()?->getName(),
+                    'model' => $vehicle->getVehicleModel()?->getModel()?->getName(),
                     'status' => $vehicle->getStatus(),
                     'registrationNumber' => $vehicle->getRegistrationNumber(),
                 ];
@@ -80,7 +80,7 @@ class VehicleController extends AbstractController
         Request $request,
         Vehicle $vehicle,
         EntityManagerInterface $em
-    ): Response {        
+    ): Response {
 
         $form = $this->createForm(VehicleType::class, $vehicle);
         $title = "Modifier un modèle de véhicule";

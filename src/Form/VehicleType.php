@@ -70,7 +70,7 @@ class VehicleType extends AbstractType
                 'placeholder' => 'Choisir une couleur',
             ])
 
-            ->add('model', EntityType::class, [
+            ->add('vehicleModel', EntityType::class, [
                 'class' => VehicleModel::class,
                 'choice_label' => function (VehicleModel $vm) {
                     return $vm->getBrand()?->getName() . ' ' . $vm->getModel()?->getName();
@@ -81,14 +81,16 @@ class VehicleType extends AbstractType
                         ->leftJoin('vm.model', 'm')
                         ->addSelect('b', 'm')
                         ->orderBy('b.name', 'ASC');
-                }
+                },
+                'label' => 'Modèle',
+                'placeholder' => 'Choisir un modèle'
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Vehicle::class,
+            'data_class' => Vehicle::class,            
         ]);
     }
 }

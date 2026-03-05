@@ -21,7 +21,7 @@ class Feature
     /**
      * @var Collection<int, Vehicle>
      */
-    #[ORM\OneToMany(targetEntity: Vehicle::class, mappedBy: 'feature')]
+    #[ORM\ManyToMany(targetEntity: Vehicle::class, mappedBy: 'features')]
     private Collection $vehicles;
 
     public function __construct()
@@ -42,7 +42,6 @@ class Feature
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -58,7 +57,7 @@ class Feature
     {
         if (!$this->vehicles->contains($vehicle)) {
             $this->vehicles->add($vehicle);
-            $vehicle->setFeature($this);
+            $vehicle->addFeature($this); // synchronisation côté propriétaire
         }
 
         return $this;
@@ -67,10 +66,7 @@ class Feature
     public function removeVehicle(Vehicle $vehicle): static
     {
         if ($this->vehicles->removeElement($vehicle)) {
-            // set the owning side to null (unless already changed)
-            if ($vehicle->getFeature() === $this) {
-                $vehicle->setFeature(null);
-            }
+            $vehicle->removeFeature($this); // synchronisation côté propriétaire
         }
 
         return $this;
