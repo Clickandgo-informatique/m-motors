@@ -18,18 +18,39 @@ class VehicleModelFixtures extends Fixture
     private array $modelCache = [];
     private array $variantCache = [];
     private array $fuelCache = [];
+    private array $cnitCache = [];
 
     public function load(ObjectManager $em): void
     {
         ini_set('memory_limit', '-1');
 
-        $batchSize = 200;
+        $batchSize = 1000;
 
         $projectDir = dirname(__DIR__, 2);
         $path = $projectDir . '/data/utac.csv';
 
         if (!file_exists($path)) {
-            throw new \Exception("Fichier introuvable : $path");
+            throw new \Exception("CSV introuvable : $path");
+        }
+
+        $file = fopen($path, 'r');
+
+        /*
+        =========================
+        HEADER MAPPING
+        =========================
+        */
+
+        $header = fgetcsv($file, 0, ';');
+
+        foreach ($header as &$col) {
+            $col = preg_replace('/^\xEF\xBB\xBF/', '', $col);
+        }
+
+        $map = [];
+
+        foreach ($header as $i => $col) {
+            $map[strtolower(trim($col))] = $i;
         }
 
         $totalLines = $this->countLines($path) - 1;
@@ -38,44 +59,68 @@ class VehicleModelFixtures extends Fixture
         $progressBar = new ProgressBar($output, $totalLines);
         $progressBar->start();
 
-        $file = fopen($path, 'r');
-        fgets($file); // skip header
-
         $i = 0;
 
-        while (($rawLine = fgets($file)) !== false) {
+        while (($row = fgetcsv($file, 0, ';')) !== false) {
 
-            $row = str_getcsv($rawLine, ';');
-
-            $row = array_map(
-                fn($v) => $v !== null
-                    ? trim(str_replace('""', '"', mb_convert_encoding($v, 'UTF-8', 'auto')), "\" \t\n\r")
-                    : null,
-                $row
+            $cnit = $this->sanitizeString(
+                $this->col($row, $map, 'cnit'),
+                50
             );
 
-            $brandName   = $this->normalize($row[0] ?? null);
-            $modelName   = $this->normalize($row[4] ?? null);
-            $variantName = $this->normalize($row[3] ?? null);
+            if (!$cnit || isset($this->cnitCache[$cnit])) {
+                continue;
+            }
+
+            $this->cnitCache[$cnit] = true;
+
+            /*
+            =========================
+            DONNEES PRINCIPALES
+            =========================
+            */
+
+            $brandName = $this->normalize(
+                $this->col($row, $map, 'lib_mrq_doss')
+            );
+
+            $modelName = $this->normalize(
+                $this->col($row, $map, 'dscom')
+            );
+
+            $variantName = $this->normalize(
+                $this->col($row, $map, 'mod_utac')
+            );
 
             if (!$brandName || !$modelName) {
                 continue;
             }
 
-            $fuelName = $this->normalize($row[7] ?? null);
+            $fuelName = $this->normalizeFuel(
+                $this->col($row, $map, 'energ')
+            );
+
+            /*
+            =========================
+            ENTITES RELATIONNELLES
+            =========================
+            */
 
             $brand = $this->getBrand($em, $brandName);
             $model = $this->getModel($em, $brand, $modelName);
             $variant = $this->getVariant($em, $model, $variantName);
             $fuel = $fuelName ? $this->getFuel($em, $fuelName) : null;
 
+            /*
+            =========================
+            VEHICLE MODEL
+            =========================
+            */
+
             $vm = new VehicleModel();
 
-            /*
-            ==========================
-            RELATIONS
-            ==========================
-            */          
+            $vm->setBrand($brand);
+            $vm->setModel($model);
 
             if ($variant) {
                 $vm->setVariant($variant);
@@ -86,45 +131,109 @@ class VehicleModelFixtures extends Fixture
             }
 
             /*
-            ==========================
-            DONNEES TECHNIQUES
-            ==========================
+            =========================
+            PUISSANCES
+            =========================
             */
 
-            $vm->setPowerHp($this->sanitizeNumber($row[10] ?? null, 2000));
-            $vm->setPowerFiscal($this->sanitizeNumber($row[9] ?? null, 100));
-            $vm->setConsumption($this->sanitizeNumber($row[15] ?? null, 50));
-            $vm->setCo2($this->sanitizeNumber($row[16] ?? null, 2000));
-
-            /*
-            ==========================
-            IDENTIFIANTS UTAC
-            ==========================
-            */
-
-            $vm->setCnit($row[5] ?? null);
-            $vm->setUtacCode($row[6] ?? null);
-
-            /*
-            ==========================
-            DATE HOMOLOGATION
-            ==========================
-            */
-
-            $dateString = $row[25] ?? null;
-
-            $vm->setHomologationDate(
-                $dateString && strtotime($dateString)
-                    ? new \DateTime($dateString)
-                    : null
+            $vm->setPowerHp(
+                $this->sanitizeNumber(
+                    $this->col($row, $map, 'puiss_max'),
+                    2000
+                )
             );
+
+            $vm->setPowerFiscal(
+                $this->sanitizeNumber(
+                    $this->col($row, $map, 'puiss_admin'),
+                    100
+                )
+            );
+
+            /*
+            =========================
+            CONSOMMATION
+            =========================
+            */
+
+            $vm->setConsumption(
+                $this->sanitizeNumber(
+                    $this->col($row, $map, 'conso_mixte'),
+                    50
+                )
+            );
+
+            $vm->setCo2(
+                $this->sanitizeNumber(
+                    $this->col($row, $map, 'co2_mixte'),
+                    2000
+                )
+            );
+
+            /*
+            =========================
+            MASSES
+            =========================
+            */
+
+            $massMin = $this->sanitizeNumber(
+                $this->col($row, $map, 'masse_ordma_min'),
+                10000
+            );
+
+            $massMax = $this->sanitizeNumber(
+                $this->col($row, $map, 'masse_ordma_max'),
+                10000
+            );
+
+            if ($massMin && $massMax && $massMin > $massMax) {
+                $massMin = null;
+            }
+
+            $vm->setMassMin($massMin);
+            $vm->setMassMax($massMax);
+
+            /*
+            =========================
+            IDENTIFIANTS
+            =========================
+            */
+
+            $vm->setCnit($cnit);
+
+            $vm->setUtacCode(
+                $this->sanitizeString(
+                    $this->col($row, $map, 'tvv'),
+                    50
+                )
+            );
+
+            /*
+            =========================
+            DATE HOMOLOGATION
+            =========================
+            */
+
+            $date = $this->col($row, $map, 'date_maj');
+
+            if ($date && strtotime($date)) {
+                $vm->setHomologationDate(new \DateTime($date));
+            }
 
             $em->persist($vm);
 
+            /*
+            =========================
+            BATCH FLUSH
+            =========================
+            */
+
             if (($i % $batchSize) === 0 && $i !== 0) {
+
                 $em->flush();
                 $em->clear();
-                $this->resetLocalReferences();
+
+                $this->resetCache();
             }
 
             $i++;
@@ -137,39 +246,100 @@ class VehicleModelFixtures extends Fixture
         $em->clear();
 
         $progressBar->finish();
-        $output->writeln("\nImport terminé !");
+
+        $output->writeln("\nImport terminé.");
     }
+
+    /*
+    ======================================
+    CSV COLUMN
+    ======================================
+    */
+
+    private function col(array $row, array $map, string $name)
+    {
+        $i = $map[$name] ?? null;
+        return $i !== null ? ($row[$i] ?? null) : null;
+    }
+
+    /*
+    ======================================
+    NORMALISATION
+    ======================================
+    */
 
     private function normalize(?string $value): ?string
     {
-        if (!$value) {
-            return null;
-        }
+        if (!$value) return null;
 
-        $value = trim($value);
-        $value = mb_strtolower($value, 'UTF-8');
-        $value = mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
+        $value = mb_strtolower(trim($value));
+        $value = mb_convert_case($value, MB_CASE_TITLE);
 
-        $replacements = [
-            'Hdi' => 'HDI',
-            'Gti' => 'GTI',
-            'Tdi' => 'TDI',
-            'Dci' => 'DCI',
+        return $value;
+    }
+
+    private function normalizeFuel(?string $fuel): ?string
+    {
+        if (!$fuel) return null;
+
+        $fuel = strtolower(trim($fuel));
+
+        $map = [
+            'diesel' => 'Diesel',
+            'gazole' => 'Diesel',
+            'gasoil' => 'Diesel',
+            'essence' => 'Essence',
+            'hybride' => 'Hybride',
+            'electric' => 'Electrique',
+            'electrique' => 'Electrique'
         ];
 
-        return str_replace(array_keys($replacements), array_values($replacements), $value);
+        return $map[$fuel] ?? ucfirst($fuel);
     }
+
+    /*
+    ======================================
+    SANITIZE
+    ======================================
+    */
 
     private function sanitizeNumber($value, $max)
     {
-        if (!is_numeric($value)) return null;
+        if ($value === null) {
+            return null;
+        }
+
+        $value = str_replace([' ', ','], ['', '.'], $value);
+
+        if (!is_numeric($value)) {
+            return null;
+        }
 
         $num = (float)$value;
 
-        return $num > $max ? null : $num;
+        if ($num > $max) {
+            return null;
+        }
+
+        return $num;
     }
 
-    private function resetLocalReferences(): void
+    private function sanitizeString(?string $value, int $max): ?string
+    {
+        if (!$value) return null;
+
+        $value = trim($value);
+
+        return mb_strlen($value) > $max ? null : $value;
+    }
+
+    /*
+    ======================================
+    CACHE RESET
+    ======================================
+    */
+
+    private function resetCache(): void
     {
         $this->brandCache = [];
         $this->modelCache = [];
@@ -177,7 +347,13 @@ class VehicleModelFixtures extends Fixture
         $this->fuelCache = [];
     }
 
-    private function countLines(string $path): int
+    /*
+    ======================================
+    COUNT LINES
+    ======================================
+    */
+
+    private function countLines($path): int
     {
         $lines = 0;
         $file = fopen($path, 'r');
@@ -191,6 +367,11 @@ class VehicleModelFixtures extends Fixture
 
         return $lines;
     }
+    /*
+======================================
+GET BRAND
+======================================
+*/
 
     private function getBrand(ObjectManager $em, string $name): Brand
     {
@@ -199,13 +380,23 @@ class VehicleModelFixtures extends Fixture
         }
 
         $brand = $em->getRepository(Brand::class)
-            ->findOneBy(['name' => $name])
-            ?? (new Brand())->setName($name);
+            ->findOneBy(['name' => $name]);
 
-        $em->persist($brand);
+        if (!$brand) {
+            $brand = (new Brand())->setName($name);
+            $em->persist($brand);
+        }
 
-        return $this->brandCache[$name] = $brand;
+        $this->brandCache[$name] = $brand;
+
+        return $brand;
     }
+
+    /*
+======================================
+GET MODEL
+======================================
+*/
 
     private function getModel(ObjectManager $em, Brand $brand, string $name): Model
     {
@@ -216,13 +407,29 @@ class VehicleModelFixtures extends Fixture
         }
 
         $model = $em->getRepository(Model::class)
-            ->findOneBy(['name' => $name, 'brand' => $brand])
-            ?? (new Model())->setName($name)->setBrand($brand);
+            ->findOneBy([
+                'name' => $name,
+                'brand' => $brand
+            ]);
 
-        $em->persist($model);
+        if (!$model) {
+            $model = (new Model())
+                ->setName($name)
+                ->setBrand($brand);
 
-        return $this->modelCache[$key] = $model;
+            $em->persist($model);
+        }
+
+        $this->modelCache[$key] = $model;
+
+        return $model;
     }
+
+    /*
+======================================
+GET VARIANT
+======================================
+*/
 
     private function getVariant(ObjectManager $em, Model $model, ?string $name): ?Variant
     {
@@ -237,13 +444,29 @@ class VehicleModelFixtures extends Fixture
         }
 
         $variant = $em->getRepository(Variant::class)
-            ->findOneBy(['name' => $name, 'model' => $model])
-            ?? (new Variant())->setName($name)->setModel($model);
+            ->findOneBy([
+                'name' => $name,
+                'model' => $model
+            ]);
 
-        $em->persist($variant);
+        if (!$variant) {
+            $variant = (new Variant())
+                ->setName($name)
+                ->setModel($model);
 
-        return $this->variantCache[$key] = $variant;
+            $em->persist($variant);
+        }
+
+        $this->variantCache[$key] = $variant;
+
+        return $variant;
     }
+
+    /*
+======================================
+GET FUEL
+======================================
+*/
 
     private function getFuel(ObjectManager $em, string $name): FuelType
     {
@@ -252,11 +475,17 @@ class VehicleModelFixtures extends Fixture
         }
 
         $fuel = $em->getRepository(FuelType::class)
-            ->findOneBy(['name' => $name])
-            ?? (new FuelType())->setName($name);
+            ->findOneBy(['name' => $name]);
 
-        $em->persist($fuel);
+        if (!$fuel) {
+            $fuel = (new FuelType())
+                ->setName($name);
 
-        return $this->fuelCache[$name] = $fuel;
+            $em->persist($fuel);
+        }
+
+        $this->fuelCache[$name] = $fuel;
+
+        return $fuel;
     }
 }

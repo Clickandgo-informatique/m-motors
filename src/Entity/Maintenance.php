@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MaintenanceRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MaintenanceRepository::class)]
 class Maintenance
@@ -14,33 +14,36 @@ class Maintenance
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(type: 'date')]
+    #[Assert\NotBlank]
+    private ?\DateTimeInterface $date = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 255)]
+    private ?string $description = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
+    private ?int $mileage = null;
+
     #[ORM\ManyToOne(inversedBy: 'maintenances')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Vehicle $vehicle = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $description = null;
-
-    #[ORM\Column]
-    private ?\DateTime $date = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0, nullable: true)]
-    private ?string $cost = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getVehicle(): ?Vehicle
+    public function getDate(): ?\DateTimeInterface
     {
-        return $this->vehicle;
+        return $this->date;
     }
 
-    public function setVehicle(?Vehicle $vehicle): static
+    public function setDate(\DateTimeInterface $date): static
     {
-        $this->vehicle = $vehicle;
-
+        $this->date = $date;
         return $this;
     }
 
@@ -51,32 +54,29 @@ class Maintenance
 
     public function setDescription(string $description): static
     {
-        $this->description = $description;
-
+        $this->description = trim($description);
         return $this;
     }
 
-    public function getDate(): ?\DateTime
+    public function getMileage(): ?int
     {
-        return $this->date;
+        return $this->mileage;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setMileage(?int $mileage): static
     {
-        $this->date = $date;
-
+        $this->mileage = $mileage;
         return $this;
     }
 
-    public function getCost(): ?string
+    public function getVehicle(): ?Vehicle
     {
-        return $this->cost;
+        return $this->vehicle;
     }
 
-    public function setCost(?string $cost): static
+    public function setVehicle(?Vehicle $vehicle): static
     {
-        $this->cost = $cost;
-
+        $this->vehicle = $vehicle;
         return $this;
     }
 }

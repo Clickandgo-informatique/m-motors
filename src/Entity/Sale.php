@@ -2,11 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\SaleRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: SaleRepository::class)]
+#[ORM\Entity]
 class Sale
 {
     #[ORM\Id]
@@ -14,20 +13,18 @@ class Sale
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'sales')]
+    #[ORM\ManyToOne(inversedBy: "sales")]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Vehicle $vehicle = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
-    private ?string $price = null;
-
     #[ORM\Column]
-    private ?\DateTime $date = null;
+    #[Assert\Positive(message: "Le prix doit être positif")]
+    private ?float $price = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    #[ORM\Column(type: "date")]
+    #[Assert\NotNull]
+    private ?\DateTimeInterface $soldAt = null;
 
     public function getVehicle(): ?Vehicle
     {
@@ -37,31 +34,6 @@ class Sale
     public function setVehicle(?Vehicle $vehicle): static
     {
         $this->vehicle = $vehicle;
-
-        return $this;
-    }
-
-    public function getPrice(): ?string
-    {
-        return $this->price;
-    }
-
-    public function setPrice(string $price): static
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
-    public function getDate(): ?\DateTime
-    {
-        return $this->date;
-    }
-
-    public function setDate(\DateTime $date): static
-    {
-        $this->date = $date;
-
         return $this;
     }
 }

@@ -16,20 +16,20 @@ class Brand
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100, unique: true)]
+    #[ORM\Column(length: 120, unique: true)]
     #[Assert\NotBlank(message: "Le nom de la marque est obligatoire.")]
     #[Assert\Length(
         min: 2,
-        max: 100,
+        max: 120,
         minMessage: "Le nom doit contenir au moins {{ limit }} caractères.",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères."
     )]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: "brand", targetEntity: Model::class)]
+    #[ORM\OneToMany(mappedBy: 'brand', targetEntity: Model::class, orphanRemoval: true)]
     private Collection $models;
 
-    #[ORM\OneToMany(mappedBy: "brand", targetEntity: VehicleModel::class)]
+    #[ORM\OneToMany(mappedBy: 'brand', targetEntity: VehicleModel::class)]
     private Collection $vehicleModels;
 
     public function __construct()
@@ -54,6 +54,7 @@ class Brand
         return $this;
     }
 
+    /** @return Collection<int, Model> */
     public function getModels(): Collection
     {
         return $this->models;
@@ -62,7 +63,7 @@ class Brand
     public function addModel(Model $model): static
     {
         if (!$this->models->contains($model)) {
-            $this->models[] = $model;
+            $this->models->add($model);
             $model->setBrand($this);
         }
 
@@ -80,6 +81,7 @@ class Brand
         return $this;
     }
 
+    /** @return Collection<int, VehicleModel> */
     public function getVehicleModels(): Collection
     {
         return $this->vehicleModels;
@@ -88,7 +90,7 @@ class Brand
     public function addVehicleModel(VehicleModel $vehicleModel): static
     {
         if (!$this->vehicleModels->contains($vehicleModel)) {
-            $this->vehicleModels[] = $vehicleModel;
+            $this->vehicleModels->add($vehicleModel);
             $vehicleModel->setBrand($this);
         }
 

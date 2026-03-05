@@ -16,27 +16,39 @@ class FuelType
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank(message: "Le carburant est obligatoire.")]
+    #[ORM\Column(length: 50, unique: true)]
+    #[Assert\NotBlank(message: "Le type de carburant est obligatoire")]
     #[Assert\Length(
         min: 2,
         max: 50,
-        minMessage: "Le carburant doit contenir au moins {{ limit }} caractères.",
-        maxMessage: "Le carburant ne peut pas dépasser {{ limit }} caractères."
+        minMessage: "Minimum {{ limit }} caractères",
+        maxMessage: "Maximum {{ limit }} caractères"
+    )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-ZÀ-ÿ0-9\s\-]+$/",
+        message: "Caractères invalides"
     )]
     private ?string $name = null;
+
+    /*
+    ==========================
+    VEHICLES
+    ==========================
+    */
 
     #[ORM\OneToMany(mappedBy: 'fuelType', targetEntity: Vehicle::class)]
     private Collection $vehicles;
 
-    #[ORM\OneToMany(mappedBy: 'fuelType', targetEntity: VehicleModel::class)]
-    private Collection $vehicleModels;
-
     public function __construct()
     {
         $this->vehicles = new ArrayCollection();
-        $this->vehicleModels = new ArrayCollection();
     }
+
+    /*
+    ==========================
+    GETTERS / SETTERS
+    ==========================
+    */
 
     public function getId(): ?int
     {
@@ -50,17 +62,36 @@ class FuelType
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->name = trim($name);
         return $this;
     }
 
+    /**
+     * @return Collection<int, Vehicle>
+     */
     public function getVehicles(): Collection
     {
         return $this->vehicles;
     }
 
-    public function getVehicleModels(): Collection
+    public function addVehicle(Vehicle $vehicle): static
     {
-        return $this->vehicleModels;
+        if (!$this->vehicles->contains($vehicle)) {
+            $this->vehicles->add($vehicle);
+            $vehicle->setFuelType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVehicle(Vehicle $vehicle): static
+    {
+        if ($this->vehicles->removeElement($vehicle)) {
+            if ($vehicle->getFuelType() === $this) {
+                $vehicle->setFuelType(null);
+            }
+        }
+
+        return $this;
     }
 }

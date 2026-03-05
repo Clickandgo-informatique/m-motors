@@ -18,54 +18,80 @@ class Supplier
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 2, max: 255)]
+    #[Assert\NotBlank(message: "Le nom du fournisseur est obligatoire")]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: "Le nom doit contenir au moins {{ limit }} caractères",
+        maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
+    )]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(max: 255)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "L'adresse ne peut pas dépasser {{ limit }} caractères"
+    )]
     private ?string $address = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Assert\Length(max: 100)]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: "La ville ne peut pas dépasser {{ limit }} caractères"
+    )]
     private ?string $city = null;
 
     #[ORM\Column(length: 10, nullable: true)]
     #[Assert\Regex(
-        pattern: '/^[0-9]{4,10}$/',
-        message: 'Code postal invalide'
+        pattern: '/^[0-9]{5}$/',
+        message: "Le code postal doit contenir 5 chiffres"
     )]
     private ?string $postalCode = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: "Le pays ne peut pas dépasser {{ limit }} caractères"
+    )]
     private ?string $country = 'France';
 
-    #[ORM\Column(length: 20, nullable: true, unique: true)]
+    #[ORM\Column(length: 14, nullable: true, unique: true)]
     #[Assert\Regex(
         pattern: '/^[0-9]{14}$/',
-        message: 'Le SIRET doit contenir 14 chiffres'
+        message: "Le SIRET doit contenir exactement 14 chiffres"
     )]
     private ?string $siret = null;
 
     #[ORM\Column(length: 180, nullable: true)]
-    #[Assert\Email]
+    #[Assert\Email(message: "Adresse email invalide")]
     private ?string $email = null;
 
     #[ORM\Column(length: 30, nullable: true)]
-    #[Assert\Length(max: 30)]
+    #[Assert\Regex(
+        pattern: '/^[0-9+\s().-]{6,30}$/',
+        message: "Numéro de téléphone invalide"
+    )]
     private ?string $phone = null;
 
     #[ORM\Column(enumType: SupplierType::class)]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: "Le type de fournisseur est obligatoire")]
     private ?SupplierType $type = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\PositiveOrZero]
-    private ?int $averageDeliveryDelay = null; // en jours
+    #[Assert\PositiveOrZero(message: "Le délai doit être positif")]
+    #[Assert\LessThanOrEqual(
+        value: 365,
+        message: "Le délai semble incorrect"
+    )]
+    private ?int $averageDeliveryDelay = null;
 
     #[ORM\Column(type: 'decimal', precision: 2, scale: 1, nullable: true)]
-    #[Assert\Range(min: 0, max: 5)]
-    private ?string $rating = null; // note 0 à 5
+    #[Assert\Range(
+        min: 0,
+        max: 5,
+        notInRangeMessage: "La note doit être comprise entre {{ min }} et {{ max }}"
+    )]
+    private ?string $rating = null;
 
     /**
      * @var Collection<int, Vehicle>
@@ -103,7 +129,7 @@ class Supplier
 
     public function setAddress(?string $address): static
     {
-        $this->address = $address;
+        $this->address = $address ? trim($address) : null;
         return $this;
     }
 
@@ -114,7 +140,7 @@ class Supplier
 
     public function setCity(?string $city): static
     {
-        $this->city = $city;
+        $this->city = $city ? trim($city) : null;
         return $this;
     }
 
@@ -136,7 +162,7 @@ class Supplier
 
     public function setCountry(?string $country): static
     {
-        $this->country = $country;
+        $this->country = $country ? trim($country) : null;
         return $this;
     }
 
@@ -147,7 +173,7 @@ class Supplier
 
     public function setSiret(?string $siret): static
     {
-        $this->siret = $siret;
+        $this->siret = $siret ? strtoupper(trim($siret)) : null;
         return $this;
     }
 
@@ -158,7 +184,7 @@ class Supplier
 
     public function setEmail(?string $email): static
     {
-        $this->email = $email;
+        $this->email = $email ? strtolower(trim($email)) : null;
         return $this;
     }
 
@@ -169,7 +195,7 @@ class Supplier
 
     public function setPhone(?string $phone): static
     {
-        $this->phone = $phone;
+        $this->phone = $phone ? trim($phone) : null;
         return $this;
     }
 

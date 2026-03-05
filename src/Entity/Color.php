@@ -6,7 +6,7 @@ use App\Repository\ColorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Vehicle; // ✅ AJOUT IMPORTANT
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ColorRepository::class)]
 class Color
@@ -16,12 +16,20 @@ class Color
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50, unique: true)]
+    #[Assert\NotBlank(message: "Le nom de la couleur est obligatoire")]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "La couleur doit contenir au moins {{ limit }} caractères",
+        maxMessage: "La couleur ne peut dépasser {{ limit }} caractères"
+    )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-ZÀ-ÿ\s\-]+$/",
+        message: "La couleur contient des caractères invalides"
+    )]
     private ?string $name = null;
 
-    /**
-     * @var Collection<int, Vehicle>
-     */
     #[ORM\OneToMany(mappedBy: 'color', targetEntity: Vehicle::class)]
     private Collection $vehicles;
 
@@ -42,7 +50,7 @@ class Color
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->name = ucfirst(strtolower($name));
         return $this;
     }
 
@@ -52,26 +60,5 @@ class Color
     public function getVehicles(): Collection
     {
         return $this->vehicles;
-    }
-
-    public function addVehicle(Vehicle $vehicle): static
-    {
-        if (!$this->vehicles->contains($vehicle)) {
-            $this->vehicles->add($vehicle);
-            $vehicle->setColor($this); // côté propriétaire
-        }
-
-        return $this;
-    }
-
-    public function removeVehicle(Vehicle $vehicle): static
-    {
-        if ($this->vehicles->removeElement($vehicle)) {
-            if ($vehicle->getColor() === $this) {
-                $vehicle->setColor(null);
-            }
-        }
-
-        return $this;
     }
 }

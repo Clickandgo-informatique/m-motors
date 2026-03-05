@@ -16,22 +16,33 @@ class Variant
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 150)]
+    #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le nom de la variante est obligatoire.")]
     #[Assert\Length(
-        min: 1,
-        max: 150,
-        minMessage: "Le nom doit contenir au moins {{ limit }} caractère.",
-        maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères."
+        min: 2,
+        max: 255,
+        minMessage: "La variante doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "La variante ne peut pas dépasser {{ limit }} caractères."
     )]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(inversedBy: "variants")]
+    /*
+    ==========================
+    MODEL
+    ==========================
+    */
+
+    #[ORM\ManyToOne(inversedBy: 'variants')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "Le modèle est obligatoire.")]
     private ?Model $model = null;
 
-    #[ORM\OneToMany(mappedBy: "variant", targetEntity: VehicleModel::class)]
+    /*
+    ==========================
+    VEHICLE MODELS
+    ==========================
+    */
+
+    #[ORM\OneToMany(mappedBy: 'variant', targetEntity: VehicleModel::class)]
     private Collection $vehicleModels;
 
     public function __construct()
@@ -44,6 +55,12 @@ class Variant
         return $this->id;
     }
 
+    /*
+    ==========================
+    NAME
+    ==========================
+    */
+
     public function getName(): ?string
     {
         return $this->name;
@@ -54,6 +71,12 @@ class Variant
         $this->name = $name;
         return $this;
     }
+
+    /*
+    ==========================
+    MODEL
+    ==========================
+    */
 
     public function getModel(): ?Model
     {
@@ -66,6 +89,12 @@ class Variant
         return $this;
     }
 
+    /*
+    ==========================
+    VEHICLE MODELS
+    ==========================
+    */
+
     public function getVehicleModels(): Collection
     {
         return $this->vehicleModels;
@@ -74,7 +103,7 @@ class Variant
     public function addVehicleModel(VehicleModel $vehicleModel): static
     {
         if (!$this->vehicleModels->contains($vehicleModel)) {
-            $this->vehicleModels[] = $vehicleModel;
+            $this->vehicleModels->add($vehicleModel);
             $vehicleModel->setVariant($this);
         }
 
