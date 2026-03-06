@@ -23,7 +23,8 @@ class VehicleController extends AbstractController
         VehicleRepository $vehicleRepository
     ): JsonResponse {
 
-        $term = $request->query->get('q', '');
+        $term = $request->query->all('vehicle')['vehicleModelSearch'] ?? '';
+
         $page = $request->query->getInt('page', 1);
         $limit = 10;
         $offset = ($page - 1) * $limit;
@@ -74,6 +75,51 @@ class VehicleController extends AbstractController
             'vehicles' => $vehicles,
         ]);
     }
+    #[Route('/vehicles/new', name: 'vehicle_new', methods: ['GET', 'POST'])]
+    public function new(
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+
+        $vehicle = new Vehicle();
+        $form = $this->createForm(VehicleType::class, $vehicle);
+        $title = "Ajouter un véhicule";
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $em->persist($vehicle);
+            $em->flush();
+
+            $this->addFlash('message', 'Le véhicule a été créé avec succès.');
+
+            if ($request->isXmlHttpRequest()) {
+                return new Response("OK");
+            }
+
+            return $this->redirectToRoute('vehicles');
+        }
+
+        if ($request->isXmlHttpRequest()) {
+
+            $html = $this->renderView('vehicles/_vehicle_form.html.twig', [
+                'form' => $form->createView(),
+                'vehicle' => $vehicle,
+                'title' => $title,
+            ]);
+
+            return new JsonResponse([
+                'html' => $html
+            ]);
+        }
+
+        return $this->render('vehicles/_vehicle_form.html.twig', [
+            'form' => $form->createView(),
+            'vehicle' => $vehicle,
+            'title' => $title,
+        ]);
+    }
 
     #[Route('/vehicles/{id}/edit', name: 'vehicle_edit', methods: ['GET', 'POST'])]
     public function edit(
@@ -83,7 +129,7 @@ class VehicleController extends AbstractController
     ): Response {
 
         $form = $this->createForm(VehicleType::class, $vehicle);
-        $title = "Modifier un modèle de véhicule";
+        $title = "Modifier une fiche véhicule";
 
         $form->handleRequest($request);
 

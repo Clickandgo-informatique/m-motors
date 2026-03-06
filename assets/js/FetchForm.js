@@ -1,41 +1,63 @@
-console.log("FetchForm.js instancié");
+console.log("FetchForm.js chargé");
+
+/**
+ * FetchForm
+ *
+ * Module générique d'autocomplete / recherche AJAX
+ * réutilisable dans n'importe quel projet.
+ *
+ * Tout est configuré via dataset HTML.
+ */
 
 export default class FetchForm {
   constructor(input) {
+
+    /* ELEMENTS */
+
     this.input = input;
     this.form = input.closest("form");
 
     if (!this.form) {
-      console.warn("FetchForm: input hors d'un <form>", input);
+      console.warn("FetchForm : input hors formulaire");
       return;
     }
 
-    /* CONFIG DATASET */
+    /* CONFIGURATION */
+
     this.endpoint = this.form.dataset.searchForm;
+    this.queryParam = this.form.dataset.queryParam || "q";
 
-    this.dropdownClass = this.form.dataset.dropdownClass;
-    this.itemClass = this.form.dataset.itemClass;
-    this.linkClass = this.form.dataset.linkClass;
-    this.noResultsClass = this.form.dataset.noResultsClass;
-    this.urlField = this.form.dataset.urlField;
-    this.itemUrlPattern = this.form.dataset.itemUrl;
+    this.dropdownClass = this.form.dataset.dropdownClass || "dropdown-results";
+    this.itemClass = this.form.dataset.itemClass || "dropdown-item";
+    this.linkClass = this.form.dataset.linkClass || "dropdown-link";
+    this.noResultsClass = this.form.dataset.noResultsClass || "dropdown-no-results";
 
-    this.resultDivSelector = input.dataset.resultDiv;
+    this.itemUrlPattern = this.form.dataset.itemUrl || null;
+
+    /* RESULT DIV */
+
+    this.resultDivSelector = this.input.dataset.resultDiv;
     this.resultDiv = document.querySelector(this.resultDivSelector);
 
-    this.autocomplete = input.dataset.autocomplete === "true";
-    this.defaultSuggestions = input.dataset.defaultSuggestions === "true";
-    this.highlight = input.dataset.highlight === "true";
+    /* OPTIONS */
 
-    this.toggleBtn = this.form.querySelector("[data-search-toggle]");
+    this.autocomplete = this.input.dataset.autocomplete === "true";
 
-    this.activeIndex = -1;
-    this.debounceTimer = null;
+    this.hiddenSelector = this.input.dataset.hiddenTarget || null;
+    this.hiddenInput = this.hiddenSelector
+      ? document.querySelector(this.hiddenSelector)
+      : null;
+
+    /* ETAT */
+
     this.page = 1;
     this.loadingMore = false;
+    this.debounceTimer = null;
+
+    this.activeIndex = -1;
 
     if (!this.endpoint || !this.resultDiv) {
-      console.warn("FetchForm: configuration incomplète", input);
+      console.warn("FetchForm configuration invalide");
       return;
     }
 
@@ -43,71 +65,35 @@ export default class FetchForm {
     this.bindEvents();
   }
 
-  /* ----------------------------- */
-  /* NORMALISATION UNIVERSELLE */
-  /* ----------------------------- */
-  normalizePayload(payload) {
-    // Cas 1 : tableau simple
-    if (Array.isArray(payload)) {
-      return {
-        items: payload,
-        total: payload.length
-      };
-    }
+  /* ========================= */
+  /* SPINNER                   */
+  /* ========================= */
 
-    // Cas 2 : détection automatique clé tableau
-    const arrayKey = ["items", "results", "data"].find(key =>
-      Array.isArray(payload?.[key])
-    );
-
-    if (arrayKey) {
-      return {
-        items: payload[arrayKey],
-        total: payload.total ?? payload[arrayKey].length
-      };
-    }
-
-    console.warn("Format JSON inattendu :", payload);
-    return { items: [], total: 0 };
-  }
-
-  /* ----------------------------- */
-  /* SPINNER */
-  /* ----------------------------- */
   injectSpinner() {
     this.spinner = document.createElement("div");
     this.spinner.classList.add("dropdown-spinner");
     this.spinner.innerHTML = `<div class="spinner-circle"></div>`;
-    this.resultDiv.appendChild(this.spinner);
   }
 
   showSpinner() {
-    this.spinner.classList.add("visible");
+    this.resultDiv.appendChild(this.spinner);
   }
 
   hideSpinner() {
-    this.spinner.classList.remove("visible");
+    this.spinner.remove();
   }
 
-  /* ----------------------------- */
-  /* EVENTS */
-  /* ----------------------------- */
+  /* ========================= */
+  /* EVENTS                    */
+  /* ========================= */
+
   bindEvents() {
-    this.resultDiv.addEventListener("scroll", () => {
-      if (
-        this.resultDiv.scrollTop + this.resultDiv.clientHeight >=
-        this.resultDiv.scrollHeight - 20
-      ) {
-        this.loadMore();
-      }
-    });
 
     this.input.addEventListener("input", () => {
-      this.updateToggleButton();
 
       const q = this.input.value.trim();
 
-      if (!q && !this.defaultSuggestions) {
+      if (!q) {
         this.clearResults();
         return;
       }
@@ -115,187 +101,209 @@ export default class FetchForm {
       this.debounce(() => this.search(q), 250);
     });
 
-    if (this.toggleBtn) {
-      this.toggleBtn.addEventListener("click", () => {
-        if (this.input.value.trim() !== "") {
-          this.input.value = "";
-          this.clearResults();
-          this.updateToggleButton();
-          this.input.focus();
-        } else {
-          this.input.focus();
-        }
-      });
-    }
-
-    this.input.addEventListener("keydown", e => {
-      const items = this.resultDiv.querySelectorAll(`.${this.itemClass}`);
-      if (!items.length) return;
-
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        this.activeIndex = (this.activeIndex + 1) % items.length;
-        this.updateActiveItem(items);
-      }
-
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        this.activeIndex = (this.activeIndex - 1 + items.length) % items.length;
-        this.updateActiveItem(items);
-      }
-
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const link = items[this.activeIndex]?.querySelector(
-          `.${this.linkClass}`
-        );
-        if (link) window.location.href = link.href;
-      }
-    });
-
-    document.addEventListener("click", e => {
+    document.addEventListener("click", (e) => {
       if (!this.form.contains(e.target)) {
         this.clearResults();
       }
     });
+
+    this.resultDiv.addEventListener("scroll", () => {
+
+      if (
+        this.resultDiv.scrollTop + this.resultDiv.clientHeight >=
+        this.resultDiv.scrollHeight - 20
+      ) {
+        this.loadMore();
+      }
+
+    });
   }
 
-  /* ----------------------------- */
-  updateToggleButton() {
-    if (!this.toggleBtn) return;
-
-    if (this.input.value.trim() === "") {
-      this.toggleBtn.textContent = "🔍";
-      this.toggleBtn.classList.remove("active");
-    } else {
-      this.toggleBtn.textContent = "✖";
-      this.toggleBtn.classList.add("active");
-    }
-  }
+  /* ========================= */
+  /* DEBOUNCE                  */
+  /* ========================= */
 
   debounce(callback, delay) {
+
     clearTimeout(this.debounceTimer);
+
     this.debounceTimer = setTimeout(callback, delay);
+
   }
 
-  /* ----------------------------- */
+  /* ========================= */
+  /* SEARCH AJAX               */
+  /* ========================= */
+
   async search(q) {
-    this.hasSearched = true;
+
     this.page = 1;
 
-    this.resultDiv.classList.add("active");
+    const url = `${this.endpoint}?${this.queryParam}=${encodeURIComponent(q)}`;
+
     this.showSpinner();
 
-    const url = `${this.endpoint}?${this.input.name}=${encodeURIComponent(q)}`;
-
     try {
+
       const response = await fetch(url);
-      const raw = await response.json();
-      const payload = this.normalizePayload(raw);
-      this.renderResults(payload, q);
+
+      const data = await response.json();
+
+      this.renderResults(data);
+
     } catch (e) {
-      console.error("FetchForm error:", e);
-    } finally {
-      this.hideSpinner();
+
+      console.error("FetchForm error", e);
+
     }
+
+    this.hideSpinner();
   }
 
-  /* ----------------------------- */
-  renderResults(payload, q) {
-    const items = payload.items;
-    const total = payload.total;
+  /* ========================= */
+  /* RENDER RESULTS            */
+  /* ========================= */
+
+  renderResults(items) {
 
     this.resultDiv.innerHTML = "";
-    this.resultDiv.appendChild(this.spinner);
-
-    const count = document.createElement("div");
-    count.classList.add("dropdown-count");
-    count.textContent = `${total} résultat${total > 1 ? "s" : ""}`;
-    this.resultDiv.appendChild(count);
 
     if (!items.length) {
-      this.resultDiv.innerHTML += `
-        <div class="${this.noResultsClass}">Aucun résultat</div>
-      `;
-      this.resultDiv.classList.add("active");
+
+      const div = document.createElement("div");
+
+      div.className = this.noResultsClass;
+      div.textContent = "Aucun résultat";
+
+      this.resultDiv.appendChild(div);
+
       return;
     }
 
-    this.activeIndex = -1;
-    this.appendItems(items, q);
+    items.forEach(item => {
+
+      const wrapper = document.createElement("div");
+      wrapper.classList.add(this.itemClass);
+
+      wrapper.dataset.id = item.id;
+
+      const link = document.createElement("a");
+
+      link.classList.add(this.linkClass);
+      link.href = "#";
+
+      const label =
+        item.label ||
+        item.name ||
+        Object.values(item).filter(v => typeof v === "string").join(" ");
+
+      link.textContent = label;
+
+      wrapper.appendChild(link);
+
+      wrapper.addEventListener("click", () => this.selectItem(wrapper, label));
+
+      this.resultDiv.appendChild(wrapper);
+    });
+
+    this.resultDiv.classList.add("active");
   }
 
-  /* ----------------------------- */
-  appendItems(items, q = "") {
-    items.forEach(item => {
-      const div = document.createElement("div");
-      div.classList.add(this.itemClass);
+  /* ========================= */
+  /* SELECT ITEM               */
+  /* ========================= */
 
-      let text = Object.entries(item)
-        .filter(
-          ([key, val]) => typeof val === "string" && key !== this.urlField
-        )
-        .map(([_, val]) => val)
-        .join(" ");
+  selectItem(item, label) {
 
-      if (this.highlight && q) {
-        const regex = new RegExp(`(${q})`, "gi");
-        text = text.replace(regex, "<mark>$1</mark>");
+    const id = item.dataset.id;
+
+    if (this.autocomplete) {
+
+      this.input.value = label;
+
+      if (this.hiddenInput) {
+        this.hiddenInput.value = id;
       }
 
-      const url = this.itemUrlPattern.replace("__ID__", item.id);
-
-      div.innerHTML = `
-        <a href="#" class="${this.linkClass}"
-           data-ajax-modal="${url}">
-          ${text}
-        </a>
-      `;
-
-      this.resultDiv.appendChild(div);
-    });
-  }
-
-  /* ----------------------------- */
-  updateActiveItem(items) {
-    items.forEach((item, index) => {
-      item.classList.toggle("active", index === this.activeIndex);
-    });
-
-    const activeLink = items[this.activeIndex]?.querySelector(
-      `.${this.linkClass}`
-    );
-    if (activeLink) activeLink.scrollIntoView({ block: "nearest" });
-  }
-
-  /* ----------------------------- */
-  clearResults() {
-    if (this.hasSearched) {
-      this.resultDiv.innerHTML = "";
-      this.resultDiv.classList.remove("active");
-      this.activeIndex = -1;
+      this.clearResults();
+      return;
     }
+
+    if (this.itemUrlPattern) {
+
+      const url = this.itemUrlPattern.replace("__ID__", id);
+
+      window.location.href = url;
+    }
+
+    this.clearResults();
   }
 
-  /* ----------------------------- */
-  async loadMore() {
-    if (this.loadingMore) return;
-    this.loadingMore = true;
+  /* ========================= */
+  /* CLEAR                     */
+  /* ========================= */
 
+  clearResults() {
+
+    this.resultDiv.innerHTML = "";
+    this.resultDiv.classList.remove("active");
+
+  }
+
+  /* ========================= */
+  /* LOAD MORE                 */
+  /* ========================= */
+
+  async loadMore() {
+
+    if (this.loadingMore) return;
+
+    this.loadingMore = true;
     this.page++;
 
-    const url = `${this.endpoint}?${this.input.name}=${encodeURIComponent(
+    const url = `${this.endpoint}?${this.queryParam}=${encodeURIComponent(
       this.input.value
     )}&page=${this.page}`;
 
     try {
-      const response = await fetch(url);
-      const raw = await response.json();
-      const payload = this.normalizePayload(raw);
 
-      this.appendItems(payload.items, this.input.value);
+      const response = await fetch(url);
+
+      const data = await response.json();
+
+      data.forEach(item => {
+
+        const wrapper = document.createElement("div");
+        wrapper.classList.add(this.itemClass);
+
+        wrapper.dataset.id = item.id;
+
+        const link = document.createElement("a");
+
+        link.classList.add(this.linkClass);
+        link.href = "#";
+
+        const label =
+          item.label ||
+          item.name ||
+          Object.values(item).filter(v => typeof v === "string").join(" ");
+
+        link.textContent = label;
+
+        wrapper.appendChild(link);
+
+        wrapper.addEventListener("click", () =>
+          this.selectItem(wrapper, label)
+        );
+
+        this.resultDiv.appendChild(wrapper);
+
+      });
+
     } catch (e) {
-      console.error("FetchForm loadMore error:", e);
+
+      console.error("loadMore error", e);
+
     }
 
     this.loadingMore = false;

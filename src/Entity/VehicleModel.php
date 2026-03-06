@@ -161,6 +161,17 @@ class VehicleModel
         $this->vehicles = new ArrayCollection();
     }
 
+
+    public function __toString(): string
+    {
+        return trim(
+            ($this->brand?->getName() ?? '') . ' ' .
+                ($this->model?->getName() ?? '') . ' ' .
+                ($this->variant?->getName() ?? '')
+        );
+    }
+
+
     /*
     |--------------------------------------------------------------------------
     | GETTERS / SETTERS

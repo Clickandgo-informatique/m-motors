@@ -123,6 +123,9 @@ class Vehicle
     #[ORM\Column(type: 'integer')]
     private ?int $price = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $firstRegistrationDate = null;
+
 
     /*
     ===============================
@@ -311,6 +314,18 @@ class Vehicle
     public function setStatus(VehicleStatus $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getFirstRegistrationDate(): ?\DateTime
+    {
+        return $this->firstRegistrationDate;
+    }
+
+    public function setFirstRegistrationDate(?\DateTime $firstRegistrationDate): static
+    {
+        $this->firstRegistrationDate = $firstRegistrationDate;
 
         return $this;
     }

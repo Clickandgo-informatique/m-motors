@@ -1,66 +1,163 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{title}}{% endblock %}
+{% block title %}
+{{ title }}
+{% endblock %}
 
 {% block body %}
-    <h1 class="text-center">{{title}}</h1>
-{{ form_start(form) }}
+
+<h1 class="text-center">{{ title }}</h1>
+
+{{ form_start(form, {
+    attr: {
+        'data-search-form': path('vehicle_model_search'),
+        'data-query-param': 'q',
+        'data-dropdown-class': 'dropdown-results',
+        'data-item-class': 'dropdown-item',
+        'data-link-class': 'dropdown-link',
+        'data-no-results-class': 'dropdown-no-results',
+        'data-item-url': '/vehicles/models/__ID__/edit'
+    }
+}) }}
 
 <div class="form-row">
-    {{ form_label(form.vehicleModel) }}
-    {{ form_widget(form.vehicleModel) }}
-    {{ form_errors(form.vehicleModel) }}
-</div>
 
-<div>
-    {{ form_label(form.vin) }}
-    {{ form_widget(form.vin) }}
-    {{ form_errors(form.vin) }}
-</div>
+    <div class="form-group">
+        {{ form_label(form.status) }}
+        {{ form_widget(form.status) }}
+        {{ form_errors(form.status) }}
+    </div>
 
-<div>
-    {{ form_label(form.registrationNumber) }}
-    {{ form_widget(form.registrationNumber) }}
-    {{ form_errors(form.registrationNumber) }}
+    <div class="form-group">
+        {{ form_label(form.supplier) }}
+        {{ form_widget(form.supplier) }}
+        {{ form_errors(form.supplier) }}
+    </div>
+
 </div>
 
 <div class="form-row">
-    {{ form_label(form.year) }}
-    {{ form_widget(form.year) }}
-    {{ form_errors(form.year) }}
 
-    {{ form_label(form.mileage) }}
-    {{ form_widget(form.mileage) }}
-    {{ form_errors(form.mileage) }}
+    <div class="form-group autocomplete-container">
+
+        {{ form_label(form.vehicleModelSearch) }}
+
+        <div class="dropdown-wrapper">
+
+            {{ form_widget(form.vehicleModelSearch, {
+                attr: {
+                    'autocomplete': 'off',
+                    'data-autocomplete': 'true',
+                    'data-result-div': '#vehicle-model-results',
+                    'data-hidden-target': '#vehicle_vehicleModel'
+                }
+            }) }}
+
+            {{ form_widget(form.vehicleModel, {
+                attr: { style: 'display:none;' }
+            }) }}
+
+            <div
+                id="vehicle-model-results"
+                class="dropdown-results">
+            </div>
+
+        </div>
+
+        {{ form_errors(form.vehicleModelSearch) }}
+
+    </div>
+
 </div>
 
-<div>
-    {{ form_label(form.firstRegistrationDate) }}
-    {{ form_widget(form.firstRegistrationDate) }}
-    {{ form_errors(form.firstRegistrationDate) }}
+<div class="form-row">
+
+    <div class="form-group">
+        {{ form_label(form.vin) }}
+        {{ form_widget(form.vin) }}
+        {{ form_errors(form.vin) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.registrationNumber) }}
+        {{ form_widget(form.registrationNumber) }}
+        {{ form_errors(form.registrationNumber) }}
+    </div>
+
 </div>
 
-<div>
-    {{ form_label(form.price) }}
-    {{ form_widget(form.price) }}
-    {{ form_errors(form.price) }}
+<div class="form-row">
+
+    <div class="form-group">
+        {{ form_label(form.year) }}
+        {{ form_widget(form.year) }}
+        {{ form_errors(form.year) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.mileage) }}
+        {{ form_widget(form.mileage) }}
+        {{ form_errors(form.mileage) }}
+    </div>
+
 </div>
 
-<div>
-    {{ form_label(form.status) }}
-    {{ form_widget(form.status) }}
-    {{ form_errors(form.status) }}
+<div class="form-row">
+
+    <div class="form-group">
+        {{ form_label(form.firstRegistrationDate) }}
+        {{ form_widget(form.firstRegistrationDate) }}
+        {{ form_errors(form.firstRegistrationDate) }}
+    </div>
+
 </div>
 
-<div>
-    {{ form_label(form.color) }}
-    {{ form_widget(form.color) }}
-    {{ form_errors(form.color) }}
+<div class="form-row">
+
+    <div class="form-group">
+        {{ form_label(form.color) }}
+        {{ form_widget(form.color) }}
+        {{ form_errors(form.color) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.fuelType) }}
+        {{ form_widget(form.fuelType) }}
+        {{ form_errors(form.fuelType) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.gear) }}
+        {{ form_widget(form.gear) }}
+        {{ form_errors(form.gear) }}
+    </div>
+
 </div>
 
+<div class="form-row">
+
+    <div class="form-group">
+        {{ form_label(form.price) }}
+        {{ form_widget(form.price) }}
+        {{ form_errors(form.price) }}
+    </div>
+
+</div>
+
+<div class="form-row">
+
+    <div class="form-group">
+        {{ form_label(form.features) }}
+        {{ form_widget(form.features) }}
+        {{ form_errors(form.features) }}
+    </div>
+
+</div>
 
 <button type="submit">
-    {{ button_label|default('Enregistrer') }}
+{{ button_label|default('Enregistrer') }}
 </button>
 
 {{ form_end(form) }}
+
+{% endblock %}
