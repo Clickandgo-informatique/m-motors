@@ -23,11 +23,8 @@
 }
 .nav-toggle {
   display: none;
-  background:var(--bg-primary);
-  color:var(--color-primary);
-  border:1px solid var(--color-primary);
+  background:var(--color-primary)
 }
-
 /* ========================================================= */
 /* NAVBAR LINKS */
 /* ========================================================= */

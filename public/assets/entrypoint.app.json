@@ -2,6 +2,7 @@
     "\/assets\/stimulus_bootstrap.js",
     "\/assets\/js\/theme.js",
     "\/assets\/styles\/app.css",
+    "\/assets\/js\/sidebar.js",
     "\/assets\/js\/DynamicFormCollection.js",
     "\/assets\/js\/FetchForm.js",
     "\/assets\/js\/AjaxManager.js",
