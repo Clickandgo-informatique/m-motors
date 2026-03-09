@@ -1,0 +1,70 @@
+@startuml
+title Architecture du projet et stratégie de tests
+
+actor Utilisateur
+actor Developpeur
+
+rectangle "Frontend" {
+  [Interface Web]
+}
+
+rectangle "Backend Application" {
+
+  package "API Layer" {
+    [Controllers / Routes]
+  }
+
+  package "Business Logic" {
+    [Services]
+  }
+
+  package "Data Layer" {
+    [Models]
+    [Repositories]
+  }
+
+}
+
+database "Database"
+
+rectangle "Tests" {
+
+  package "Unit Tests" {
+    [test_models]
+    [test_services]
+  }
+
+  package "Functional Tests" {
+    [test_api]
+  }
+
+  package "E2E Tests" {
+    [test_user_workflow]
+  }
+
+}
+
+rectangle "CI/CD Pipeline" {
+  [Build]
+  [Run Tests]
+  [Deploy]
+}
+
+Utilisateur --> [Interface Web]
+[Interface Web] --> [Controllers / Routes]
+[Controllers / Routes] --> [Services]
+[Services] --> [Repositories]
+[Repositories] --> Database
+
+Developpeur --> "CI/CD Pipeline"
+
+"CI/CD Pipeline" --> [Build]
+[Build] --> [Run Tests]
+[Run Tests] --> [Deploy]
+
+[test_models] --> [Models]
+[test_services] --> [Services]
+[test_api] --> [Controllers / Routes]
+[test_user_workflow] --> [Interface Web]
+
+@enduml

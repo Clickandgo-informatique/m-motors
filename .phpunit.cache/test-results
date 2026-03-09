@@ -1,0 +1,1 @@
+{"version":2,"defects":{"App\\Tests\\Service\\PriceCalculatorTest::testCalculate":8,"App\\Tests\\Integration\\Service\\PriceCalculatorTest::testCalculate":8},"times":{"App\\Tests\\Unit\\SanityTest::testTrue":0,"App\\Tests\\Service\\PriceCalculatorTest::testCalculate":0.003,"App\\Tests\\Integration\\Service\\PriceCalculatorTest::testCalculate":0}}

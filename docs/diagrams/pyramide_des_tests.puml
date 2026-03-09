@@ -1,0 +1,22 @@
+@startuml
+title Pyramide des tests
+
+package "Tests E2E" {
+  [Scénarios utilisateur complets]
+}
+
+package "Tests fonctionnels" {
+  [Tests API]
+  [Tests intégration]
+}
+
+package "Tests unitaires" {
+  [Tests modèles]
+  [Tests services]
+  [Tests utilitaires]
+}
+
+[Tests unitaires] -up-> [Tests fonctionnels]
+[Tests fonctionnels] -up-> [Scénarios utilisateur complets]
+
+@enduml

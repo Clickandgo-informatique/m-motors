@@ -1,0 +1,24 @@
+@startuml
+title Pipeline CI/CD avec exécution des tests
+
+actor Developer
+
+Developer -> "Git Repository" : Push code
+
+"Git Repository" -> "CI Pipeline" : Trigger build
+
+rectangle "CI Pipeline" {
+    component "Build"
+    component "Tests unitaires"
+    component "Tests fonctionnels"
+    component "Tests E2E"
+}
+
+"CI Pipeline" -> "Build"
+"Build" -> "Tests unitaires"
+"Tests unitaires" -> "Tests fonctionnels"
+"Tests fonctionnels" -> "Tests E2E"
+
+"Tests E2E" -> "Déploiement" : si succès
+
+@enduml

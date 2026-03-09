@@ -1,0 +1,32 @@
+@startuml
+title Architecture des tests
+
+folder tests {
+
+  folder unit {
+    [test_models.py]
+    [test_services.py]
+  }
+
+  folder functional {
+    [test_api.py]
+  }
+
+  folder e2e {
+    [test_user_workflow.py]
+  }
+
+}
+
+package "Application" {
+  [Models]
+  [Services]
+  [API]
+}
+
+[test_models.py] --> [Models]
+[test_services.py] --> [Services]
+[test_api.py] --> [API]
+[test_user_workflow.py] --> [API]
+
+@enduml
