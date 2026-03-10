@@ -1,13 +1,31 @@
-/var/
+### Symfony ###
+/var/cache/
+/var/log/
+/var/sessions/
+
+### Dependencies ###
 /vendor/
-/.env.local
-/.env.local.php
-/.env.*.local
-/.phpunit.result.cache
-/phpunit.xml
-/phpunit.xml.dist
+/node_modules/
+
+### Environment ###
+.env.local
+.env.*.local
+.env.local.php
+
+### PHPUnit ###
+.phpunit.cache/
+
+### IDE ###
 /.idea/
 /.vscode/
-/node_modules/
-/public/bundles/
+
+### Assets ###
 /public/build/
+/public/bundles/
+
+### Composer ###
+.composer/
+
+### Logs ###
+npm-debug.log
+yarn-error.log
