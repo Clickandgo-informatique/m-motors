@@ -3,6 +3,8 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Brand;
+use App\Entity\VehicleModel;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -61,9 +63,66 @@ class BrandTest extends KernelTestCase
         $brand = new Brand();
 
         $brand->setName(str_repeat('a', 121));
-
         $errors = $this->validator->validate($brand);
-
         $this->assertGreaterThan(0, count($errors));
+    }
+
+    //Tests concernant la collection vehicleModel
+
+    //Vérification que la collection est vide
+    public function testVehicleModelsCollectionIsEmptyByDefault(): void
+    {
+        $brand = new Brand();
+
+        //On vérifie que vehicleModels soit bien une collection
+        $this->assertInstanceOf(Collection::class, $brand->getVehicleModels());
+        //On vérifie que la collection est vide au départ
+        $this->assertCount(0, $brand->getVehicleModels());
+    }
+
+    public function testAddVehicleModel(): void
+    {
+        $brand = new Brand();
+        $vehicleModel = new VehicleModel();
+
+        $brand->addVehicleModel($vehicleModel);
+
+        //On vérifie la présence dans la collection
+        $this->assertTrue($brand->getVehicleModels()->contains($vehicleModel));
+
+        $this->assertCount(1, $brand->getVehicleModels());
+
+        //On verifie que la relation bidirectionnelle fonctionne
+        $this->assertSame($brand, $vehicleModel->getBrand());
+    }
+
+    public function testVehicleModelIsNotDuplicated(): void
+    {
+        $brand = new Brand();
+
+        $vehicleModel = new VehicleModel();
+
+        //On crée 2 fois un vehicleModel
+        $brand->addVehicleModel($vehicleModel);
+        $brand->addVehicleModel($vehicleModel);
+
+        //On vérifie que l'instance soit bonne dans la collection
+        $this->assertTrue($brand->getVehicleModels()->contains($vehicleModel));
+
+        //On vérifie qu'un seul vehicleModel est généré
+        $this->assertCount(1, $brand->getVehicleModels());
+    }
+
+    public function testRemoveVehicleModel(): void
+    {
+        $brand = new Brand();
+        $vehicleModel = new VehicleModel();
+        $brand->addVehicleModel($vehicleModel);
+        $brand->removeVehicleModel($vehicleModel);
+
+        $this->assertCount(0, $brand->getVehicleModels());
+
+        //On vérifie la relation inverse
+        $this->assertNull($vehicleModel->getBrand());
     }
 }
