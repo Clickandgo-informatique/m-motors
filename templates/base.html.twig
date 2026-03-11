@@ -1,68 +1,57 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>
+			{% block title %}Bienvenue !
+			{% endblock %}
+		</title>
+		{# <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>"> {% block stylesheets %}{% endblock %} #}
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 
-    <title>
-        {% block title %}Bienvenue !{% endblock %}
-    </title>
+		{% block javascripts %}
+			{% block importmap %}
+				{{ importmap('app', { defer: true }) }}
+			{% endblock %}
+		{% endblock %}
+	</head>
 
-    {# Font Awesome #}
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+	<body>
+		{{ include("partials/_header.html.twig") }}
 
-    {# JS / Importmap Symfony #}
-    {% block javascripts %}
-        {{ importmap('app', { defer: true }) }}
-    {% endblock %}
+		<div class="app-layout">			
+				{{ include("partials/_sidebar.html.twig") }}		
 
-</head>
+			<div class="app-main">
 
-<body>
+				<main class="main-content">
+					<div class="container section">
+						{{ include('partials/_flash_messages.html.twig') }}
+						{% block body %}{% endblock %}
+					</div>
+				</main>
 
-                {{ include("partials/_header.html.twig") }}    
-<div class="app-layout">
+				<footer>
+					<div class="container">
+						{{ include("partials/_footer.html.twig") }}
+					</div>
+				</footer>
+			</div>
+		</div>
 
-    <aside class="sidebar" id="sidebar">
+		<!-- MODALE DOIT ÊTRE ICI, DANS LE BODY -->
+		<div id="modal">
+			<div class="modal-backdrop" data-modal-close></div>
 
-        {{ include("partials/_sidebar.html.twig") }}
-    </aside>
+			<div id="modal-content">
+				<button class="modal-close" data-modal-close>&times;</button>
 
-    <div class="app-main">                 
+				<div
+					id="modal-body"><!-- Le contenu AJAX sera injecté ici -->
+				</div>
+			</div>
+		</div>
 
-        <main class="main-content">
-            <div class="container section">
-                {% block body %}{% endblock %}
-            </div>
-        </main>
-
-        <footer>
-            <div class="container">
-                {{ include("partials/_footer.html.twig") }}
-            </div>
-        </footer>
-
-    </div>
-
-</div>
-
-{# MODALE #}
-
-<div id="modal">
-    <div class="modal-backdrop" data-modal-close></div>
-
-    <div id="modal-content">
-
-        <button class="modal-close" data-modal-close>
-            &times;
-        </button>
-
-        <div id="modal-body">
-            {# contenu injecté en AJAX #}
-        </div>
-
-    </div>
-</div>
-
-</body>
+	</body>
 </html>

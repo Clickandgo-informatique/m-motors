@@ -1,8 +1,0 @@
-.sidebar {
-  display: flex;
-  flex-direction: row;
-  min-width: 250px;
-  min-height: 100vh;
-  overflow-y: scroll;
-  border: 1px solid darkgray;
-}

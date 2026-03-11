@@ -5,9 +5,9 @@ services:
       dockerfile: docker/php/Dockerfile
     container_name: php
     working_dir: /var/www
-    user: "www-data"
     volumes:
       - ./:/var/www
+      - vendor:/var/www/vendor
     depends_on:
       - db
       - redis
@@ -57,3 +57,4 @@ services:
 
 volumes:
   pgdata:
+  vendor:

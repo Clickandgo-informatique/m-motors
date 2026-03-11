@@ -1,12 +1,15 @@
 {% extends "base.html.twig" %}
 
-{% block title %}M-Motors: {{ title }}{% endblock %}
+{% block title %}M-Motors:
+	{{ title }}
+{% endblock %}
 
 {% block body %}
-<a href="{{ path('vehicles_models') }}" class="btn btn-back">
-    <i class="fa-solid fa-list-ul"></i> Revenir à la liste
-</a>
+	<a href="{{ path('vehicles_models') }}" class="btn btn-back">
+		<i class="fa-solid fa-list-ul"></i>
+		Revenir à la liste
+	</a>
 
-<h1 class="text-center">{{ title }}</h1>
-{% include "partials/_vehicle_model_form.html.twig" %}
+	<h1 class="text-center">{{ title }}</h1>
+	{% include "vehicles/_vehicle_model_form.html.twig" %}
 {% endblock %}

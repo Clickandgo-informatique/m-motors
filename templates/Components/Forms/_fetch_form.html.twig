@@ -1,38 +1,15 @@
-<form method="get"
-      action="{{ action|default('') }}"
-      data-search-form="{{ action|default('') }}"
-      data-dropdown-class="{{ dropdownClass|default('dropdown-results') }}"
-      data-item-class="{{ itemClass|default('dropdown-item') }}"
-      data-link-class="{{ linkClass|default('dropdown-link') }}"
-      data-no-results-class="{{ noResultsClass|default('dropdown-no-results') }}"
-      data-url-field="{{ urlField|default('url') }}"
-      data-item-url="{{ itemUrl|default('') }}"
-      class="fetch-form">
+<form method="get" action="{{ action|default('') }}" data-search-form="{{ action|default('') }}" data-dropdown-class="{{ dropdownClass|default('dropdown-results') }}" data-item-class="{{ itemClass|default('dropdown-item') }}" data-link-class="{{ linkClass|default('dropdown-link') }}" data-no-results-class="{{ noResultsClass|default('dropdown-no-results') }}" data-url-field="{{ urlField|default('url') }}" data-item-url="{{ itemUrl|default('') }}" {% if ajaxModal|default(false) %} data-ajax-modal {% endif %} class="fetch-form">
 
-    <div class="form-row dropdown-wrapper">
+	<div class="form-row dropdown-wrapper">
 
-        <input type="text"
-               name="{{ name|default('q') }}"
-               value="{{ value|default('') }}"
-               placeholder="{{ placeholder|default('Rechercher...') }}"             
-               data-result-div="#{{ resultDiv|default('results') }}"
-               data-autocomplete="{{ autocomplete|default(false) ? 'true' : 'false' }}"
-               data-default-suggestions="{{ defaultSuggestions|default(false) ? 'true' : 'false' }}"
-               data-highlight="{{ highlight|default(false) ? 'true' : 'false' }}"
-        />
+		<input type="text" name="{{ name|default('q') }}" value="{{ value|default('') }}" placeholder="{{ placeholder|default('Rechercher...') }}" data-result-div="{{ resultDiv|default('results') }}" data-autocomplete="{{ autocomplete|default(false) ? 'true' : 'false' }}" data-default-suggestions="{{ defaultSuggestions|default(false) ? 'true' : 'false' }}" data-highlight="{{ highlight|default(false) ? 'true' : 'false' }}"/>
 
-        {# 🔍 Bouton toggle (loupe → croix) #}
-        <button type="button" class="search-toggle-btn" data-search-toggle>
-            🔍
-        </button>
+		<button type="button" class="search-toggle-btn" data-search-toggle>
+			🔍
+		</button>
 
-        {# Dropdown #}
-        <div id="{{ resultDiv|default('results') }}"
-             class="{{ dropdownClass|default('dropdown-results') }}"
-             data-pagination="{{ pagination|default(false) ? 'ajax' : '' }}"
-             data-pagination-mode="{{ paginationMode|default('load-more') }}"
-             data-pagination-limit="{{ paginationLimit|default(10) }}">
-        </div>
+		<div id="{{ resultDiv|default('results') }}" class="{{ dropdownClass|default('dropdown-results') }}" data-pagination="{{ pagination|default(false) ? 'ajax' : '' }}" data-pagination-mode="{{ paginationMode|default('load-more') }}" data-pagination-limit="{{ paginationLimit|default(10) }}"></div>
 
-    </div>
+	</div>
+
 </form>

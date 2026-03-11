@@ -1,77 +1,85 @@
 {% extends 'base.html.twig' %}
-{% block title %}M-Motors: Catalogue des modèles véhicules{% endblock %}
+{% block title %}M-Motors: Catalogue des modèles véhicules
+{% endblock %}
 
 {% block body %}
 
 
-<h1>Catalogue des modèles véhicules</h1>
+	<h1 class="text-center">Catalogue des modèles de véhicules</h1>
 
-{# Formulaire de recherche #}
-{% include "Components/Forms/_fetch_form.html.twig" with {
-     action: path('vehicle_model_search'),
-     resultDiv: 'vehicle-model-results',
-     placeholder:"Rechercher par marque ou modèle",
-     itemUrl: path('vehicle_model_edit', { id: '__ID__' }),
-     autocomplete: true
+	{# Formulaire de recherche #}
+	{% include "Components/Forms/_fetch_form.html.twig" with {
+    action: path('vehicle_model_search'),
+    queryParam: 'vehicle[vehicleModelSearch]',
+    resultDiv: 'vehicle-model-results',
+    placeholder: "Rechercher par marque ou modèle",
+    itemUrl: path('vehicle_model_edit', { id: '__ID__' }),
+    ajaxModal:true,
+	autocomplete: true	
 } %}
 
-    <p>Total modèles : {{ vm.getTotalItemCount|number_format(0, ',', '.') }}</p>
+	<p class="text-center">Total modèles :
+		{{ vm.getTotalItemCount|number_format(0, ',', '.') }}</p>
 
-    <div class="pagination-info">
-        Page {{ vm.currentPageNumber }} de {{ vm.pageCount }}
-    </div>
+	<div class="pagination-info text-center">
+		Page
+		{{ vm.currentPageNumber }}
+		de
+		{{ vm.pageCount }}
+	</div>
 
-    <div class="pagination">
-        {{ knp_pagination_render(vm) }}
-    </div>
+	<div class="pagination">
+		{{ knp_pagination_render(vm) }}
+	</div>
 
-    <a class="btn btn-new" href="{{ path('vehicle_model_new') }}" data-ajax-modal><i class="fa-solid fa-circle-plus"></i>Ajouter un nouveau modèle de véhicule</a>
+	<a class="btn btn-new" href="{{ path('vehicle_model_new') }}" data-ajax-modal>
+		<i class="fa-solid fa-circle-plus"></i>Ajouter un nouveau modèle de véhicule</a>
 
-    <table class="table-utac">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Id</th>
-                <th>Marque</th>
-                <th>Modèle</th>
-                <th>Variante</th>
-                <th>CNIT</th>
-                <th>CO₂</th>
-                <th>Masse min</th>
-                <th>Masse max</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for vmod in vm %}
-                <tr id="row-{{vmod.id}}">
-                    <td><a href="{{ path('vehicle_model_edit', {id: vmod.id}) }}" data-ajax-modal><i class="fa-regular fa-pen-to-square">   </i></a></td>
-                <td>{{vmod.id}}</td>
-                    <td data-label="Marque">{{ vmod.brand.name }}</td>
-                    <td data-label="Modèle">{{ vmod.variant.model.name ?? '-' }}</td>
-                    <td data-label="Variante">{{ vmod.variant.name ?? '-' }}</td>
-                    <td data-label="CNIT">{{ vmod.cnit }}</td>
-                    <td data-label="CO₂">{{ vmod.co2 }}</td>
-                    <td data-label="Masse min">{{ vmod.massMin }}</td>
-                    <td data-label="Masse max">{{ vmod.massMax }}</td>
-                    <td> 
-                    <form method="post"
-                    class="form-delete-btn" 
-                    action="{{ path('vehicle_model_delete', {id: vmod.id}) }}" 
-                    data-ajax-delete 
-                    data-delete-target="#row-{{ vmod.id }}"> 
-                    <input type="hidden" 
-                    name="_token" 
-                    value="{{ csrf_token('delete_vehicle_model_' ~ vmod.id) }}"> 
-                    <button class="btn btn-danger btn-sm btn-delete"><i class="fa-regular fa-trash-can"></i></button>
-                     </form> 
-                     </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+	<table class="table-utac">
+		<thead>
+			<tr>
+				<th></th>
+				<th>Id</th>
+				<th>Marque</th>
+				<th>Modèle</th>
+				<th>Variante</th>
+				<th>CNIT</th>
+				<th>CO₂</th>
+				<th>Masse min</th>
+				<th>Masse max</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for vmod in vm %}
+				<tr id="row-{{vmod.id}}">
+					<td>
+						<a href="{{ path('vehicle_model_edit', {id: vmod.id}) }}" data-ajax-modal>
+							<i class="fa-regular fa-pen-to-square"></i>
+						</a>
+					</td>
+					<td>{{vmod.id}}</td>
+					<td data-label="Marque">{{ vmod.brand.name }}</td>
+					<td data-label="Modèle">{{ vmod.variant.model.name ?? '-' }}</td>
+					<td data-label="Variante">{{ vmod.variant.name ?? '-' }}</td>
+					<td data-label="CNIT">{{ vmod.cnit }}</td>
+					<td data-label="CO₂">{{ vmod.co2 }}</td>
+					<td data-label="Masse min">{{ vmod.massMin }}</td>
+					<td data-label="Masse max">{{ vmod.massMax }}</td>
+					<td>
+						<form method="post" class="form-delete-btn" action="{{ path('vehicle_model_delete', {id: vmod.id}) }}" data-ajax-delete data-delete-target="#row-{{ vmod.id }}">
+							<input type="hidden" name="_token" value="{{ csrf_token('delete_vehicle_model_' ~ vmod.id) }}">
+							<button class="btn btn-danger btn-sm btn-delete">
+								<i class="fa-regular fa-trash-can"></i>
+							</button>
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 
-    <div class="pagination">
-        {{ knp_pagination_render(vm) }}
-    </div>
+	<div class="pagination">
+		{{ knp_pagination_render(vm) }}
+	</div>
 {% endblock %}

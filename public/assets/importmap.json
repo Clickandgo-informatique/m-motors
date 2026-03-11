@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app--700wzP.css",
+        "path": "\/assets\/styles\/app-9gyx2Da.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -40,11 +40,11 @@
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-iENYPiq.js",
+        "path": "\/assets\/js\/FetchForm-ox1A17Y.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
-        "path": "\/assets\/js\/AjaxManager-FC6OT_o.js",
+        "path": "\/assets\/js\/AjaxManager-laxGYa1.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {
@@ -60,7 +60,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-iENYPiq.js",
+        "path": "\/assets\/js\/FetchForm-ox1A17Y.js",
         "type": "js"
     }
 }

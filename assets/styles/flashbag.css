@@ -1,0 +1,54 @@
+/* ================================
+   FLASH MESSAGES
+================================ */
+
+.flash {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-s);
+  margin-bottom: var(--space-m);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+/* SUCCESS */
+
+.flash-success {
+  background: #e6f7ec;
+  border: 1px solid #b7e4c7;
+  color: #1b5e20;
+}
+
+/* ERROR */
+
+.flash-error {
+  background: #fdecea;
+  border: 1px solid #f5c2c0;
+  color: #7f1d1d;
+}
+
+/* WARNING */
+
+.flash-warning {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  color: #7c4a03;
+}
+
+/* INFO */
+
+.flash-info {
+  background: #e8f4fd;
+  border: 1px solid #b6d4fe;
+  color: #084298;
+}
+
+/* CLOSE BUTTON */
+
+.flash-close {
+  border: none;
+  background: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
