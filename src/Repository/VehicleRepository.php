@@ -23,10 +23,9 @@ class VehicleRepository extends ServiceEntityRepository
     private function baseQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder('v')
-            ->leftJoin('v.model', 'vm')
+            ->leftJoin('v.vehicleModel', 'vm')
             ->leftJoin('vm.model', 'm')
             ->leftJoin('vm.brand', 'b');
-        // ❌ PAS de addSelect ici
     }
 
     /**
@@ -35,11 +34,14 @@ class VehicleRepository extends ServiceEntityRepository
     public function findAllQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder('v')
+            ->leftJoin('v.vehicleModel', 'vm')
+            ->leftJoin('vm.brand', 'b')
+            ->addSelect('vm', 'b')
             ->orderBy('v.id', 'DESC');
     }
 
     /**
-     * Recherche pour KnpPaginator (retourne QueryBuilder)
+     * Recherche pour KnpPaginator
      */
     public function searchQueryBuilder(string $term): QueryBuilder
     {
@@ -70,7 +72,7 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     /**
-     * Compteur custom (pour API ou pagination manuelle)
+     * Compteur custom
      */
     public function countSearch(string $term): int
     {
@@ -80,7 +82,7 @@ class VehicleRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('v')
             ->select('COUNT(DISTINCT v.id)')
-            ->leftJoin('v.model', 'vm')
+            ->leftJoin('v.vehicleModel', 'vm')
             ->leftJoin('vm.model', 'm')
             ->leftJoin('vm.brand', 'b');
 
@@ -106,7 +108,7 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     /**
-     * Pagination custom SANS addSelect
+     * Pagination custom
      */
     public function searchPaginated(string $term, int $limit, int $offset): array
     {
@@ -151,7 +153,7 @@ class VehicleRepository extends ServiceEntityRepository
     ): ?Vehicle {
 
         $qb = $this->createQueryBuilder('v')
-            ->leftJoin('v.model', 'vm')
+            ->leftJoin('v.vehicleModel', 'vm')
             ->leftJoin('vm.model', 'm')
             ->leftJoin('vm.brand', 'b')
             ->andWhere('b = :brand')

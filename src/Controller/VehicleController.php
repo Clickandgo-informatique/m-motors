@@ -27,9 +27,11 @@ class VehicleController extends AbstractController
     ): Response {
 
         $query = $repo->createQueryBuilder('v')
-            ->leftJoin('v.model', 'vm')
+            ->leftJoin('v.vehicleModel', 'vm')
             ->leftJoin('vm.brand', 'b')
-            ->addSelect('vm', 'b')
+            ->leftJoin('vm.model', 'm')
+            ->leftJoin('vm.variant', 'va')
+            ->addSelect('vm', 'b', 'm', 'va')
             ->orderBy('v.id', 'DESC')
             ->getQuery();
 
@@ -39,7 +41,7 @@ class VehicleController extends AbstractController
             20
         );
 
-        return $this->render('vehicle/index.html.twig', [
+        return $this->render('vehicles/index.html.twig', [
             'vehicles' => $vehicles,
             'title' => 'Catalogue des véhicules'
         ]);
@@ -66,10 +68,10 @@ class VehicleController extends AbstractController
 
             $this->addFlash('success', 'Véhicule créé.');
 
-            return $this->redirectToRoute('vehicle_index');
+            return $this->redirectToRoute('vehicles');
         }
 
-        return $this->render('vehicle/new.html.twig', [
+        return $this->render('vehicles/new.html.twig', [
             'form' => $form,
             'title' => 'Créer un véhicule'
         ]);
@@ -94,10 +96,10 @@ class VehicleController extends AbstractController
 
             $this->addFlash('success', 'Véhicule modifié.');
 
-            return $this->redirectToRoute('vehicle_index');
+            return $this->redirectToRoute('vehicles');
         }
 
-        return $this->render('vehicle/edit.html.twig', [
+        return $this->render('vehicles/_vehicle_form.html.twig', [
             'form' => $form,
             'vehicle' => $vehicle,
             'title' => 'Modifier le véhicule'
@@ -125,7 +127,6 @@ class VehicleController extends AbstractController
 
         foreach ($items as $item) {
 
-            // support array ou entité
             if (is_array($item)) {
 
                 $results[] = [
@@ -135,10 +136,15 @@ class VehicleController extends AbstractController
                 ];
             } else {
 
+                $vm = $item->getVehicleModel();
+
+                $brand = $vm?->getBrand()?->getName() ?? '';
+                $model = $vm?->getModel()?->getName() ?? '';
+                $variant = $vm?->getVariant()?->getName() ?? '';
+
                 $results[] = [
                     'id' => $item->getId(),
-                    'label' => $item->getModel()?->getBrand()?->getName()
-                        . ' ' . $item->getModel()?->getName()
+                    'label' => trim("$brand $model $variant")
                 ];
             }
         }
@@ -166,6 +172,6 @@ class VehicleController extends AbstractController
             $this->addFlash('success', 'Véhicule supprimé.');
         }
 
-        return $this->redirectToRoute('vehicle_index');
+        return $this->redirectToRoute('vehicles');
     }
 }
