@@ -7,6 +7,7 @@ use App\Entity\Model;
 use App\Entity\Variant;
 use App\Entity\FuelType;
 use App\Entity\VehicleModel;
+use App\Entity\BodyType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -19,6 +20,8 @@ class VehicleModelFixtures extends Fixture
     private array $variantCache = [];
     private array $fuelCache = [];
     private array $cnitCache = [];
+
+    private array $bodyTypes = [];
 
     public function load(ObjectManager $em): void
     {
@@ -52,6 +55,16 @@ class VehicleModelFixtures extends Fixture
         foreach ($header as $i => $col) {
             $map[strtolower(trim($col))] = $i;
         }
+
+        /*
+        =========================
+        CHARGEMENT BODY TYPES
+        =========================
+        */
+
+        $this->bodyTypes = $em
+            ->getRepository(BodyType::class)
+            ->findAll();
 
         $totalLines = $this->countLines($path) - 1;
 
@@ -121,6 +134,7 @@ class VehicleModelFixtures extends Fixture
 
             $vm->setBrand($brand);
             $vm->setModel($model);
+            $vm->setBodyType($this->randomBodyType());
 
             if ($variant) {
                 $vm->setVariant($variant);
@@ -234,6 +248,10 @@ class VehicleModelFixtures extends Fixture
                 $em->clear();
 
                 $this->resetCache();
+
+                $this->bodyTypes = $em
+                    ->getRepository(BodyType::class)
+                    ->findAll();
             }
 
             $i++;
@@ -250,23 +268,20 @@ class VehicleModelFixtures extends Fixture
         $output->writeln("\nImport terminé.");
     }
 
-    /*
-    ======================================
-    CSV COLUMN
-    ======================================
-    */
+    private function randomBodyType(): ?BodyType
+    {
+        if (empty($this->bodyTypes)) {
+            return null;
+        }
+
+        return $this->bodyTypes[array_rand($this->bodyTypes)];
+    }
 
     private function col(array $row, array $map, string $name)
     {
         $i = $map[$name] ?? null;
         return $i !== null ? ($row[$i] ?? null) : null;
     }
-
-    /*
-    ======================================
-    NORMALISATION
-    ======================================
-    */
 
     private function normalize(?string $value): ?string
     {
@@ -296,12 +311,6 @@ class VehicleModelFixtures extends Fixture
 
         return $map[$fuel] ?? ucfirst($fuel);
     }
-
-    /*
-    ======================================
-    SANITIZE
-    ======================================
-    */
 
     private function sanitizeNumber($value, $max)
     {
@@ -333,12 +342,6 @@ class VehicleModelFixtures extends Fixture
         return mb_strlen($value) > $max ? null : $value;
     }
 
-    /*
-    ======================================
-    CACHE RESET
-    ======================================
-    */
-
     private function resetCache(): void
     {
         $this->brandCache = [];
@@ -346,12 +349,6 @@ class VehicleModelFixtures extends Fixture
         $this->variantCache = [];
         $this->fuelCache = [];
     }
-
-    /*
-    ======================================
-    COUNT LINES
-    ======================================
-    */
 
     private function countLines($path): int
     {
@@ -367,11 +364,6 @@ class VehicleModelFixtures extends Fixture
 
         return $lines;
     }
-    /*
-======================================
-GET BRAND
-======================================
-*/
 
     private function getBrand(ObjectManager $em, string $name): Brand
     {
@@ -391,12 +383,6 @@ GET BRAND
 
         return $brand;
     }
-
-    /*
-======================================
-GET MODEL
-======================================
-*/
 
     private function getModel(ObjectManager $em, Brand $brand, string $name): Model
     {
@@ -424,12 +410,6 @@ GET MODEL
 
         return $model;
     }
-
-    /*
-======================================
-GET VARIANT
-======================================
-*/
 
     private function getVariant(ObjectManager $em, Model $model, ?string $name): ?Variant
     {
@@ -461,12 +441,6 @@ GET VARIANT
 
         return $variant;
     }
-
-    /*
-======================================
-GET FUEL
-======================================
-*/
 
     private function getFuel(ObjectManager $em, string $name): FuelType
     {

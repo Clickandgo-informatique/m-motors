@@ -8,6 +8,18 @@ CONSOLE = $(PHP) php bin/console
 COMPOSER = $(PHP) composer
 
 # =========================
+# PHONY
+# =========================
+
+.PHONY: up down restart build logs ps bash \
+        composer-install composer-update composer-require \
+        cache-clear cache-warmup debug-router debug-container \
+        db-create db-drop db-reset fixtures db-fixtures \
+        migration migrate migration-clean migration-reset \
+        db-fresh validate-schema debug-entities \
+        tests perm deploy deploy-fast
+
+# =========================
 # DOCKER
 # =========================
 
@@ -49,9 +61,6 @@ composer-update:
 
 composer-require:
 	$(COMPOSER) require $(pkg)
-
-# exemple :
-# make composer-require pkg=symfony/ux-live-component
 
 # =========================
 # SYMFONY
@@ -137,7 +146,7 @@ debug-entities:
 # =========================
 
 tests:
-	$(PHP) php bin/phpunit
+	docker compose exec php vendor/bin/phpunit
 
 # =========================
 # PERMISSIONS (Linux)
@@ -164,3 +173,4 @@ deploy-fast:
 	$(DC) up -d
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction
 	$(CONSOLE) cache:clear
+

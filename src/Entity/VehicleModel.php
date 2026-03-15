@@ -49,6 +49,10 @@ class VehicleModel
     #[ORM\OneToMany(mappedBy: "vehicleModel", targetEntity: Vehicle::class)]
     private Collection $vehicles;
 
+    #[ORM\ManyToOne(targetEntity: BodyType::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?BodyType $bodyType = null;
+
     /*
     |--------------------------------------------------------------------------
     | DONNÉES TECHNIQUES
@@ -378,6 +382,24 @@ class VehicleModel
     public function setEuroNorm(?string $euroNorm): static
     {
         $this->euroNorm = $euroNorm;
+        return $this;
+    }
+
+    /**
+     * Get the value of bodyType
+     */
+    public function getBodyType(): ?BodyType
+    {
+        return $this->bodyType;
+    }
+
+    /**
+     * Set the value of bodyType
+     */
+    public function setBodyType(?BodyType $bodyType): self
+    {
+        $this->bodyType = $bodyType;
+
         return $this;
     }
 }
