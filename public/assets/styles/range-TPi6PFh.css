@@ -1,0 +1,116 @@
+/* ========================================================= */
+/* DOUBLE SLIDER — SLIDER KILOMÉTRAGE */
+/* ========================================================= */
+
+.double-slider {
+  position: relative;
+  height: 60px; /* laisse de la place pour les tooltips */
+  margin-top: var(--space-m);
+  user-select: none;
+}
+
+.slider-track {
+  position: absolute;
+  height: 6px;
+  background: var(--bg-tertiary);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  border-radius: var(--radius-small);
+  z-index: 0;
+  box-shadow: var(--shadow-light);
+}
+
+.slider-range {
+  position: absolute;
+  height: 6px;
+  background: var(--color-primary);
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: var(--radius-small);
+  z-index: 1;
+  box-shadow: var(--shadow-medium);
+}
+
+/* Thumbs */
+.thumb {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  box-shadow: var(--shadow-medium);
+  transition: transform 0.1s ease;
+}
+
+.thumb:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================================= */
+/* Tooltips des thumbs */
+
+/* Min thumb : tooltip au-dessus */
+.thumb-min .thumb-value {
+  position: absolute;
+  top: -28px; /* au-dessus du thumb */
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font-size: var(--font-size-small);
+  padding: 2px 6px;
+  border-radius: var(--radius-small);
+  box-shadow: var(--shadow-medium);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+  transition: top 0.1s ease, transform 0.1s ease;
+}
+
+/* Max thumb : tooltip en dessous */
+.thumb-max .thumb-value {
+  position: absolute;
+  top: 28px; /* sous le thumb */
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font-size: var(--font-size-small);
+  padding: 2px 6px;
+  border-radius: var(--radius-small);
+  box-shadow: var(--shadow-medium);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+  transition: top 0.1s ease, transform 0.1s ease;
+}
+
+/* ========================================================= */
+/* Mode sombre */
+:root.dark .slider-track {
+  background: var(--bg-tertiary);
+  box-shadow: var(--shadow-light);
+}
+
+:root.dark .slider-range {
+  background: var(--color-primary);
+  box-shadow: var(--shadow-medium);
+}
+
+:root.dark .thumb {
+  background: var(--color-primary);
+  box-shadow: var(--shadow-medium);
+}
+
+:root.dark .thumb-min .thumb-value,
+:root.dark .thumb-max .thumb-value {
+  background: var(--surface-2);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-light);
+}

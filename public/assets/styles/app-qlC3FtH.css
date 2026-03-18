@@ -1,0 +1,47 @@
+@import "reset-XQl7hhL.css";
+@import "variables-0TG1OQp.css";
+@import "typography-7qAptHg.css";
+@import "layout-dRL_NM_.css";
+@import "form-eqB6aFy.css";
+@import "button-WuGZzb6.css";
+@import "checkbox-R0UiYyX.css";
+@import "header-ixz58L_.css";
+@import "navbar-rF-HiOI.css";
+@import "table-U1KyIjR.css";
+@import "pagination-lcoycK0.css";
+@import "dropdown-na0vA-a.css";
+@import "modal-wQ-VujO.css";
+@import "badge--u8Sd0l.css";
+@import "footer-0x0TEN2.css";
+@import "card-SYxY4Gg.css";
+@import "flashbag-qdCQRD8.css";
+@import "sidebar-zsxBstb.css";
+@import "range-BOZdrj2.css";
+
+/* ========================================================= */
+/* BASE GLOBALE */
+/* ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+
+  font-family: var(--font-family);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

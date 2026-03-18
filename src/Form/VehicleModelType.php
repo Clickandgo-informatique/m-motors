@@ -2,13 +2,13 @@
 
 namespace App\Form;
 
+use App\Entity\BodyType;
 use App\Entity\Brand;
 use App\Entity\FuelType;
 use App\Entity\Gear;
 use App\Entity\Model;
 use App\Entity\Variant;
 use App\Entity\VehicleModel;
-use DateTime;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -56,6 +56,11 @@ class VehicleModelType extends AbstractType
                 'label' => 'Boîte vitesse',
                 'class' => Gear::class,
                 'choice_label' => 'type',
+            ])
+            ->add('bodyType',EntityType::class,[
+                'label'=>'Type carrosserie',
+                'class'=>BodyType::class,
+                'choice_label'=>'name'
             ])
         ;
     }

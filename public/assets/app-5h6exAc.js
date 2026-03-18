@@ -3,7 +3,6 @@ import "./js/theme.js";
 import "./styles/app.css";
 import "./js/sidebar.js";
 import "./js/rangeSelector.js";
-import "./js/vehiclesFilters.js";
 
 import DynamicFormCollection from "./js/DynamicFormCollection.js";
 import FetchForm from "./js/FetchForm.js";

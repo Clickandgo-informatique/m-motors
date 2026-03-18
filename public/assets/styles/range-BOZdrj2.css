@@ -1,0 +1,31 @@
+.range-container {
+	position: relative;
+	height: 40px;
+}
+
+.range-container input[type="range"] {
+	position: absolute;
+	width: 100%;
+	pointer-events: none;
+	appearance: none;
+	background: none;
+}
+
+.range-container input[type="range"]::-webkit-slider-thumb {
+	pointer-events: all;
+	width: 16px;
+	height: 16px;
+	background: #333;
+	border-radius: 50%;
+	cursor: pointer;
+	appearance: none;
+}
+
+.range-container input[type="range"]::-moz-range-thumb {
+	pointer-events: all;
+	width: 16px;
+	height: 16px;
+	background: #333;
+	border-radius: 50%;
+	cursor: pointer;
+}

@@ -40,6 +40,7 @@
 			<tr>
 				<th></th>
 				<th>Id</th>
+				<th>Carrosserie</th>
 				<th>Marque</th>
 				<th>Modèle</th>
 				<th>Variante</th>
@@ -58,7 +59,8 @@
 							<i class="fa-regular fa-pen-to-square"></i>
 						</a>
 					</td>
-					<td>{{vmod.id}}</td>
+					<td>{{vmod.id}}</td>			
+					<td data-label="Carrosserie">{{vmod.bodyType.name}}</td>
 					<td data-label="Marque">{{ vmod.brand.name }}</td>
 					<td data-label="Modèle">{{ vmod.variant.model.name ?? '-' }}</td>
 					<td data-label="Variante">{{ vmod.variant.name ?? '-' }}</td>

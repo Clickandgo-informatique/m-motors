@@ -1,0 +1,84 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+	<form
+		id="filters-form">
+
+		{# Marques #}
+		{% if brands|length > 0 %}
+			<details>
+				<summary>Marque</summary>
+				<ul class="brand-list">
+					{% for brand in brands %}
+						<li class="list-item">
+							<input type="checkbox" name="filters[brand][]" id="brand-{{ brand.id }}" value="{{ brand.id }}">
+							<label for="brand-{{ brand.id }}" class="item-name">
+								{{ brand.name }}
+							</label>
+						</li>
+					{% endfor %}
+				</ul>
+			</details>
+		{% endif %}
+
+		{# Carrosserie #}
+		{% if bodyTypes|length > 0 %}
+			<details>
+				<summary>Carrosserie</summary>
+				<ul class="bodyType-list">
+					{% for bodyType in bodyTypes %}
+						<li class="list-item">
+							<input type="checkbox" name="filters[bodyType][]" id="bodyType-{{ bodyType.id }}" value="{{ bodyType.id }}">
+							<label for="bodyType-{{ bodyType.id }}" class="item-name">
+								{{ bodyType.name }}
+							</label>
+						</li>
+					{% endfor %}
+				</ul>
+			</details>
+		{% endif %}
+
+		{# Kilométrage #}
+		<div class="mileage-range wrapper">
+			<div>
+				Kilométrage :
+				<span id="mileage-min-value">0</span>
+				km -
+				<span id="mileage-max-value">300 000</span>
+				km
+			</div>
+			<div class="double-slider">
+				<div class="slider-track"></div>
+				<div class="slider-range"></div>
+
+				<div class="thumb thumb-min" id="thumb-min">
+					<span class="thumb-value" id="value-min">0</span>
+				</div>
+
+				<div class="thumb thumb-max" id="thumb-max">
+					<span class="thumb-value" id="value-max">300 000</span>
+				</div>
+			</div>
+		</div>
+
+		{# Carburant #}
+		{% if fuelTypes|length > 0 %}
+			<details>
+				<summary>Carburant</summary>
+				<ul class="fuelType-list">
+					{% for fuelType in fuelTypes %}
+						<li class="list-item">
+							<input type="checkbox" name="filters[fuelType][]" id="fuelType-{{ fuelType.id }}" value="{{ fuelType.id }}">
+							<label for="fuelType-{{ fuelType.id }}" class="item-name">
+								{{ fuelType.name }}
+							</label>
+						</li>
+					{% endfor %}
+				</ul>
+			</details>
+		{% endif %}
+
+	</form>
+
+{% endblock %}

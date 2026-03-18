@@ -3,6 +3,8 @@
     "\/assets\/js\/theme.js",
     "\/assets\/styles\/app.css",
     "\/assets\/js\/sidebar.js",
+    "\/assets\/js\/rangeSelector.js",
+    "\/assets\/js\/vehiclesFilters.js",
     "\/assets\/js\/DynamicFormCollection.js",
     "\/assets\/js\/FetchForm.js",
     "\/assets\/js\/AjaxManager.js",

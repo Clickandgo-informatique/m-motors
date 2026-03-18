@@ -15,29 +15,11 @@ class FuelTypeRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, FuelType::class);
     }
-
-    //    /**
-    //     * @return FuelType[] Returns an array of FuelType objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('f.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?FuelType
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function getFuelTypes(): array
+    {
+        return $this->createQueryBuilder('ft')
+            ->orderBy('ft.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

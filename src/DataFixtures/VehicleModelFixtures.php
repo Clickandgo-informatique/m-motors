@@ -292,7 +292,6 @@ class VehicleModelFixtures extends Fixture
 
         return $value;
     }
-
     private function normalizeFuel(?string $fuel): ?string
     {
         if (!$fuel) return null;
@@ -300,13 +299,73 @@ class VehicleModelFixtures extends Fixture
         $fuel = strtolower(trim($fuel));
 
         $map = [
-            'diesel' => 'Diesel',
+
+            /*
+        =========================
+        CARBURANTS CLASSIQUES
+        =========================
+        */
+
+            'es' => 'Essence',
+            'ess' => 'Essence',
+            'essence' => 'Essence',
+
+            'go' => 'Diesel',
             'gazole' => 'Diesel',
             'gasoil' => 'Diesel',
-            'essence' => 'Essence',
+            'diesel' => 'Diesel',
+
+            /*
+        =========================
+        ELECTRIQUE
+        =========================
+        */
+
+            'el' => 'Électrique',
+            'elec' => 'Électrique',
+            'electric' => 'Électrique',
+            'electrique' => 'Électrique',
+
+            /*
+        =========================
+        HYBRIDES
+        =========================
+        */
+
+            'hy' => 'Hybride',
             'hybride' => 'Hybride',
-            'electric' => 'Electrique',
-            'electrique' => 'Electrique'
+
+            'he' => 'Hybride Essence',
+            'hybride essence' => 'Hybride Essence',
+
+            'hd' => 'Hybride Diesel',
+            'hybride diesel' => 'Hybride Diesel',
+
+            /*
+        =========================
+        GAZ / ALTERNATIFS
+        =========================
+        */
+
+            'gn' => 'Gaz Naturel (GNV)',
+            'gnv' => 'Gaz Naturel (GNV)',
+
+            'gpl' => 'GPL',
+
+            'e85' => 'Superéthanol E85',
+            'ethanol' => 'Superéthanol E85',
+
+            /*
+        =========================
+        CAS RARES / UTAC
+        =========================
+        */
+
+            'ee' => 'Électrique',
+            'fe' => 'Flexfuel (Essence/E85)',
+            'fh' => 'Hybride Rechargeable',
+            'ph' => 'Hybride Rechargeable',
+
         ];
 
         return $map[$fuel] ?? ucfirst($fuel);

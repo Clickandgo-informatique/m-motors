@@ -1,0 +1,48 @@
+.range-container {
+  position: relative;
+  height: 40px;
+}
+
+/* Inputs superposés */
+.range-container input[type="range"] {
+  position: absolute;
+  width: 100%;
+  pointer-events: none;
+  appearance: none;
+  background: transparent;
+  height: 6px;
+}
+
+/* TRACK (barre) */
+.range-container input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.range-container input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+}
+
+/* THUMB (curseur) */
+.range-container input[type="range"]::-webkit-slider-thumb {
+  pointer-events: all;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -5px; /* aligne avec la track */
+}
+
+.range-container input[type="range"]::-moz-range-thumb {
+  pointer-events: all;
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+}

@@ -16,6 +16,8 @@
 @import "./card.css";
 @import "./flashbag.css";
 @import "./sidebar.css";
+@import "./range.css";
+@import "./filters-form.css";
 
 /* ========================================================= */
 /* BASE GLOBALE */
@@ -44,4 +46,3 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
-

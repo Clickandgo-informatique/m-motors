@@ -1,0 +1,136 @@
+/* ========================================================= */
+/* FILTRES DYNAMIQUES — FORMULAIRE #filters-form */
+/* ========================================================= */
+
+#filters-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+  width: 240px; /* largeur colonne */
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+}
+
+/* Chaque détail */
+#filters-form details {
+  background: var(--surface-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: var(--space-s);
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* Hover et focus */
+#filters-form details:hover {
+  background: var(--surface-2);
+  border-color: var(--focus-border);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Summary */
+#filters-form summary {
+  list-style: none;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+/* Flèche personnalisée */
+#filters-form summary::marker {
+  display: none; /* supprime flèche native */
+}
+
+#filters-form summary::after {
+  content: "▸"; /* flèche droite */
+  transition: transform 0.3s ease;
+  font-size: 0.8rem;
+}
+
+/* Rotation flèche quand ouvert */
+#filters-form details[open] summary::after {
+  transform: rotate(90deg);
+}
+
+/* Contenu des filtres (liste des options) */
+#filters-form details ul {
+  list-style: none;
+  padding-left: var(--space-m);
+  margin-top: var(--space-s);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+/* Affiche le contenu quand ouvert */
+#filters-form details[open] ul {
+  max-height: 500px; /* suffisant pour la plupart des listes */
+  opacity: 1;
+}
+
+/* Checkbox + label */
+#filters-form details ul li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  transition: background 0.2s ease;
+}
+
+#filters-form details ul li input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+#filters-form details ul li .item-name {
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+}
+
+/* Hover sur les items */
+#filters-form details ul li:hover {
+  background: var(--surface-2);
+  border-radius: var(--radius-small);
+}
+
+/* ========================================================= */
+/* MODE SOMBRE */
+:root.dark #filters-form {
+  color: var(--text-primary);
+}
+
+:root.dark #filters-form details {
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-light);
+}
+
+:root.dark #filters-form details:hover {
+  background: var(--surface-3);
+  border-color: var(--focus-border);
+  box-shadow: var(--shadow-medium);
+}
+
+:root.dark #filters-form details ul li {
+  color: var(--text-primary);
+}
+
+:root.dark #filters-form details ul li input[type="checkbox"] {
+  accent-color: var(--color-primary);
+}
+
+:root.dark #filters-form details ul li:hover {
+  background: var(--surface-3);
+}

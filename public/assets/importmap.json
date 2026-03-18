@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-gq8-qgy.js",
+        "path": "\/assets\/app-gfckQWD.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,11 +28,19 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-9gyx2Da.css",
+        "path": "\/assets\/styles\/app-jUsyrTw.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
         "path": "\/assets\/js\/sidebar-mwUYV2W.js",
+        "type": "js"
+    },
+    "\/assets\/js\/rangeSelector.js": {
+        "path": "\/assets\/js\/rangeSelector-mbOSjfn.js",
+        "type": "js"
+    },
+    "\/assets\/js\/vehiclesFilters.js": {
+        "path": "\/assets\/js\/vehiclesFilters-pQo-DrP.js",
         "type": "js"
     },
     "\/assets\/js\/DynamicFormCollection.js": {
