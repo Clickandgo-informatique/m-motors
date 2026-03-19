@@ -169,4 +169,45 @@ class VehicleRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getOneOrNullResult();
     }
+    //Filtrage dynamique des véhicules coté utilisateur client
+    public function findByFilters(array $filters): array
+    {
+        $qb = $this->createQueryBuilder('v')
+            ->join('v.vehicleModel', 'm')
+            ->join('m.brand', 'b');
+
+        // BRAND
+        if (!empty($filters['brand'])) {
+            $qb->andWhere('b.id IN (:brands)')
+                ->setParameter('brands', $filters['brand']);
+        }
+
+        // FUEL
+        if (!empty($filters['fuel'])) {
+            $qb->andWhere('m.fuelType IN (:fuel)')
+                ->setParameter('fuel', $filters['fuel']);
+        }
+
+        // PRIX MIN
+        if (!empty($filters['priceMin'])) {
+            $qb->andWhere('v.price >= :min')
+                ->setParameter('min', $filters['priceMin']);
+        }
+
+        // PRIX MAX
+        if (!empty($filters['priceMax'])) {
+            $qb->andWhere('v.price <= :max')
+                ->setParameter('max', $filters['priceMax']);
+        }
+
+        //Kilométrage
+        if (isset($filters['mileageMin'], $filters['mileageMax'])) {
+            $qb->andWhere('v.mileage >= :min AND v.mileage <= :max')
+                ->setParameter('min', $filters['mileageMin'])
+                ->setParameter('max', $filters['mileageMax']);
+        }
+
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -1,47 +1,36 @@
-// vehiclesFilters.js
 import initDoubleSlider from "./rangeSelector.js";
 
-// Debounce pour éviter les requêtes en rafale
-function debounce(fn, delay = 300) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  };
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-  const filterForm = document.getElementById("filters-form");
-
-  // Initialisation des sliders
+  // Active tous les sliders
   document.querySelectorAll(".double-slider").forEach(slider => {
-    initDoubleSlider(slider);
+    initDoubleSlider(slider); // ✔️ slider est bien défini
   });
 
-  let sliderFilters = {};
+  const filterForm = document.getElementById("filters-form");
 
-  // Sliders → mise à jour des filtres
+  let sliderFilters = {}; // stockage des valeurs des sliders
+
+  // Écoute les sliders
   document.addEventListener("sliderChanged", e => {
     const { filter, min, max } = e.detail;
 
-    sliderFilters[`${filter}Min`] = min;
-    sliderFilters[`${filter}Max`] = max;
+    sliderFilters[filter + "Min"] = min;
+    sliderFilters[filter + "Max"] = max;
 
-    debouncedSearch();
+    search();
   });
 
-  // Checkboxes → mise à jour des filtres
+  // Écoute les checkboxes
   filterForm.addEventListener("change", () => {
-    debouncedSearch();
+    search();
   });
 
-  const debouncedSearch = debounce(search, 300);
-
+  // Fonction de recherche globale
   async function search() {
     try {
       const filters = {};
 
-      // Récupération des cases cochées
+      // Récupère toutes les cases cochées
       const checkedInputs = filterForm.querySelectorAll(
         "input[type='checkbox']:checked"
       );
@@ -56,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filters[key].push(input.value);
       });
 
-      // Ajout des valeurs des sliders
+      // Ajoute les valeurs des sliders
       Object.assign(filters, sliderFilters);
 
       console.log("Filters envoyés :", filters);

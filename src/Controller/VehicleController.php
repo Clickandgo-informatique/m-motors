@@ -80,7 +80,7 @@ class VehicleController extends AbstractController
     /**
      * Edition véhicule
      */
-    #[Route('/{id}/edit', name: 'vehicle_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id<\d+>}/edit', name: 'vehicle_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
         Vehicle $vehicle,
@@ -157,7 +157,7 @@ class VehicleController extends AbstractController
     /**
      * Suppression
      */
-    #[Route('/{id}', name: 'vehicle_delete', methods: ['POST'])]
+    #[Route('/{id<\d+>}', name: 'vehicle_delete', methods: ['POST'])]
     public function delete(
         Request $request,
         Vehicle $vehicle,

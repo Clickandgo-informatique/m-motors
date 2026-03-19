@@ -1,14 +1,19 @@
-// rangeSelector.js
-export default function initDoubleSlider(slider) {
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".double-slider").forEach(initDoubleSlider);
+});
+
+export function initDoubleSlider(slider) {
+  // Lecture des datasets
   const FILTER = slider.dataset.filter; // ex: "mileage"
   const MIN = Number.parseInt(slider.dataset.min);
   const MAX = Number.parseInt(slider.dataset.max);
   const STEP = Number.parseInt(slider.dataset.step);
 
-  // Génération interne du slider
+  // Création dynamique des éléments internes
   slider.innerHTML = `
     <div class="slider-track"></div>
     <div class="slider-range"></div>
+
     <div class="thumb thumb-min"><span class="thumb-value"></span></div>
     <div class="thumb thumb-max"><span class="thumb-value"></span></div>
   `;
@@ -23,11 +28,13 @@ export default function initDoubleSlider(slider) {
   let currentMin = MIN;
   let currentMax = MAX;
 
+  // Convertir valeur en position px
   function valueToPos(value) {
     const width = slider.clientWidth;
     return ((value - MIN) / (MAX - MIN)) * width;
   }
 
+  // Convertir position px en valeur arrondie
   function posToValue(pos) {
     const width = slider.clientWidth;
     let val = MIN + (pos / width) * (MAX - MIN);
@@ -35,6 +42,7 @@ export default function initDoubleSlider(slider) {
     return Math.min(Math.max(val, MIN), MAX);
   }
 
+  // Mise à jour UI
   function updateUI() {
     const left = valueToPos(currentMin);
     const right = valueToPos(currentMax);
@@ -48,16 +56,7 @@ export default function initDoubleSlider(slider) {
     valueMin.textContent = currentMin.toLocaleString("fr-FR");
     valueMax.textContent = currentMax.toLocaleString("fr-FR");
 
-    // Mise à jour des champs externes
-    const externalMin = document.getElementById(`${FILTER}-min-value`);
-    const externalMax = document.getElementById(`${FILTER}-max-value`);
-
-    if (externalMin)
-      externalMin.textContent = currentMin.toLocaleString("fr-FR");
-    if (externalMax)
-      externalMax.textContent = currentMax.toLocaleString("fr-FR");
-
-    // Envoi d’un événement global
+    // Événement générique envoyé au système de filtres
     document.dispatchEvent(
       new CustomEvent("sliderChanged", {
         detail: {
@@ -69,6 +68,7 @@ export default function initDoubleSlider(slider) {
     );
   }
 
+  // Drag souris
   let activeThumb = null;
 
   function startDrag(e, thumb) {
@@ -98,6 +98,7 @@ export default function initDoubleSlider(slider) {
     document.removeEventListener("mouseup", stopDrag);
   }
 
+  // Touch events
   function startTouch(e, thumb) {
     activeThumb = thumb;
     document.addEventListener("touchmove", onTouch);
@@ -124,11 +125,13 @@ export default function initDoubleSlider(slider) {
     document.removeEventListener("touchend", stopTouch);
   }
 
+  // Bind events
   thumbMin.addEventListener("mousedown", e => startDrag(e, thumbMin));
   thumbMax.addEventListener("mousedown", e => startDrag(e, thumbMax));
 
   thumbMin.addEventListener("touchstart", e => startTouch(e, thumbMin));
   thumbMax.addEventListener("touchstart", e => startTouch(e, thumbMax));
 
+  // Initialisation
   updateUI();
 }
