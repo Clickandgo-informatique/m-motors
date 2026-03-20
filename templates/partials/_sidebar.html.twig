@@ -1,21 +1,25 @@
 <aside class="sidebar" id="sidebar">
-	<button id="sidebar-toggle" class="sidebar-handle">
-		<i class="fa-solid fa-chevron-left"></i>
-	</button>
+    <button id="sidebar-toggle" class="sidebar-handle">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <nav class="sidenav" aria-label="Navigation latérale">
+        <details>
+            <summary>
+                <i class="fa-solid fa-car-side"></i>
+                <span>Véhicules</span>
+            </summary>
+            <ul>
+                <li><a href="{{ path('vehicles_models') }}">Catalogue fabricants</a></li>
+                <li><a href="{{ path('vehicle_model_new') }}">Créer un modèle de véhicule</a></li>
+                <li><a href="{{ path('vehicles') }}">Véhicules enregistrés</a></li>
+            </ul>
+        </details>
+    </nav>
 
-	<nav class="sidenav" aria-label="Navigation latérale">
-
-		<details>
-			<summary>
-				<i class="fa-solid fa-car-side"></i>
-				<span>Véhicules</span>
-			</summary>
-
-			<ul>
-				<li><a href="{{path('vehicles_models')}}">Catalogue fabricants</a></li>
-				<li><a href="{{path('vehicle_model_new')}}">Créer un modèle de véhicule</a></li>
-				<li><a href="{{path('vehicles')}}">Véhicules enregistrés</a></li>
-			</ul>
-		</details>
-	</nav>
+    {# Include filtres uniquement si on est sur la page vehicles #}
+{% if app.request.attributes.get('_route') starts with 'vehicles' %}
+    {{ render(controller(
+        'App\\Controller\\VehiclesFilterController::getFilters'
+    )) }}
+{% endif %}
 </aside>

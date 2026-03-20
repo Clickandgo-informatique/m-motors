@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-gfckQWD.js",
+        "path": "\/assets\/app-MWvx4QI.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -40,7 +40,7 @@
         "type": "js"
     },
     "\/assets\/js\/vehiclesFilters.js": {
-        "path": "\/assets\/js\/vehiclesFilters-MDfyDyp.js",
+        "path": "\/assets\/js\/vehiclesFilters-IE2QH6y.js",
         "type": "js"
     },
     "\/assets\/js\/DynamicFormCollection.js": {
@@ -48,11 +48,15 @@
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-ox1A17Y.js",
+        "path": "\/assets\/js\/FetchForm-8x4qLgH.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
         "path": "\/assets\/js\/AjaxManager-laxGYa1.js",
+        "type": "js"
+    },
+    "vehiclesFilters": {
+        "path": "\/assets\/js\/vehiclesFilters-IE2QH6y.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {
@@ -68,7 +72,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-ox1A17Y.js",
+        "path": "\/assets\/js\/FetchForm-8x4qLgH.js",
         "type": "js"
     }
 }

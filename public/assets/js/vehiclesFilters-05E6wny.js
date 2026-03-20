@@ -3,7 +3,7 @@ import initDoubleSlider from "./rangeSelector.js";
 
 export function initVehicleFilters() {
   const filterForm = document.getElementById("filters-form");
-  const resultsContainer = document.getElementById("vehicles-search-results"); // tbody dans la page d'index des véhicules
+  const resultsContainer = document.getElementById("vehicle-search-results"); // tbody dans la page d'index des véhicules
 
   if (!filterForm || !resultsContainer) {
     console.log(

@@ -1,0 +1,82 @@
+import "./stimulus_bootstrap.js";
+import "./js/theme.js";
+import "./styles/app.css";
+import "./js/sidebar.js";
+import "./js/rangeSelector.js";
+import { initVehicleFilters } from "./js/vehiclesFilters.js";
+
+import DynamicFormCollection from "./js/DynamicFormCollection.js";
+import FetchForm from "./js/FetchForm.js";
+import AjaxManager from "./js/AjaxManager.js";
+
+// --------------------------------------------------
+// DynamicFormCollection
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM fully loaded: Initialisation DynamicFormCollection");
+  document.querySelectorAll("[data-collection]").forEach(root => {
+    new DynamicFormCollection(root);
+  });
+});
+
+// --------------------------------------------------
+// FetchForm
+function initFetchForms() {
+  console.log("Initialisation FetchForm");
+  document.querySelectorAll("input[data-result-div]").forEach(input => {
+    new FetchForm(input);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initFetchForms);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") initFetchForms();
+});
+
+// --------------------------------------------------
+// AjaxManager
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Initialisation AjaxManager");
+  new AjaxManager();
+});
+
+// --------------------------------------------------
+// Initialisation des filtres véhicules
+function initAllVehicleFilters() {
+  console.log("initAllVehicleFilters appelé");
+  const form = document.getElementById("filters-form");
+  const results = document.getElementById("vehicles-index-results");
+
+  if (!form || !results) {
+    console.log(
+      "initAllVehicleFilters: #filters-form ou #vehicles-index-results introuvable, attente du DOM..."
+    );
+  } else {
+    console.log(
+      "Formulaire et container présents, lancement initVehicleFilters"
+    );
+  }
+
+  // On initialise sliders et checkboxes si la sidebar est présente
+  initVehicleFilters();
+}
+
+// Chargement initial
+document.addEventListener("DOMContentLoaded", initAllVehicleFilters);
+
+// Pour navigation "back/forward" (bfcache)
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") initAllVehicleFilters();
+});
+
+// Observer pour inclusions dynamiques (sidebar ajoutée plus tard)
+const observer = new MutationObserver(() => {
+  console.log("MutationObserver a détecté un changement dans le DOM");
+  if (document.getElementById("filters-form")) {
+    console.log("Formulaire détecté via MutationObserver");
+    initAllVehicleFilters();
+    observer.disconnect();
+  }
+});
+observer.observe(document.body, { childList: true, subtree: true });
+
+console.log("app.js chargé et véhiculesFilters prêt à fonctionner ✅");

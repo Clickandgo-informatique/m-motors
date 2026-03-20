@@ -1,0 +1,25 @@
+           
+                {% for vehicle in vehicles %}
+                    <tr>
+                        <td>
+                            <a href="{{ path('vehicle_edit', { id: vehicle.id }) }}">
+                                <i class="fa-solid fa-pen-to-square"></i> Voir
+                            </a>
+                        </td>
+                        <td data-label="Etat">
+                            <span class="badge badge-{{ vehicle.status.value|default('default') }}">
+                                {{ vehicle.status.label|default('N/A') }}
+                            </span>
+                        </td>
+                        <td data-label="Immatriculation">{{ vehicle.registrationNumber|default('-') }}</td>
+                        <td data-label="Marque">{{ vehicle.vehicleModel.brand.name|default('-') }}</td>
+                        <td data-label="Modèle">{{ vehicle.vehicleModel.model.name|default('-') }}</td>
+                        <td class="text-right" data-label="Kilométrage">
+                            {{ vehicle.mileage|default(0)|number_format(0, ',', '.') }} kms
+                        </td>
+                        <td class="text-right" data-label="Prix">
+                            {{ vehicle.price|default(0)|number_format(0, ',', '.') }} €
+                        </td>
+                    </tr>
+                {% endfor %}
+           

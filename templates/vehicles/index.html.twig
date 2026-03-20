@@ -1,97 +1,65 @@
 {% extends "base.html.twig" %}
-{% block title %}M-Motors : Liste des véhicules enregistrés
-{% endblock %}
+
+{% block title %}M-Motors : Liste des véhicules enregistrés{% endblock %}
+
 {% block body %}
-	<h1 class="text-center">Liste des véhicules enregistrés</h1>
+<h1 class="text-center">Liste des véhicules enregistrés</h1>
 
-	{# Formulaire de recherche #}
-	{% include "Components/Forms/_fetch_form.html.twig" with {
-     action: path('vehicle_search'),
-     resultDiv: 'vehicle-results',
-     placeholder:"Rechercher par marque,immatriculation,vin ou modèle",
-     itemUrl: path('vehicle_edit', { id: '__ID__' }),
-     autocomplete: true
-}%}
+{# Formulaire de recherche AJAX #}
+{% include "Components/Forms/_fetch_form.html.twig" with {
+    action: path('vehicle_search'),
+    resultDiv: 'vehicle-results',
+    placeholder: "Rechercher par marque, immatriculation, vin ou modèle",
+    itemUrl: path('vehicle_edit', { id: 0 })|replace({'0': '__ID__'}),
+    autocomplete: true
+} %}
 
-	{% if vehicles is not empty %}
+{# Conteneur pour résultats filtrés via AJAX #}
+<div id="vehicles-index-results">
+    {% if vehicles is not empty %}
+        <div class="pagination-info">
+            {% set start = (vehicles.currentPageNumber - 1) * vehicles.itemNumberPerPage + 1 %}
+            {% set end = start + vehicles|length - 1 %}
+            <p class="text-center">
+                Affichage {{ start }} à {{ end }} sur {{ vehicles.getTotalItemCount }} véhicules
+                <br>
+                Page {{ vehicles.currentPageNumber }} / {{ vehicles.pageCount }}
+            </p>
+        </div>
 
-		<div class="pagination-info">
-			{% set start = (vehicles.currentPageNumber - 1) * vehicles.itemNumberPerPage + 1 %}
-			{% set end = start + vehicles|length - 1 %}
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Etat</th>
+                    <th>Immatriculation</th>
+                    <th>Marque</th>
+                    <th>Modèle</th>
+                    <th>Kilométrage</th>
+                    <th>Prix</th>
+                </tr>
+            </thead>
+{# Insertion du tbody via AJAX #}
+ <tbody id="vehicles-search-results">
+{% include "vehicles/_vehicles_search_results.html.twig" with {vehicles:vehicles}%}
+ </tbody>
+        </table>
 
-			<p class="text-center">Affichage
-				{{ start }}
-				à
-			{{ end }}
-			sur
-			{{ vehicles.getTotalItemCount }}
-			véhicules
-			<br>
-			Page
-			{{ vehicles.currentPageNumber }}
-			/
-			{{ vehicles.pageCount }}</p>
-	</div>
+        <div class="pagination">
+            {% if vehicles.currentPageNumber > 1 %}
+                <a href="{{ path('vehicles', { page: vehicles.currentPageNumber - 1 }) }}">← Précédent</a>
+            {% else %}
+                <span class="disabled">← Précédent</span>
+            {% endif %}
 
-	<table>
-		<thead>
-			<tr>
-				<th></th>
-				<th>Etat</th>
-				<th>Immatriculation</th>
-				<th>Marque</th>
-				<th>Modèle</th>
-				<th>Kilomètrage</th>
-				<th>Prix</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for vehicle in vehicles %}
-				<tr>
-					<td>
-						<a href="{{ path('vehicle_edit', {id: vehicle.id}) }}">
-							<i class="fa-solid fa-pen-to-square"></i>Voir</a>
-					</td>
-					<td data-label="Etat">
-						<span class="badge badge-{{ vehicle.status.value }}">
-							{{ vehicle.status.label }}
-						</span>
-					</td>
-					<td data-label="Immatriculation">{{ vehicle.registrationNumber }}</td>
-					<td data-label="Marque">{{vehicle.vehicleModel.brand.name}}</td>
-					<td data-label="Modèle">
-						{{ vehicle.vehicleModel.model.name }}</td>
-					<td class="text-right" data-label="Kilomètrage">
-						{{ vehicle.mileage|number_format(0, ',', '.') }}
-						kms</td>
-					<td class="text-right" data-label="Prix">
-						{{ vehicle.price|number_format(0, ',', '.') }}
-						€</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-
-	<div class="pagination">
-
-		{% if vehicles.currentPageNumber > 1 %}
-			<a href="{{ path('vehicles', {page: vehicles.currentPageNumber - 1}) }}">
-				← Précédent
-			</a>
-		{% else %}
-			<span class="disabled">← Précédent</span>
-		{% endif %}
-
-		{% if vehicles.currentPageNumber < vehicles.pageCount %}
-			<a href="{{ path('vehicles', {page: vehicles.currentPageNumber + 1}) }}">
-				Suivant →
-			</a>
-		{% else %}
-			<span class="disabled">Suivant →</span>
-		{% endif %}
-
-	</div>
-
-{% else %}
-	<p class="alert">Il n'existe encore aucun véhicule dans la base.</p>
-{% endif %}{% endblock %}
+            {% if vehicles.currentPageNumber < vehicles.pageCount %}
+                <a href="{{ path('vehicles', { page: vehicles.currentPageNumber + 1 }) }}">Suivant →</a>
+            {% else %}
+                <span class="disabled">Suivant →</span>
+            {% endif %}
+        </div>
+    {% else %}
+        <p class="alert">Il n'existe encore aucun véhicule dans la base.</p>
+    {% endif %}
+</div>
+{% endblock %}

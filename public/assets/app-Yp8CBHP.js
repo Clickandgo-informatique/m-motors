@@ -1,10 +1,9 @@
-// assets/app.js
 import "./stimulus_bootstrap.js";
 import "./js/theme.js";
 import "./styles/app.css";
 import "./js/sidebar.js";
 import "./js/rangeSelector.js";
-import { initVehicleFilters } from "./js/vehiclesFilters.js";
+import "./js/vehiclesFilters.js";
 
 import DynamicFormCollection from "./js/DynamicFormCollection.js";
 import FetchForm from "./js/FetchForm.js";
@@ -36,31 +35,27 @@ document.addEventListener("visibilitychange", () => {
 document.addEventListener("DOMContentLoaded", () => new AjaxManager());
 
 // --------------------------------------------------
-// Initialisation des filtres véhicules avec guard
-let filtersInitialized = false;
-
-function waitForVehicleFilters() {
-  const form = document.getElementById("filters-form");
-  if (form && !filtersInitialized) {
-    initVehicleFilters();
-    filtersInitialized = true;
-  } else if (!filtersInitialized) {
-    // Observer uniquement pour l’insertion du formulaire (sidebar dynamique)
-    const observer = new MutationObserver(() => {
-      const form = document.getElementById("filters-form");
-      if (form && !filtersInitialized) {
-        initVehicleFilters();
-        filtersInitialized = true;
-        observer.disconnect();
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-  }
+// Initialisation des filtres véhicules
+function initAllVehicleFilters() {
+  // On initialise sliders et checkboxes si la sidebar est présente
+  initVehicleFilters();
 }
 
-document.addEventListener("DOMContentLoaded", waitForVehicleFilters);
+//Chargement initial
+document.addEventListener("DOMContentLoaded", initAllVehicleFilters);
+
+//Pour navigation "back/forward" (bfcache)
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") waitForVehicleFilters();
+  if (document.visibilityState === "visible") initAllVehicleFilters();
 });
 
-console.log("app.js chargé et véhiculesFilters prêt à fonctionner ");
+//Observer pour inclusions dynamiques (sidebar ajoutée plus tard)
+const observer = new MutationObserver(() => {
+  if (document.getElementById("filters-form")) {
+    initAllVehicleFilters();
+    observer.disconnect();
+  }
+});
+observer.observe(document.body, { childList: true, subtree: true });
+
+console.log("app.js chargé et véhiculesFilters prêt à fonctionner ✅");

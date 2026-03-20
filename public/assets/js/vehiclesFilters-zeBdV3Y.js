@@ -1,30 +1,20 @@
-// assets/js/vehiclesFilters.js
 import initDoubleSlider from "./rangeSelector.js";
 
-export function initVehicleFilters() {
+function initVehicleFilters() {
   const filterForm = document.getElementById("filters-form");
-  const resultsContainer = document.getElementById("vehicles-search-results"); // tbody dans la page d'index des véhicules
-
-  if (!filterForm || !resultsContainer) {
-    console.log(
-      "initVehicleFilters: #filters-form ou #vehicle-results introuvable, attente du DOM..."
-    );
-    return;
-  }
+  const resultsContainer = document.getElementById("vehicles-index-results");
+  if (!filterForm || !resultsContainer) return;
 
   const sliderFilters = {};
 
-  // 🔹 Initialisation des sliders présents dans le DOM
   function initSliders() {
-    const sliders = document.querySelectorAll(".double-slider");
-    if (!sliders.length) return;
-    sliders.forEach(slider => initDoubleSlider(slider));
-    console.log("Sliders initialisés:", sliders.length);
+    document.querySelectorAll(".double-slider").forEach(slider => {
+      initDoubleSlider(slider);
+    });
   }
 
-  initSliders(); // initialisation au chargement
+  initSliders();
 
-  // 🔹 Debounce pour limiter le nombre de requêtes
   function debounce(fn, delay = 300) {
     let timer;
     return (...args) => {
@@ -35,7 +25,6 @@ export function initVehicleFilters() {
 
   const debouncedSearch = debounce(search, 300);
 
-  // 🔹 Événement custom déclenché par rangeSelector.js
   document.addEventListener("sliderChanged", e => {
     const { filter, min, max } = e.detail;
     sliderFilters[`${filter}Min`] = min;
@@ -43,15 +32,11 @@ export function initVehicleFilters() {
     debouncedSearch();
   });
 
-  //Événement sur le formulaire pour checkboxes / selects / inputs
   filterForm.addEventListener("change", () => debouncedSearch());
 
-  //Fonction de recherche AJAX
   async function search() {
     try {
       const filters = {};
-
-      //Récupération des checkboxes cochées
       filterForm
         .querySelectorAll("input[type='checkbox']:checked")
         .forEach(input => {
@@ -60,10 +45,8 @@ export function initVehicleFilters() {
           filters[key].push(input.value);
         });
 
-      //Ajout des valeurs des sliders
       Object.assign(filters, sliderFilters);
 
-      //Requête AJAX
       const response = await fetch("/vehicles/vehicles-search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,15 +54,14 @@ export function initVehicleFilters() {
       });
 
       const html = await response.text();
-
-      //Injection uniquement dans le <tbody>
       resultsContainer.innerHTML = html;
 
-      console.log("Résultats mis à jour via AJAX");
+      initSliders();
     } catch (error) {
       console.error("Erreur recherche véhicules :", error);
     }
   }
-
-  console.log("initVehicleFilters prêt ✅");
 }
+
+// Auto-exécution
+document.addEventListener("DOMContentLoaded", initVehicleFilters);
