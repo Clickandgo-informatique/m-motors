@@ -32,6 +32,11 @@ class Brand
     #[ORM\OneToMany(mappedBy: 'brand', targetEntity: VehicleModel::class)]
     private Collection $vehicleModels;
 
+    public function __toString(): string
+    {
+        return $this->getName() ?? '';
+    }
+
     public function __construct()
     {
         $this->models = new ArrayCollection();

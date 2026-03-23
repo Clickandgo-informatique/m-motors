@@ -1,65 +1,50 @@
 {% extends "base.html.twig" %}
 
-{% block title %}M-Motors : Liste des véhicules enregistrés{% endblock %}
+{% block title %}M-Motors : Liste des véhicules enregistrés
+{% endblock %}
 
 {% block body %}
-<h1 class="text-center">Liste des véhicules enregistrés</h1>
+	<h1 class="text-center">Liste des véhicules enregistrés</h1>
 
-{# Formulaire de recherche AJAX #}
-{% include "Components/Forms/_fetch_form.html.twig" with {
-    action: path('vehicle_search'),
-    resultDiv: 'vehicle-results',
-    placeholder: "Rechercher par marque, immatriculation, vin ou modèle",
-    itemUrl: path('vehicle_edit', { id: 0 })|replace({'0': '__ID__'}),
-    autocomplete: true
-} %}
+	{# Conteneur principal pour AJAX (résultats + pagination) #}
+	<div id="vehicles-results" data-fetch-form data-fetch-url="{{ path('vehicles_search') }}">
 
-{# Conteneur pour résultats filtrés via AJAX #}
-<div id="vehicles-index-results">
-    {% if vehicles is not empty %}
-        <div class="pagination-info">
-            {% set start = (vehicles.currentPageNumber - 1) * vehicles.itemNumberPerPage + 1 %}
-            {% set end = start + vehicles|length - 1 %}
-            <p class="text-center">
-                Affichage {{ start }} à {{ end }} sur {{ vehicles.getTotalItemCount }} véhicules
-                <br>
-                Page {{ vehicles.currentPageNumber }} / {{ vehicles.pageCount }}
-            </p>
-        </div>
+		{% if vehicles is not empty %}
 
-        <table>
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Etat</th>
-                    <th>Immatriculation</th>
-                    <th>Marque</th>
-                    <th>Modèle</th>
-                    <th>Kilométrage</th>
-                    <th>Prix</th>
-                </tr>
-            </thead>
-{# Insertion du tbody via AJAX #}
- <tbody id="vehicles-search-results">
-{% include "vehicles/_vehicles_search_results.html.twig" with {vehicles:vehicles}%}
- </tbody>
-        </table>
+			{# Résumé / badges des filtres (géré par JS) #}
+			<div id="filters-summary" data-target="filters-summary"></div>
 
-        <div class="pagination">
-            {% if vehicles.currentPageNumber > 1 %}
-                <a href="{{ path('vehicles', { page: vehicles.currentPageNumber - 1 }) }}">← Précédent</a>
-            {% else %}
-                <span class="disabled">← Précédent</span>
-            {% endif %}
+			{# Pagination en haut #}
+			<div class="pagination-wrapper" data-target="pagination-top">
+				{% include "vehicles/_pagination_info.html.twig" with {vehicles: vehicles} %}
+			</div>
 
-            {% if vehicles.currentPageNumber < vehicles.pageCount %}
-                <a href="{{ path('vehicles', { page: vehicles.currentPageNumber + 1 }) }}">Suivant →</a>
-            {% else %}
-                <span class="disabled">Suivant →</span>
-            {% endif %}
-        </div>
-    {% else %}
-        <p class="alert">Il n'existe encore aucun véhicule dans la base.</p>
-    {% endif %}
-</div>
+			<table>
+				<thead>
+					<tr>
+						<th>Etat</th>
+						<th>Immatriculation</th>
+						<th>Marque</th>
+						<th>Modèle</th>
+						<th>Kilométrage</th>
+						<th>Carrosserie</th>
+						<th>Carburant</th>
+						<th>Prix</th>
+					</tr>
+				</thead>
+				<tbody id="vehicles-search-results" data-target="vehicles-search-results">
+					{% include "vehicles/_vehicles_search_results.html.twig" with {vehicles: vehicles} %}
+				</tbody>
+			</table>
+
+			{# Pagination en bas #}
+			<div class="pagination-wrapper" data-target="pagination-bottom">
+				{% include "vehicles/_pagination_info.html.twig" with {vehicles: vehicles} %}
+			</div>
+
+		{% else %}
+			<p class="alert">Il n'existe encore aucun véhicule dans la base.</p>
+		{% endif %}
+
+	</div>
 {% endblock %}

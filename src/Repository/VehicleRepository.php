@@ -3,10 +3,16 @@
 namespace App\Repository;
 
 use App\Entity\Vehicle;
+use App\Entity\Brand;
+use App\Entity\BodyType;
+use App\Entity\FuelType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * Repository pour l'entité Vehicle.
+ */
 class VehicleRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -15,7 +21,8 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     /**
-     * QueryBuilder pour récupérer tous les véhicules avec jointures
+     * QueryBuilder pour récupérer tous les véhicules
+     * avec les jointures nécessaires pour l'affichage.
      */
     public function getAllVehiclesQueryBuilder(): QueryBuilder
     {
@@ -28,132 +35,204 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     /**
-     * QueryBuilder pour filtrer dynamiquement
-     */
-    public function findByFiltersQueryBuilder(array $filters): QueryBuilder
-    {
-        $qb = $this->createQueryBuilder('v')
-            ->leftJoin('v.vehicleModel', 'vm')
-            ->leftJoin('vm.brand', 'b');
-
-        // Filtre marque
-        if (!empty($filters['brand'])) {
-            $qb->andWhere('b.id IN (:brands)')
-                ->setParameter('brands', $filters['brand']);
-        }
-
-        // Filtre carburant
-        if (!empty($filters['fuel'])) {
-            $qb->andWhere('vm.fuelType IN (:fuel)')
-                ->setParameter('fuel', $filters['fuel']);
-        }
-
-        // Kilométrage
-        if (isset($filters['mileageMin'], $filters['mileageMax'])) {
-            $qb->andWhere('v.mileage >= :min AND v.mileage <= :max')
-                ->setParameter('min', $filters['mileageMin'])
-                ->setParameter('max', $filters['mileageMax']);
-        }
-
-        // Prix
-        if (!empty($filters['priceMin'])) {
-            $qb->andWhere('v.price >= :minPrice')
-                ->setParameter('minPrice', $filters['priceMin']);
-        }
-        if (!empty($filters['priceMax'])) {
-            $qb->andWhere('v.price <= :maxPrice')
-                ->setParameter('maxPrice', $filters['priceMax']);
-        }
-
-        return $qb->orderBy('vm.brand', 'ASC');
-    }
-
-    /**
-     * Liste des marques ayant au moins un véhicule (pour le filtre dynamique)
-     */
-    public function findBrandNamesWithVehicles(): array
-    {
-        return $this->createQueryBuilder('v')
-            ->select('DISTINCT b.id, b.name')
-            ->join('v.vehicleModel', 'm')
-            ->join('m.brand', 'b')
-            ->orderBy('b.name', 'ASC')
-            ->getQuery()
-            ->getArrayResult();
-    }
-
-    /**
-     * Recherche paginée ou autocomplete pour les véhicules
+     * Construit un QueryBuilder avec filtres dynamiques.
      *
-     * @param array $filters Tableau des filtres ['brand' => [1,2], 'fuel' => [1,2], 'mileageMin' => 0, ...]
-     * @param string|null $searchTerm Terme pour recherche texte
-     * @param int|null $limit Nombre maximum de résultats
-     * @param int|null $offset Décalage pour pagination
-     * @return Vehicle[]
+     * @param array $filters Tableau des filtres (brand, bodyType, fuelType, price, mileage, etc.)
+     * @param string|null $searchTerm Terme de recherche texte
      */
-    public function searchPaginated(array $filters = [], ?string $searchTerm = null, ?int $limit = null, ?int $offset = null): array
+    public function getFilteredQueryBuilder(array $filters = [], ?string $searchTerm = null): QueryBuilder
     {
         $qb = $this->createQueryBuilder('v')
             ->leftJoin('v.vehicleModel', 'vm')
             ->leftJoin('vm.brand', 'b')
-            ->addSelect('vm', 'b');
+            ->leftJoin('vm.model', 'm')
+            ->leftJoin('vm.bodyType', 'bt')
+            ->leftJoin('vm.fuelType', 'ft')
+            ->addSelect('vm', 'b', 'm', 'bt', 'ft');
 
-        // 🔹 Filtrage des marques
+        /**
+         * Filtre par marques
+         */
         if (!empty($filters['brand'])) {
             $qb->andWhere('b.id IN (:brands)')
                 ->setParameter('brands', $filters['brand']);
         }
 
-        // 🔹 Filtrage carburant
-        if (!empty($filters['fuel'])) {
-            $qb->andWhere('v.fuelType IN (:fuel)')
-                ->setParameter('fuel', $filters['fuel']);
-        }
-
-        // 🔹 Filtrage carrosserie
+        /**
+         * Filtre par type de carrosserie
+         */
         if (!empty($filters['bodyType'])) {
-            $qb->andWhere('v.bodyType IN (:bodyTypes)')
+            $qb->andWhere('bt.id IN (:bodyTypes)')
                 ->setParameter('bodyTypes', $filters['bodyType']);
         }
 
-        // 🔹 Filtrage sliders (mileage, price, etc.)
-        if (isset($filters['mileageMin'])) {
+        /**
+         * Filtre par carburant
+         */
+        if (!empty($filters['fuelType'])) {
+            $qb->andWhere('ft.id IN (:fuelTypes)')
+                ->setParameter('fuelTypes', $filters['fuelType']);
+        }
+
+        /**
+         * Filtre kilométrage minimum
+         */
+        if (isset($filters['mileageMin']) && $filters['mileageMin'] !== '') {
             $qb->andWhere('v.mileage >= :mileageMin')
                 ->setParameter('mileageMin', $filters['mileageMin']);
         }
-        if (isset($filters['mileageMax'])) {
+
+        /**
+         * Filtre kilométrage maximum
+         */
+        if (isset($filters['mileageMax']) && $filters['mileageMax'] !== '') {
             $qb->andWhere('v.mileage <= :mileageMax')
                 ->setParameter('mileageMax', $filters['mileageMax']);
         }
 
-        if (isset($filters['priceMin'])) {
+        /**
+         * Filtre prix minimum
+         */
+        if (isset($filters['priceMin']) && $filters['priceMin'] !== '') {
             $qb->andWhere('v.price >= :priceMin')
                 ->setParameter('priceMin', $filters['priceMin']);
         }
-        if (isset($filters['priceMax'])) {
+
+        /**
+         * Filtre prix maximum
+         */
+        if (isset($filters['priceMax']) && $filters['priceMax'] !== '') {
             $qb->andWhere('v.price <= :priceMax')
                 ->setParameter('priceMax', $filters['priceMax']);
         }
 
-        // 🔹 Recherche texte (marque, modèle, immatriculation, VIN)
+        /**
+         * Recherche texte multi-champs
+         */
         if ($searchTerm) {
             $qb->andWhere('
                 LOWER(v.registrationNumber) LIKE :search
                 OR LOWER(v.vin) LIKE :search
-                OR LOWER(vm.model.name) LIKE :search
+                OR LOWER(m.name) LIKE :search
                 OR LOWER(b.name) LIKE :search
             ')
                 ->setParameter('search', '%' . strtolower($searchTerm) . '%');
         }
 
-        // 🔹 Pagination
+        return $qb->orderBy('b.name', 'ASC');
+    }
+
+    /**
+     * Utilisé pour la pagination avec KnpPaginator
+     */
+    public function searchForPaginator(array $filters = [], ?string $searchTerm = null): QueryBuilder
+    {
+        return $this->getFilteredQueryBuilder($filters, $searchTerm);
+    }
+
+    /**
+     * Utilisé pour des résultats limités (autocomplete, API, etc.)
+     */
+    public function searchForAutocomplete(
+        array $filters = [],
+        ?string $searchTerm = null,
+        ?int $limit = null,
+        ?int $offset = null
+    ): array {
+        $qb = $this->getFilteredQueryBuilder($filters, $searchTerm);
+
         if ($limit !== null) {
             $qb->setMaxResults($limit);
         }
+
         if ($offset !== null) {
             $qb->setFirstResult($offset);
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Retourne les marques réellement utilisées dans les véhicules
+     */
+    public function getUsedBrands(): array
+    {
+        $em = $this->getEntityManager();
+
+        $results = $em->createQueryBuilder()
+            ->select('b.id, b.name')
+            ->from(Vehicle::class, 'v')
+            ->innerJoin('v.vehicleModel', 'vm')
+            ->innerJoin('vm.brand', 'b')
+            ->groupBy('b.id, b.name')
+            ->orderBy('b.name', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        $brands = [];
+        foreach ($results as $row) {
+            $brand = $em->getRepository(Brand::class)->find($row['id']);
+            if ($brand) {
+                $brands[] = $brand;
+            }
+        }
+
+        return $brands;
+    }
+
+    /**
+     * Retourne les types de carrosserie utilisés
+     */
+    public function getUsedBodyTypes(): array
+    {
+        $em = $this->getEntityManager();
+
+        $results = $em->createQueryBuilder()
+            ->select('bt.id, bt.name')
+            ->from(Vehicle::class, 'v')
+            ->innerJoin('v.vehicleModel', 'vm')
+            ->innerJoin('vm.bodyType', 'bt')
+            ->groupBy('bt.id, bt.name')
+            ->orderBy('bt.name', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        $bodyTypes = [];
+        foreach ($results as $row) {
+            $bt = $em->getRepository(BodyType::class)->find($row['id']);
+            if ($bt) {
+                $bodyTypes[] = $bt;
+            }
+        }
+
+        return $bodyTypes;
+    }
+
+    /**
+     * Retourne les carburants utilisés
+     */
+    public function getUsedFuelTypes(): array
+    {
+        $em = $this->getEntityManager();
+
+        $results = $em->createQueryBuilder()
+            ->select('ft.id, ft.name')
+            ->from(Vehicle::class, 'v')
+            ->innerJoin('v.vehicleModel', 'vm')
+            ->innerJoin('vm.fuelType', 'ft')
+            ->groupBy('ft.id, ft.name')
+            ->orderBy('ft.name', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        $fuelTypes = [];
+        foreach ($results as $row) {
+            $ft = $em->getRepository(FuelType::class)->find($row['id']);
+            if ($ft) {
+                $fuelTypes[] = $ft;
+            }
+        }
+
+        return $fuelTypes;
     }
 }

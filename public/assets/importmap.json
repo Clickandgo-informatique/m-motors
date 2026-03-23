@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-MWvx4QI.js",
+        "path": "\/assets\/app-M1Kaj86.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -36,11 +36,15 @@
         "type": "js"
     },
     "\/assets\/js\/rangeSelector.js": {
-        "path": "\/assets\/js\/rangeSelector-O_qdfKa.js",
+        "path": "\/assets\/js\/rangeSelector-oyJKIxs.js",
         "type": "js"
     },
     "\/assets\/js\/vehiclesFilters.js": {
-        "path": "\/assets\/js\/vehiclesFilters-IE2QH6y.js",
+        "path": "\/assets\/js\/vehiclesFilters-F-8Ngji.js",
+        "type": "js"
+    },
+    "\/assets\/js\/FilterBadges.js": {
+        "path": "\/assets\/js\/FilterBadges-C0N8oZX.js",
         "type": "js"
     },
     "\/assets\/js\/DynamicFormCollection.js": {
@@ -48,15 +52,15 @@
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-8x4qLgH.js",
+        "path": "\/assets\/js\/FetchForm-GG03rti.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
-        "path": "\/assets\/js\/AjaxManager-laxGYa1.js",
+        "path": "\/assets\/js\/AjaxManager-B5H9Cur.js",
         "type": "js"
     },
     "vehiclesFilters": {
-        "path": "\/assets\/js\/vehiclesFilters-IE2QH6y.js",
+        "path": "\/assets\/js\/vehiclesFilters-F-8Ngji.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {
@@ -72,7 +76,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-8x4qLgH.js",
+        "path": "\/assets\/js\/FetchForm-GG03rti.js",
         "type": "js"
     }
 }

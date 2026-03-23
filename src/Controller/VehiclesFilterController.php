@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Repository\BodyTypeRepository;
-use App\Repository\FuelTypeRepository;
 use App\Repository\VehicleRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,11 +11,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class VehiclesFilterController extends AbstractController
 {
+    /**
+     * Page principale véhicules avec pagination
+     */
     #[Route('/vehicles', name: 'vehicles')]
     public function index(
         VehicleRepository $vehicleRepo,
-        BodyTypeRepository $bodyTypeRepo,
-        FuelTypeRepository $fuelTypeRepo,
         Request $request,
         PaginatorInterface $paginator
     ): Response {
@@ -31,10 +30,10 @@ class VehiclesFilterController extends AbstractController
             10
         );
 
-        // Filtres pour sidebar
-        $brands = $vehicleRepo->findBrandNamesWithVehicles();
-        $bodyTypes = $bodyTypeRepo->getBodyTypes();
-        $fuelTypes = $fuelTypeRepo->getFuelTypes();
+        // Filtres sidebar renvoyés en tant qu'objets
+        $brands = $vehicleRepo->getUsedBrands();
+        $bodyTypes = $vehicleRepo->getUsedBodyTypes();
+        $fuelTypes = $vehicleRepo->getUsedFuelTypes();
 
         return $this->render('vehicles/index.html.twig', [
             'vehicles' => $vehicles,
@@ -44,6 +43,9 @@ class VehiclesFilterController extends AbstractController
         ]);
     }
 
+    /**
+     * Endpoint AJAX pour filtrage dynamique des véhicules
+     */
     #[Route('/vehicles/vehicles-search', name: 'vehicles_search', methods: ['POST'])]
     public function search(
         Request $request,
@@ -51,47 +53,45 @@ class VehiclesFilterController extends AbstractController
         PaginatorInterface $paginator
     ): Response {
         // Décodage JSON du body
-        $data = json_decode($request->getContent(), true);
-
-        // S'assurer que $filters est toujours un tableau
-        $filters = [];
-        if (isset($data['filters']) && is_array($data['filters'])) {
-            $filters = $data['filters'];
-        }
-
-        // Optionnel : terme de recherche texte pour autocomplete
+        $data = json_decode($request->getContent(), true) ?: [];
+        $filters = $data['filters'] ?? [];
         $searchTerm = $data['q'] ?? null;
-        if (is_string($searchTerm) && trim($searchTerm) === '') {
-            $searchTerm = null;
-        }
+        $page = isset($data['page']) && is_numeric($data['page']) ? (int)$data['page'] : 1;
 
-        // QueryBuilder filtré
-        $query = $vehicleRepo->searchPaginated($filters, $searchTerm);
+        // QueryBuilder filtré pour pagination
+        $query = $vehicleRepo->searchForPaginator($filters, $searchTerm);
 
-        $vehicles = $paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1),
-            10
-        );
+        // Pagination KnpPaginator
+        $vehicles = $paginator->paginate($query, $page, 20);
 
-        // Fragment Twig pour injection AJAX
-        $html = $this->renderView('vehicles/_vehicles_search_results.html.twig', [
-            'vehicles' => $vehicles
+        // Retour JSON avec fragments pour injection AJAX
+        return $this->json([
+            'results' => $this->renderView('vehicles/_vehicles_search_results.html.twig', [
+                'vehicles' => $vehicles
+            ]),
+            'paginationTop' => $this->renderView('vehicles/_pagination_info.html.twig', [
+                'vehicles' => $vehicles
+            ]),
+            'paginationBottom' => $this->renderView('vehicles/_pagination_info.html.twig', [
+                'vehicles' => $vehicles
+            ])
+            // Les badges sont maintenant gérés côté JS → plus besoin de filtersSummary ici
         ]);
-
-        return new Response($html);
     }
 
+    /**
+     * Endpoint AJAX pour récupérer les filtres sidebar
+     */
     #[Route('/vehicles/filters', name: 'vehicles_filters', methods: ['GET'])]
     public function getFilters(
-        VehicleRepository $vehicleRepo,
-        BodyTypeRepository $bodyTypeRepo,
-        FuelTypeRepository $fuelTypeRepo
+        VehicleRepository $vehicleRepo
     ): Response {
-        $brands = $vehicleRepo->findBrandNamesWithVehicles();
-        $bodyTypes = $bodyTypeRepo->getBodyTypes();
-        $fuelTypes = $fuelTypeRepo->getFuelTypes();
+        // Objets pour la sidebar
+        $brands = $vehicleRepo->getUsedBrands();
+        $bodyTypes = $vehicleRepo->getUsedBodyTypes();
+        $fuelTypes = $vehicleRepo->getUsedFuelTypes();
 
+        // Fragment AJAX pour le formulaire de filtres
         return $this->render('vehicles/_vehicles_filters.html.twig', [
             'brands' => $brands,
             'bodyTypes' => $bodyTypes,

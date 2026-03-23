@@ -9,6 +9,7 @@
     "\/assets\/js\/FetchForm.js",
     "\/assets\/js\/AjaxManager.js",
     "@symfony\/stimulus-bundle",
+    "\/assets\/js\/FilterBadges.js",
     "@hotwired\/stimulus",
     "\/assets\/@symfony\/stimulus-bundle\/controllers.js",
     "\/assets\/@symfony\/ux-turbo\/turbo_controller.js",

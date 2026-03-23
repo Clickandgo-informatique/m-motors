@@ -36,7 +36,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
             throw new \RuntimeException('Aucun Supplier trouvé en base.');
         }
 
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 1000; $i++) {
 
             $vehicle = new Vehicle();
 
