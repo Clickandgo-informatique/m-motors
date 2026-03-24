@@ -53,7 +53,7 @@
   align-items: center;
   gap: 4px;
   padding: 5px 7px;
-  border: 1px solid var(--primary-color);
+  border: 1px solid var(--text-primary);
   border-radius: 999px;
 
   /* 🔥 les lignes importantes */

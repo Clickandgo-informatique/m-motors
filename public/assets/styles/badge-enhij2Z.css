@@ -1,0 +1,42 @@
+/* Style général du badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 130px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 20px;
+  text-transform: capitalize;
+  color: var(--text-primary);
+  text-align: center;
+  transition: 0.2s ease;
+}
+.badge:hover {
+  transform: scale(1.05);
+}
+/* Etats du workflow */
+
+.badge-available {
+  background-color: #28a745; /* vert */
+}
+
+.badge-rented {
+  background-color: #fd7e14; /* orange */
+}
+
+.badge-sold {
+  background-color: #dc3545; /* rouge */
+}
+
+.badge-maintenance {
+  background-color: #007bff; /* bleu */
+}
+#filters-summary {
+  display: flex;
+  min-height: 40px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
