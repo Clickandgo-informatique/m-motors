@@ -54,9 +54,8 @@
   gap: 4px;
   padding: 5px 7px;
   background: var(--color-primary);
-  color: #ffff;
+  color: var(--text-primary);
   border-radius: 999px;
-  box-shadow: var(--shadow-medium);
 
   /* 🔥 les lignes importantes */
   flex: 0 0 auto; /* pas de grow, pas de shrink forcé */

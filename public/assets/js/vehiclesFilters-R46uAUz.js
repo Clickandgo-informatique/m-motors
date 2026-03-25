@@ -3,20 +3,22 @@ import FilterBadges from "./FilterBadges.js";
 import initDoubleSlider from "./rangeSelector.js";
 
 /**
- * Classe principale pour la gestion des filtres véhicules
- * - Sliders (mileage, years, etc.)
- * - Badges dynamiques
- * - Pagination AJAX
+ * Gestion des filtres véhicules :
+ * - Filtrage AJAX
+ * - Pagination
+ * - Badges interactifs
+ * - Double sliders avec debounce
  */
 export default class VehiclesFilter {
   constructor(form) {
+    // Vérification que l'élément est bien un formulaire
     if (!(form instanceof HTMLFormElement)) return;
 
     this.form = form;
     this.url = form.dataset.fetchUrl;
     if (!this.url) return;
 
-    // Conteneurs principaux
+    // Conteneurs principaux dans la page
     this.resultsContainer = document.querySelector(
       '[data-target="vehicles-search-results"]'
     );
@@ -30,7 +32,7 @@ export default class VehiclesFilter {
       '[data-target="filters-summary"]'
     );
 
-    // Initialisation des badges côté client
+    // Initialisation des badges côté client si conteneur présent
     if (this.summaryContainer) {
       this.badges = new FilterBadges(
         this.summaryContainer,
@@ -39,30 +41,30 @@ export default class VehiclesFilter {
       );
     }
 
-    // Initialisation des sliders (double sliders)
+    // Initialisation des sliders (kilométrage, années, etc.)
     this.initSliders();
 
-    // Initialisation des événements (form change, pagination, badges)
+    // Initialisation des événements (inputs, pagination, badges)
     this.initEvents();
   }
 
   /**
-   * Initialise tous les double sliders présents dans le formulaire
+   * Initialise tous les sliders présents dans le formulaire
    */
   initSliders() {
     const sliders = this.form.querySelectorAll(".double-slider");
     if (!sliders.length || typeof initDoubleSlider !== "function") return;
 
     sliders.forEach(slider => {
-      // Initialise le slider et ajoute la méthode resetSlider
+      // Initialisation du slider via la fonction importée
       initDoubleSlider(slider);
 
-      // Débounce pour limiter le nombre de requêtes AJAX
+      // Débounce pour éviter trop de requêtes AJAX lors du glissement du slider
       let timer = null;
       slider.addEventListener("sliderChanged", e => {
         const { filter, min, max } = e.detail;
 
-        // Mise à jour des inputs cachés
+        // Mise à jour des inputs cachés associés
         const inputMin = this.form.querySelector(
           `input[name="filters[${filter}Min]"]`
         );
@@ -72,6 +74,7 @@ export default class VehiclesFilter {
         if (inputMin) inputMin.value = min;
         if (inputMax) inputMax.value = max;
 
+        // Déclenchement du filtrage AJAX après 300ms
         clearTimeout(timer);
         timer = setTimeout(() => this.submitFilters(), 300);
       });
@@ -79,10 +82,13 @@ export default class VehiclesFilter {
   }
 
   /**
-   * Initialise tous les événements du formulaire
+   * Initialisation des événements :
+   * - Changement de checkbox/input
+   * - Pagination
+   * - Clic sur les badges pour suppression d'un filtre
    */
   initEvents() {
-    // Changement sur un input ou checkbox
+    // Détection des changements sur les inputs du formulaire
     this.form.addEventListener("change", e => {
       if (!e.target.matches("input")) return;
       this.submitFilters();
@@ -97,7 +103,7 @@ export default class VehiclesFilter {
       if (!isNaN(page)) this.submitFilters(page);
     });
 
-    // Clic sur les badges pour supprimer un filtre
+    // Gestion du clic sur les badges
     if (this.summaryContainer) {
       this.summaryContainer.addEventListener("click", e => {
         if (!e.target.matches(".badge-remove")) return;
@@ -105,15 +111,14 @@ export default class VehiclesFilter {
         const filter = e.target.dataset.filter;
         const value = e.target.dataset.value;
 
-        // Vérifie si c'est un slider (range)
+        // Si badge lié à un slider (range), reset du slider
         const slider = this.form.querySelector(
           `.double-slider[data-filter="${filter}"]`
         );
         if (slider && typeof slider.resetSlider === "function") {
-          // Reset complet du slider : thumbs, inputs et labels
           slider.resetSlider();
         } else {
-          // Checkbox classiques : décocher les cases correspondantes
+          // Sinon, checkbox classique : décocher la valeur correspondante
           const checkboxes = this.form.querySelectorAll(
             `input[name="filters[${filter}][]"]`
           );
@@ -122,23 +127,24 @@ export default class VehiclesFilter {
           });
         }
 
-        // Mise à jour des badges côté client
+        // Mise à jour visuelle des badges
         if (this.badges) this.badges.updateBadges();
 
-        // Relance le filtrage AJAX
+        // Relance du filtrage AJAX
         this.submitFilters();
       });
     }
   }
 
   /**
-   * Soumission des filtres via AJAX
+   * Soumission AJAX des filtres
+   * @param {number} page - Numéro de page pour pagination
    */
   async submitFilters(page = 1) {
     const formData = new FormData(this.form);
     const filters = {};
 
-    // Conversion FormData en objet JSON utilisable
+    // Construction de l'objet filters à partir des inputs
     for (const [key, value] of formData.entries()) {
       const match = key.match(/^filters\[(.+?)\](\[\])?$/);
       if (!match) continue;
@@ -147,7 +153,9 @@ export default class VehiclesFilter {
       if (isArray) {
         if (!filters[name]) filters[name] = [];
         filters[name].push(value);
-      } else filters[name] = value;
+      } else {
+        filters[name] = value;
+      }
     }
 
     try {
@@ -164,7 +172,7 @@ export default class VehiclesFilter {
   }
 
   /**
-   * Met à jour le DOM avec les résultats de la requête AJAX
+   * Mise à jour du DOM avec les résultats et pagination
    */
   updateDOM(data) {
     if (this.resultsContainer && data.results)
@@ -174,13 +182,13 @@ export default class VehiclesFilter {
     if (this.paginationBottom && data.paginationBottom)
       this.paginationBottom.innerHTML = data.paginationBottom;
 
-    // Mise à jour des badges côté client
+    // Mise à jour des badges après injection des résultats
     if (this.badges) this.badges.updateBadges();
   }
 }
 
 /**
- * Observer pour détecter le formulaire de filtre dynamique
+ * Observer pour détecter un formulaire ajouté dynamiquement
  */
 function watchFiltersForm() {
   const observer = new MutationObserver(() => {
@@ -193,4 +201,5 @@ function watchFiltersForm() {
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
+// Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", watchFiltersForm);

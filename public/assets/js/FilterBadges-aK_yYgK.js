@@ -1,3 +1,7 @@
+/**
+ * FilterBadges.js
+ * Gestion des badges côté client et suppression
+ */
 export default class FilterBadges {
   constructor(container, form, onRemoveCallback) {
     this.container = container;
@@ -18,54 +22,58 @@ export default class FilterBadges {
       const checkboxes = this.form.querySelectorAll(
         `input[name="filters[${filter}][]"]`
       );
-      if (checkboxes.length) {
-        checkboxes.forEach(cb => {
-          if (cb.value === value) cb.checked = false;
-        });
-      }
+      checkboxes.forEach(cb => {
+        if (cb.value === value) cb.checked = false;
+      });
 
-      // Sliders (range)
+      // Sliders (mileage ou year)
       if (filter === "mileage" || filter === "year") {
-        const sliderEl = this.form.querySelector(
-          `.double-slider[data-filter="${filter}"]`
+        const [min, max] = value.split("-");
+        const inputMin = this.form.querySelector(
+          `input[name="filters[${filter}Min]"]`
         );
-        if (sliderEl) {
-          const defaultMin = parseInt(sliderEl.dataset.min, 10);
-          const defaultMax = parseInt(sliderEl.dataset.max, 10);
-
-          const inputMin = this.form.querySelector(
-            `input[name="filters[${filter}Min]"]`
+        const inputMax = this.form.querySelector(
+          `input[name="filters[${filter}Max]"]`
+        );
+        if (inputMin && inputMax) {
+          // Remise aux bornes par défaut (min/max HTML)
+          const sliderEl = this.form.querySelector(
+            `.double-slider[data-filter="${filter}"]`
           );
-          const inputMax = this.form.querySelector(
-            `input[name="filters[${filter}Max]"]`
-          );
-          if (inputMin && inputMax) {
-            inputMin.value = defaultMin;
-            inputMax.value = defaultMax;
-          }
+          const sliderMin = parseInt(sliderEl.dataset.min, 10);
+          const sliderMax = parseInt(sliderEl.dataset.max, 10);
+          inputMin.value = sliderMin;
+          inputMax.value = sliderMax;
 
+          // Déclenche événement custom pour remettre à jour le slider visuellement
           sliderEl.dispatchEvent(
             new CustomEvent("sliderChanged", {
               bubbles: true,
-              detail: { filter, min: defaultMin, max: defaultMax }
+              detail: { filter, min: sliderMin, max: sliderMax }
             })
           );
         }
       }
 
+      // Suppression du badge DOM
       badge.remove();
 
-      if (typeof this.onRemoveCallback === "function") this.onRemoveCallback();
+      // Callback pour relancer le filtrage AJAX
+      if (typeof this.onRemoveCallback === "function") {
+        this.onRemoveCallback();
+      }
     });
   }
 
+  /**
+   * Met à jour tous les badges existants à partir des valeurs du formulaire
+   */
   updateBadges() {
     if (!this.container) return;
     this.container.innerHTML = "";
 
     const formData = new FormData(this.form);
 
-    // Parcours des filtres
     for (const [key, value] of formData.entries()) {
       const match = key.match(/^filters\[(.+?)\](\[\])?$/);
       if (!match) continue;
@@ -74,48 +82,45 @@ export default class FilterBadges {
 
       // Checkbox multiples
       if (isArray && value) {
-        const labelEl = this.form.querySelector(
-          `input[name="filters[${name}][]"][value="${value}"]`
-        );
-        const labelText = labelEl
-          ? this.form.querySelector(`label[for="${labelEl.id}"]`).textContent
-          : value;
-        this.createBadge(name, value, labelText);
+        this.createBadge(name, value);
       }
-
-      // Sliders (mileage / year)
+      // Sliders : mileage / year
       else if (
+        value &&
         ["mileageMin", "mileageMax", "yearMin", "yearMax"].includes(name)
       ) {
         if (name.endsWith("Min")) {
           const filter = name.replace("Min", "");
           const min = value;
           const max = formData.get(`filters[${filter}Max]`);
-          this.createBadge(filter, `${min}-${max}`);
+          if (min !== null && max !== null) {
+            this.createBadge(filter, `${min}-${max}`);
+          }
         }
       }
     }
   }
 
-  createBadge(filter, value, label = null) {
+  /**
+   * Crée un badge et l’ajoute au container
+   */
+  createBadge(filter, value) {
     const badge = document.createElement("span");
     badge.className = "badge badge-filter";
     badge.dataset.filter = filter;
     badge.dataset.value = value;
 
     // Label lisible
-    if (!label) {
-      if (filter === "year") {
-        const [min, max] = value.split("-");
-        label = `Années : ${min} → ${max}`;
-      } else if (filter === "mileage") {
-        const [min, max] = value.split("-");
-        label = `Kilométrage : ${Number(min).toLocaleString()} → ${Number(
-          max
-        ).toLocaleString()} km`;
-      } else {
-        label = value;
-      }
+    let label = value;
+    if (filter === "year") {
+      const [min, max] = value.split("-");
+      label = `Années : ${min} → ${max}`;
+    }
+    if (filter === "mileage") {
+      const [min, max] = value.split("-");
+      label = `Kilométrage : ${Number(min).toLocaleString()} → ${Number(
+        max
+      ).toLocaleString()} km`;
     }
 
     badge.textContent = label;

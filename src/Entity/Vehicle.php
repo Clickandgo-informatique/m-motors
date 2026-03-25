@@ -58,20 +58,32 @@ class Vehicle
     */
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Range(
-        min: 1950,
-        max: 2100,
-        notInRangeMessage: "L'année doit être comprise entre {{ min }} et {{ max }}"
-    )]
-    private ?int $year = null;
-
-    #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero(message: "Le kilométrage doit être positif")]
     #[Assert\LessThan(
         value: 2000000,
         message: "Kilométrage incohérent"
     )]
     private ?int $mileage = null;
+    
+    #[ORM\Column(type: 'integer')]
+    #[Assert\NotNull(message: 'Le prix est obligatoire.')]
+    #[Assert\Positive(message: 'Le prix doit être supérieur à 0.')]
+    #[Assert\LessThan(
+        value: 10000000,
+        message: 'Le prix est trop élevé.'
+    )]
+    private ?int $price = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Assert\Type(
+        type: \DateTimeInterface::class,
+        message: 'La date doit être valide.'
+    )]
+    #[Assert\LessThanOrEqual(
+        'today',
+        message: 'La date de première mise en circulation ne peut pas être dans le futur.'
+    )]
+    private ?\DateTime $firstRegistrationDate = null;
 
     /*
     ===============================
@@ -120,13 +132,6 @@ class Vehicle
         $this->rentals = new ArrayCollection();
         $this->sales = new ArrayCollection();
     }
-    #[ORM\Column(type: 'integer')]
-    private ?int $price = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?\DateTime $firstRegistrationDate = null;
-
-
     /*
     ===============================
     GETTERS / SETTERS
@@ -168,17 +173,6 @@ class Vehicle
     public function setRegistrationNumber(string $registrationNumber): static
     {
         $this->registrationNumber = strtoupper(trim($registrationNumber));
-        return $this;
-    }
-
-    public function getYear(): ?int
-    {
-        return $this->year;
-    }
-
-    public function setYear(?int $year): static
-    {
-        $this->year = $year;
         return $this;
     }
 

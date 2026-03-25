@@ -34,12 +34,16 @@ class VehiclesFilterController extends AbstractController
         $brands = $vehicleRepo->getUsedBrands();
         $bodyTypes = $vehicleRepo->getUsedBodyTypes();
         $fuelTypes = $vehicleRepo->getUsedFuelTypes();
+        $registrationYears = $vehicleRepo->getRegistrationYears();
 
         return $this->render('vehicles/index.html.twig', [
             'vehicles' => $vehicles,
             'brands' => $brands,
             'bodyTypes' => $bodyTypes,
             'fuelTypes' => $fuelTypes,
+            'registrationYears' => $registrationYears['years'],
+            'registrationYearsMin' => $registrationYears['min'],
+            'registrationYearsMax' => $registrationYears['max']
         ]);
     }
 
@@ -90,12 +94,16 @@ class VehiclesFilterController extends AbstractController
         $brands = $vehicleRepo->getUsedBrands();
         $bodyTypes = $vehicleRepo->getUsedBodyTypes();
         $fuelTypes = $vehicleRepo->getUsedFuelTypes();
+        $registrationYears = $vehicleRepo->getRegistrationYears();
 
         // Fragment AJAX pour le formulaire de filtres
         return $this->render('vehicles/_vehicles_filters.html.twig', [
             'brands' => $brands,
             'bodyTypes' => $bodyTypes,
-            'fuelTypes' => $fuelTypes
+            'fuelTypes' => $fuelTypes,
+            'registrationYears' => $registrationYears['years'],
+            'registrationYearsMin' => $registrationYears['min'],
+            'registrationYearsMax' => $registrationYears['max']
         ]);
     }
 }

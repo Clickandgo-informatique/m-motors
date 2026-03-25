@@ -44,10 +44,10 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
             $vehicle->setRegistrationNumber(
                 $faker->regexify('[A-Z]{2}-[0-9]{3}-[A-Z]{2}')
             );
-            $vehicle->setMileage($faker->numberBetween(0, 200000));
-            $vehicle->setYear($faker->numberBetween(2005, 2024));
+            $vehicle->setMileage($faker->numberBetween(0, 200000));         
             $vehicle->setPrice($faker->randomFloat(2, 5000, 60000));
             $vehicle->setStatus(VehicleStatus::AVAILABLE);
+            $vehicle->setFirstRegistrationDate($faker->dateTimeThisDecade());
             $vehicle->setColor($colors[array_rand($colors)]);
 
             // VehicleModel aléatoire depuis la base

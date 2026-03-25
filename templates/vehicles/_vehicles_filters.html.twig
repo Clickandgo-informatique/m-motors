@@ -52,11 +52,24 @@
 			Kilométrage :
 			<span id="mileage-min-value">0</span>
 			km -
-			<span id="mileage-max-value">300 000</span>
+			<span id="mileage-max-value">300 000</span>
 			km
 		</div>
-		<div class="double-slider" data-filter="mileage" data-min="0" data-max="300000" data-step="10000" data-value-low="0" data-value-high="300000"></div>
+		<div class="double-slider" data-filter="mileage" data-min="0" data-max="300000" data-step="10000" data-value-low="0" data-value-high="300000" data-target-min="#mileage-min-value" data-target-max="#mileage-max-value" data-input-min="filters[mileageMin]" data-input-max="filters[mileageMax]"></div>
 		<input type="hidden" name="filters[mileageMin]" value="0">
 		<input type="hidden" name="filters[mileageMax]" value="300000">
+	</div>
+
+	{# Slider Années mise en circulation #}
+	<div class="registration-years-range wrapper">
+		<div>
+			Années :
+			<span id="year-min-value">{{ registrationYearsMin }}</span>
+			-
+			<span id="year-max-value">{{ registrationYearsMax }}</span>
+		</div>
+		<div class="double-slider" data-filter="year" data-min="{{ registrationYearsMin }}" data-max="{{ registrationYearsMax }}" data-step="1" data-value-low="{{ registrationYearsMin }}" data-value-high="{{ registrationYearsMax }}" data-target-min="#year-min-value" data-target-max="#year-max-value" data-input-min="filters[yearMin]" data-input-max="filters[yearMax]"></div>
+		<input type="hidden" name="filters[yearMin]" value="{{ registrationYearsMin }}">
+		<input type="hidden" name="filters[yearMax]" value="{{ registrationYearsMax }}">
 	</div>
 </form>

@@ -56,7 +56,7 @@
   background: var(--color-primary);
   color: #ffff;
   border-radius: 999px;
-  box-shadow: var(--shadow-medium);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.35);
 
   /* 🔥 les lignes importantes */
   flex: 0 0 auto; /* pas de grow, pas de shrink forcé */

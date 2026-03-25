@@ -54,9 +54,7 @@
   gap: 4px;
   padding: 5px 7px;
   background: var(--color-primary);
-  color: #ffff;
   border-radius: 999px;
-  box-shadow: var(--shadow-medium);
 
   /* 🔥 les lignes importantes */
   flex: 0 0 auto; /* pas de grow, pas de shrink forcé */
@@ -70,7 +68,6 @@
   line-height: 1;
   font-size: 0.8rem;
   justify-content: center;
-  cursor: pointer;
 }
 
 /* bouton remove intégré */

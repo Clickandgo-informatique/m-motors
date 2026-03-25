@@ -56,7 +56,6 @@
   background: var(--color-primary);
   color: #ffff;
   border-radius: 999px;
-  box-shadow: var(--shadow-medium);
 
   /* 🔥 les lignes importantes */
   flex: 0 0 auto; /* pas de grow, pas de shrink forcé */

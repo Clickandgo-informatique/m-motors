@@ -50,78 +50,71 @@ class VehicleRepository extends ServiceEntityRepository
             ->leftJoin('vm.fuelType', 'ft')
             ->addSelect('vm', 'b', 'm', 'bt', 'ft');
 
-        /**
-         * Filtre par marques
-         */
+        // Filtre par marques
         if (!empty($filters['brand'])) {
             $qb->andWhere('b.id IN (:brands)')
                 ->setParameter('brands', $filters['brand']);
         }
 
-        /**
-         * Filtre par type de carrosserie
-         */
+        // Filtre par type de carrosserie
         if (!empty($filters['bodyType'])) {
             $qb->andWhere('bt.id IN (:bodyTypes)')
                 ->setParameter('bodyTypes', $filters['bodyType']);
         }
 
-        /**
-         * Filtre par carburant
-         */
+        // Filtre par carburant
         if (!empty($filters['fuelType'])) {
             $qb->andWhere('ft.id IN (:fuelTypes)')
                 ->setParameter('fuelTypes', $filters['fuelType']);
         }
 
-        /**
-         * Filtre kilométrage minimum
-         */
+        // Filtre kilométrage minimum
         if (isset($filters['mileageMin']) && $filters['mileageMin'] !== '') {
             $qb->andWhere('v.mileage >= :mileageMin')
                 ->setParameter('mileageMin', $filters['mileageMin']);
         }
 
-        /**
-         * Filtre kilométrage maximum
-         */
+        // Filtre kilométrage maximum
         if (isset($filters['mileageMax']) && $filters['mileageMax'] !== '') {
             $qb->andWhere('v.mileage <= :mileageMax')
                 ->setParameter('mileageMax', $filters['mileageMax']);
         }
 
-        /**
-         * Filtre prix minimum
-         */
+        // Filtre prix minimum
         if (isset($filters['priceMin']) && $filters['priceMin'] !== '') {
             $qb->andWhere('v.price >= :priceMin')
                 ->setParameter('priceMin', $filters['priceMin']);
         }
 
-        /**
-         * Filtre prix maximum
-         */
+        // Filtre prix maximum
         if (isset($filters['priceMax']) && $filters['priceMax'] !== '') {
             $qb->andWhere('v.price <= :priceMax')
                 ->setParameter('priceMax', $filters['priceMax']);
         }
 
-        /**
-         * Recherche texte multi-champs
-         */
+        // Filtre années de mise en circulation
+        if (
+            isset($filters['yearMin']) && $filters['yearMin'] !== '' &&
+            isset($filters['yearMax']) && $filters['yearMax'] !== ''
+        ) {
+            $qb->andWhere('v.firstRegistrationDate BETWEEN :yearMin AND :yearMax')
+                ->setParameter('yearMin', new \DateTime($filters['yearMin'] . '-01-01'))
+                ->setParameter('yearMax', new \DateTime($filters['yearMax'] . '-12-31'));
+        }
+
+        // Recherche texte multi-champs
         if ($searchTerm) {
             $qb->andWhere('
-                LOWER(v.registrationNumber) LIKE :search
-                OR LOWER(v.vin) LIKE :search
-                OR LOWER(m.name) LIKE :search
-                OR LOWER(b.name) LIKE :search
-            ')
+            LOWER(v.registrationNumber) LIKE :search
+            OR LOWER(v.vin) LIKE :search
+            OR LOWER(m.name) LIKE :search
+            OR LOWER(b.name) LIKE :search
+        ')
                 ->setParameter('search', '%' . strtolower($searchTerm) . '%');
         }
 
         return $qb->orderBy('b.name', 'ASC');
     }
-
     /**
      * Utilisé pour la pagination avec KnpPaginator
      */
@@ -234,5 +227,32 @@ class VehicleRepository extends ServiceEntityRepository
         }
 
         return $fuelTypes;
+    }
+    //Recherche des bornes de dates en années pour doule slider
+    public function getRegistrationYears(): array
+    {
+        $qb = $this->createQueryBuilder('v')
+            ->select('MIN(v.firstRegistrationDate) AS minDate')
+            ->addSelect('MAX(v.firstRegistrationDate) AS maxDate')
+            ->where('v.firstRegistrationDate IS NOT NULL');
+
+        $result = $qb->getQuery()->getOneOrNullResult();
+
+        if (!$result || !$result['minDate'] || !$result['maxDate']) {
+            return [
+                'min' => null,
+                'max' => null,
+                'years' => [],
+            ];
+        }
+
+        $minYear = (int) (new \DateTime($result['minDate']))->format('Y');
+        $maxYear = (int) (new \DateTime($result['maxDate']))->format('Y');
+
+        return [
+            'min' => $minYear,
+            'max' => $maxYear,
+            'years' => range($minYear, $maxYear),
+        ];
     }
 }

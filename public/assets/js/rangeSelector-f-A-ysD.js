@@ -1,3 +1,4 @@
+// rangeSelector.js
 export default function initDoubleSlider(slider) {
   if (!slider) return;
 
@@ -6,56 +7,38 @@ export default function initDoubleSlider(slider) {
   const MAX = Number(slider.dataset.max) || 100;
   const STEP = Number(slider.dataset.step) || 1;
 
-  const inputMin = document.querySelector(slider.dataset.inputMin);
-  const inputMax = document.querySelector(slider.dataset.inputMax);
-  const targetMinLabel = document.querySelector(slider.dataset.targetMin);
-  const targetMaxLabel = document.querySelector(slider.dataset.targetMax);
-
-  let currentMin = MIN;
-  let currentMax = MAX;
-  let activeThumb = null;
-
-  // Build / rebuild slider
-  const buildSlider = () => {
+  // Création de la structure HTML si nécessaire
+  if (!slider.querySelector(".slider-track")) {
     slider.innerHTML = `
       <div class="slider-track"></div>
       <div class="slider-range"></div>
       <div class="thumb thumb-min"><span class="thumb-value"></span></div>
       <div class="thumb thumb-max"><span class="thumb-value"></span></div>
     `;
+  }
 
-    thumbs.thumbMin = slider.querySelector(".thumb-min");
-    thumbs.thumbMax = slider.querySelector(".thumb-max");
-    thumbs.valueMin = thumbs.thumbMin.querySelector(".thumb-value");
-    thumbs.valueMax = thumbs.thumbMax.querySelector(".thumb-value");
-    thumbs.rangeBar = slider.querySelector(".slider-range");
+  const thumbMin = slider.querySelector(".thumb-min");
+  const thumbMax = slider.querySelector(".thumb-max");
+  const rangeBar = slider.querySelector(".slider-range");
+  const valueMin = thumbMin.querySelector(".thumb-value");
+  const valueMax = thumbMax.querySelector(".thumb-value");
 
-    // Event listeners souris/touch
-    thumbs.thumbMin.addEventListener("mousedown", e =>
-      startDrag(e, thumbs.thumbMin)
-    );
-    thumbs.thumbMax.addEventListener("mousedown", e =>
-      startDrag(e, thumbs.thumbMax)
-    );
-    thumbs.thumbMin.addEventListener("touchstart", e =>
-      startTouch(e, thumbs.thumbMin)
-    );
-    thumbs.thumbMax.addEventListener("touchstart", e =>
-      startTouch(e, thumbs.thumbMax)
-    );
-  };
+  let currentMin = Number(slider.dataset.valueLow) || MIN;
+  let currentMax = Number(slider.dataset.valueHigh) || MAX;
+  let activeThumb = null;
 
-  const thumbs = {};
-  buildSlider();
-
+  // Conversion valeur -> position
   const valueToPos = value =>
     ((value - MIN) / (MAX - MIN)) * slider.clientWidth;
+
+  // Conversion position -> valeur
   const posToValue = pos => {
     let val = MIN + (pos / slider.clientWidth) * (MAX - MIN);
     val = Math.round(val / STEP) * STEP;
     return Math.min(Math.max(val, MIN), MAX);
   };
 
+  // Mise à jour visuelle + inputs + dispatch event
   const updateUI = () => {
     currentMin = Math.min(currentMin, currentMax);
     currentMax = Math.max(currentMax, currentMin);
@@ -63,21 +46,26 @@ export default function initDoubleSlider(slider) {
     const left = valueToPos(currentMin);
     const right = valueToPos(currentMax);
 
-    thumbs.thumbMin.style.left = left + "px";
-    thumbs.thumbMax.style.left = right + "px";
-    thumbs.rangeBar.style.left = left + "px";
-    thumbs.rangeBar.style.width = right - left + "px";
+    thumbMin.style.left = left + "px";
+    thumbMax.style.left = right + "px";
+    rangeBar.style.left = left + "px";
+    rangeBar.style.width = right - left + "px";
 
-    thumbs.valueMin.textContent = currentMin.toLocaleString("fr-FR");
-    thumbs.valueMax.textContent = currentMax.toLocaleString("fr-FR");
+    valueMin.textContent = currentMin.toLocaleString("fr-FR");
+    valueMax.textContent = currentMax.toLocaleString("fr-FR");
+
+    // Mise à jour des inputs cachés
+    const inputMin = slider.dataset.inputMin
+      ? document.querySelector(`input[name="${slider.dataset.inputMin}"]`)
+      : null;
+    const inputMax = slider.dataset.inputMax
+      ? document.querySelector(`input[name="${slider.dataset.inputMax}"]`)
+      : null;
 
     if (inputMin) inputMin.value = currentMin;
     if (inputMax) inputMax.value = currentMax;
-    if (targetMinLabel)
-      targetMinLabel.textContent = currentMin.toLocaleString("fr-FR");
-    if (targetMaxLabel)
-      targetMaxLabel.textContent = currentMax.toLocaleString("fr-FR");
 
+    // Dispatch événement custom
     slider.dispatchEvent(
       new CustomEvent("sliderChanged", {
         bubbles: true,
@@ -95,10 +83,10 @@ export default function initDoubleSlider(slider) {
   };
   const onDrag = e => {
     if (!activeThumb) return;
-    const pos = e.clientX - slider.getBoundingClientRect().left;
+    const rect = slider.getBoundingClientRect();
+    const pos = e.clientX - rect.left;
     const val = posToValue(pos);
-    if (activeThumb === thumbs.thumbMin)
-      currentMin = Math.min(val, currentMax - STEP);
+    if (activeThumb === thumbMin) currentMin = Math.min(val, currentMax - STEP);
     else currentMax = Math.max(val, currentMin + STEP);
     updateUI();
   };
@@ -117,10 +105,10 @@ export default function initDoubleSlider(slider) {
   const onTouch = e => {
     e.preventDefault();
     if (!activeThumb) return;
-    const pos = e.touches[0].clientX - slider.getBoundingClientRect().left;
+    const rect = slider.getBoundingClientRect();
+    const pos = e.touches[0].clientX - rect.left;
     const val = posToValue(pos);
-    if (activeThumb === thumbs.thumbMin)
-      currentMin = Math.min(val, currentMax - STEP);
+    if (activeThumb === thumbMin) currentMin = Math.min(val, currentMax - STEP);
     else currentMax = Math.max(val, currentMin + STEP);
     updateUI();
   };
@@ -130,14 +118,22 @@ export default function initDoubleSlider(slider) {
     document.removeEventListener("touchend", stopTouch);
   };
 
-  // Reset complet
+  // Événements
+  thumbMin.addEventListener("mousedown", e => startDrag(e, thumbMin));
+  thumbMax.addEventListener("mousedown", e => startDrag(e, thumbMax));
+  thumbMin.addEventListener("touchstart", e => startTouch(e, thumbMin));
+  thumbMax.addEventListener("touchstart", e => startTouch(e, thumbMax));
+
+  // Méthode publique pour reset slider à min/max
   slider.resetSlider = () => {
     currentMin = MIN;
     currentMax = MAX;
-    buildSlider(); // reconstruire le slider
-    updateUI(); // mettre à jour thumbs, range et labels
+    updateUI();
   };
 
+  // Initialisation
   updateUI();
+
+  // Resize
   window.addEventListener("resize", updateUI);
 }

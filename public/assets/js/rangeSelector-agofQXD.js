@@ -1,3 +1,8 @@
+// rangeSelector.js
+/**
+ * Initialisation d'un double slider (min/max) avec labels et inputs liés.
+ * Support souris et tactile.
+ */
 export default function initDoubleSlider(slider) {
   if (!slider) return;
 
@@ -6,16 +11,18 @@ export default function initDoubleSlider(slider) {
   const MAX = Number(slider.dataset.max) || 100;
   const STEP = Number(slider.dataset.step) || 1;
 
+  // Inputs et labels ciblés depuis les data attributes
   const inputMin = document.querySelector(slider.dataset.inputMin);
   const inputMax = document.querySelector(slider.dataset.inputMax);
   const targetMinLabel = document.querySelector(slider.dataset.targetMin);
   const targetMaxLabel = document.querySelector(slider.dataset.targetMax);
 
+  // Valeurs actuelles
   let currentMin = MIN;
   let currentMax = MAX;
   let activeThumb = null;
 
-  // Build / rebuild slider
+  // Reconstruire le slider visuel
   const buildSlider = () => {
     slider.innerHTML = `
       <div class="slider-track"></div>
@@ -29,25 +36,12 @@ export default function initDoubleSlider(slider) {
     thumbs.valueMin = thumbs.thumbMin.querySelector(".thumb-value");
     thumbs.valueMax = thumbs.thumbMax.querySelector(".thumb-value");
     thumbs.rangeBar = slider.querySelector(".slider-range");
-
-    // Event listeners souris/touch
-    thumbs.thumbMin.addEventListener("mousedown", e =>
-      startDrag(e, thumbs.thumbMin)
-    );
-    thumbs.thumbMax.addEventListener("mousedown", e =>
-      startDrag(e, thumbs.thumbMax)
-    );
-    thumbs.thumbMin.addEventListener("touchstart", e =>
-      startTouch(e, thumbs.thumbMin)
-    );
-    thumbs.thumbMax.addEventListener("touchstart", e =>
-      startTouch(e, thumbs.thumbMax)
-    );
   };
 
   const thumbs = {};
   buildSlider();
 
+  // Conversion valeur <-> position
   const valueToPos = value =>
     ((value - MIN) / (MAX - MIN)) * slider.clientWidth;
   const posToValue = pos => {
@@ -56,6 +50,7 @@ export default function initDoubleSlider(slider) {
     return Math.min(Math.max(val, MIN), MAX);
   };
 
+  // Mise à jour visuelle et inputs
   const updateUI = () => {
     currentMin = Math.min(currentMin, currentMax);
     currentMax = Math.max(currentMax, currentMin);
@@ -78,6 +73,7 @@ export default function initDoubleSlider(slider) {
     if (targetMaxLabel)
       targetMaxLabel.textContent = currentMax.toLocaleString("fr-FR");
 
+    // Dispatch custom event
     slider.dispatchEvent(
       new CustomEvent("sliderChanged", {
         bubbles: true,
@@ -130,14 +126,31 @@ export default function initDoubleSlider(slider) {
     document.removeEventListener("touchend", stopTouch);
   };
 
-  // Reset complet
+  // Événements
+  thumbs.thumbMin.addEventListener("mousedown", e =>
+    startDrag(e, thumbs.thumbMin)
+  );
+  thumbs.thumbMax.addEventListener("mousedown", e =>
+    startDrag(e, thumbs.thumbMax)
+  );
+  thumbs.thumbMin.addEventListener("touchstart", e =>
+    startTouch(e, thumbs.thumbMin)
+  );
+  thumbs.thumbMax.addEventListener("touchstart", e =>
+    startTouch(e, thumbs.thumbMax)
+  );
+
+  // Reset complet du slider
   slider.resetSlider = () => {
     currentMin = MIN;
     currentMax = MAX;
-    buildSlider(); // reconstruire le slider
-    updateUI(); // mettre à jour thumbs, range et labels
+    buildSlider(); // Reconstruit le slider et thumbs
+    updateUI();
   };
 
+  // Initialisation
   updateUI();
+
+  // Resize : recalcul des positions
   window.addEventListener("resize", updateUI);
 }
