@@ -2,151 +2,31 @@
 
 namespace App\Entity;
 
-use App\Entity\Feature;
-use App\Entity\FuelType;
-use App\Entity\Gear;
-use App\Entity\Maintenance;
-use App\Entity\Rental;
-use App\Entity\Sale;
-use App\Entity\Supplier;
-use App\Entity\VehicleModel;
-use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
+use App\Entity\Favorite;
+use App\Entity\Feature;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VehicleRepository::class)]
 class Vehicle
 {
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(enumType: VehicleStatus::class)]
-    private ?VehicleStatus $status = null;
-
-    /*
-    ===============================
-    IDENTIFICATION
-    ===============================
-    */
-
-    #[ORM\Column(length: 17, unique: true)]
-    #[Assert\NotBlank(message: "Le VIN est obligatoire")]
-    #[Assert\Regex(
-        pattern: '/^[A-HJ-NPR-Z0-9]{17}$/',
-        message: "VIN invalide (17 caractères alphanumériques)"
-    )]
-    private ?string $vin = null;
-
-    #[ORM\Column(length: 15, unique: true)]
-    #[Assert\NotBlank(message: "Le numéro d'immatriculation est obligatoire")]
-    #[Assert\Regex(
-        pattern: '/^[A-Z0-9\-]{4,15}$/',
-        message: "Format d'immatriculation invalide"
-    )]
-    private ?string $registrationNumber = null;
-
-    /*
-    ===============================
-    INFORMATIONS VEHICULE
-    ===============================
-    */
-
-    #[ORM\Column(nullable: true)]
-    #[Assert\PositiveOrZero(message: "Le kilométrage doit être positif")]
-    #[Assert\LessThan(
-        value: 2000000,
-        message: "Kilométrage incohérent"
-    )]
-    private ?int $mileage = null;
-    
-    #[ORM\Column(type: 'integer')]
-    #[Assert\NotNull(message: 'Le prix est obligatoire.')]
-    #[Assert\Positive(message: 'Le prix doit être supérieur à 0.')]
-    #[Assert\LessThan(
-        value: 10000000,
-        message: 'Le prix est trop élevé.'
-    )]
-    private ?int $price = null;
-
-    #[ORM\Column(nullable: true)]
-    #[Assert\Type(
-        type: \DateTimeInterface::class,
-        message: 'La date doit être valide.'
-    )]
-    #[Assert\LessThanOrEqual(
-        'today',
-        message: 'La date de première mise en circulation ne peut pas être dans le futur.'
-    )]
-    private ?\DateTime $firstRegistrationDate = null;
-
-    /*
-    ===============================
-    RELATIONS PRINCIPALES
-    ===============================
-    */
-
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?VehicleModel $vehicleModel = null;
-
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?FuelType $fuelType = null;
-
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?Gear $gear = null;
-
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?Color $color = null;
-
-    #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?Supplier $supplier = null;
-
-    /*
-    ===============================
-    RELATIONS SECONDAIRES
-    ===============================
-    */
+    #[ORM\OneToMany(mappedBy: "vehicle", targetEntity: Favorite::class, orphanRemoval: true)]
+    private Collection $favorites;
 
     #[ORM\ManyToMany(targetEntity: Feature::class, inversedBy: 'vehicles')]
     private Collection $features;
 
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Maintenance::class)]
-    private Collection $maintenances;
-
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Rental::class)]
-    private Collection $rentals;
-
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Sale::class)]
-    private Collection $sales;
-
     public function __construct()
     {
+        $this->favorites = new ArrayCollection();
         $this->features = new ArrayCollection();
-        $this->maintenances = new ArrayCollection();
-        $this->rentals = new ArrayCollection();
-        $this->sales = new ArrayCollection();
-    }
-    /*
-    ===============================
-    GETTERS / SETTERS
-    ===============================
-    */
-    public function getPrice(): ?int
-    {
-        return $this->price;
-    }
-
-    public function setPrice(int $price): self
-    {
-        $this->price = $price;
-
-        return $this;
     }
 
     public function getId(): ?int
@@ -154,173 +34,46 @@ class Vehicle
         return $this->id;
     }
 
-    public function getVin(): ?string
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
     {
-        return $this->vin;
+        return $this->favorites;
     }
 
-    public function setVin(string $vin): static
+    public function addFavorite(Favorite $favorite): self
     {
-        $this->vin = strtoupper(trim($vin));
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites[] = $favorite;
+            $favorite->setVehicle($this);
+        }
         return $this;
     }
 
-    public function getRegistrationNumber(): ?string
+    public function removeFavorite(Favorite $favorite): self
     {
-        return $this->registrationNumber;
-    }
-
-    public function setRegistrationNumber(string $registrationNumber): static
-    {
-        $this->registrationNumber = strtoupper(trim($registrationNumber));
+        // Avec orphanRemoval=true, Doctrine supprime automatiquement le favorite
+        $this->favorites->removeElement($favorite);
         return $this;
     }
-
-    public function getMileage(): ?int
-    {
-        return $this->mileage;
-    }
-
-    public function setMileage(?int $mileage): static
-    {
-        $this->mileage = $mileage;
-        return $this;
-    }
-
-    public function getVehicleModel(): ?VehicleModel
-    {
-        return $this->vehicleModel;
-    }
-
-    public function setVehicleModel(?VehicleModel $vehicleModel): static
-    {
-        $this->vehicleModel = $vehicleModel;
-        return $this;
-    }
-
-    public function getFuelType(): ?FuelType
-    {
-        return $this->fuelType;
-    }
-
-    public function setFuelType(?FuelType $fuelType): static
-    {
-        $this->fuelType = $fuelType;
-        return $this;
-    }
-
-    public function getGear(): ?Gear
-    {
-        return $this->gear;
-    }
-
-    public function setGear(?Gear $gear): static
-    {
-        $this->gear = $gear;
-        return $this;
-    }
-
-    public function getColor(): ?Color
-    {
-        return $this->color;
-    }
-
-    public function setColor(?Color $color): static
-    {
-        $this->color = $color;
-        return $this;
-    }
-
-    public function getSupplier(): ?Supplier
-    {
-        return $this->supplier;
-    }
-
-    public function setSupplier(?Supplier $supplier): static
-    {
-        $this->supplier = $supplier;
-        return $this;
-    }
-
-    /*
-    ===============================
-    FEATURES
-    ===============================
-    */
 
     public function getFeatures(): Collection
     {
         return $this->features;
     }
 
-    public function addFeature(Feature $feature): static
+    public function addFeature(Feature $feature): self
     {
         if (!$this->features->contains($feature)) {
             $this->features->add($feature);
         }
-
         return $this;
     }
 
-    public function removeFeature(Feature $feature): static
+    public function removeFeature(Feature $feature): self
     {
         $this->features->removeElement($feature);
-        return $this;
-    }
-
-    /*
-    ===============================
-    MAINTENANCE
-    ===============================
-    */
-
-    public function getMaintenances(): Collection
-    {
-        return $this->maintenances;
-    }
-
-    /*
-    ===============================
-    RENTALS
-    ===============================
-    */
-
-    public function getRentals(): Collection
-    {
-        return $this->rentals;
-    }
-
-    /*
-    ===============================
-    SALES
-    ===============================
-    */
-
-    public function getSales(): Collection
-    {
-        return $this->sales;
-    }
-    public function getStatus(): ?VehicleStatus
-    {
-        return $this->status;
-    }
-
-    public function setStatus(VehicleStatus $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function getFirstRegistrationDate(): ?\DateTime
-    {
-        return $this->firstRegistrationDate;
-    }
-
-    public function setFirstRegistrationDate(?\DateTime $firstRegistrationDate): static
-    {
-        $this->firstRegistrationDate = $firstRegistrationDate;
-
         return $this;
     }
 }

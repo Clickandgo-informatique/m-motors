@@ -75,15 +75,14 @@
 
 /* bouton remove intégré */
 #filters-summary .badge-remove {
-  display: inline-flex; /* suit le texte du badge */
-  align-items: center; /* centre verticalement le “x” */
+  display: flex;
+  align-items: center; /* centre le contenu verticalement */
   justify-content: center;
-  font-size: 0.8rem; /* même taille que le texte du badge */
-  font-weight: 400;
-  line-height: 1; /* pas de décalage */
-  vertical-align: middle; /* aligne sur le texte du badge */
+  align-self: center; /* assure le centrage par rapport au badge parent */
+  font-size: 0.9rem; /* adapte la taille pour matcher le texte */
+  line-height: 1; /* évite les décalages */
   background: none;
-  color: #fff;
-  padding: 0 4px; /* juste un petit espace horizontal */
+  color: #ffff;
+  padding: 0 4px; /* uniquement horizontal si nécessaire */
   cursor: pointer;
 }
