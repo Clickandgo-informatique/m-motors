@@ -1,0 +1,67 @@
+/* Reset du form parent */
+.view-switch-wrapper form {
+  all: unset; /* annule margin, padding, border, display */
+  display: inline-flex; /* on remet le flex */
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Switcher principal */
+.view-switch-wrapper {
+  position: relative;
+  margin: 10px auto;
+  display: inline-flex;
+  width: 100px;
+  height: 40px;
+  background: var(--surface-2);
+  border-radius: var(--radius-large);
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  user-select: none;
+}
+
+/* Masquer les radios */
+.view-switch-wrapper input[type="radio"] {
+  display: none;
+}
+
+/* Curseur glissant */
+.view-switch-wrapper .switch-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 48%;
+  height: calc(100% - 4px);
+  background: var(--color-primary);
+  border-radius: var(--radius-large);
+  transition: transform 0.3s ease;
+  z-index: 0;
+}
+
+/* Labels pour icônes */
+.view-switch-wrapper label {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+/* Déplacement du curseur selon le radio coché */
+.view-switch-wrapper input#view-grid:checked ~ .switch-slider {
+  transform: translateX(0%);
+}
+
+.view-switch-wrapper input#view-table:checked ~ .switch-slider {
+  transform: translateX(100%);
+}
+
+/* Icône active */
+.view-switch-wrapper input#view-grid:checked ~ label[for="view-grid"],
+.view-switch-wrapper input#view-table:checked ~ label[for="view-table"] {
+  color: var(--text-inverse);
+}

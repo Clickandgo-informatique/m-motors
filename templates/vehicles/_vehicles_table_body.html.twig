@@ -1,0 +1,35 @@
+{# templates/vehicles/_vehicles_table.html.twig #}
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Statut</th>
+			<th>Immatriculation</th>
+			<th>Marque</th>
+			<th>Modèle</th>
+			<th>Kilométrage</th>
+			<th>Carrosserie</th>
+			<th>Énergie</th>
+			<th>Prix</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for vehicle in vehicles %}
+			<tr>
+				<td data-label="Statut">{{ vehicle.status.label }}</td>
+				<td data-label="Immatriculation">{{ vehicle.registrationNumber }}</td>
+				<td data-label="Marque">{{ vehicle.vehicleModel.brand.name }}</td>
+				<td data-label="Modèle">{{ vehicle.vehicleModel.model.name }}</td>
+				<td data-label="Kilométrage">{{ vehicle.mileage|number_format(0, ',', ' ') }}
+					km</td>
+				<td data-label="Carrosserie">{{ vehicle.vehicleModel.bodyType.name }}</td>
+				<td data-label="Énergie">{{ vehicle.vehicleModel.fuelType.name }}</td>
+				<td data-label="Prix">{{ vehicle.price|number_format(0, ',', ' ') }}
+					€</td>
+			</tr>
+		{% else %}
+			<tr>
+				<td colspan="8" class="text-center">Aucun véhicule trouvé</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>

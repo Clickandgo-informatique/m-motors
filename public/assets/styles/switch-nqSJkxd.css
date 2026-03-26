@@ -1,0 +1,51 @@
+.view-switch-wrapper {
+  position: relative;
+  display: inline-flex;
+  width: 90px;
+  height: 40px;
+  background: #e0e0e0;
+  border-radius: 30px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+.view-switch-wrapper input {
+  display: none;
+}
+
+.view-switch-wrapper .switch-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 50%;
+  height: calc(100% - 4px);
+  background: #1877f2;
+  border-radius: 30px;
+  transition: transform 0.3s ease;
+  z-index: 0; /* derrière les labels */
+}
+
+.view-switch-wrapper label.switch-label {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1; /* au-dessus du curseur */
+  color: #333;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.view-switch-wrapper input#view-grid:checked ~ .switch-slider {
+  transform: translateX(0);
+}
+
+.view-switch-wrapper input#view-table:checked ~ .switch-slider {
+  transform: translateX(100%);
+}
+
+.view-switch-wrapper input#view-grid:checked ~ label[for="view-grid"],
+.view-switch-wrapper input#view-table:checked ~ label[for="view-table"] {
+  color: #fff; /* couleur du label actif */
+}

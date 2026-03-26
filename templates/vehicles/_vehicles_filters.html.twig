@@ -1,6 +1,6 @@
 {# templates/vehicles/_vehicles_filters.html.twig #}
 <form
-	id="filters-form" data-fetch-form data-fetch-url="{{ path('vehicles_search') }}">
+	id="filters-form" data-fetch-form data-fetch-url="{{ path('vehicles_ajax_search') }}">
 	{# Marques #}
 	{% if brands|length > 0 %}
 		<details>

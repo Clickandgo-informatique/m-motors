@@ -23,8 +23,8 @@ export default class VehiclesFilter {
       '[data-target="filters-summary"]'
     );
 
-    // --- INIT BADGES (uniquement si on est sur le formulaire des filtres) ---
-    if (this.summaryContainer && this.form.matches("#filters-form")) {
+    // --- INIT BADGES ---
+    if (this.summaryContainer) {
       this.badges = new FilterBadges(
         this.summaryContainer,
         this.form,
@@ -32,8 +32,8 @@ export default class VehiclesFilter {
       );
     }
 
-    // --- INIT SLIDERS (uniquement sur le formulaire des filtres) ---
-    if (this.form.matches("#filters-form")) this.initSliders();
+    // --- INIT SLIDERS ---
+    this.initSliders();
 
     // --- INIT EVENTS ---
     this.initEvents();
@@ -82,8 +82,8 @@ export default class VehiclesFilter {
       if (!isNaN(page)) this.submitFilters(page);
     });
 
-    // Suppression badges (uniquement sur formulaire filtres)
-    if (this.summaryContainer && this.form.matches("#filters-form")) {
+    // Suppression badges
+    if (this.summaryContainer) {
       this.summaryContainer.addEventListener("click", e => {
         if (!e.target.matches(".badge-remove")) return;
 
@@ -128,7 +128,7 @@ export default class VehiclesFilter {
       } else filters[name] = value;
     }
 
-    // --- Ajout view depuis le radio toggle si présent ---
+    // --- Ajout view depuis le radio toggle ---
     const viewInput = this.form.querySelector("input[name='view']:checked");
     if (viewInput) filters.view = viewInput.value;
 
@@ -150,7 +150,7 @@ export default class VehiclesFilter {
       if (this.paginationBottom && data.paginationBottom)
         this.paginationBottom.innerHTML = data.paginationBottom;
 
-      // Badges (uniquement si présent)
+      // Badges
       if (this.badges) this.badges.updateBadges();
     } catch (err) {
       console.error("Erreur AJAX :", err);
@@ -158,17 +158,16 @@ export default class VehiclesFilter {
   }
 }
 
-// --- Observer pour initialisation automatique sur tous les formulaires fetch ---
-function watchFetchForms() {
+// --- Observer pour initialisation automatique ---
+function watchFiltersForm() {
   const observer = new MutationObserver(() => {
-    document.querySelectorAll("[data-fetch-form]").forEach(form => {
-      if (form.dataset.initialized) return;
-      form.dataset.initialized = "true";
-      new VehiclesFilter(form);
-    });
+    const form = document.querySelector("#filters-form");
+    if (!form || form.dataset.initialized) return;
+    form.dataset.initialized = "true";
+    new VehiclesFilter(form);
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-document.addEventListener("DOMContentLoaded", watchFetchForms);
+document.addEventListener("DOMContentLoaded", watchFiltersForm);

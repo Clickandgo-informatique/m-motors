@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-QnjQBTK.css",
+        "path": "\/assets\/styles\/app-otFcb7a.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -40,7 +40,7 @@
         "type": "js"
     },
     "\/assets\/js\/vehiclesFilters.js": {
-        "path": "\/assets\/js\/vehiclesFilters-wQaY45x.js",
+        "path": "\/assets\/js\/vehiclesFilters-kfc_gaG.js",
         "type": "js"
     },
     "\/assets\/js\/FilterBadges.js": {
@@ -60,7 +60,7 @@
         "type": "js"
     },
     "vehiclesFilters": {
-        "path": "\/assets\/js\/vehiclesFilters-wQaY45x.js",
+        "path": "\/assets\/js\/vehiclesFilters-kfc_gaG.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {

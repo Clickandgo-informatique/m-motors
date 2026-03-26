@@ -1,0 +1,68 @@
+/* Conteneur principal centré */
+.switch-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 16px 0;
+}
+
+/* Wrapper du switcher */
+.view-switch-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface-2);       /* fond légèrement différent */
+  border-radius: var(--radius-large);
+  padding: 6px 12px;
+  box-shadow: var(--shadow-strong);  /* effet de profondeur */
+  width: 120px;
+  position: relative;
+}
+
+/* Masquer les inputs radio */
+.view-switch-wrapper input[type="radio"] {
+  display: none;
+}
+
+/* Curseur mobile / slider */
+.view-switch-wrapper .switch-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 50%;
+  height: calc(100% - 6px);
+  background: var(--btn-primary-bg);
+  border-radius: var(--radius-large);
+  transition: all 0.3s ease;
+  z-index: 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Déplacement du curseur quand table est sélectionné */
+#view-table:checked ~ .switch-slider {
+  left: 50%;
+}
+
+/* Labels contenant les icônes */
+.view-switch-wrapper label {
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+  z-index: 1; /* au-dessus du slider */
+  color: var(--text-primary);
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.view-switch-wrapper input[type="radio"]:checked + label {
+  color: var(--text-inverse);
+}
+
+/* Hover effet */
+.view-switch-wrapper label:hover {
+  color: var(--color-primary);
+}

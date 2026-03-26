@@ -1,0 +1,32 @@
+<div class="cards-grid">
+	{% for vehicle in vehicles %}
+		<div class="vehicle-card card">
+			<div class="vehicle-card-header">{{ vehicle.vehicleModel.brand.name }}
+				{{ vehicle.vehicleModel.model.name }}</div>
+			<div class="vehicle-card-body">
+				<div>
+					<strong>Statut:</strong>
+					{{ vehicle.status.label }}</div>
+				<div>
+					<strong>Immatriculation:</strong>
+					{{ vehicle.registrationNumber }}</div>
+				<div>
+					<strong>Kilométrage:</strong>
+					{{ vehicle.mileage|number_format(0, ',', ' ') }}
+					km</div>
+				<div>
+					<strong>Carrosserie:</strong>
+					{{ vehicle.vehicleModel.bodyType.name }}</div>
+				<div>
+					<strong>Énergie:</strong>
+					{{ vehicle.vehicleModel.fuelType.name }}</div>
+				<div>
+					<strong>Prix:</strong>
+					{{ vehicle.price|number_format(0, ',', ' ') }}
+					€</div>
+			</div>
+		</div>
+	{% else %}
+		<div class="text-center text-muted">Aucun véhicule trouvé</div>
+	{% endfor %}
+</div>

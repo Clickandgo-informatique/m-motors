@@ -1,4 +1,5 @@
 // --- vehiclesFilters.js ---
+// Gestion des filtres AJAX et du toggle view
 import FilterBadges from "./FilterBadges.js";
 import initDoubleSlider from "./rangeSelector.js";
 
@@ -10,21 +11,12 @@ export default class VehiclesFilter {
     this.url = form.dataset.fetchUrl; // URL AJAX côté controller
     if (!this.url) return;
 
-    // Conteneurs principaux
-    this.container = document.querySelector("#vehicles-container");
-    this.resultsEl = document.querySelector("#vehicles-search-results");
-    this.paginationTop = document.querySelector(
-      '[data-target="pagination-top"]'
-    );
-    this.paginationBottom = document.querySelector(
-      '[data-target="pagination-bottom"]'
-    );
-    this.summaryContainer = document.querySelector(
-      '[data-target="filters-summary"]'
-    );
+    // Conteneur principal où le controller injecte tout le HTML
+    this.resultsContainer = document.querySelector("#vehicles-results");
 
-    // --- INIT BADGES (uniquement si on est sur le formulaire des filtres) ---
-    if (this.summaryContainer && this.form.matches("#filters-form")) {
+    // Conteneur des badges
+    this.summaryContainer = document.querySelector("#filters-summary");
+    if (this.summaryContainer) {
       this.badges = new FilterBadges(
         this.summaryContainer,
         this.form,
@@ -32,14 +24,17 @@ export default class VehiclesFilter {
       );
     }
 
-    // --- INIT SLIDERS (uniquement sur le formulaire des filtres) ---
-    if (this.form.matches("#filters-form")) this.initSliders();
+    // --- Init sliders ---
+    this.initSliders();
 
-    // --- INIT EVENTS ---
+    // --- Init toggle view ---
+    this.initViewToggle();
+
+    // --- Init événements form / pagination / badges ---
     this.initEvents();
   }
 
-  // --- Double sliders ---
+  // --- Initialisation des doubles sliders ---
   initSliders() {
     const sliders = this.form.querySelectorAll(".double-slider");
     if (!sliders.length || typeof initDoubleSlider !== "function") return;
@@ -65,9 +60,32 @@ export default class VehiclesFilter {
     });
   }
 
-  // --- Events form, pagination, badges, view switch ---
+  // --- Toggle radio view (grid/table) ---
+  initViewToggle() {
+    this.viewToggle = document.querySelector("#view-switch-form");
+    if (!this.viewToggle) return;
+
+    // Lecture valeur persistée dans localStorage
+    const savedView = localStorage.getItem("vehicleView");
+    if (savedView) {
+      const input = this.viewToggle.querySelector(
+        `input[name="view"][value="${savedView}"]`
+      );
+      if (input) input.checked = true;
+    }
+
+    // Changement de view
+    this.viewToggle.querySelectorAll("input[name='view']").forEach(input => {
+      input.addEventListener("change", () => {
+        localStorage.setItem("vehicleView", input.value); // sauvegarde locale
+        this.submitFilters(); // recharge via AJAX
+      });
+    });
+  }
+
+  // --- Initialisation des événements ---
   initEvents() {
-    // Changement sur filtres ou toggle view
+    // Changement de filtres (checkbox, select)
     this.form.addEventListener("change", e => {
       if (!e.target.matches("input, select")) return;
       this.submitFilters();
@@ -82,8 +100,8 @@ export default class VehiclesFilter {
       if (!isNaN(page)) this.submitFilters(page);
     });
 
-    // Suppression badges (uniquement sur formulaire filtres)
-    if (this.summaryContainer && this.form.matches("#filters-form")) {
+    // Suppression badges
+    if (this.summaryContainer) {
       this.summaryContainer.addEventListener("click", e => {
         if (!e.target.matches(".badge-remove")) return;
 
@@ -112,11 +130,12 @@ export default class VehiclesFilter {
     }
   }
 
-  // --- AJAX submit ---
+  // --- Envoi AJAX ---
   async submitFilters(page = 1) {
     const formData = new FormData(this.form);
     const filters = {};
 
+    // Construction objet filters
     for (const [key, value] of formData.entries()) {
       const match = key.match(/^filters\[(.+?)\](\[\])?$/);
       if (!match) continue;
@@ -128,8 +147,10 @@ export default class VehiclesFilter {
       } else filters[name] = value;
     }
 
-    // --- Ajout view depuis le radio toggle si présent ---
-    const viewInput = this.form.querySelector("input[name='view']:checked");
+    // Ajout de la view depuis toggle
+    const viewInput = this.viewToggle.querySelector(
+      "input[name='view']:checked"
+    );
     if (viewInput) filters.view = viewInput.value;
 
     try {
@@ -139,36 +160,34 @@ export default class VehiclesFilter {
         body: JSON.stringify({ filters, page })
       });
       const data = await res.json();
-
-      // --- Injection HTML tel quel, le controller gère table/grid ---
-      if (this.container && data.results)
-        this.container.innerHTML = data.results;
-
-      // Pagination
-      if (this.paginationTop && data.paginationTop)
-        this.paginationTop.innerHTML = data.paginationTop;
-      if (this.paginationBottom && data.paginationBottom)
-        this.paginationBottom.innerHTML = data.paginationBottom;
-
-      // Badges (uniquement si présent)
-      if (this.badges) this.badges.updateBadges();
+      this.updateDOM(data);
     } catch (err) {
       console.error("Erreur AJAX :", err);
     }
   }
+
+  // --- Mise à jour du DOM ---
+  updateDOM(data) {
+    if (!this.resultsContainer) return;
+
+    // Remplace entièrement le container principal par le HTML rendu côté serveur
+    if (data.results) this.resultsContainer.innerHTML = data.results;
+
+    // Met à jour les badges
+    if (this.badges) this.badges.updateBadges();
+  }
 }
 
-// --- Observer pour initialisation automatique sur tous les formulaires fetch ---
-function watchFetchForms() {
+// --- Initialisation automatique ---
+function watchFiltersForm() {
   const observer = new MutationObserver(() => {
-    document.querySelectorAll("[data-fetch-form]").forEach(form => {
-      if (form.dataset.initialized) return;
-      form.dataset.initialized = "true";
-      new VehiclesFilter(form);
-    });
+    const form = document.querySelector("#filters-form");
+    if (!form || form.dataset.initialized) return;
+    form.dataset.initialized = "true";
+    new VehiclesFilter(form);
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-document.addEventListener("DOMContentLoaded", watchFetchForms);
+document.addEventListener("DOMContentLoaded", watchFiltersForm);

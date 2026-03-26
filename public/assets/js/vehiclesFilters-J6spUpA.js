@@ -1,18 +1,20 @@
 // --- vehiclesFilters.js ---
+// Gestion des filtres AJAX, toggle view (table/grid) et pagination
 import FilterBadges from "./FilterBadges.js";
 import initDoubleSlider from "./rangeSelector.js";
 
 export default class VehiclesFilter {
   constructor(form) {
+    // Vérifie que le paramètre est bien un formulaire
     if (!(form instanceof HTMLFormElement)) return;
 
     this.form = form;
-    this.url = form.dataset.fetchUrl; // URL AJAX côté controller
-    if (!this.url) return;
+    this.url = "/vehicles/filters"; // URL AJAX pour soumettre les filtres
 
-    // Conteneurs principaux
-    this.container = document.querySelector("#vehicles-container");
-    this.resultsEl = document.querySelector("#vehicles-search-results");
+    // Conteneurs principaux pour injecter les résultats et la pagination
+    this.resultsContainer = document.querySelector(
+      '[data-target="vehicles-search-results"]'
+    );
     this.paginationTop = document.querySelector(
       '[data-target="pagination-top"]'
     );
@@ -23,31 +25,35 @@ export default class VehiclesFilter {
       '[data-target="filters-summary"]'
     );
 
-    // --- INIT BADGES (uniquement si on est sur le formulaire des filtres) ---
-    if (this.summaryContainer && this.form.matches("#filters-form")) {
+    // --- Initialisation des badges (résumé des filtres appliqués) ---
+    if (this.summaryContainer) {
       this.badges = new FilterBadges(
         this.summaryContainer,
         this.form,
-        this.submitFilters.bind(this)
+        this.submitFilters.bind(this) // callback pour mettre à jour les résultats
       );
     }
 
-    // --- INIT SLIDERS (uniquement sur le formulaire des filtres) ---
-    if (this.form.matches("#filters-form")) this.initSliders();
+    // --- Initialisation des sliders ---
+    this.initSliders();
 
-    // --- INIT EVENTS ---
+    // --- Initialisation du toggle view (table / grid) ---
+    this.initViewToggle();
+
+    // --- Initialisation des événements (form, pagination, badges, toggle) ---
     this.initEvents();
   }
 
-  // --- Double sliders ---
+  // --- Initialisation des sliders doubles ---
   initSliders() {
     const sliders = this.form.querySelectorAll(".double-slider");
     if (!sliders.length || typeof initDoubleSlider !== "function") return;
 
     sliders.forEach(slider => {
-      initDoubleSlider(slider);
+      initDoubleSlider(slider); // Fonction externe qui initialise le slider
       let timer = null;
 
+      // Quand le slider change, on met à jour les inputs correspondants
       slider.addEventListener("sliderChanged", e => {
         const { filter, min, max } = e.detail;
         const inputMin = this.form.querySelector(
@@ -59,21 +65,45 @@ export default class VehiclesFilter {
         if (inputMin) inputMin.value = min;
         if (inputMax) inputMax.value = max;
 
+        // Débounce pour éviter les multiples appels AJAX
         clearTimeout(timer);
         timer = setTimeout(() => this.submitFilters(), 300);
       });
     });
   }
 
-  // --- Events form, pagination, badges, view switch ---
+  // --- Initialisation du toggle view (table / grid) ---
+  initViewToggle() {
+    this.viewToggle = document.querySelector("#view-switch-form");
+    if (!this.viewToggle) return;
+
+    // Récupère la dernière vue sauvegardée côté client (localStorage)
+    const savedView = localStorage.getItem("vehicleView");
+    if (savedView) {
+      const input = this.viewToggle.querySelector(
+        `input[name="view"][value="${savedView}"]`
+      );
+      if (input) input.checked = true;
+    }
+
+    // Quand l'utilisateur change le toggle, on sauvegarde et on recharge les résultats
+    this.viewToggle.querySelectorAll("input[name='view']").forEach(input => {
+      input.addEventListener("change", () => {
+        localStorage.setItem("vehicleView", input.value);
+        this.submitFilters();
+      });
+    });
+  }
+
+  // --- Initialisation des autres événements ---
   initEvents() {
-    // Changement sur filtres ou toggle view
+    // Détection des changements dans le formulaire (checkbox, select, etc.)
     this.form.addEventListener("change", e => {
-      if (!e.target.matches("input, select")) return;
+      if (!e.target.matches("input")) return;
       this.submitFilters();
     });
 
-    // Pagination
+    // Pagination : clique sur un bouton avec data-page
     document.addEventListener("click", e => {
       const btn = e.target.closest("[data-page]");
       if (!btn) return;
@@ -82,22 +112,21 @@ export default class VehiclesFilter {
       if (!isNaN(page)) this.submitFilters(page);
     });
 
-    // Suppression badges (uniquement sur formulaire filtres)
-    if (this.summaryContainer && this.form.matches("#filters-form")) {
+    // Suppression des badges
+    if (this.summaryContainer) {
       this.summaryContainer.addEventListener("click", e => {
         if (!e.target.matches(".badge-remove")) return;
-
         const filter = e.target.dataset.filter;
         const value = e.target.dataset.value;
 
-        // Reset slider si applicable
+        // Si le filtre est un slider, on reset
         const slider = this.form.querySelector(
           `.double-slider[data-filter="${filter}"]`
         );
         if (slider && typeof slider.resetSlider === "function")
           slider.resetSlider();
         else {
-          // Reset checkbox
+          // Sinon, on décoche la checkbox correspondante
           const checkboxes = this.form.querySelectorAll(
             `input[name="filters[${filter}][]"]`
           );
@@ -112,11 +141,12 @@ export default class VehiclesFilter {
     }
   }
 
-  // --- AJAX submit ---
+  // --- Soumission AJAX des filtres ---
   async submitFilters(page = 1) {
     const formData = new FormData(this.form);
     const filters = {};
 
+    // On reconstruit un objet JS à partir des inputs name="filters[...]"
     for (const [key, value] of formData.entries()) {
       const match = key.match(/^filters\[(.+?)\](\[\])?$/);
       if (!match) continue;
@@ -128,8 +158,10 @@ export default class VehiclesFilter {
       } else filters[name] = value;
     }
 
-    // --- Ajout view depuis le radio toggle si présent ---
-    const viewInput = this.form.querySelector("input[name='view']:checked");
+    // Ajoute le mode d'affichage (table/grid)
+    const viewInput = this.viewToggle.querySelector(
+      'input[name="view"]:checked'
+    );
     if (viewInput) filters.view = viewInput.value;
 
     try {
@@ -139,36 +171,36 @@ export default class VehiclesFilter {
         body: JSON.stringify({ filters, page })
       });
       const data = await res.json();
-
-      // --- Injection HTML tel quel, le controller gère table/grid ---
-      if (this.container && data.results)
-        this.container.innerHTML = data.results;
-
-      // Pagination
-      if (this.paginationTop && data.paginationTop)
-        this.paginationTop.innerHTML = data.paginationTop;
-      if (this.paginationBottom && data.paginationBottom)
-        this.paginationBottom.innerHTML = data.paginationBottom;
-
-      // Badges (uniquement si présent)
-      if (this.badges) this.badges.updateBadges();
+      this.updateDOM(data);
     } catch (err) {
-      console.error("Erreur AJAX :", err);
+      console.error("Erreur AJAX:", err);
     }
+  }
+
+  // --- Mise à jour du DOM après AJAX ---
+  updateDOM(data) {
+    if (this.resultsContainer && data.results)
+      this.resultsContainer.innerHTML = data.results;
+    if (this.paginationTop && data.paginationTop)
+      this.paginationTop.innerHTML = data.paginationTop;
+    if (this.paginationBottom && data.paginationBottom)
+      this.paginationBottom.innerHTML = data.paginationBottom;
+
+    if (this.badges) this.badges.updateBadges();
   }
 }
 
-// --- Observer pour initialisation automatique sur tous les formulaires fetch ---
-function watchFetchForms() {
+// --- Observer pour attendre que le formulaire soit présent dans le DOM ---
+function watchFiltersForm() {
   const observer = new MutationObserver(() => {
-    document.querySelectorAll("[data-fetch-form]").forEach(form => {
-      if (form.dataset.initialized) return;
-      form.dataset.initialized = "true";
-      new VehiclesFilter(form);
-    });
+    const form = document.querySelector("#filters-form");
+    if (!form || form.dataset.initialized) return;
+    form.dataset.initialized = "true";
+    new VehiclesFilter(form);
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-document.addEventListener("DOMContentLoaded", watchFetchForms);
+// --- Initialisation après DOM ready ---
+document.addEventListener("DOMContentLoaded", watchFiltersForm);

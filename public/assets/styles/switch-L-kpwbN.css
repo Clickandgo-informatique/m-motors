@@ -1,0 +1,87 @@
+/* ========================================================= */
+/* SWITCHER GRID / TABLE - FLAT, SIMPLE, ANNULE STYLE FORM */
+/* ========================================================= */
+
+/* 1️⃣ Annule tous les styles par défaut du form */
+.view-switch-wrapper form#view-switch-form {
+  all: unset; /* annule marges, padding, border, font… */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+/* 2️⃣ Conteneur du switch */
+.view-switch-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-large);
+  padding: var(--space-xs);
+  user-select: none;
+}
+
+/* 3️⃣ Cacher les radios */
+.view-switch-wrapper input[type="radio"] {
+  display: none;
+}
+
+/* 4️⃣ Labels avec icônes */
+.view-switch-wrapper .switch-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  font-size: 18px;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+/* 5️⃣ Slider simple flat */
+.view-switch-wrapper .switch-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 44px;
+  height: 40px;
+  background: var(--btn-primary-bg);
+  border-radius: var(--radius-large);
+  transition: transform 0.3s ease;
+  z-index: 1;
+}
+
+/* 6️⃣ Couleur des labels actifs */
+.view-switch-wrapper input#view-grid:checked + label[for="view-grid"],
+.view-switch-wrapper input#view-table:checked + label[for="view-table"] {
+  color: var(--text-inverse);
+}
+
+/* 7️⃣ Déplacement du slider selon le choix */
+input#view-table:checked ~ .switch-slider {
+  transform: translateX(48px); /* largeur + padding interne */
+}
+
+/* 8️⃣ Hover */
+.view-switch-wrapper .switch-label:hover {
+  color: var(--color-primary-hover);
+}
+
+/* 9️⃣ Responsive */
+@media (max-width: 600px) {
+  .view-switch-wrapper .switch-label {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+  .view-switch-wrapper .switch-slider {
+    width: 36px;
+    height: 32px;
+  }
+  input#view-table:checked ~ .switch-slider {
+    transform: translateX(40px);
+  }
+}
