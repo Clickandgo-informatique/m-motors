@@ -1,30 +1,66 @@
 <div class="cards-grid">
 	{% for vehicle in vehicles %}
 		<div class="vehicle-card card">
-			<div class="vehicle-card-header">{{ vehicle.vehicleModel.brand.name }}
-				{{ vehicle.vehicleModel.model.name }}</div>
-			<div class="vehicle-card-body">
-				<div>
-					<strong>Statut:</strong>
-					{{ vehicle.status.label }}</div>
-				<div>
-					<strong>Immatriculation:</strong>
-					{{ vehicle.registrationNumber }}</div>
-				<div>
-					<strong>Kilométrage:</strong>
-					{{ vehicle.mileage|number_format(0, ',', ' ') }}
-					km</div>
-				<div>
-					<strong>Carrosserie:</strong>
-					{{ vehicle.vehicleModel.bodyType.name }}</div>
-				<div>
-					<strong>Énergie:</strong>
-					{{ vehicle.vehicleModel.fuelType.name }}</div>
-				<div>
-					<strong>Prix:</strong>
-					{{ vehicle.price|number_format(0, ',', ' ') }}
-					€</div>
+			<div class="vehicle-card-header">
+				<strong>{{ vehicle.vehicleModel.brand.name }}</strong>
+				{{ vehicle.vehicleModel.model.name }}
 			</div>
+			<div class="vehicle-card-body">
+				<img src="#" alt="Image du véhicule">
+				<table class="vehicle-specs">
+					<tbody>
+						<tr>
+							<th>Statut</th>
+							<td>{{ vehicle.status.label }}</td>
+						</tr>
+
+						{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+							<tr>
+								<th>Immatriculation</th>
+								<td>{{ vehicle.registrationNumber }}</td>
+							</tr>
+						{% endif %}
+
+						<tr>
+							<th>Kilométrage</th>
+							<td>{{ vehicle.mileage|number_format(0, ',', ' ') }}
+								km</td>
+						</tr>
+						<tr>
+							<th>Carrosserie</th>
+							<td>{{ vehicle.vehicleModel.bodyType.name }}</td>
+						</tr>
+						<tr>
+							<th>Énergie</th>
+							<td>{{ vehicle.vehicleModel.fuelType.name }}</td>
+						</tr>
+						<tr>
+							<th>Prix</th>
+							<td>{{ vehicle.price|number_format(0, ',', ' ') }}
+								€</td>
+						</tr>
+						<tr>
+							<th>Mois/Année</th>
+							<td>{{ vehicle.firstRegistrationDate|date("m/Y") }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			{# Liste compacte des options du véhicule #}
+			{% set allFeatures = vehicle.features|map(f => f.label) %}
+			{% set maxVisible = 5 %}
+			{% set visibleFeatures = allFeatures|slice(0, maxVisible) %}
+			{% set hiddenCount = allFeatures|length - maxVisible %}
+
+			<p class="vehicle-features">
+				Options ({{ allFeatures|length }}):
+				{{ visibleFeatures|join(', ') }}
+				{% if hiddenCount > 0 %}
+					, +{{ hiddenCount }}
+					autres…
+				{% endif %}
+			</p>
 		</div>
 	{% else %}
 		<div class="text-center text-muted">Aucun véhicule trouvé</div>

@@ -6,9 +6,9 @@ use App\Repository\FeatureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FeatureRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Feature
 {
     #[ORM\Id]
@@ -16,19 +16,18 @@ class Feature
     #[ORM\Column]
     private ?int $id = null;
 
+    // 🔥 CODE TECHNIQUE (stable, utilisé partout)
     #[ORM\Column(length: 100, unique: true)]
-    #[Assert\NotBlank(message: "Le nom de l'option est obligatoire")]
-    #[Assert\Length(
-        min: 2,
-        max: 100,
-        minMessage: "L'option doit contenir au moins {{ limit }} caractères",
-        maxMessage: "L'option ne peut dépasser {{ limit }} caractères"
-    )]
-    #[Assert\Regex(
-        pattern: "/^[a-zA-ZÀ-ÿ0-9\s\-]+$/",
-        message: "L'option contient des caractères invalides"
-    )]
-    private ?string $name = null;
+    private ?string $code = null;
+
+    // 🖥️ LABEL AFFICHÉ
+    #[ORM\Column(length: 100)]
+    private ?string $label = null;
+
+    // 📂 CATÉGORIE
+    #[ORM\ManyToOne(inversedBy: 'features')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?FeatureCategory $category = null;
 
     #[ORM\ManyToMany(targetEntity: Vehicle::class, mappedBy: 'features')]
     private Collection $vehicles;
@@ -38,19 +37,45 @@ class Feature
         $this->vehicles = new ArrayCollection();
     }
 
+    // =========================
+    // GETTERS / SETTERS
+    // =========================
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getCode(): ?string
     {
-        return $this->name;
+        return $this->code;
     }
 
-    public function setName(string $name): static
+    public function setCode(string $code): static
     {
-        $this->name = ucfirst(strtolower($name));
+        $this->code = strtolower(trim($code));
+        return $this;
+    }
+
+    public function getLabel(): ?string
+    {
+        return $this->label;
+    }
+
+    public function setLabel(string $label): static
+    {
+        $this->label = ucfirst($label);
+        return $this;
+    }
+
+    public function getCategory(): ?FeatureCategory
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?FeatureCategory $category): static
+    {
+        $this->category = $category;
         return $this;
     }
 
@@ -60,5 +85,24 @@ class Feature
     public function getVehicles(): Collection
     {
         return $this->vehicles;
+    }
+
+    // =========================
+    // AUTO-GENERATION DU CODE
+    // =========================
+
+    #[ORM\PrePersist]
+    public function generateCode(): void
+    {
+        if (!$this->code && $this->label) {
+            $this->code = $this->slugify($this->label);
+        }
+    }
+
+    private function slugify(string $text): string
+    {
+        $text = strtolower($text);
+        $text = preg_replace('/[^a-z0-9]+/', '_', $text);
+        return trim($text, '_');
     }
 }

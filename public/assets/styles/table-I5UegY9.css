@@ -100,9 +100,6 @@ tbody tr:hover {
     color: var(--text-secondary);
   }
 }
-.vehicle-specs {
-  font-size: 0.8rem;
-}
 /* Désactiver le zébrage pour .vehicle-specs */
 .vehicle-specs tbody tr:nth-child(odd) {
   background: inherit; /* ou background: var(--surface-1); selon ton design */

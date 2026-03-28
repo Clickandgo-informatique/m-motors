@@ -1,0 +1,536 @@
+{
+    "categories": [
+        {
+            "code": "comfort",
+            "label": "Confort"
+        },
+        {
+            "code": "multimedia",
+            "label": "Multimédia"
+        },
+        {
+            "code": "safety",
+            "label": "Sécurité"
+        },
+        {
+            "code": "driver_assistance",
+            "label": "Aides à la conduite"
+        },
+        {
+            "code": "exterior",
+            "label": "Extérieur"
+        },
+        {
+            "code": "interior",
+            "label": "Intérieur"
+        },
+        {
+            "code": "performance",
+            "label": "Performance"
+        },
+        {
+            "code": "practicality",
+            "label": "Praticité"
+        },
+        {
+            "code": "lighting_visibility",
+            "label": "Visibilité"
+        },
+        {
+            "code": "eco",
+            "label": "Écologie & énergie"
+        }
+    ],
+    "features": [
+        {
+            "code": "ac_manual",
+            "label": "Climatisation manuelle",
+            "category": "comfort"
+        },
+        {
+            "code": "ac_auto",
+            "label": "Climatisation automatique",
+            "category": "comfort"
+        },
+        {
+            "code": "ac_auto_bizone",
+            "label": "Climatisation bi-zone",
+            "category": "comfort"
+        },
+        {
+            "code": "ac_auto_trizone",
+            "label": "Climatisation tri-zone",
+            "category": "comfort"
+        },
+        {
+            "code": "heated_seats_front",
+            "label": "Sièges chauffants avant",
+            "category": "comfort"
+        },
+        {
+            "code": "heated_seats_rear",
+            "label": "Sièges chauffants arrière",
+            "category": "comfort"
+        },
+        {
+            "code": "ventilated_seats",
+            "label": "Sièges ventilés",
+            "category": "comfort"
+        },
+        {
+            "code": "massage_seats",
+            "label": "Sièges massants",
+            "category": "comfort"
+        },
+        {
+            "code": "electric_seats",
+            "label": "Sièges électriques",
+            "category": "comfort"
+        },
+        {
+            "code": "memory_seats",
+            "label": "Sièges à mémoire",
+            "category": "comfort"
+        },
+        {
+            "code": "heated_steering_wheel",
+            "label": "Volant chauffant",
+            "category": "comfort"
+        },
+        {
+            "code": "electric_steering_wheel",
+            "label": "Volant électrique",
+            "category": "comfort"
+        },
+        {
+            "code": "heated_windshield",
+            "label": "Pare-brise chauffant",
+            "category": "comfort"
+        },
+        {
+            "code": "electric_windows_front",
+            "label": "Lève-vitres électriques avant",
+            "category": "comfort"
+        },
+        {
+            "code": "electric_windows_rear",
+            "label": "Lève-vitres électriques arrière",
+            "category": "comfort"
+        },
+        {
+            "code": "sun_blinds",
+            "label": "Stores pare-soleil arrière",
+            "category": "comfort"
+        },
+        {
+            "code": "rear_air_vents",
+            "label": "Bouches d’air arrière",
+            "category": "comfort"
+        },
+        {
+            "code": "air_conditioned_seats",
+            "label": "Sièges climatisés",
+            "category": "comfort"
+        },
+        {
+            "code": "ambient_lighting_front",
+            "label": "Éclairage d’ambiance avant",
+            "category": "comfort"
+        },
+        {
+            "code": "ambient_lighting_rear",
+            "label": "Éclairage d’ambiance arrière",
+            "category": "comfort"
+        },
+        {
+            "code": "bluetooth",
+            "label": "Bluetooth",
+            "category": "multimedia"
+        },
+        {
+            "code": "apple_carplay",
+            "label": "Apple CarPlay",
+            "category": "multimedia"
+        },
+        {
+            "code": "android_auto",
+            "label": "Android Auto",
+            "category": "multimedia"
+        },
+        {
+            "code": "gps",
+            "label": "GPS intégré",
+            "category": "multimedia"
+        },
+        {
+            "code": "touchscreen",
+            "label": "Écran tactile",
+            "category": "multimedia"
+        },
+        {
+            "code": "audio_premium",
+            "label": "Système audio premium",
+            "category": "multimedia"
+        },
+        {
+            "code": "audio_bose",
+            "label": "Système audio Bose",
+            "category": "multimedia"
+        },
+        {
+            "code": "audio_harman",
+            "label": "Système audio Harman Kardon",
+            "category": "multimedia"
+        },
+        {
+            "code": "wireless_charging",
+            "label": "Chargeur à induction",
+            "category": "multimedia"
+        },
+        {
+            "code": "usb_ports",
+            "label": "Ports USB",
+            "category": "multimedia"
+        },
+        {
+            "code": "wifi_hotspot",
+            "label": "Wi-Fi embarqué",
+            "category": "multimedia"
+        },
+        {
+            "code": "voice_control",
+            "label": "Commande vocale",
+            "category": "multimedia"
+        },
+        {
+            "code": "headphones_jack",
+            "label": "Prise casque",
+            "category": "multimedia"
+        },
+        {
+            "code": "abs",
+            "label": "ABS",
+            "category": "safety"
+        },
+        {
+            "code": "esp",
+            "label": "ESP",
+            "category": "safety"
+        },
+        {
+            "code": "asr",
+            "label": "ASR",
+            "category": "safety"
+        },
+        {
+            "code": "airbags_front",
+            "label": "Airbags frontaux",
+            "category": "safety"
+        },
+        {
+            "code": "airbags_side",
+            "label": "Airbags latéraux",
+            "category": "safety"
+        },
+        {
+            "code": "airbags_curtain",
+            "label": "Airbags rideaux",
+            "category": "safety"
+        },
+        {
+            "code": "isofix",
+            "label": "Fixations ISOFIX",
+            "category": "safety"
+        },
+        {
+            "code": "emergency_brake",
+            "label": "Freinage d'urgence automatique",
+            "category": "safety"
+        },
+        {
+            "code": "lane_departure_warning",
+            "label": "Alerte franchissement de ligne",
+            "category": "safety"
+        },
+        {
+            "code": "blind_spot",
+            "label": "Détection angle mort",
+            "category": "safety"
+        },
+        {
+            "code": "traction_control",
+            "label": "Contrôle de traction",
+            "category": "safety"
+        },
+        {
+            "code": "hill_start_assist",
+            "label": "Assistance démarrage en côte",
+            "category": "safety"
+        },
+        {
+            "code": "collision_warning",
+            "label": "Alerte collision",
+            "category": "safety"
+        },
+        {
+            "code": "tire_pressure_monitoring",
+            "label": "Surveillance pression pneus",
+            "category": "safety"
+        },
+        {
+            "code": "cruise_control",
+            "label": "Régulateur de vitesse",
+            "category": "driver_assistance"
+        },
+        {
+            "code": "adaptive_cruise",
+            "label": "Régulateur adaptatif",
+            "category": "driver_assistance"
+        },
+        {
+            "code": "rear_camera",
+            "label": "Caméra de recul",
+            "category": "driver_assistance"
+        },
+        {
+            "code": "camera_360",
+            "label": "Caméra 360°",
+            "category": "driver_assistance"
+        },
+        {
+            "code": "parking_sensors_front",
+            "label": "Radar avant",
+            "category": "driver_assistance"
+        },
+        {
+            "code": "parking_sensors_rear",
+            "label": "Radar arrière",
+            "category": "driver_assistance"
+        },
+        {
+            "code": "park_assist",
+            "label": "Park Assist",
+            "category": "driver_assistance"
+        },
+        {
+            "code": "traffic_sign_recognition",
+            "label": "Reconnaissance panneaux",
+            "category": "driver_assistance"
+        },
+        {
+            "code": "driver_attention_monitor",
+            "label": "Surveillance vigilance conducteur",
+            "category": "driver_assistance"
+        },
+        {
+            "code": "cross_traffic_alert",
+            "label": "Alerte trafic transversal",
+            "category": "driver_assistance"
+        },
+        {
+            "code": "alloy_wheels",
+            "label": "Jantes alliage",
+            "category": "exterior"
+        },
+        {
+            "code": "panoramic_roof",
+            "label": "Toit panoramique",
+            "category": "exterior"
+        },
+        {
+            "code": "sunroof",
+            "label": "Toit ouvrant",
+            "category": "exterior"
+        },
+        {
+            "code": "tinted_windows",
+            "label": "Vitres teintées",
+            "category": "exterior"
+        },
+        {
+            "code": "led_headlights",
+            "label": "Feux LED",
+            "category": "exterior"
+        },
+        {
+            "code": "matrix_led",
+            "label": "Feux LED matriciels",
+            "category": "exterior"
+        },
+        {
+            "code": "power_mirrors",
+            "label": "Rétroviseurs électriques",
+            "category": "exterior"
+        },
+        {
+            "code": "folding_mirrors",
+            "label": "Rétroviseurs rabattables",
+            "category": "exterior"
+        },
+        {
+            "code": "roof_rack",
+            "label": "Barres de toit",
+            "category": "exterior"
+        },
+        {
+            "code": "side_steps",
+            "label": "Marchepieds",
+            "category": "exterior"
+        },
+        {
+            "code": "leather_seats",
+            "label": "Sellerie cuir",
+            "category": "interior"
+        },
+        {
+            "code": "ambient_lighting",
+            "label": "Éclairage d’ambiance",
+            "category": "interior"
+        },
+        {
+            "code": "digital_cockpit",
+            "label": "Cockpit digital",
+            "category": "interior"
+        },
+        {
+            "code": "head_up_display",
+            "label": "Affichage tête haute",
+            "category": "interior"
+        },
+        {
+            "code": "folding_rear_seats",
+            "label": "Banquette arrière rabattable",
+            "category": "interior"
+        },
+        {
+            "code": "rear_armrest",
+            "label": "Accoudoir arrière",
+            "category": "interior"
+        },
+        {
+            "code": "storage_compartments",
+            "label": "Rangements intérieurs",
+            "category": "interior"
+        },
+        {
+            "code": "cup_holders",
+            "label": "Porte-gobelets",
+            "category": "interior"
+        },
+        {
+            "code": "glovebox_cooling",
+            "label": "Boîte à gants réfrigérée",
+            "category": "interior"
+        },
+        {
+            "code": "sport_mode",
+            "label": "Mode sport",
+            "category": "performance"
+        },
+        {
+            "code": "adaptive_suspension",
+            "label": "Suspension adaptative",
+            "category": "performance"
+        },
+        {
+            "code": "awd",
+            "label": "Transmission intégrale",
+            "category": "performance"
+        },
+        {
+            "code": "launch_control",
+            "label": "Lancement assisté",
+            "category": "performance"
+        },
+        {
+            "code": "limited_slip_diff",
+            "label": "Différentiel à glissement limité",
+            "category": "performance"
+        },
+        {
+            "code": "electric_trunk",
+            "label": "Coffre électrique",
+            "category": "practicality"
+        },
+        {
+            "code": "handsfree_trunk",
+            "label": "Coffre mains libres",
+            "category": "practicality"
+        },
+        {
+            "code": "keyless_entry",
+            "label": "Accès sans clé",
+            "category": "practicality"
+        },
+        {
+            "code": "keyless_start",
+            "label": "Démarrage sans clé",
+            "category": "practicality"
+        },
+        {
+            "code": "tow_bar",
+            "label": "Attelage",
+            "category": "practicality"
+        },
+        {
+            "code": "fuel_lid_remote",
+            "label": "Ouverture trappe carburant électrique",
+            "category": "practicality"
+        },
+        {
+            "code": "roof_box",
+            "label": "Coffre de toit",
+            "category": "practicality"
+        },
+        {
+            "code": "rain_sensor",
+            "label": "Capteur de pluie",
+            "category": "lighting_visibility"
+        },
+        {
+            "code": "light_sensor",
+            "label": "Capteur de luminosité",
+            "category": "lighting_visibility"
+        },
+        {
+            "code": "auto_headlights",
+            "label": "Feux automatiques",
+            "category": "lighting_visibility"
+        },
+        {
+            "code": "cornering_lights",
+            "label": "Feux d’angle",
+            "category": "lighting_visibility"
+        },
+        {
+            "code": "fog_lights",
+            "label": "Feux antibrouillard",
+            "category": "lighting_visibility"
+        },
+        {
+            "code": "start_stop",
+            "label": "Start & Stop",
+            "category": "eco"
+        },
+        {
+            "code": "eco_mode",
+            "label": "Mode éco",
+            "category": "eco"
+        },
+        {
+            "code": "heat_pump",
+            "label": "Pompe à chaleur",
+            "category": "eco"
+        },
+        {
+            "code": "low_rolling_resistance_tyres",
+            "label": "Pneus basse résistance",
+            "category": "eco"
+        },
+        {
+            "code": "regenerative_braking",
+            "label": "Freinage régénératif",
+            "category": "eco"
+        }
+    ]
+}
