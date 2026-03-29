@@ -8,33 +8,31 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class FavoriteController extends AbstractController
 {
-    private $favoriteRepository;
-    private $em;
-    private $session;
+    private FavoriteRepository $favoriteRepository;
+    private EntityManagerInterface $em;
 
-    public function __construct(FavoriteRepository $favoriteRepository, EntityManagerInterface $em, SessionInterface $session)
+    public function __construct(FavoriteRepository $favoriteRepository, EntityManagerInterface $em)
     {
         $this->favoriteRepository = $favoriteRepository;
         $this->em = $em;
-        $this->session = $session;
     }
 
     #[Route('/vehicle/{id}/favorite', name: 'vehicle_toggle_favorite', methods: ['POST'])]
-    public function toggleFavorite(Vehicle $vehicle, Request $request)
+    public function toggleFavorite(Vehicle $vehicle, Request $request): JsonResponse
     {
         $user = $this->getUser();
+        $session = $request->getSession();
 
         if ($user) {
-            // Utilisateur connecté → on utilise la table Favorite
+            // Utilisateur connecté → DB
             $added = $this->favoriteRepository->toggleFavorite($user, $vehicle);
         } else {
-            // Utilisateur non connecté → stockage en session
-            $favorites = $this->session->get('favorites', []);
+            // Utilisateur non connecté → session
+            $favorites = $session->get('favorites', []);
             $vehicleId = $vehicle->getId();
 
             if (in_array($vehicleId, $favorites)) {
@@ -45,7 +43,7 @@ class FavoriteController extends AbstractController
                 $added = true;
             }
 
-            $this->session->set('favorites', $favorites);
+            $session->set('favorites', $favorites);
         }
 
         return new JsonResponse([
@@ -56,15 +54,17 @@ class FavoriteController extends AbstractController
     }
 
     #[Route('/vehicle/{id}/is-favorite', name: 'vehicle_is_favorite', methods: ['GET'])]
-    public function isFavorite(Vehicle $vehicle)
+    public function isFavorite(Vehicle $vehicle, Request $request): JsonResponse
     {
         $user = $this->getUser();
+        $session = $request->getSession();
+
         $isFavorite = false;
 
         if ($user) {
             $isFavorite = $this->favoriteRepository->isFavorite($user, $vehicle);
         } else {
-            $favorites = $this->session->get('favorites', []);
+            $favorites = $session->get('favorites', []);
             $isFavorite = in_array($vehicle->getId(), $favorites);
         }
 

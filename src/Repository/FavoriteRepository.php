@@ -6,7 +6,8 @@ use App\Entity\Favorite;
 use App\Entity\User;
 use App\Entity\Vehicle;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
+
 
 class FavoriteRepository extends ServiceEntityRepository
 {
