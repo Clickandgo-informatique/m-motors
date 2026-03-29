@@ -1,12 +1,12 @@
 <div class="cards-grid">
 	{% for vehicle in vehicles %}
 		<div class="vehicle-card card">
+			<img src="#" alt="coverImg {{ vehicle.vehicleModel.model.name }}">
 			<div class="vehicle-card-header">
 				<strong>{{ vehicle.vehicleModel.brand.name }}</strong>
 				{{ vehicle.vehicleModel.model.name }}
 			</div>
 			<div class="vehicle-card-body">
-				<img src="#" alt="Image du véhicule">
 				<table class="vehicle-specs">
 					<tbody>
 						<tr>
