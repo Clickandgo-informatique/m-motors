@@ -1,47 +1,60 @@
 <div class="cards-grid">
 	{% for vehicle in vehicles %}
-		<div class="vehicle-card card">
-			<img src="#" alt="coverImg {{ vehicle.vehicleModel.model.name }}">
-			<div class="vehicle-card-header">
-				<strong>{{ vehicle.vehicleModel.brand.name }}</strong>
-				{{ vehicle.vehicleModel.model.name }}
+		<div
+			class="vehicle-card card">
+
+			{# Image du véhicule avec bouton favoris overlay #}
+			<div class="vehicle-image-wrapper">
+				<img src="#" alt="coverImg {{ vehicle.vehicleModel.model.name }}">
+				<button data-action="toggle-favorite" data-url="/vehicle/{{ vehicle.id }}/favorite" class="favorite-btn" aria-pressed="false">
+					<i class="fa-regular fa-heart" data-icon></i>
+				</button>
 			</div>
+			<div class="vehicle-card-header">
+				<span class="vehicle-brand">
+					{{vehicle.vehicleModel.brand.name}}
+				</span>
+				<span class="vehicle-model">
+					{{ vehicle.vehicleModel.model.name }}
+				</span>
+			</div>
+			{# Tableau des spécifications #}
 			<div class="vehicle-card-body">
 				<table class="vehicle-specs">
 					<tbody>
 						<tr>
 							<th>Statut</th>
-							<td>{{ vehicle.status.label }}</td>
+							<td data-label="Statut">{{ vehicle.status.label }}</td>
 						</tr>
 
 						{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 							<tr>
 								<th>Immatriculation</th>
-								<td>{{ vehicle.registrationNumber }}</td>
+								<td data-label="Immatriculation">{{ vehicle.registrationNumber }}</td>
 							</tr>
 						{% endif %}
 
 						<tr>
 							<th>Kilométrage</th>
-							<td>{{ vehicle.mileage|number_format(0, ',', ' ') }}
+							<td data-label="Kilométrage">{{ vehicle.mileage|number_format(0, ',', ' ') }}
 								km</td>
 						</tr>
 						<tr>
 							<th>Carrosserie</th>
-							<td>{{ vehicle.vehicleModel.bodyType.name }}</td>
+							<td data-label="Carrosserie">{{ vehicle.vehicleModel.bodyType.name }}</td>
 						</tr>
 						<tr>
 							<th>Énergie</th>
-							<td>{{ vehicle.vehicleModel.fuelType.name }}</td>
+							<td data-label="Énergie">{{ vehicle.vehicleModel.fuelType.name }}</td>
 						</tr>
 						<tr>
 							<th>Prix</th>
-							<td>{{ vehicle.price|number_format(0, ',', ' ') }}
+							<td data-label="Prix">{{ vehicle.price|number_format(0, ',', ' ') }}
 								€</td>
 						</tr>
 						<tr>
 							<th>Mois/Année</th>
-							<td>{{ vehicle.firstRegistrationDate|date("m/Y") }}</td>
+							<td data-label="Mois/Année">{{ vehicle.firstRegistrationDate|date("m/Y") }}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -61,6 +74,7 @@
 					autres…
 				{% endif %}
 			</p>
+
 		</div>
 	{% else %}
 		<div class="text-center text-muted">Aucun véhicule trouvé</div>

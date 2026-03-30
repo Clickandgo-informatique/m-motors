@@ -17,48 +17,45 @@
 }
 
 /* ============================
-   BOUTON FAVORIS
+   FAVORITE BUTTON (FontAwesome)
    ============================ */
 .favorite-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  cursor: pointer;
+  background: none;
   border: none;
   padding: 0;
-  margin: 0;
-  line-height: 1;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.favorite-btn:hover {
-  transform: scale(1.1);
-}
-
+/* Icône */
 .favorite-btn i {
   font-size: 1.4rem;
   color: #999;
-  line-height: 1;
-  display: block;
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.favorite-btn.is-favorite i,
-.favorite-btn.active i {
-  color: red;
-  transform: scale(1.2);
+/* Etat actif */
+.favorite-btn.is-favorite i {
+  color: #e63946;
 }
-.vehicle-card-header {
-  display: flex;
-  flex-direction: column;
+
+/* Animation */
+.favorite-btn i.animate {
+  animation: favorite-bounce 0.3s ease;
+}
+
+@keyframes favorite-bounce {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.3);
+  }
+  60% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* ============================
@@ -66,14 +63,10 @@
    ============================ */
 .vehicle-card img {
   width: 100%;
-  height: 200px; /* hauteur desktop */
+  height: 200px;
   object-fit: cover;
   border-radius: var(--radius-small);
   margin-bottom: var(--space-s);
-}
-
-.vehicle-image-wrapper {
-  position: relative;
 }
 
 @media (max-width: 768px) {
@@ -127,55 +120,17 @@
 }
 
 /* ============================
-   TABLEAU RESPONSIVE MOBILE CORRIGÉ
-   ============================ */
-@media (max-width: 600px) {
-  .vehicle-specs thead {
-    display: none; /* cache l'entête */
-  }
-
-  .vehicle-specs tr {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 1rem;
-    /* border: 1px solid var(--border-color);
-    border-radius: var(--radius-small); */
-    padding: 8px;
-    background: var(--surface-1);
-  }
-
-  .vehicle-specs td {
-    display: flex;
-    justify-content: space-between; /* label à gauche, valeur à droite */
-    padding: 4px 0;
-  }
-
-  .vehicle-specs th {
-    display: none; /* ne pas afficher les th */
-  }
-
-  .vehicle-specs td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: var(--text-secondary);
-    margin-right: 10px;
-    flex-shrink: 0; /* évite que le label soit compressé */
-  }
-}
-
-/* ============================
    LISTE DES OPTIONS
    ============================ */
 .vehicle-features {
   font-size: 0.7rem;
   color: var(--secondary-color);
   line-height: 1.2;
-  max-height: 3.6em; /* limite à environ 3 lignes */
+  max-height: 3.6em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
-  margin: var(--space-s);
+  margin-top: var(--space-s);
 }
 
 /* ============================
@@ -200,11 +155,35 @@
     padding: 8px 10px;
   }
 }
-.vehicle-brand {
-  font-weight: 600;
-  color: var(--color-primary);
-}
-.vehicle-model {
-  font-size: 0.8rem;
-  font-style: italic;
+
+@media (max-width: 600px) {
+  .vehicle-specs {
+    border: 0;
+  }
+
+  .vehicle-specs thead {
+    display: none;
+  }
+
+  .vehicle-specs tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    padding: 10px;
+    background: var(--surface-1);
+  }
+
+  .vehicle-specs td {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border: none;
+  }
+
+  .vehicle-specs td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
 }

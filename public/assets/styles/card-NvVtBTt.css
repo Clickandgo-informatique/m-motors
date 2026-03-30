@@ -56,10 +56,6 @@
   color: red;
   transform: scale(1.2);
 }
-.vehicle-card-header {
-  display: flex;
-  flex-direction: column;
-}
 
 /* ============================
    IMAGE DU VÉHICULE
@@ -168,6 +164,7 @@
    LISTE DES OPTIONS
    ============================ */
 .vehicle-features {
+
   font-size: 0.7rem;
   color: var(--secondary-color);
   line-height: 1.2;

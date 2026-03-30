@@ -25,6 +25,31 @@ class UserFixtures extends Fixture
             ->setPassword($hashedPassword)
         ;
         $manager->persist($user);
+
+        //Création du Sale_Manager
+        $user = new User();
+        $hashedPassword = $this->passwordHasher->hashPassword($user, 'Admin2026!');
+        $user->setEmail("commercial@m-motors.com")
+            ->setRoles(['ROLE_MANAGER'])
+            ->setPassword($hashedPassword)
+            ->setNickname('Vendeur principal')
+        ;
+        $manager->persist($user);
+
+        //Création de clients
+        for ($i = 1; $i < 5; $i++) {
+            $client = new User();
+            $hashedPassword = $this->passwordHasher->hashPassword($client, 'Client2026!');
+            $client->setEmail('client_' . $i . '@google.com')
+                ->setNickname('Client ' . $i)
+                ->setRoles(['ROLE_USER'])
+                ->setPassword($hashedPassword);
+        }
+
         $manager->flush();
+    }
+    public static function getGroups(): array
+    {
+        return ['UserFixtures'];
     }
 }

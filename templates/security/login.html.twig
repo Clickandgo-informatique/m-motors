@@ -17,7 +17,8 @@
 			<div class="mb-3">
 				Vous êtes connecté en tant que
 				{{ app.user.userIdentifier }},
-				<a href="{{ logout_path() }}">Déconnexion</a>
+				<a href="{{ logout_path() }}">
+					<i class="fa-solid fa-right-from-bracket"></i>Déconnexion</a>
 			</div>
 		{% endif %}
 
@@ -51,9 +52,27 @@
 				<label for="remember_me">Se souvenir de moi</label>
 			</div>
 		</fieldset>
+		<div class="form-row connection-buttons">
+			<button type="submit" class="btn btn-submit">
+				<i class="fa-solid fa-right-to-bracket"></i>Se connecter</button>
 
-		<button type="submit">Se connecter</button>
-
+			<a
+				href="{{ path('connect_google') }}" class="btn btn-google">
+				<!-- Logo officiel Google G -->
+				<svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 46 46" width="20" height="20">
+					<defs>
+						<path id="a" d="M44.5 20H24v6h11.7C34.3 30.1 29.7 34 24 34c-5.5 0-10-4.5-10-10s4.5-10 10-10c2.6 0 4.9 1 6.7 2.6l4.9-4.9C33.1 7.1 28.9 5 24 5 12.3 5 3 14.3 3 26s9.3 21 21 21c10.7 0 19.6-7.8 20.9-18H44.5z"/>
+					</defs>
+					<clipPath id="b">
+						<use xlink:href="#a" overflow="visible"/>
+					</clipPath>
+					<path fill="#FBBC05" d="M0 37V9l17 14z"/>
+					<path fill="#EA4335" d="M0 9l17 14 7-6.1L48 14V0H0z"/>
+					<path fill="#34A853" d="M0 37l30-23 7.9 1L48 0v48H0z"/>
+					<path fill="#4285F4" d="M48 48L17 24l-4-3 35-10z"/>
+				</svg>
+				<span>Se connecter avec Google</span>
+			</a>
+		</div>
 	</form>
-
 {% endblock %}

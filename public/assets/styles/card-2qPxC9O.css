@@ -56,10 +56,6 @@
   color: red;
   transform: scale(1.2);
 }
-.vehicle-card-header {
-  display: flex;
-  flex-direction: column;
-}
 
 /* ============================
    IMAGE DU VÉHICULE
@@ -127,40 +123,34 @@
 }
 
 /* ============================
-   TABLEAU RESPONSIVE MOBILE CORRIGÉ
+   TABLEAU RESPONSIVE MOBILE
    ============================ */
 @media (max-width: 600px) {
   .vehicle-specs thead {
-    display: none; /* cache l'entête */
+    display: none;
   }
 
   .vehicle-specs tr {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
     margin-bottom: 1rem;
-    /* border: 1px solid var(--border-color);
-    border-radius: var(--radius-small); */
-    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    padding: 10px;
     background: var(--surface-1);
   }
 
   .vehicle-specs td {
-    display: flex;
-    justify-content: space-between; /* label à gauche, valeur à droite */
     padding: 4px 0;
-  }
-
-  .vehicle-specs th {
-    display: none; /* ne pas afficher les th */
   }
 
   .vehicle-specs td::before {
     content: attr(data-label);
     font-weight: 600;
     color: var(--text-secondary);
-    margin-right: 10px;
-    flex-shrink: 0; /* évite que le label soit compressé */
+    display: block;
+    margin-bottom: 4px;
   }
 }
 
@@ -175,7 +165,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
-  margin: var(--space-s);
+  margin-top: var(--space-s);
 }
 
 /* ============================
@@ -199,12 +189,4 @@
   .vehicle-specs td {
     padding: 8px 10px;
   }
-}
-.vehicle-brand {
-  font-weight: 600;
-  color: var(--color-primary);
-}
-.vehicle-model {
-  font-size: 0.8rem;
-  font-style: italic;
 }

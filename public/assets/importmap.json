@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-M1Kaj86.js",
+        "path": "\/assets\/app-J1vJDwo.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -12,7 +12,7 @@
         "type": "js"
     },
     "\/assets\/@symfony\/ux-turbo\/turbo_controller.js": {
-        "path": "\/assets\/@symfony\/ux-turbo\/turbo_controller-8wQNi2p.js",
+        "path": "\/assets\/@symfony\/ux-turbo\/turbo_controller-bFCo5ub.js",
         "type": "js"
     },
     "\/assets\/controllers\/hello_controller.js": {
@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-HIQOJik.css",
+        "path": "\/assets\/styles\/app--bHo7aO.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -59,6 +59,10 @@
         "path": "\/assets\/js\/AjaxManager-B5H9Cur.js",
         "type": "js"
     },
+    "\/assets\/js\/ToggleVehicleFavorite.js": {
+        "path": "\/assets\/js\/ToggleVehicleFavorite-_AEJVjI.js",
+        "type": "js"
+    },
     "vehiclesFilters": {
         "path": "\/assets\/js\/vehiclesFilters-kfc_gaG.js",
         "type": "js"
@@ -68,7 +72,7 @@
         "type": "js"
     },
     "@symfony\/stimulus-bundle": {
-        "path": "\/assets\/@symfony\/stimulus-bundle\/loader-V1GtHuK.js",
+        "path": "\/assets\/@symfony\/stimulus-bundle\/loader-IOzBDLu.js",
         "type": "js"
     },
     "@hotwired\/turbo": {

@@ -35,6 +35,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: "user", targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $nickname = null;
+
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
@@ -120,6 +123,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // Avec orphanRemoval=true, Doctrine supprime automatiquement le favorite
         $this->favorites->removeElement($favorite);
+        return $this;
+    }
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname(?string $nickname): static
+    {
+        $this->nickname = $nickname;
+
         return $this;
     }
 }

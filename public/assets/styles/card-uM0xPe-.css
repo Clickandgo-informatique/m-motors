@@ -56,10 +56,6 @@
   color: red;
   transform: scale(1.2);
 }
-.vehicle-card-header {
-  display: flex;
-  flex-direction: column;
-}
 
 /* ============================
    IMAGE DU VÉHICULE
@@ -139,8 +135,8 @@
     flex-direction: column;
     gap: 4px;
     margin-bottom: 1rem;
-    /* border: 1px solid var(--border-color);
-    border-radius: var(--radius-small); */
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
     padding: 8px;
     background: var(--surface-1);
   }
@@ -175,7 +171,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
-  margin: var(--space-s);
+  margin-top: var(--space-s);
 }
 
 /* ============================

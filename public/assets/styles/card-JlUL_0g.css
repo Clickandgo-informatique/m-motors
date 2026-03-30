@@ -20,6 +20,37 @@
    BOUTON FAVORIS
    ============================ */
 .favorite-btn {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.favorite-btn .active {
+  color: red;
+}
+
+.favorite-btn.is-favorite {
+  color: red;
+}
+
+/* ============================
+   IMAGE DU VÉHICULE
+   ============================ */
+.vehicle-card img {
+  width: 100%;
+  height: 200px; /* hauteur desktop */
+  object-fit: cover; /* conserve le ratio et remplit le cadre */
+  border-radius: var(--radius-small);
+  margin-bottom: var(--space-s);
+}
+
+/* Wrapper pour overlay bouton favoris */
+.vehicle-image-wrapper {
+  position: relative;
+}
+
+/* Bouton favoris overlay */
+.favorite-btn {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -32,59 +63,56 @@
   align-items: center;
   justify-content: center;
   border: none;
-  padding: 0;
-  margin: 0;
-  line-height: 1;
   cursor: pointer;
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .favorite-btn:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .favorite-btn i {
   font-size: 1.4rem;
   color: #999;
-  line-height: 1;
-  display: block;
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.favorite-btn.is-favorite i,
-.favorite-btn.active i {
-  color: red;
-  transform: scale(1.2);
+.favorite-btn.is-favorite i {
+  color: #e63946;
 }
-.vehicle-card-header {
-  display: flex;
-  flex-direction: column;
+
+.favorite-btn i.animate {
+  animation: favorite-bounce 0.3s ease;
+}
+
+@keyframes favorite-bounce {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.3);
+  }
+  60% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* ============================
-   IMAGE DU VÉHICULE
+   IMAGE DU VÉHICULE - RESPONSIVE
    ============================ */
-.vehicle-card img {
-  width: 100%;
-  height: 200px; /* hauteur desktop */
-  object-fit: cover;
-  border-radius: var(--radius-small);
-  margin-bottom: var(--space-s);
-}
-
-.vehicle-image-wrapper {
-  position: relative;
-}
-
 @media (max-width: 768px) {
   .vehicle-card img {
-    height: 150px;
+    height: 150px; /* hauteur mobile */
   }
 }
 
 @media (min-width: 1200px) {
   .vehicle-card img {
-    height: 250px;
+    height: 250px; /* hauteur grand écran */
   }
 }
 
@@ -117,51 +145,15 @@
   color: var(--text-primary);
 }
 
+/* Désactiver le zébrage */
 .vehicle-specs tbody tr:nth-child(odd) {
   background: inherit;
 }
 
+/* Hover reste actif */
 .vehicle-specs tbody tr:hover {
   background: var(--focus-bg);
   transition: background 0.2s ease;
-}
-
-/* ============================
-   TABLEAU RESPONSIVE MOBILE CORRIGÉ
-   ============================ */
-@media (max-width: 600px) {
-  .vehicle-specs thead {
-    display: none; /* cache l'entête */
-  }
-
-  .vehicle-specs tr {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 1rem;
-    /* border: 1px solid var(--border-color);
-    border-radius: var(--radius-small); */
-    padding: 8px;
-    background: var(--surface-1);
-  }
-
-  .vehicle-specs td {
-    display: flex;
-    justify-content: space-between; /* label à gauche, valeur à droite */
-    padding: 4px 0;
-  }
-
-  .vehicle-specs th {
-    display: none; /* ne pas afficher les th */
-  }
-
-  .vehicle-specs td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: var(--text-secondary);
-    margin-right: 10px;
-    flex-shrink: 0; /* évite que le label soit compressé */
-  }
 }
 
 /* ============================
@@ -175,7 +167,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
-  margin: var(--space-s);
+  margin-top: var(--space-s);
 }
 
 /* ============================
@@ -200,11 +192,35 @@
     padding: 8px 10px;
   }
 }
-.vehicle-brand {
-  font-weight: 600;
-  color: var(--color-primary);
-}
-.vehicle-model {
-  font-size: 0.8rem;
-  font-style: italic;
+
+@media (max-width: 600px) {
+  .vehicle-specs {
+    border: 0;
+  }
+
+  .vehicle-specs thead {
+    display: none;
+  }
+
+  .vehicle-specs tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    padding: 10px;
+    background: var(--surface-1);
+  }
+
+  .vehicle-specs td {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border: none;
+  }
+
+  .vehicle-specs td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
 }

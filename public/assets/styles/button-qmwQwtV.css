@@ -14,7 +14,6 @@ button {
   font-family: var(--font-family);
   justify-content: center;
   align-items: center;
-  color: var(--btn-primary-text);
 }
 
 /* ========================================================= */
@@ -110,7 +109,6 @@ button i {
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
-  min-width: 300px;
 }
 
 .btn-google:hover {
@@ -128,7 +126,4 @@ button i {
   justify-content: center;
   align-items: center;
   width: 100%;
-}
-.btn-submit {
-  min-width: 300px;
 }

@@ -2,7 +2,12 @@
 	{% if app.user %}
 		<p class="connected">
 			Vous êtes connecté en tant que
-			{{ app.user.nickname }}
+			{% if app.user.nickname %}
+				{{ app.user.nickname }}
+			{% else %}
+				{{app.user.email}}
+			{% endif %}
+
 		</p>
 		<a href="{{ path('app_logout') }}">Se déconnecter</a>
 	{% else %}
