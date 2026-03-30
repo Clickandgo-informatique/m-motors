@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -21,12 +22,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank(message: 'L’email est obligatoire')]
+    #[Assert\Email(message: 'Le format de l’email n’est pas valide')]
     private ?string $email = null;
 
     #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Le mot de passe est obligatoire')]
+    #[Assert\Length(
+        min: 6,
+        max: 4096,
+        minMessage: 'Le mot de passe doit faire au moins {{ limit }} caractères',
+        maxMessage: 'Le mot de passe ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $password = null;
 
     #[ORM\Column]
@@ -36,13 +46,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $favorites;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(
+        max: 50,
+        maxMessage: 'Le pseudonyme ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $nickname = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Le secret TOTP ne peut pas dépasser {{ limit }} caractères'
+    )]
+    private ?string $totpSecret = null;
+
+    #[ORM\Column(type: 'boolean', options: ["default" => false])]
+    private bool $totpEnabled = false;
 
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
     }
 
+    // ----------------- BASIC USER -----------------
     public function getId(): ?int
     {
         return $this->id;
@@ -102,6 +127,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // ----------------- FAVORITES -----------------
     /**
      * @return Collection<int, Favorite>
      */
@@ -121,11 +147,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeFavorite(Favorite $favorite): static
     {
-        // Avec orphanRemoval=true, Doctrine supprime automatiquement le favorite
         $this->favorites->removeElement($favorite);
         return $this;
     }
 
+    // ----------------- NICKNAME -----------------
     public function getNickname(): ?string
     {
         return $this->nickname;
@@ -134,7 +160,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNickname(?string $nickname): static
     {
         $this->nickname = $nickname;
-
         return $this;
+    }
+
+    // ----------------- TOTP -----------------
+    public function getTotpSecret(): ?string
+    {
+        return $this->totpSecret;
+    }
+
+    public function setTotpSecret(?string $totpSecret): static
+    {
+        $this->totpSecret = $totpSecret;
+        return $this;
+    }
+
+    public function isTotpAuthenticationEnabled(): bool
+    {
+        return $this->totpEnabled && $this->totpSecret !== null;
+    }
+
+    public function enableTotp(): static
+    {
+        $this->totpEnabled = true;
+        return $this;
+    }
+
+    public function disableTotp(): static
+    {
+        $this->totpEnabled = false;
+        return $this;
+    }
+
+    public function isTotpEnabled(): bool
+    {
+        return $this->totpEnabled;
     }
 }

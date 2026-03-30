@@ -39,6 +39,11 @@ security:
 
             # switch_user: true # Activer si besoin d'un mode impersonation/admin
 
+            #Authentification double facteur
+            two_factor:
+                auth_form_path: 2fa_login
+                check_path: 2fa_login_check
+
     # Contrôles d'accès par rôle
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }

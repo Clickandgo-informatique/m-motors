@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<h2>Activation de l’authentification à deux facteurs (TOTP)</h2>
+
+	{% if totpEnabled %}
+		<p>Scannez ce QR code avec Google Authenticator ou une autre app TOTP :</p>
+		<img src="{{ qrCodeUrl }}" alt="QR Code TOTP">
+		<p>Ensuite, utilisez votre code généré pour vous connecter.</p>
+	{% else %}
+		<p>TOTP non activé.</p>
+	{% endif %}
+
+	<a href="{{ path('app_profile') }}">Retour au profil</a>
+{% endblock %}
