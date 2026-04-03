@@ -1,45 +1,49 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Formulaire d'inscription{% endblock %}
+{% block title %}M-Motors: Formulaire d'inscription
+{% endblock %}
 
 {% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
+	<h1 class="text-center">Formulaire d'inscription</h1>
 
-    <h1>Formulaire d'inscription</h1>
+	{# Affichage des erreurs globales #}
+	{% for flash_error in app.flashes('verify_email_error') %}
+		<div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+	{% endfor %}
 
-    {{ form_errors(registrationForm) }}
+	{{ form_start(registrationForm) }}
 
-    {{ form_start(registrationForm) }}
+	{# Message d’information 2FA obligatoire #}
+	<div class="alert alert-warning">
+		<strong>🔐 Attention: Sécurisation obligatoire de votre compte</strong><br>
+		<p>Après votre inscription, vous devrez configurer l'authentification à deux facteurs (2FA) pour pouvoir vous connecter.</p>
+	</div>
 
-    <fieldset>
-        <legend>Informations de connexion</legend>
+	{# Champs du formulaire #}
+	<div class="form-row">
+		{{ form_row(registrationForm.email) }}
+	</div>
+	<div class="form-row">
+		{{ form_row(registrationForm.plainPassword) }}
+	</div>
+	<div class="checkbox-row">
+		{{ form_widget(registrationForm.agreeTerms) }}
+		{{ form_label(registrationForm.agreeTerms) }}
+		{{ form_errors(registrationForm.agreeTerms) }}
+	</div>
+	<div class="checkbox-row">
+		{{ form_widget(registrationForm.accept2fa) }}
+		{{ form_label(registrationForm.accept2fa) }}
+		{{ form_errors(registrationForm.accept2fa) }}
+	</div>
 
-        <div class="form-row">
-            {{ form_row(registrationForm.email) }}
-        </div>
+	{# Bouton d’inscription #}
+	<button type="submit" class="btn">S'inscrire</button>
 
-        <div class="form-row">
-            {{ form_row(registrationForm.plainPassword, { label: 'Password' }) }}
-        </div>
-    </fieldset>
+	<p class="form-footer">
+		Déjà inscrit ?
+		<a href="{{ path('app_login') }}">Cliquez ici pour vous connecter</a>
+	</p>
 
-    <fieldset>
-        <legend>Conditions</legend>
-
-        <div class="form-row checkbox-row">
-            {{ form_widget(registrationForm.agreeTerms) }}
-            {{ form_label(registrationForm.agreeTerms) }}
-        </div>
-    </fieldset>
-
-    <button type="submit" class="btn">S'inscrire</button>
-
-    <p class="form-footer">
-        Déjà inscrit ?
-        <a href="{{ path('app_login') }}">Cliquez ici</a>
-    </p>
-
-    {{ form_end(registrationForm) }}
+	{{ form_end(registrationForm) }}
 {% endblock %}

@@ -26,12 +26,12 @@ class VehicleModel
 
     #[ORM\ManyToOne(inversedBy: "vehicleModels")]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "La marque est obligatoire")]
+    #[Assert\NotNull(message: "La marque est obligatoire.")]
     private ?Brand $brand = null;
 
     #[ORM\ManyToOne(inversedBy: "vehicleModels")]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "Le modèle est obligatoire")]
+    #[Assert\NotNull(message: "Le modèle est obligatoire.")]
     private ?Model $model = null;
 
     #[ORM\ManyToOne(inversedBy: "vehicleModels")]
@@ -46,11 +46,12 @@ class VehicleModel
     #[ORM\JoinColumn(nullable: true)]
     private ?Gear $gear = null;
 
-    #[ORM\OneToMany(mappedBy: "vehicleModel", targetEntity: Vehicle::class)]
+    #[ORM\OneToMany(mappedBy: "vehicleModel", targetEntity: Vehicle::class, orphanRemoval: true)]
     private Collection $vehicles;
 
-    #[ORM\ManyToOne(targetEntity: BodyType::class)]
+    #[ORM\ManyToOne(targetEntity: BodyType::class, inversedBy: 'vehicleModels')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "Le type de carrosserie est obligatoire.")]
     private ?BodyType $bodyType = null;
 
     /*
@@ -62,7 +63,7 @@ class VehicleModel
     #[ORM\Column(length: 20, nullable: true)]
     #[Assert\Regex(
         pattern: '/^EURO\s?[0-9]{1,2}$/i',
-        message: 'Norme EURO invalide'
+        message: 'Norme EURO invalide.'
     )]
     private ?string $euroNorm = null;
 
@@ -70,7 +71,7 @@ class VehicleModel
     #[Assert\Range(
         min: 1,
         max: 2000,
-        notInRangeMessage: "La puissance doit être entre {{ min }} et {{ max }} chevaux"
+        notInRangeMessage: "La puissance doit être comprise entre {{ min }} et {{ max }} chevaux."
     )]
     private ?int $powerHp = null;
 
@@ -78,7 +79,7 @@ class VehicleModel
     #[Assert\Range(
         min: 1,
         max: 100,
-        notInRangeMessage: "La puissance fiscale doit être entre {{ min }} et {{ max }}"
+        notInRangeMessage: "La puissance fiscale doit être comprise entre {{ min }} et {{ max }}."
     )]
     private ?float $powerFiscal = null;
 
@@ -86,7 +87,7 @@ class VehicleModel
     #[Assert\Range(
         min: 0,
         max: 50,
-        notInRangeMessage: "Consommation invalide"
+        notInRangeMessage: "La consommation doit être comprise entre {{ min }} et {{ max }}."
     )]
     private ?float $consumption = null;
 
@@ -94,7 +95,7 @@ class VehicleModel
     #[Assert\Range(
         min: 0,
         max: 2000,
-        notInRangeMessage: "CO2 invalide"
+        notInRangeMessage: "Le CO2 doit être compris entre {{ min }} et {{ max }}."
     )]
     private ?int $co2 = null;
 
@@ -108,50 +109,39 @@ class VehicleModel
     #[Assert\Length(
         min: 4,
         max: 50,
-        minMessage: "CNIT trop court",
-        maxMessage: "CNIT trop long"
+        minMessage: "CNIT trop court.",
+        maxMessage: "CNIT trop long."
     )]
     #[Assert\Regex(
         pattern: "/^[A-Z0-9]+$/",
-        message: "Le CNIT ne doit contenir que lettres majuscules et chiffres"
+        message: "Le CNIT ne doit contenir que des lettres majuscules et chiffres."
     )]
     private ?string $cnit = null;
 
-    #[ORM\Column(name: "utac_code", length: 50, nullable: true)]
+    #[ORM\Column(length: 50, nullable: true, name: "utac_code")]
     #[Assert\Length(
         min: 3,
         max: 50,
-        minMessage: "Code UTAC trop court",
-        maxMessage: "Code UTAC trop long"
+        minMessage: "Code UTAC trop court.",
+        maxMessage: "Code UTAC trop long."
     )]
     #[Assert\Regex(
         pattern: "/^[A-Z0-9\-]+$/",
-        message: "Code UTAC invalide"
+        message: "Le code UTAC ne doit contenir que des lettres majuscules, chiffres et tirets."
     )]
     private ?string $utacCode = null;
 
     #[ORM\Column(type: "date", nullable: true)]
     private ?\DateTimeInterface $homologationDate = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    #[Assert\PositiveOrZero(
-        message: 'La masse minimale doit être positive.'
-    )]
-    #[Assert\LessThanOrEqual(
-        propertyPath: 'massMax',
-        message: 'La masse minimale doit être inférieure ou égale à la masse maximale.'
-    )]
+    #[ORM\Column(type: "integer", nullable: true)]
+    #[Assert\PositiveOrZero(message: "La masse minimale doit être positive.")]
+    #[Assert\LessThanOrEqual(propertyPath: "massMax", message: "La masse minimale doit être inférieure ou égale à la masse maximale.")]
     private ?int $massMin = null;
 
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    #[Assert\PositiveOrZero(
-        message: 'La masse maximale doit être positive.'
-    )]
-    #[Assert\GreaterThanOrEqual(
-        propertyPath: 'massMin',
-        message: 'La masse maximale doit être supérieure ou égale à la masse minimale.'
-    )]
+    #[ORM\Column(type: "integer", nullable: true)]
+    #[Assert\PositiveOrZero(message: "La masse maximale doit être positive.")]
+    #[Assert\GreaterThanOrEqual(propertyPath: "massMin", message: "La masse maximale doit être supérieure ou égale à la masse minimale.")]
     private ?int $massMax = null;
 
     /*
@@ -165,6 +155,11 @@ class VehicleModel
         $this->vehicles = new ArrayCollection();
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | TO STRING
+    |--------------------------------------------------------------------------
+    */
 
     public function __toString(): string
     {
@@ -174,7 +169,6 @@ class VehicleModel
                 ($this->variant?->getName() ?? '')
         );
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -239,6 +233,23 @@ class VehicleModel
     public function setGear(?Gear $gear): static
     {
         $this->gear = $gear;
+        return $this;
+    }
+
+    public function getBodyType(): ?BodyType
+    {
+        return $this->bodyType;
+    }
+
+    public function setBodyType(?BodyType $bodyType): static
+    {
+        $this->bodyType = $bodyType;
+
+        // Assure la cohérence bidirectionnelle
+        if ($bodyType && !$bodyType->getVehicleModels()->contains($this)) {
+            $bodyType->addVehicleModel($this);
+        }
+
         return $this;
     }
 
@@ -318,15 +329,15 @@ class VehicleModel
         $this->homologationDate = $date;
         return $this;
     }
+
     public function getMassMin(): ?int
     {
         return $this->massMin;
     }
 
-    public function setMassMin(?int $massMin): self
+    public function setMassMin(?int $massMin): static
     {
         $this->massMin = $massMin;
-
         return $this;
     }
 
@@ -335,10 +346,9 @@ class VehicleModel
         return $this->massMax;
     }
 
-    public function setMassMax(?int $massMax): self
+    public function setMassMax(?int $massMax): static
     {
         $this->massMax = $massMax;
-
         return $this;
     }
 
@@ -359,21 +369,19 @@ class VehicleModel
             $this->vehicles->add($vehicle);
             $vehicle->setVehicleModel($this);
         }
-
         return $this;
     }
 
     public function removeVehicle(Vehicle $vehicle): static
     {
         if ($this->vehicles->removeElement($vehicle)) {
-
             if ($vehicle->getVehicleModel() === $this) {
                 $vehicle->setVehicleModel(null);
             }
         }
-
         return $this;
     }
+
     public function getEuroNorm(): ?string
     {
         return $this->euroNorm;
@@ -382,24 +390,6 @@ class VehicleModel
     public function setEuroNorm(?string $euroNorm): static
     {
         $this->euroNorm = $euroNorm;
-        return $this;
-    }
-
-    /**
-     * Get the value of bodyType
-     */
-    public function getBodyType(): ?BodyType
-    {
-        return $this->bodyType;
-    }
-
-    /**
-     * Set the value of bodyType
-     */
-    public function setBodyType(?BodyType $bodyType): self
-    {
-        $this->bodyType = $bodyType;
-
         return $this;
     }
 }

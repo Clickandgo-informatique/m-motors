@@ -1,10 +1,26 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}M-Motors: Connexion 2FA
+{% endblock %}
+
 {% block body %}
-	<h2>Code de sécurité</h2>
+	<h2>Authentification à deux facteurs</h2>
+
+	<p>Entrez le code généré par votre application 2FA (Google Authenticator, Microsoft Authenticator, FreeOTP…)</p>
+
 	<form action="{{ path('2fa_login_check') }}" method="post">
 		<label for="totp">Code TOTP :</label>
-		<input type="text" id="totp" name="_auth_code" required autofocus>
+		<div class="form-row">
+			<input type="text" name="_auth_code" inputmode="numeric" pattern="[0-9]*" required autofocus>
+		</div>
 		<button type="submit">Valider</button>
 	</form>
+
+	{% for flash in app.flashes('danger') %}
+		<div class="alert alert-danger">{{ flash }}</div>
+	{% endfor %}
+
+	<p style="margin-top:1em;">
+		<a href="{{ path('app_home') }}">← Retour à l'accueil</a>
+	</p>
 {% endblock %}

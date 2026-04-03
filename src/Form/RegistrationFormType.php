@@ -17,21 +17,28 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email')
-            ->add('agreeTerms', CheckboxType::class, [
-                'mapped' => false,
+            ->add('email') // Validation sur l'entité User (Unique, Email, NotBlank)
+            ->add('accept2fa', CheckboxType::class, [
+                'mapped' => false, // pas de propriété User correspondante
                 'constraints' => [
                     new IsTrue([
-                        'message' => 'You should agree to our terms.',
+                        'message' => 'Vous devez accepter l’activation du 2FA pour sécuriser votre compte.',
+                    ]),
+                ],
+                'label' => 'J’accepte d’activer le 2FA sur mon compte',
+            ])
+            ->add('agreeTerms', CheckboxType::class, [
+                'mapped' => false, // pas de propriété User correspondante
+                'constraints' => [
+                    new IsTrue([
+                        'message' => 'Vous devez accepter les conditions d’utilisation.',
                     ]),
                 ],
                 'label' => "J'accepte les conditions d'utilisation"
             ])
             ->add('plainPassword', PasswordType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
                 'label' => "Mot de passe",
-                'mapped' => false,
+                'mapped' => false, // ne mappe pas sur $user->password
                 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
                     new NotBlank([
@@ -40,12 +47,10 @@ class RegistrationFormType extends AbstractType
                     new Length([
                         'min' => 6,
                         'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} caractères.',
-                        // max length allowed by Symfony for security reasons
                         'max' => 4096,
                     ]),
                 ],
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

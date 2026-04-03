@@ -16,78 +16,121 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
+    private EmailVerifier $emailVerifier;
+
+    public function __construct(EmailVerifier $emailVerifier)
     {
+        $this->emailVerifier = $emailVerifier;
     }
 
+    /**
+     * Route d'inscription
+     * Affiche le formulaire et gère la création du compte
+     */
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
-    {
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager
+    ): Response {
         $user = new User();
+
+        // Création du formulaire d'inscription
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
+        // Vérification du formulaire soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
+
+            // Hash du mot de passe
             $plainPassword = $form->get('plainPassword')->getData();
+            $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
 
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            // Vérification de la checkbox 2FA
+            if (!$form->get('accept2fa')->getData()) {
+                // Ajoute une erreur au formulaire si l'utilisateur n'accepte pas le 2FA
+                $form->addError(new \Symfony\Component\Form\FormError(
+                    'Vous devez accepter l’activation du 2FA pour sécuriser votre compte.'
+                ));
+                return $this->render('registration/register.html.twig', [
+                    'registrationForm' => $form,
+                ]);
+            }
 
+            // Génération du secret TOTP (initialement non activé)
+            $totpSecret = bin2hex(random_bytes(10)); // 20 caractères hexadécimaux
+            $user->setTotpSecret($totpSecret);
+
+            // Persistance du nouvel utilisateur en base
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+            // Envoi de l'email de confirmation
+            $this->emailVerifier->sendEmailConfirmation(
+                'app_verify_email', // Nom de la route de vérification
+                $user,
                 (new TemplatedEmail())
-                    ->from(new Address('register-verification@m-motors.com', 'M-motors Mail Bot'))
-                    ->to((string) $user->getEmail())
-                    ->subject('Please Confirm your Email')
+                    ->from(new Address('register-verification@m-motors.com', 'M-Motors Mail Bot'))
+                    ->to($user->getEmail())
+                    ->subject('Veuillez confirmer votre email')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
-            // do anything else you need here, like send an email
+            // Flash message pour l'utilisateur
+            $this->addFlash('info', 'Votre compte a été créé. Veuillez vérifier votre email et configurer votre 2FA.');
 
-            return $security->login($user, LoginFormAuthenticator::class, 'main');
+            // Redirection vers la page de configuration 2FA
+            return $this->redirectToRoute('app_2fa_setup');
         }
 
+        // Si le formulaire n'est pas soumis ou invalide, on l'affiche
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
         ]);
     }
 
+    /**
+     * Route de vérification de l'email
+     * Cette route est appelée par le lien dans l'email de confirmation
+     */
     #[Route('/verify/email', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): Response
-    {
+    public function verifyUserEmail(
+        Request $request,
+        UserRepository $userRepository,
+        Security $security
+    ): Response {
         $id = $request->query->get('id');
 
-        if (null === $id) {
+        if (!$id) {
+            $this->addFlash('danger', 'ID utilisateur manquant.');
             return $this->redirectToRoute('app_register');
         }
 
         $user = $userRepository->find($id);
-
-        if (null === $user) {
+        if (!$user) {
+            $this->addFlash('danger', 'Utilisateur introuvable.');
             return $this->redirectToRoute('app_register');
         }
 
-        // validate email confirmation link, sets User::isVerified=true and persists
         try {
+            // Confirmation de l'email via EmailVerifier
             $this->emailVerifier->handleEmailConfirmation($request, $user);
-        } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
-
+        } catch (\SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface $exception) {
+            $this->addFlash('danger', 'Erreur lors de la vérification de votre email : ' . $exception->getReason());
             return $this->redirectToRoute('app_register');
         }
 
-        // @TODO Change the redirect on success and handle or remove the flash message in your templates
-        $this->addFlash('success', 'Your email address has been verified.');
+        // Email confirmé → login automatique
+        $security->login($user, LoginFormAuthenticator::class, 'main');
 
-        return $this->redirectToRoute('app_register');
+        // Flash message pour l'utilisateur
+        $this->addFlash('success', 'Votre email a été vérifié. Configurez maintenant votre 2FA.');
+
+        // Redirection vers la page de configuration 2FA
+        return $this->redirectToRoute('app_2fa_setup');
     }
 }

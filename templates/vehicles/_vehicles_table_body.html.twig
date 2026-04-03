@@ -15,16 +15,32 @@
 	<tbody>
 		{% for vehicle in vehicles %}
 			<tr>
-				<td data-label="Statut">{{ vehicle.status.label }}</td>
-				<td data-label="Immatriculation">{{ vehicle.registrationNumber }}</td>
-				<td data-label="Marque">{{ vehicle.vehicleModel.brand.name }}</td>
-				<td data-label="Modèle">{{ vehicle.vehicleModel.model.name }}</td>
-				<td data-label="Kilométrage">{{ vehicle.mileage|number_format(0, ',', ' ') }}
-					km</td>
-				<td data-label="Carrosserie">{{ vehicle.vehicleModel.bodyType.name }}</td>
-				<td data-label="Énergie">{{ vehicle.vehicleModel.fuelType.name }}</td>
-				<td data-label="Prix">{{ vehicle.price|number_format(0, ',', ' ') }}
-					€</td>
+				<td data-label="Statut">
+					<span class="">{{ vehicle.status.label }}</span>
+				</td>
+				<td data-label="Immatriculation">
+					<span class="">{{ vehicle.registrationNumber }}</span>
+				</td>
+				<td data-label="Marque">
+					<span class="">{{ vehicle.vehicleModel.brand.name }}</span>
+				</td>
+				<td data-label="Modèle">
+					<span class="">{{ vehicle.vehicleModel.model.name }}</span>
+				</td>
+				<td data-label="Kilométrage">
+					<span class="text-right">{{ vehicle.mileage|number_format(0, ',', '.') }}
+						km</span>
+				</td>
+				<td data-label="Carrosserie">
+					<span class="">{{ vehicle.vehicleModel.bodyType.name }}</span>
+				</td>
+				<td data-label="Énergie">
+					<span class="">{{ vehicle.vehicleModel.fuelType.name }}</span>
+				</td>
+				<td data-label="Prix">
+					<span class="text-right">{{ vehicle.price|number_format(0, ',', '.') }}
+						€</span>
+				</td>
 			</tr>
 		{% else %}
 			<tr>

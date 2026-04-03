@@ -1,0 +1,54 @@
+@startuml
+title Flow Utilisateur: Inscription + 2FA
+
+start
+
+:Page d'accueil (/);
+note right
+L'utilisateur peut cliquer sur "S'inscrire"
+end note
+
+:Formulaire d'inscription (/register);
+note right
+- Remplit email et mot de passe
+- Accepte les conditions et la 2FA
+end note
+
+if (Formulaire soumis et valide ?) then (oui)
+  :Création du compte en base;
+  :Génération du secret TOTP;
+  :Persistance du compte (isTotpEnabled = false);
+  :Email de confirmation envoyé;
+  :Flash info "Configurez votre 2FA";
+  -> /2fa/setup;
+else (non)
+  :Afficher les erreurs du formulaire;
+  -> /register
+endif
+
+:Page de configuration 2FA (/2fa/setup);
+note right
+- Affiche QR code à scanner
+- Instructions étape par étape
+- Formulaire pour entrer le code TOTP
+- Lien retour accueil disponible
+end note
+
+if (Code TOTP valide ?) then (oui)
+  :Activation du 2FA (isTotpEnabled = true);
+  :Login automatique de l'utilisateur;
+  -> /dashboard (ou /home)
+else (non)
+  :Afficher message d'erreur "Code invalide";
+  -> /2fa/setup
+endif
+
+:Page login 2FA quotidien (/2fa/login);
+note right
+- L'utilisateur doit saisir le code TOTP pour se connecter
+- Flash messages en cas de code incorrect
+- Lien retour accueil disponible
+end note
+
+stop
+@enduml

@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}M-Motors: Configuration 2FA
+{% endblock %}
+
+{% block body %}
+	<h1 class="text-center">
+		<i class="fa-regular fa-shield-alt"></i>Configurer l'authentification à deux facteurs (2FA)</h1>
+
+	{# ============================
+									       Explication pour l'utilisateur
+									       ============================ #}
+	<p class="text-center">
+		Pour sécuriser votre compte, vous devez activer l'authentification à deux facteurs (2FA) en utilisant une application compatible :
+																		        Google Authenticator, Microsoft Authenticator ou FreeOTP sur votre dispositif mobile (smartphone ou tablette).
+	</p>
+
+	{# ============================
+									       QR code TOTP à scanner
+									       ============================ #}
+	<div class="container-qrcode">
+		{% if qrCode is defined and qrCode %}
+			{# On utilise un générateur en ligne pour transformer l'URL TOTP en image QR code #}
+			<img src="https://api.qrserver.com/v1/create-qr-code/?data={{ qrCode|url_encode }}&size=200x200" alt="QR Code 2FA"/>
+		{% else %}
+			<p class="alert alert-warning">
+				QR code non disponible pour le moment. Veuillez contacter le support.
+			</p>
+		{% endif %}
+
+
+		{# ============================
+												       Instructions pour l'utilisateur
+												       ============================ #}
+		<div>
+			<p>
+				1️⃣ Scannez le QR code avec votre application.<br>
+				2️⃣ Votre application générera un code temporaire (TOTP).<br>
+				3️⃣ Entrez ce code ci-dessous pour valider la configuration.
+			</p>
+
+		</div>
+	</div>
+	{# ============================
+									       Formulaire pour saisir le code TOTP
+									       ============================ #}
+	<form action="{{ path('app_2fa_setup') }}" method="post">
+		<label for="totp">Code TOTP :</label>
+		<div class="form-row">
+			<input type="text" name="_auth_code" inputmode="numeric" pattern="[0-9]*" required autofocus>
+		</div>
+		<button type="submit">Valider</button>
+	</form>
+
+	{# ============================
+									       Affichage des messages flash d'erreur
+									       ============================ #}
+	{% for flash in app.flashes('danger') %}
+		<div class="alert alert-danger">{{ flash }}</div>
+	{% endfor %}
+
+	{# ============================
+									       Lien retour à l'accueil
+									       ============================ #}
+	<p style="margin-top:1em;">
+		<a href="{{ path('app_home') }}">← Retour à l'accueil</a>
+	</p>
+{% endblock %}

@@ -1004,7 +1004,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             use_underscore?: bool|Param, // Default: true
  *             unordered_list_markers?: list<scalar|Param|null>,
  *         },
- *         ...<mixed>
+ *         ...<string, mixed>
  *     },
  * }
  * @psalm-type SecurityConfig = array{
@@ -1544,6 +1544,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         template?: scalar|Param|null, // Default: "@SchebTwoFactor/Authentication/form.html.twig"
  *     },
  * }
+ * @psalm-type EndroidQrCodeConfig = array<string, mixed>
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1561,6 +1562,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     knp_paginator?: KnpPaginatorConfig,
  *     knpu_oauth2_client?: KnpuOauth2ClientConfig,
  *     scheb_two_factor?: SchebTwoFactorConfig,
+ *     endroid_qr_code?: EndroidQrCodeConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1581,6 +1583,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         knp_paginator?: KnpPaginatorConfig,
  *         knpu_oauth2_client?: KnpuOauth2ClientConfig,
  *         scheb_two_factor?: SchebTwoFactorConfig,
+ *         endroid_qr_code?: EndroidQrCodeConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1599,6 +1602,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         knp_paginator?: KnpPaginatorConfig,
  *         knpu_oauth2_client?: KnpuOauth2ClientConfig,
  *         scheb_two_factor?: SchebTwoFactorConfig,
+ *         endroid_qr_code?: EndroidQrCodeConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1618,6 +1622,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         knp_paginator?: KnpPaginatorConfig,
  *         knpu_oauth2_client?: KnpuOauth2ClientConfig,
  *         scheb_two_factor?: SchebTwoFactorConfig,
+ *         endroid_qr_code?: EndroidQrCodeConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
