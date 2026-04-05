@@ -1,5 +1,5 @@
 <?php
-
+// src/DataFixtures/UserFixtures.php
 namespace App\DataFixtures;
 
 use App\Entity\User;
@@ -16,61 +16,39 @@ class UserFixtures extends Fixture
         $this->passwordHasher = $passwordHasher;
     }
 
-    /**
-     * Génère un secret TOTP Base32
-     */
-    private function generateTotpSecret(int $length = 16): string
-    {
-        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; // Base32
-        $secret = '';
-        for ($i = 0; $i < $length; $i++) {
-            $secret .= $chars[random_int(0, 31)];
-        }
-        return $secret;
-    }
-
     public function load(ObjectManager $manager): void
     {
         // -----------------------------
-        // Admin
+        // ADMIN
         // -----------------------------
-        $user = new User();
-        $secret = $this->generateTotpSecret();
-        $hashedPassword = $this->passwordHasher->hashPassword($user, 'Admin2026!');
-        $user->setEmail("admin@m-motors.com")
+        $admin = new User();
+        $admin->setEmail('admin@m-motors.com')
             ->setRoles(['ROLE_ADMIN'])
-            ->setTotpSecret($secret)
-            ->enableTotp()
-            ->setPassword($hashedPassword);
-        $manager->persist($user);
+            ->setPassword($this->passwordHasher->hashPassword($admin, 'Admin2026!'));
+    
+        $manager->persist($admin);
 
         // -----------------------------
-        // Manager / Sale
+        // MANAGER / SALE
         // -----------------------------
-        $user = new User();
-        $secret = $this->generateTotpSecret();
-        $hashedPassword = $this->passwordHasher->hashPassword($user, 'Admin2026!');
-        $user->setEmail("commercial@m-motors.com")
+        $managerUser = new User();
+        $managerUser->setEmail('commercial@m-motors.com')
             ->setRoles(['ROLE_MANAGER'])
             ->setNickname('Vendeur principal')
-            ->setTotpSecret($secret)
-            ->enableTotp()
-            ->setPassword($hashedPassword);
-        $manager->persist($user);
+            ->setPassword($this->passwordHasher->hashPassword($managerUser, 'Admin2026!'));
+    
+        $manager->persist($managerUser);
 
         // -----------------------------
-        // Clients
+        // CLIENTS
         // -----------------------------
         for ($i = 1; $i <= 4; $i++) {
             $client = new User();
-            $secret = $this->generateTotpSecret();
-            $hashedPassword = $this->passwordHasher->hashPassword($client, 'Client2026!');
             $client->setEmail('client_' . $i . '@google.com')
                 ->setNickname('Client ' . $i)
                 ->setRoles(['ROLE_USER'])
-                ->setTotpSecret($secret)
-                ->enableTotp()
-                ->setPassword($hashedPassword);
+                ->setPassword($this->passwordHasher->hashPassword($client, 'Client2026!'));
+         
             $manager->persist($client);
         }
 

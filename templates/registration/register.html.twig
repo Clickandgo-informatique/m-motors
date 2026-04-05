@@ -6,44 +6,154 @@
 {% block body %}
 	<h1 class="text-center">Formulaire d'inscription</h1>
 
-	{# Affichage des erreurs globales #}
 	{% for flash_error in app.flashes('verify_email_error') %}
 		<div class="alert alert-danger" role="alert">{{ flash_error }}</div>
 	{% endfor %}
 
-	{{ form_start(registrationForm) }}
+	{{ form_start(registrationForm, {'attr': {'id': 'registrationForm'}}) }}
 
-	{# Message d’information 2FA obligatoire #}
 	<div class="alert alert-warning">
 		<strong>🔐 Attention: Sécurisation obligatoire de votre compte</strong><br>
 		<p>Après votre inscription, vous devrez configurer l'authentification à deux facteurs (2FA) pour pouvoir vous connecter.</p>
 	</div>
 
-	{# Champs du formulaire #}
-	<div class="form-row">
+	<div class="form-row mb-3">
 		{{ form_row(registrationForm.email) }}
 	</div>
-	<div class="form-row">
+
+	<div class="form-row mb-3 position-relative">
 		{{ form_row(registrationForm.plainPassword) }}
+
+		{# Barre de progression compacte #}
+		<div id="strength-bar" style="position:relative; width:100%; height:8px; background:#ddd; border-radius:4px; margin-top:4px;">
+			<div id="strength-fill" style="height:100%; width:0; border-radius:4px; transition:width 0.3s;"></div>
+		</div>
+
+		{# Indicateurs compacts à côté du champ #}
+		<div id="password-indicators" class="d-flex justify-content-between mt-1" style="font-size:0.85em;">
+			<span id="length-indicator" style="color:red">&#10006;8+</span>
+			<span id="lower-indicator" style="color:red">&#10006;a-z</span>
+			<span id="upper-indicator" style="color:red">&#10006;A-Z</span>
+			<span id="digit-indicator" style="color:red">&#10006;0-9</span>
+			<span id="special-indicator" style="color:red">&#10006;!@#</span>
+		</div>
+
+		<p id="strength-text" class="mt-1 mb-0" style="font-size:0.9em;"></p>
 	</div>
-	<div class="checkbox-row">
+
+	<div class="checkbox-row mb-2">
 		{{ form_widget(registrationForm.agreeTerms) }}
 		{{ form_label(registrationForm.agreeTerms) }}
 		{{ form_errors(registrationForm.agreeTerms) }}
 	</div>
-	<div class="checkbox-row">
+
+	<div class="checkbox-row mb-3">
 		{{ form_widget(registrationForm.accept2fa) }}
 		{{ form_label(registrationForm.accept2fa) }}
 		{{ form_errors(registrationForm.accept2fa) }}
 	</div>
 
-	{# Bouton d’inscription #}
-	<button type="submit" class="btn">S'inscrire</button>
+	<button type="submit" class="btn" id="submit-btn">S'inscrire</button>
 
-	<p class="form-footer">
+	<p class="form-footer mt-2">
 		Déjà inscrit ?
 		<a href="{{ path('app_login') }}">Cliquez ici pour vous connecter</a>
 	</p>
 
 	{{ form_end(registrationForm) }}
+
+	<script>
+		const passwordInput = document.getElementById('registrationForm_plainPassword');
+const strengthFill = document.getElementById('strength-fill');
+const strengthText = document.getElementById('strength-text');
+const submitBtn = document.getElementById('submit-btn');
+
+const indicators = {
+length: document.getElementById('length-indicator'),
+lower: document.getElementById('lower-indicator'),
+upper: document.getElementById('upper-indicator'),
+digit: document.getElementById('digit-indicator'),
+special: document.getElementById('special-indicator')
+};
+
+passwordInput.addEventListener('input', updateStrength);
+
+function updateStrength() {
+const password = passwordInput.value;
+let score = 0;
+
+// Longueur
+if (password.length >= 8) {
+score += 25;
+indicators.length.style.color = 'green';
+indicators.length.innerHTML = '&#10004;8+';
+} else {
+indicators.length.style.color = 'red';
+indicators.length.innerHTML = '&#10006;8+';
+}
+
+// Minuscule
+if (/[a-z]/.test(password)) {
+score += 15;
+indicators.lower.style.color = 'green';
+indicators.lower.innerHTML = '&#10004;a-z';
+} else {
+indicators.lower.style.color = 'red';
+indicators.lower.innerHTML = '&#10006;a-z';
+}
+
+// Majuscule
+if (/[A-Z]/.test(password)) {
+score += 20;
+indicators.upper.style.color = 'green';
+indicators.upper.innerHTML = '&#10004;A-Z';
+} else {
+indicators.upper.style.color = 'red';
+indicators.upper.innerHTML = '&#10006;A-Z';
+}
+
+// Chiffre
+if (/\d/.test(password)) {
+score += 20;
+indicators.digit.style.color = 'green';
+indicators.digit.innerHTML = '&#10004;0-9';
+} else {
+indicators.digit.style.color = 'red';
+indicators.digit.innerHTML = '&#10006;0-9';
+}
+
+// Spécial
+if (/[!@#$%^&*]/.test(password)) {
+score += 20;
+indicators.special.style.color = 'green';
+indicators.special.innerHTML = '&#10004;!@#';
+} else {
+indicators.special.style.color = 'red';
+indicators.special.innerHTML = '&#10006;!@#';
+}
+
+if (score > 100) 
+score = 100;
+
+
+// Barre de progression
+strengthFill.style.width = score + '%';
+if (score < 60) {
+strengthFill.style.backgroundColor = 'red';
+strengthText.textContent = `Complexité faible (${score}%) – minimum 60% requis`;
+submitBtn.disabled = true;
+} else if (score < 80) {
+strengthFill.style.backgroundColor = 'orange';
+strengthText.textContent = `Complexité moyenne (${score}%)`;
+submitBtn.disabled = false;
+} else {
+strengthFill.style.backgroundColor = 'green';
+strengthText.textContent = `Complexité élevée (${score}%)`;
+submitBtn.disabled = false;
+}
+}
+
+// Initial check
+updateStrength();
+	</script>
 {% endblock %}

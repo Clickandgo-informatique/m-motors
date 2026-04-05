@@ -1,12 +1,14 @@
 <?php
-// src/Security/LoginFormAuthenticator.php
+
 namespace App\Security;
 
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
@@ -20,25 +22,28 @@ use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 {
+    private RouterInterface $router;
+    private EntityManagerInterface $em;
+
+    public function __construct(RouterInterface $router, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator)
+    {
+        $this->router = $router;
+        $this->em = $em;
+        $this->urlGenerator = $urlGenerator;
+    }
+
     use TargetPathTrait;
 
     public const LOGIN_ROUTE = 'app_login';
     private UrlGeneratorInterface $urlGenerator;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator)
-    {
-        $this->urlGenerator = $urlGenerator;
-    }
 
-    /**
-     * Authentifie l'utilisateur via email + mot de passe.
-     */
+
     public function authenticate(Request $request): Passport
     {
         $email = $request->get('email', '');
         $password = $request->get('password', '');
 
-        // Stocke le dernier email pour préremplir le formulaire si échec
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
         return new Passport(
@@ -51,23 +56,36 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         );
     }
 
-    /**
-     * Après login réussi
-     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // ⚠️ IMPORTANT : laisser Symfony / Scheb gérer le 2FA
 
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-            return new RedirectResponse($targetPath);
+        /** @var User $user */
+        $user = $token->getUser();
+
+        // ✅ RESET 2FA à chaque login
+        $request->getSession()->set('2fa_passed', false);
+
+        // Si pas encore de secret 2FA → on le génère
+        if (!$user->getGoogle2FASecret()) {
+            $google2FA = new \PragmaRX\Google2FA\Google2FA();
+            $secret = $google2FA->generateSecretKey();
+            $user->setGoogle2FASecret($secret);
+            $user->setIs2FAEnabled(false);
+
+            $this->em->persist($user);
+            $this->em->flush();
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('app_home'));
+        // Si l’utilisateur n’a pas encore validé son 2FA → setup obligatoire
+        if (!$user->is2FAEnabled()) {
+            return new RedirectResponse($this->router->generate('app_2fa_setup'));
+        }
+
+        // Sinon, passage obligatoire par la vérification OTP
+        $request->getSession()->set('2fa:userId', $user->getId());
+        return new RedirectResponse($this->router->generate('2fa_verify'));
     }
 
-    /**
-     * En cas d'échec login
-     */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         $request->getSession()->set(SecurityRequestAttributes::AUTHENTICATION_ERROR, $exception);

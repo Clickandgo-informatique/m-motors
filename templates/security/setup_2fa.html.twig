@@ -1,0 +1,34 @@
+{# setup_2fa.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Configuration de la double authentification
+{% endblock %}
+
+{% block body %}
+	<h1 class="text-center">
+		<i class="fa-solid fa-shield-halved"></i>Configurer la double authentification</h1>
+
+	{% if qrCodeSvg %}
+		<p class="text-center">Scannez ce QR Code avec Google Authenticator :</p>
+		<div class="qrCode-2fa-verify text-center">
+			{{ qrCodeSvg|raw }}
+		</div>
+	{% endif %}
+
+	<p class="text-center">Entrez maintenant le code généré par votre application pour valider l’activation :</p>
+
+	<form method="post">
+		<div class="form-row six-digits-code-wrapper">
+			<input class="six-digits-code" type="text" class="totp_code text-center" name="code" maxlength="6" required placeholder="Code à 6 chiffres">
+		</div>
+		{% for label, messages in app.flashes %}
+			{% for msg in messages %}
+				<div class="flash-{{ label }}">{{ msg }}</div>
+			{% endfor %}
+		{% endfor %}
+		<button type="submit" class="btn btn-primary">
+			<i class="fa-solid fa-check"></i>
+			Valider
+		</button>
+	</form>
+{% endblock %}

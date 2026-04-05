@@ -28,6 +28,16 @@
 		</form>
 	</div>
 
+	{# Formulaire de recherche autocomplete #}
+	{% include "Components/Forms/_fetch_form.html.twig" with {
+    action: path('api_vehicle_search'),
+    name: 'q',
+    placeholder: 'Rechercher un véhicule...',
+    resultDiv: 'vehicle-results',
+    autocomplete: true,
+    pagination: true
+} %}
+
 	{# ========================================== #}
 	{# CONTENEUR PRINCIPAL POUR AJAX ET SIDEBAR #}
 	{# ========================================== #}

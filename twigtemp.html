@@ -1,0 +1,9 @@
+{% include "Components/Forms/_fetch_form.html.twig" with {
+    action: path('vehicle_model_search'),
+    queryParam: 'vehicle[vehicleModelSearch]',
+    resultDiv: 'vehicle-model-results',
+    placeholder: "Rechercher par marque ou modèle",
+    itemUrl: path('vehicle_model_edit', { id: '__ID__' }),
+    ajaxModal: true,
+    autocomplete: true
+} %}

@@ -131,9 +131,9 @@ input[type="number"]::-webkit-outer-spin-button {
   box-shadow: none;
   background: transparent;
 }
-.six-digits-code-wrapper {
+.six-digits-code {
   max-width: 200px;
-  margin: 10px auto;
+  margin: auto;
 }
 /* ========================================================= */
 /* RESPONSIVE */

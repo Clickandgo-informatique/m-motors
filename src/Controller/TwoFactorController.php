@@ -1,82 +1,65 @@
 <?php
+// TwoFactorController.php
 
 namespace App\Controller;
 
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
-use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
+use App\Service\TOTPService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
-use App\Security\LoginFormAuthenticator;
 
+#[Route('/2fa', name: '2fa_')]
 class TwoFactorController extends AbstractController
 {
-    private EntityManagerInterface $em;
-    private TotpAuthenticatorInterface $totpAuthenticator;
-    private UserAuthenticatorInterface $userAuthenticator;
-
-    public function __construct(
-        EntityManagerInterface $em,
-        TotpAuthenticatorInterface $totpAuthenticator,
-        UserAuthenticatorInterface $userAuthenticator
-    ) {
-        $this->em = $em;
-        $this->totpAuthenticator = $totpAuthenticator;
-        $this->userAuthenticator = $userAuthenticator;
-    }
-
-    #[Route('/2fa/setup', name: 'app_2fa_setup')]
-    public function setup(Request $request, LoginFormAuthenticator $authenticator): Response
+    #[Route('/verify', name: 'verify', methods: ['GET'])]
+    public function showVerify(TOTPService $totpService): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$user) {
-            $this->addFlash('danger', 'Vous devez vous connecter pour configurer le 2FA.');
-            return $this->redirectToRoute('app_login');
+        if (!$user || !$user->is2FAEnabled()) {
+            $this->addFlash('warning', '2FA non activée pour cet utilisateur.');
+            return $this->redirectToRoute('app_home');
         }
 
-        // Génération QR code si non présent
-        if (!$user->getTotpSecret()) {
-            $totpSecret = bin2hex(random_bytes(10));
-            $user->setTotpSecret($totpSecret);
-            $this->em->flush();
-        }
+        // Génération du QR code via le service TOTPService
+        $qrCodeSvg = $totpService->getQRCode($user);
 
-        $qrCode = $this->totpAuthenticator->getQRContent($user);
-
-        // Vérification du code TOTP
-        if ($request->isMethod('POST')) {
-            $code = $request->request->get('_auth_code');
-            if ($this->totpAuthenticator->checkCode($user, $code)) {
-                $user->enableTotp();
-                $this->em->flush();
-
-                $this->addFlash('success', '2FA activé avec succès !');
-
-                return $this->userAuthenticator->authenticateUser(
-                    $user,
-                    $authenticator,
-                    $request
-                );
-            } else {
-                $this->addFlash('danger', 'Code invalide, veuillez réessayer.');
-            }
-        }
-
-        return $this->render('security/2fa_setup.html.twig', [
-            'qrCode' => $qrCode,
+        return $this->render('security/2fa_verify.html.twig', [
+            'user' => $user,
+            'qrCodeSvg' => $qrCodeSvg,
+            'totpService' => $totpService
         ]);
     }
 
-    #[Route('/2fa/login', name: 'app_2fa_login')]
-    public function login(): Response
+    #[Route('/check', name: 'check', methods: ['POST'])]
+    public function verify(Request $request, SessionInterface $session, TOTPService $totpService): Response
     {
-        // Page login 2FA (après que l'utilisateur ait activé son 2FA)
-        return $this->render('security/2fa_login.html.twig');
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$user || !$user->is2FAEnabled()) {
+            $this->addFlash('error', 'Utilisateur non authentifié ou 2FA non activée.');
+            return $this->redirectToRoute('app_home');
+        }
+
+        $code = $request->request->get('totp_code', '');
+
+        if ($totpService->verifyCode($user, $code)) {
+            $session->set('2fa_passed', true);
+            $this->addFlash('success', 'Authentification 2FA réussie.');
+
+            // 🔹 Redirection selon rôle
+            if ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MANAGER')) {
+                return $this->redirectToRoute('admin_dashboard');
+            }
+            return $this->redirectToRoute('app_home');
+        }
+
+        $this->addFlash('error', 'Code 2FA invalide.');
+        return $this->redirectToRoute('2fa_verify');
     }
 }

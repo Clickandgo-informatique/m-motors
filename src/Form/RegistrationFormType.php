@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Validator\PasswordStrength;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -37,18 +38,12 @@ class RegistrationFormType extends AbstractType
                 'label' => "J'accepte les conditions d'utilisation"
             ])
             ->add('plainPassword', PasswordType::class, [
-                'label' => "Mot de passe",
-                'mapped' => false, // ne mappe pas sur $user->password
-                'attr' => ['autocomplete' => 'new-password'],
+                'mapped' => false,
+                'label'=>'Mot de passe',
+                'attr' => ['id' => 'password'], // pour JS
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez spécifier un mot de passe valide.',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} caractères.',
-                        'max' => 4096,
-                    ]),
+                    new NotBlank(['message' => 'Veuillez saisir un mot de passe']),
+                    new PasswordStrength(['minPercent' => 60]),
                 ],
             ]);
     }

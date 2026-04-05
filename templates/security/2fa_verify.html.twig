@@ -1,0 +1,40 @@
+{# 2fa_verify.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Validation de la double authentification
+{% endblock %}
+
+{% block body %}
+	<h2>Validation de la double authentification</h2>
+
+	{% if user.google2FASecret %}
+		<p>Scannez ce QR Code avec votre application d'authentification si nécessaire :</p>
+		<div class="qrCode-2fa-verify">
+			{{ qrCodeSvg|raw }}
+		</div>
+	{% endif %}
+
+	<form method="POST" action="{{ path('2fa_check') }}" id="form-2fa">
+		<label for="totp_code">Entrez le code généré par votre application pour vous connecter :</label>
+		<input
+		type="text" id="totp_code" class="totp_code text-center" name="totp_code" maxlength="6" required placeholder="Code à 6 chiffres" pattern="\d{6}">
+
+		{# Gestion des messages d'erreur #}
+		{% for label, messages in app.flashes %}
+			{% for msg in messages %}
+				<div class="flash-{{ label }}">{{ msg }}</div>
+			{% endfor %}
+		{% endfor %}
+
+		<p class="text-red">Attention ce code change au minimum toutes les 30s !</p>
+		<button type="submit" class="btn btn-primary">
+			<i class="fa-solid fa-check"></i>
+			Valider
+		</button>
+	</form>
+
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/css/form.css') }}">
+{% endblock %}

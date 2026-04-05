@@ -36,13 +36,13 @@
 				Contact
 			</a>
 		</li>
-
-		{% if not app.user %}
+		{% if app.user %}
 			<li>
-				<a href="{{ path('app_login') }}" class="{{ app.request.attributes.get('_route') == 'app_login' ? 'active' : '' }}">
-					Connexion
+				<a href="{{path('app_profile')}}" class="{{ app.request.attributes.get('_route') == 'app_profile' ? 'active' : '' }}">
+					Mon profil
 				</a>
 			</li>
+
 		{% endif %}
 	</ul>
 </div>

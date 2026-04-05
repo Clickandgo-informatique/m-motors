@@ -1,0 +1,22 @@
+{# enable_2fa.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Activation de la double authentification
+{% endblock %}
+
+{% block body %}
+	<h2 class="text-center">Activez la double authentification</h2>
+
+	<p>
+		Scannez ce QR Code avec votre application Google Authenticator (ou autre application compatible TOTP).
+	</p>
+
+	<img class="qrCode" src="{{ qrCode|raw }}" alt="QR Code Google Authenticator">
+
+	<p>
+		Ensuite, utilisez l'application pour générer vos codes de connexion.
+	</p>
+
+	<a href="{{ path('app_main') }}" class="btn btn-primary">
+		<i class="fa-solid fa-home"></i>Retour à l'accueil</a>
+{% endblock %}

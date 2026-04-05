@@ -19,12 +19,10 @@ security:
     # Firewalls
     # -------------------------------
     firewalls:
-        # Firewall dev : pas de sécurité sur profiler, assets, etc.
         dev:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
 
-        # Firewall principal
         main:
             lazy: true
             provider: app_user_provider
@@ -41,33 +39,21 @@ security:
                 lifetime: 604800
                 path: /
 
-            # 2FA Scheb
-            two_factor:
-                auth_form_path: 2fa_login # route de vérification TOTP
-                check_path: 2fa_login_check # route de check TOTP
-                prepare_on_login: true # évite les boucles de redirection
-
     # -------------------------------
     # Contrôles d'accès
     # -------------------------------
-
     access_control:
-        # 1. Routes publiques (TOUJOURS en premier)
+        # Routes publiques (toujours en premier)
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/logout, roles: PUBLIC_ACCESS }
 
-        # 2. 2FA (CRITIQUE sinon blocage total)
+        # Autoriser le setup 2FA avant activation du TOTP
+        - { path: ^/2fa/setup, roles: IS_AUTHENTICATED_FULLY }
+
+        # Toutes les autres routes 2FA (login TOTP) requièrent l'authentification en cours
         - { path: ^/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
 
-        # 3. Admin
+        # Admin
         - { path: ^/admin, roles: ROLE_ADMIN }
 
-
-# -------------------------------
-# Services pour l'autowiring QR Code TOTP
-# -------------------------------
-services:
-    # Quand un controller demande TotpQrCodeGeneratorInterface, Symfony injecte le service du bundle
-    Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\QrCode\TotpQrCodeGeneratorInterface:
-        alias: scheb_two_factor.totp.qr_code_generator
