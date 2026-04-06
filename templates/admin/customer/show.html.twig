@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+{% block title %}Client
+	{{ customer.firstName }}
+{% endblock %}
+
+{% block body %}
+	<h1>{{ customer.firstName }}
+		{{ customer.lastName }}</h1>
+	<p>Email :
+		{{ customer.email }}</p>
+	<a href="{{ path('customer_edit', {'id': customer.id}) }}">Éditer</a>
+	<a href="{{ path('customer_list') }}">Retour à la liste</a>
+{% endblock %}

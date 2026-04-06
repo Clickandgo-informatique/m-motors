@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+	{{ customer is defined ? 'Modifier client' : 'Créer client' }}
+{% endblock %}
+
+{% block body %}
+	<h1>{{ customer is defined ? 'Modifier client' : 'Créer client' }}</h1>
+
+	{{ form_start(form) }}
+	{{ form_widget(form) }}
+	<button type="submit">{{ customer is defined ? 'Mettre à jour' : 'Créer' }}</button>
+	{{ form_end(form) }}
+
+	<a href="{{ path('customer_list') }}">Retour à la liste</a>
+{% endblock %}

@@ -13,39 +13,76 @@
 				<span>Véhicules</span>
 			</summary>
 			<ul class="items-list">
-				{% if is_granted ('ROLE_ADMIN') or is_granted('ROLE_MANAGER')%}
-
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 					<li>
-						<a href="{{path('vehicles_models')}}">
-							<i class="fa-solid fa-book"></i>Catalogue fabricants</a>
+						<a href="{{ path('vehicles_models') }}">
+							<i class="fa-solid fa-book"></i>Catalogue fabricants
+						</a>
 					</li>
 					<li>
-						<a href="{{path('vehicle_model_new')}}">
-							<i class="fa-solid fa-file-circle-plus"></i>Créer un modèle de véhicule</a>
+						<a href="{{ path('vehicle_model_new') }}">
+							<i class="fa-solid fa-file-circle-plus"></i>Créer un modèle de véhicule
+						</a>
 					</li>
 				{% endif %}
 				<li>
-					<a href="{{path('vehicles')}}">
-						<i class="fa-solid fa-car-tunnel"></i>Véhicules enregistrés</a>
+					<a href="{{ path('vehicles') }}">
+						<i class="fa-solid fa-car-tunnel"></i>Véhicules enregistrés
+					</a>
 				</li>
-
 			</ul>
 		</details>
+
 		<details>
 			<summary>
 				<i class="fa-regular fa-address-book"></i>Clients
-				</summary>
-				<ul class="items-list">
-				<li><a href="#"><i class="fa-regular fa-address-book"></i>Liste clients</a></li>
-				<li><a href="#"><i class="fa-solid fa-user-plus"></i>Créer client</a></li>
-				</ul>
+			</summary>
+			<ul class="items-list">
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+					<li>
+						<a href="{{ path('customer_list') }}">
+							<i class="fa-regular fa-address-book"></i>Liste clients
+						</a>
+					</li>
+					<li>
+						<a href="{{ path('customer_new') }}">
+							<i class="fa-solid fa-user-plus"></i>Créer client
+						</a>
+					</li>
+				{% endif %}
+			</ul>
+		</details>
+
+		<details>
+			<summary>
+				<i class="fa-solid fa-file-lines"></i>Dossiers
+			</summary>
+			<ul class="items-list">
+				{% if is_granted('ROLE_ADMIN') %}
+					<li>
+						<a href="{{ path('dossier_list') }}">
+							<i class="fa-solid fa-list"></i>Liste dossiers (Admin)
+						</a>
+					</li>
+					<li>
+						<a href="{{ path('dossier_new') }}">
+							<i class="fa-solid fa-file-circle-plus"></i>Créer dossier
+						</a>
+					</li>
+				{% endif %}
+				{% if app.user %}
+					<li>
+						<a href="{{ path('dossier_my_list') }}">
+							<i class="fa-solid fa-folder-open"></i>Mes dossiers
+						</a>
+					</li>
+				{% endif %}
+			</ul>
 		</details>
 	</nav>
 
 	{# Include filtres uniquement si on est sur la page vehicles #}
 	{% if app.request.attributes.get('_route') starts with 'vehicles' %}
-		{{ render(controller(
-        'App\\Controller\\VehiclesFilterController::getFilters'
-    )) }}
+		{{ render(controller('App\\Controller\\VehiclesFilterController::getFilters')) }}
 	{% endif %}
 </aside>
