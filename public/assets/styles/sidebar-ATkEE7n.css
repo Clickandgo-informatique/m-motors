@@ -72,7 +72,6 @@ body.sidebar-collapsed .sidebar-handle i {
   transition: all 0.3s ease;
   cursor: pointer;
   overflow: hidden;
-  margin: 5px;
 }
 /* Hover et focus */
 .sidebar details:hover {
@@ -101,7 +100,7 @@ body.sidebar-collapsed .sidebar-handle i {
 .sidebar summary::after {
   content: "▸"; /* flèche droite */
   transition: transform 0.3s ease;
-  font-size: 1.2rem;
+  font-size: 0.8rem;
 }
 
 /* Rotation flèche quand ouvert */

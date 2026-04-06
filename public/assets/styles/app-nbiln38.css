@@ -1,0 +1,50 @@
+@import "reset-XQl7hhL.css";
+@import "variables-BZYGbs9.css";
+@import "typography-7qAptHg.css";
+@import "layout-Cf_uSo5.css";
+@import "form-BgE0JXw.css";
+@import "button-ggbLakL.css";
+@import "checkbox-kNdxc6D.css";
+@import "header-RNc30IM.css";
+@import "navbar-BOK9Wzu.css";
+@import "table-BenhpGm.css";
+@import "pagination-lcoycK0.css";
+@import "dropdown-na0vA-a.css";
+@import "modal-wQ-VujO.css";
+@import "badge-wG-sETA.css";
+@import "footer-0x0TEN2.css";
+@import "card-TNY9nCO.css";
+@import "flashbag-qdCQRD8.css";
+@import "sidebar-zsxBstb.css";
+@import "range-9Dkt16P.css";
+@import "filters-form-XI5blBg.css";
+@import "switch-1xSYrSt.css";
+@import "grid-KqgtRqX.css";
+
+/* ========================================================= */
+/* BASE GLOBALE */
+/* ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+
+  font-family: var(--font-family);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

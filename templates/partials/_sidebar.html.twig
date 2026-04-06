@@ -12,20 +12,33 @@
 				<i class="fa-solid fa-car-side"></i>
 				<span>Véhicules</span>
 			</summary>
-			<ul>
-				{% if is_granted (['ROLE_ADMIN','ROLE_MANAGER'])%}
+			<ul class="items-list">
+				{% if is_granted ('ROLE_ADMIN') or is_granted('ROLE_MANAGER')%}
 
 					<li>
-						<a href="{{path('vehicles_models')}}">Catalogue fabricants</a>
+						<a href="{{path('vehicles_models')}}">
+							<i class="fa-solid fa-book"></i>Catalogue fabricants</a>
 					</li>
 					<li>
-						<a href="{{path('vehicle_model_new')}}">Créer un modèle de véhicule</a>
+						<a href="{{path('vehicle_model_new')}}">
+							<i class="fa-solid fa-file-circle-plus"></i>Créer un modèle de véhicule</a>
 					</li>
 				{% endif %}
 				<li>
-					<a href="{{path('vehicles')}}">Véhicules enregistrés</a>
+					<a href="{{path('vehicles')}}">
+						<i class="fa-solid fa-car-tunnel"></i>Véhicules enregistrés</a>
 				</li>
+
 			</ul>
+		</details>
+		<details>
+			<summary>
+				<i class="fa-regular fa-address-book"></i>Clients
+				</summary>
+				<ul class="items-list">
+				<li><a href="#"><i class="fa-regular fa-address-book"></i>Liste clients</a></li>
+				<li><a href="#"><i class="fa-solid fa-user-plus"></i>Créer client</a></li>
+				</ul>
 		</details>
 	</nav>
 

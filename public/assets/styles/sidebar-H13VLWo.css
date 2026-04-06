@@ -72,7 +72,7 @@ body.sidebar-collapsed .sidebar-handle i {
   transition: all 0.3s ease;
   cursor: pointer;
   overflow: hidden;
-  margin: 5px;
+  margin: 0 5px 5px 5px;
 }
 /* Hover et focus */
 .sidebar details:hover {

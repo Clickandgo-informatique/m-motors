@@ -36,12 +36,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $nickname = null;
+
     // ----------------- RELATIONS -----------------
     #[ORM\OneToMany(mappedBy: "user", targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $nickname = null;
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Customer::class, cascade: ['persist', 'remove'])]
+    private ?Customer $customer = null;
 
     // ----------------- 2FA -----------------
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -116,8 +119,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
-
     // ----------------- NICKNAME -----------------
     public function getNickname(): ?string
     {
@@ -157,10 +158,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
         return $this;
     }
+
+    // ----------------- RELATION CUSTOMER -----------------
+    public function getCustomer(): ?Customer
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?Customer $customer): static
+    {
+        $this->customer = $customer;
+        if ($customer && $customer->getUser() !== $this) {
+            $customer->setUser($this);
+        }
+        return $this;
+    }
+
+    // ----------------- 2FA -----------------
     public function getGoogle2FASecret(): ?string
     {
         return $this->google2FASecret;
     }
+
     public function setGoogle2FASecret(?string $secret): self
     {
         $this->google2FASecret = $secret;
@@ -171,6 +190,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->is2FAEnabled;
     }
+
     public function setIs2FAEnabled(bool $enabled): self
     {
         $this->is2FAEnabled = $enabled;
@@ -181,6 +201,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->isTwoFactorVerified;
     }
+
     public function setIsTwoFactorVerified(bool $verified): self
     {
         $this->isTwoFactorVerified = $verified;
