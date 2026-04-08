@@ -3,21 +3,21 @@
 // ===============================
 // Import des modules principaux
 // ===============================
-import "./stimulus_bootstrap.js"; // bootstrap + Stimulus
-import "./js/theme.js"; // thème / dark mode
-import "./styles/app.css"; // CSS global
-import "./js/sidebar.js"; // gestion de la sidebar
-import "./js/rangeSelector.js"; // sliders pour filtres (prix, années)
+import "./stimulus_bootstrap.js";
+import "./js/theme.js";
+import "./styles/app.css";
+import "./js/sidebar.js";
+import "./js/rangeSelector.js";
 
 // ===============================
 // Import des modules applicatifs
 // ===============================
-import VehiclesFilter from "./js/vehiclesFilters.js"; // filtre sidebar + view switch
-import DynamicFormCollection from "./js/DynamicFormCollection.js"; // formulaire collection Symfony
-import FetchForm from "./js/FetchForm.js"; // formulaire AJAX générique
-import AjaxManager from "./js/AjaxManager.js"; // gestionnaire AJAX global
-import ToggleVehicleFavorite from "./js/ToggleVehicleFavorite.js"; // favori véhicule
-import Autocomplete from "./js/Autocomplete.js"; // autocomplete inputs
+import VehiclesFilter from "./js/vehiclesFilters.js";
+import DynamicFormCollection from "./js/DynamicFormCollection.js";
+import FetchForm from "./js/FetchForm.js";
+import AjaxManager from "./js/AjaxManager.js";
+import ToggleVehicleFavorite from "./js/ToggleVehicleFavorite.js";
+import Autocomplete from "./js/Autocomplete.js";
 
 // ===============================
 // DOMContentLoaded : initialisation
@@ -34,10 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Formulaires AJAX FetchForm
   // -------------------------------
   document.querySelectorAll("input[data-result-div]").forEach(input => {
-    if (!input.dataset.fetchFormInitialized) {
-      new FetchForm(input);
-      input.dataset.fetchFormInitialized = "true";
-    }
+    new FetchForm(input);
   });
 
   // -------------------------------
@@ -46,57 +43,53 @@ document.addEventListener("DOMContentLoaded", () => {
   new AjaxManager();
 
   // -------------------------------
-  // Initialisation VehiclesFilter (sidebar + view switch)
+  // Initialisation VehiclesFilter
   // -------------------------------
-  const filtersForms = new Set();
+  let filtersInitialized = false;
 
   function initFilters() {
     const form = document.getElementById("filters-form");
-    if (form && !filtersForms.has(form)) {
+    if (form && !filtersInitialized) {
       new VehiclesFilter(form);
-      filtersForms.add(form);
+      filtersInitialized = true;
       console.log("VehiclesFilter initialisé");
     }
   }
 
   initFilters();
 
-  // Observer pour ré-initialiser Filters si formulaire injecté dynamiquement
+  // Observer pour init Filters si formulaire injecté dynamiquement
   const filtersObserver = new MutationObserver(() => initFilters());
   filtersObserver.observe(document.body, { childList: true, subtree: true });
 
   // -------------------------------
   // Initialisation ToggleVehicleFavorite
   // -------------------------------
-  const favsInitialized = new WeakSet();
-
   function initFavorites() {
     document
       .querySelectorAll('[data-action="toggle-favorite"]')
       .forEach(button => {
-        if (!favsInitialized.has(button)) {
+        if (!button.dataset.favoriteInitialized) {
           new ToggleVehicleFavorite(button);
-          favsInitialized.add(button);
+          button.dataset.favoriteInitialized = "true";
         }
       });
   }
 
   initFavorites();
 
-  // Observer global pour boutons favoris injectés dynamiquement
+  // Observer global pour les boutons favoris injectés dynamiquement
   const favoritesObserver = new MutationObserver(() => initFavorites());
   favoritesObserver.observe(document.body, { childList: true, subtree: true });
 
   // -------------------------------
   // Initialisation Autocomplete
   // -------------------------------
-  const autocompleteInitialized = new WeakSet();
-
   function initAutocomplete() {
     document.querySelectorAll('[data-autocomplete="true"]').forEach(input => {
-      if (!autocompleteInitialized.has(input)) {
+      if (!input.dataset.autocompleteInitialized) {
         new Autocomplete(input);
-        autocompleteInitialized.add(input);
+        input.dataset.autocompleteInitialized = "true";
       }
     });
   }
@@ -116,12 +109,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
       // Re-init FetchForm
-      document.querySelectorAll("input[data-result-div]").forEach(input => {
-        if (!input.dataset.fetchFormInitialized) {
-          new FetchForm(input);
-          input.dataset.fetchFormInitialized = "true";
-        }
-      });
+      document
+        .querySelectorAll("input[data-result-div]")
+        .forEach(input => new FetchForm(input));
 
       // Re-init Filters
       initFilters();

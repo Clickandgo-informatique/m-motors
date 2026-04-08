@@ -27,21 +27,17 @@ class VehicleController extends AbstractController
         PaginatorInterface $paginator,
         SessionInterface $session
     ): Response {
-        // --- Mode d'affichage par défaut selon rôle ---
         $defaultView = $this->isGranted(['ROLE_ADMIN', 'ROLE_MANAGER']) ? 'table' : 'grid';
         $view = $request->query->get('view') ?? $session->get('vehicle_view', $defaultView);
         $session->set('vehicle_view', $view);
 
-        // --- QueryBuilder initial ---
         $qb = $repo->createQueryBuilder('v')
             ->leftJoin('v.vehicleModel', 'vm')
             ->leftJoin('vm.brand', 'b')
             ->leftJoin('vm.model', 'm')
-            ->leftJoin('vm.variant', 'va')
-            ->addSelect('vm', 'b', 'm', 'va')
+            ->addSelect('vm', 'b', 'm')
             ->orderBy('v.id', 'DESC');
 
-        // --- Pagination ---
         $vehicles = $paginator->paginate($qb->getQuery(), $request->query->getInt('page', 1), 20);
 
         return $this->render('vehicles/index.html.twig', [
@@ -52,77 +48,26 @@ class VehicleController extends AbstractController
     }
 
     /**
-     * Filtres AJAX (table/grid + pagination + badges)
+     * Endpoint JSON pour l'autocomplete
      */
-    #[Route('/ajax/filters', name: 'vehicles_filters', methods: ['POST'])]
-    public function filters(
-        Request $request,
-        VehicleRepository $repo,
-        PaginatorInterface $paginator,
-        SessionInterface $session
-    ): JsonResponse {
-        $data = json_decode($request->getContent(), true) ?: [];
-        $filters = $data['filters'] ?? [];
-        $page = isset($data['page']) ? (int)$data['page'] : 1;
+    #[Route('/ajax/search', name: 'vehicles_ajax_search', methods: ['GET'])]
+    public function ajaxSearch(Request $request, VehicleRepository $repo): JsonResponse
+    {
+        $q = $request->query->get('q', '');
 
-        // --- Lecture du mode view ---
-        $view = $filters['view'] ?? $session->get('vehicle_view', 'grid');
-        $session->set('vehicle_view', $view);
+        // Repo personnalisé pour chercher sur marque, modèle, immatriculation
+        $vehicles = $repo->searchByTerm($q); // retourne un tableau de Vehicle
 
-        // --- QueryBuilder de base ---
-        $qb = $repo->createQueryBuilder('v')
-            ->leftJoin('v.vehicleModel', 'vm')
-            ->leftJoin('vm.brand', 'b')
-            ->leftJoin('vm.model', 'm')
-            ->leftJoin('vm.variant', 'va')
-            ->addSelect('vm', 'b', 'm', 'va')
-            ->orderBy('v.id', 'DESC');
+        // Transformer les résultats pour le JS
+        $items = array_map(function (Vehicle $v) {
+            return [
+                'id' => $v->getId(),
+                'label' => sprintf('%s - %s %s', $v->getRegistrationNumber(), $v->getVehicleModel()->getBrand()->getName(), $v->getVehicleModel()->getModel()->getName()),
+                'url' => $this->generateUrl('vehicle_show', ['id' => $v->getId()])
+            ];
+        }, $vehicles);
 
-        // --- Application des filtres dynamiques ---
-        if (!empty($filters['brand'])) {
-            $qb->andWhere('b.id IN (:brands)')
-                ->setParameter('brands', $filters['brand']);
-        }
-
-        if (!empty($filters['bodyType'])) {
-            $qb->andWhere('vm.bodyType IN (:bodyTypes)')
-                ->setParameter('bodyTypes', $filters['bodyType']);
-        }
-
-        if (!empty($filters['fuelType'])) {
-            $qb->andWhere('vm.fuelType IN (:fuelTypes)')
-                ->setParameter('fuelTypes', $filters['fuelType']);
-        }
-
-        if (!empty($filters['yearMin'])) {
-            $qb->andWhere('v.year >= :yearMin')
-                ->setParameter('yearMin', $filters['yearMin']);
-        }
-
-        if (!empty($filters['yearMax'])) {
-            $qb->andWhere('v.year <= :yearMax')
-                ->setParameter('yearMax', $filters['yearMax']);
-        }
-
-        // --- Pagination ---
-        $vehicles = $paginator->paginate($qb->getQuery(), $page, 20);
-
-        // --- Rendu complet du container principal ---
-        // Ce fragment contient :
-        // 1) Résumé / badges
-        // 2) Pagination (haut et bas)
-        // 3) Affichage véhicules selon view
-        $resultsHtml = $this->renderView($view === 'table'
-            ? 'vehicles/_vehicles_table_body.html.twig'
-            : 'vehicles/_vehicles_gallery_items.html.twig', [
-            'vehicles' => $vehicles,
-            'view' => $view,
-            'filters' => $filters
-        ]);
-
-        return $this->json([
-            'results' => $resultsHtml
-        ]);
+        return $this->json(['items' => $items]);
     }
 
     // --- CRUD classiques ---

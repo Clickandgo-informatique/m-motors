@@ -16,29 +16,19 @@ export default class VehiclesFilter {
     if (!this.url) return;
 
     // Conteneurs principaux
-    this.container =
-      document.querySelector("#vehicles-results") ||
-      document.querySelector("#vehicles-container");
+    this.container = document.querySelector("#vehicles-container");
     this.resultsEl = this.container?.querySelector(
       '[data-target="vehicles-search-results"]'
     );
-    this.paginationTop = this.container?.querySelector(
+    this.paginationTop = document.querySelector(
       '[data-target="pagination-top"]'
     );
-    this.paginationBottom = this.container?.querySelector(
+    this.paginationBottom = document.querySelector(
       '[data-target="pagination-bottom"]'
     );
-    this.summaryContainer = this.container?.querySelector(
+    this.summaryContainer = document.querySelector(
       '[data-target="filters-summary"]'
     );
-
-    if (!this.container || !this.resultsEl) {
-      console.warn(
-        "VehiclesFilter : container de résultats introuvable",
-        this.container
-      );
-      return;
-    }
 
     // --- INIT BADGES (si présent) ---
     if (this.summaryContainer && this.form.matches("#filters-form")) {
@@ -55,7 +45,7 @@ export default class VehiclesFilter {
     // --- INIT EVENTS ---
     this.initEvents();
 
-    // --- INIT AUTOCOMPLETE ---
+    // --- INIT AUTOCOMPLETE sur le formulaire (si présent) ---
     this.initAutocomplete();
   }
 
@@ -99,7 +89,7 @@ export default class VehiclesFilter {
     });
 
     // Pagination
-    this.container.addEventListener("click", e => {
+    document.addEventListener("click", e => {
       const btn = e.target.closest("[data-page]");
       if (!btn) return;
       e.preventDefault();
@@ -119,9 +109,10 @@ export default class VehiclesFilter {
         const slider = this.form.querySelector(
           `.double-slider[data-filter="${filter}"]`
         );
-        if (slider && typeof slider.resetSlider === "function")
+        if (slider && typeof slider.resetSlider === "function") {
           slider.resetSlider();
-        else {
+        } else {
+          // Reset checkbox
           const checkboxes = this.form.querySelectorAll(
             `input[name="filters[${filter}][]"]`
           );
@@ -140,26 +131,28 @@ export default class VehiclesFilter {
    * Soumission AJAX du formulaire
    */
   async submitFilters(page = 1) {
-    try {
-      const formData = new FormData(this.form);
-      const filters = {};
+    const formData = new FormData(this.form);
+    const filters = {};
 
-      for (const [key, value] of formData.entries()) {
-        const match = key.match(/^filters\[(.+?)\](\[\])?$/);
-        if (!match) continue;
-        const name = match[1];
-        const isArray = !!match[2];
+    for (const [key, value] of formData.entries()) {
+      const match = key.match(/^filters\[(.+?)\](\[\])?$/);
+      if (!match) continue;
+      const name = match[1];
+      const isArray = !!match[2];
 
-        if (isArray) {
-          if (!filters[name]) filters[name] = [];
-          filters[name].push(value);
-        } else filters[name] = value;
+      if (isArray) {
+        if (!filters[name]) filters[name] = [];
+        filters[name].push(value);
+      } else {
+        filters[name] = value;
       }
+    }
 
-      // Ajout de la view
-      const viewInput = this.form.querySelector("input[name='view']:checked");
-      if (viewInput) filters.view = viewInput.value;
+    // Ajout de la view
+    const viewInput = this.form.querySelector("input[name='view']:checked");
+    if (viewInput) filters.view = viewInput.value;
 
+    try {
       const res = await fetch(this.url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -168,12 +161,11 @@ export default class VehiclesFilter {
 
       const data = await res.json();
 
-      // Injection des résultats dans la galerie
-      if (this.resultsEl) {
-        this.resultsEl.innerHTML =
-          data.results && data.results.trim() !== ""
-            ? data.results
-            : "<div class='text-center text-muted'>Aucun véhicule trouvé</div>";
+      // Injection des résultats
+      if (this.container && data.results) {
+        this.container.querySelector(
+          '[data-target="vehicles-search-results"]'
+        ).innerHTML = data.results;
       }
 
       // Pagination
@@ -185,7 +177,7 @@ export default class VehiclesFilter {
       // Badges
       if (this.badges) this.badges.updateBadges();
 
-      // Re-init autocomplete sur les inputs du form
+      // Si Autocomplete est actif sur le container, réinitialise
       this.initAutocomplete();
     } catch (err) {
       console.error("Erreur AJAX :", err);

@@ -6,99 +6,78 @@
 {% block body %}
 	<h1 class="text-center">Catalogue véhicules</h1>
 
-	{# ====================== #}
-	{# TOGGLE VIEW GRID/TABLE FLAT #}
-	{# ====================== #}
-		<div class="view-switch-wrapper text-center mb-3"> <form id="view-switch-form" class="unset-form" data-fetch-form data-fetch-url="{{ path('vehicles_filters') }}" method="post">
+	{# Toggle view grid/table #}
+	<div class="view-switch-wrapper text-center mb-3">
+		<form id="view-switch-form" class="unset-form fetch-form" data-fetch-form data-fetch-url="{{ path('vehicles_ajax_filters') }}" method="post">
 			{% set defaultView = app.user is not null and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')) ? 'table' : 'grid' %}
 			{% set currentView = view|default(defaultView) %}
 
 			<div id="view-toggle">
 				<input type="radio" name="view" id="view-grid" value="grid" {{ currentView == 'grid' ? 'checked' }}>
-				<input
-				type="radio" name="view" id="view-table" value="table" {{ currentView == 'table' ? 'checked' }}>
-
-				<!-- Thumb en dernier -->
+				<input type="radio" name="view" id="view-table" value="table" {{ currentView == 'table' ? 'checked' }}>
 				<div class="toggle-thumb"></div>
-
-				<!-- Icônes -->
 				<i class="fas fa-th icon-grid"></i>
 				<i class="fas fa-table icon-table"></i>
 			</div>
 		</form>
 	</div>
 
-	{# Formulaire de recherche autocomplete #}
+	{# Formulaire autocomplete (dropdown séparé) #}
 	{% include "Components/Forms/_fetch_form.html.twig" with {
-    action: path('api_vehicle_search'),
+    action: path('vehicles_ajax_search'),
     name: 'q',
     placeholder: 'Rechercher un véhicule...',
-    resultDiv: 'vehicle-results',
+    resultDiv: 'autocomplete-results',          # dropdown spécifique
+    cardsContainer: 'vehicles-search-results',  # gallery principale
     autocomplete: true,
-    pagination: true
+    pagination: true,
+    itemUrl: '/vehicles/edit/ID_PLACEHOLDER',
+    ajaxModal: true,
+    itemClass: 'vehicle-item',
+    linkClass: 'vehicle-link',
+    noResultsClass: 'dropdown-no-results',
+    resultLinks: true,
+    highlight: true
 } %}
 
-	{# ========================================== #}
-	{# CONTENEUR PRINCIPAL POUR AJAX ET SIDEBAR #}
-	{# ========================================== #}
-		<div
-		id="vehicles-results" data-fetch-form data-fetch-url="{{ path('vehicles_filters') }}"> {# SIDEBAR / BADGES #}
+	{# Wrapper global pour VehiclesFilter #}
+	<div
+		id="vehicles-container">
+
+		{# Sidebar / filtres #}
 		<div id="filters-summary" data-target="filters-summary">
 			<p class="text-center text-muted">Aucun filtre appliqué</p>
 		</div>
 
-		{# Pagination en haut #}
+		{# Pagination haut #}
 		<div class="pagination-wrapper" data-target="pagination-top">
 			{% include "vehicles/_pagination_info.html.twig" with {vehicles: vehicles} %}
 		</div>
 
-		{# Résultats des véhicules #}
-		<div id="vehicles-container">
-			{% if currentView == 'table' %}
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>Statut</th>
-							<th>Immatriculation</th>
-							<th>Marque</th>
-							<th>Modèle</th>
-							<th>Kilométrage</th>
-							<th>Carrosserie</th>
-							<th>Énergie</th>
-							<th>Prix</th>
-						</tr>
-					</thead>
-					<tbody id="vehicles-search-results" data-target="vehicles-search-results">
-						{% for vehicle in vehicles %}
-							<tr>
-								<td data-label="Statut">{{ vehicle.status.label }}</td>
-								<td data-label="Immatriculation">{{ vehicle.registrationNumber }}</td>
-								<td data-label="Marque">{{ vehicle.vehicleModel.brand.name }}</td>
-								<td data-label="Modèle">{{ vehicle.vehicleModel.model.name }}</td>
-								<td data-label="Kilométrage">{{ vehicle.mileage|number_format(0, ',', ' ') }}
-									km</td>
-								<td data-label="Carrosserie">{{ vehicle.vehicleModel.bodyType.name }}</td>
-								<td data-label="Énergie">{{ vehicle.vehicleModel.fuelType.name }}</td>
-								<td data-label="Prix">{{ vehicle.price|number_format(0, ',', ' ') }}
-									€</td>
-							</tr>
-						{% else %}
-							<tr>
-								<td colspan="8" class="text-center">Aucun véhicule trouvé</td>
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			{% else %}
-				<div class="vehicles-cards-grid" id="vehicles-search-results" data-target="vehicles-search-results">
-					{% include 'vehicles/_vehicles_gallery_items.html.twig' with {vehicles: vehicles} %}
+		{# Galerie véhicules #}
+		<div class="vehicles-cards-grid" id="vehicles-search-results" data-target="vehicles-search-results">
+			{% for vehicle in vehicles %}
+				<div class="vehicle-item" data-id="{{ vehicle.id }}" data-url="{{ path('vehicle_edit', {'id': vehicle.id}) }}">
+					<div class="vehicle-card">
+						<h5>{{ vehicle.vehicleModel.brand.name }}
+							{{ vehicle.vehicleModel.model.name }}</h5>
+						<p>{{ vehicle.registrationNumber }}</p>
+						<p>{{ vehicle.mileage|number_format(0, ',', ' ') }}
+							km</p>
+						<p>{{ vehicle.price|number_format(0, ',', ' ') }}
+							€</p>
+					</div>
 				</div>
-			{% endif %}
+			{% else %}
+				<div class="text-center text-muted">Aucun véhicule trouvé</div>
+			{% endfor %}
 		</div>
 
-		{# Pagination en bas #}
+		{# Pagination bas #}
 		<div class="pagination-wrapper" data-target="pagination-bottom">
 			{% include "vehicles/_pagination_info.html.twig" with {vehicles: vehicles} %}
 		</div>
+
 	</div>
+	{# /#vehicles-container #}
 {% endblock %}

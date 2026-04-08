@@ -34,10 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Formulaires AJAX FetchForm
   // -------------------------------
   document.querySelectorAll("input[data-result-div]").forEach(input => {
-    if (!input.dataset.fetchFormInitialized) {
-      new FetchForm(input);
-      input.dataset.fetchFormInitialized = "true";
-    }
+    new FetchForm(input);
   });
 
   // -------------------------------
@@ -48,13 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------
   // Initialisation VehiclesFilter (sidebar + view switch)
   // -------------------------------
-  const filtersForms = new Set();
+  let filtersInitialized = false;
 
   function initFilters() {
     const form = document.getElementById("filters-form");
-    if (form && !filtersForms.has(form)) {
+    if (form && !filtersInitialized) {
       new VehiclesFilter(form);
-      filtersForms.add(form);
+      filtersInitialized = true;
       console.log("VehiclesFilter initialisé");
     }
   }
@@ -68,15 +65,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------
   // Initialisation ToggleVehicleFavorite
   // -------------------------------
-  const favsInitialized = new WeakSet();
-
   function initFavorites() {
     document
       .querySelectorAll('[data-action="toggle-favorite"]')
       .forEach(button => {
-        if (!favsInitialized.has(button)) {
+        if (!button.dataset.favoriteInitialized) {
           new ToggleVehicleFavorite(button);
-          favsInitialized.add(button);
+          button.dataset.favoriteInitialized = "true";
         }
       });
   }
@@ -90,13 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------
   // Initialisation Autocomplete
   // -------------------------------
-  const autocompleteInitialized = new WeakSet();
-
   function initAutocomplete() {
     document.querySelectorAll('[data-autocomplete="true"]').forEach(input => {
-      if (!autocompleteInitialized.has(input)) {
+      if (!input.dataset.autocompleteInitialized) {
         new Autocomplete(input);
-        autocompleteInitialized.add(input);
+        input.dataset.autocompleteInitialized = "true";
       }
     });
   }
@@ -117,10 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.visibilityState === "visible") {
       // Re-init FetchForm
       document.querySelectorAll("input[data-result-div]").forEach(input => {
-        if (!input.dataset.fetchFormInitialized) {
-          new FetchForm(input);
-          input.dataset.fetchFormInitialized = "true";
-        }
+        new FetchForm(input);
       });
 
       // Re-init Filters

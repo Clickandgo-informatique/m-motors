@@ -1,34 +1,25 @@
-// assets/js/vehiclesFilters.js
-
 import FilterBadges from "./FilterBadges.js";
 import initDoubleSlider from "./rangeSelector.js";
 import Autocomplete from "./Autocomplete.js";
 
-/**
- * Classe principale pour la gestion des filtres véhicules
- */
 export default class VehiclesFilter {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) return;
 
     this.form = form;
-    this.url = form.dataset.fetchUrl; // URL AJAX côté controller
+    this.url = form.dataset.fetchUrl;
     if (!this.url) return;
 
-    // Conteneurs principaux
-    this.container =
-      document.querySelector("#vehicles-results") ||
-      document.querySelector("#vehicles-container");
-    this.resultsEl = this.container?.querySelector(
-      '[data-target="vehicles-search-results"]'
-    );
-    this.paginationTop = this.container?.querySelector(
+    // Container principal des véhicules (sidebar + view)
+    this.container = document.querySelector("#vehicles-container");
+    this.resultsEl = this.container?.querySelector("#vehicles-search-results"); // seulement le grid/table, PAS l'autocomplete
+    this.paginationTop = document.querySelector(
       '[data-target="pagination-top"]'
     );
-    this.paginationBottom = this.container?.querySelector(
+    this.paginationBottom = document.querySelector(
       '[data-target="pagination-bottom"]'
     );
-    this.summaryContainer = this.container?.querySelector(
+    this.summaryContainer = document.querySelector(
       '[data-target="filters-summary"]'
     );
 
@@ -40,7 +31,7 @@ export default class VehiclesFilter {
       return;
     }
 
-    // --- INIT BADGES (si présent) ---
+    // Badges (si sidebar filters)
     if (this.summaryContainer && this.form.matches("#filters-form")) {
       this.badges = new FilterBadges(
         this.summaryContainer,
@@ -49,19 +40,13 @@ export default class VehiclesFilter {
       );
     }
 
-    // --- INIT SLIDERS ---
     if (this.form.matches("#filters-form")) this.initSliders();
-
-    // --- INIT EVENTS ---
     this.initEvents();
 
-    // --- INIT AUTOCOMPLETE ---
+    // Autocomplete indépendant : ne touche pas à resultsEl
     this.initAutocomplete();
   }
 
-  /**
-   * Initialisation des sliders double
-   */
   initSliders() {
     const sliders = this.form.querySelectorAll(".double-slider");
     if (!sliders.length || typeof initDoubleSlider !== "function") return;
@@ -88,9 +73,6 @@ export default class VehiclesFilter {
     });
   }
 
-  /**
-   * Initialisation des événements
-   */
   initEvents() {
     // Changement sur filtres ou toggle view
     this.form.addEventListener("change", e => {
@@ -99,7 +81,7 @@ export default class VehiclesFilter {
     });
 
     // Pagination
-    this.container.addEventListener("click", e => {
+    document.addEventListener("click", e => {
       const btn = e.target.closest("[data-page]");
       if (!btn) return;
       e.preventDefault();
@@ -111,7 +93,6 @@ export default class VehiclesFilter {
     if (this.badges) {
       this.summaryContainer.addEventListener("click", e => {
         if (!e.target.matches(".badge-remove")) return;
-
         const filter = e.target.dataset.filter;
         const value = e.target.dataset.value;
 
@@ -136,27 +117,21 @@ export default class VehiclesFilter {
     }
   }
 
-  /**
-   * Soumission AJAX du formulaire
-   */
   async submitFilters(page = 1) {
     try {
       const formData = new FormData(this.form);
       const filters = {};
-
       for (const [key, value] of formData.entries()) {
         const match = key.match(/^filters\[(.+?)\](\[\])?$/);
         if (!match) continue;
         const name = match[1];
         const isArray = !!match[2];
-
         if (isArray) {
-          if (!filters[name]) filters[name] = [];
+          filters[name] = filters[name] || [];
           filters[name].push(value);
         } else filters[name] = value;
       }
 
-      // Ajout de la view
       const viewInput = this.form.querySelector("input[name='view']:checked");
       if (viewInput) filters.view = viewInput.value;
 
@@ -168,34 +143,21 @@ export default class VehiclesFilter {
 
       const data = await res.json();
 
-      // Injection des résultats dans la galerie
-      if (this.resultsEl) {
-        this.resultsEl.innerHTML =
-          data.results && data.results.trim() !== ""
-            ? data.results
-            : "<div class='text-center text-muted'>Aucun véhicule trouvé</div>";
-      }
-
-      // Pagination
+      // Injection **uniquement** dans le container principal
+      if (this.resultsEl && data.results)
+        this.resultsEl.innerHTML = data.results;
       if (this.paginationTop && data.paginationTop)
         this.paginationTop.innerHTML = data.paginationTop;
       if (this.paginationBottom && data.paginationBottom)
         this.paginationBottom.innerHTML = data.paginationBottom;
-
-      // Badges
       if (this.badges) this.badges.updateBadges();
-
-      // Re-init autocomplete sur les inputs du form
-      this.initAutocomplete();
     } catch (err) {
       console.error("Erreur AJAX :", err);
     }
   }
 
-  /**
-   * Initialisation autocomplete sur tous les inputs du formulaire
-   */
   initAutocomplete() {
+    // Tous les inputs avec autocomplete, indépendamment du container principal
     this.form.querySelectorAll("[data-autocomplete]").forEach(input => {
       if (!input.dataset.autocompleteInitialized) {
         new Autocomplete(input);
@@ -204,20 +166,3 @@ export default class VehiclesFilter {
     });
   }
 }
-
-/**
- * Observer global pour init automatique sur tous les formulaires fetch
- */
-function watchFetchForms() {
-  const observer = new MutationObserver(() => {
-    document.querySelectorAll("[data-fetch-form]").forEach(form => {
-      if (form.dataset.initialized) return;
-      form.dataset.initialized = "true";
-      new VehiclesFilter(form);
-    });
-  });
-
-  observer.observe(document.body, { childList: true, subtree: true });
-}
-
-document.addEventListener("DOMContentLoaded", watchFetchForms);
