@@ -31,7 +31,11 @@ class FavoriteController extends AbstractController
             // Utilisateur connecté → DB
             $added = $this->favoriteRepository->toggleFavorite($user, $vehicle);
         } else {
+<<<<<<< HEAD
             // Session
+=======
+            // Utilisateur non connecté → session
+>>>>>>> feature/vehicles_favorites
             $favorites = $session->get('favorites', []);
             $vehicleId = $vehicle->getId();
 
@@ -58,6 +62,11 @@ class FavoriteController extends AbstractController
     {
         $user = $this->getUser();
         $session = $request->getSession();
+<<<<<<< HEAD
+=======
+
+        $isFavorite = false;
+>>>>>>> feature/vehicles_favorites
 
         if ($user) {
             $isFavorite = $this->favoriteRepository->isFavorite($user, $vehicle);

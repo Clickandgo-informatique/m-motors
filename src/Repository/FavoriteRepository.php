@@ -7,6 +7,10 @@ use App\Entity\User;
 use App\Entity\Vehicle;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+<<<<<<< HEAD
+=======
+
+>>>>>>> feature/vehicles_favorites
 
 class FavoriteRepository extends ServiceEntityRepository
 {

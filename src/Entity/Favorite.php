@@ -6,7 +6,12 @@ use App\Repository\FavoriteRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FavoriteRepository::class)]
-#[ORM\Table(name: 'favorite')]
+#[ORM\Table(
+    name: 'favorite',
+    uniqueConstraints: [
+        new ORM\UniqueConstraint(name: 'uniq_user_vehicle', columns: ['user_id', 'vehicle_id'])
+    ]
+)]
 class Favorite
 {
     #[ORM\Id]
@@ -22,8 +27,8 @@ class Favorite
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Vehicle $vehicle = null;
 
-    #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $createdAt;
+    #[ORM\Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
 
     public function __construct()
     {
@@ -57,14 +62,8 @@ class Favorite
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
     }
 }
