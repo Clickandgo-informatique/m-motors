@@ -1,59 +1,40 @@
 # config/packages/security.yaml
 security:
-    # -------------------------------
-    # Hashage des mots de passe
-    # -------------------------------
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: "auto"
 
-    # -------------------------------
-    # Providers utilisateurs
-    # -------------------------------
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
 
-    # -------------------------------
-    # Firewalls
-    # -------------------------------
     firewalls:
         dev:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
 
+        public:
+            pattern: ^/vehicles
+            security: false
+
         main:
             lazy: true
             provider: app_user_provider
-
-            # Authenticator personnalisé (login form)
             custom_authenticators:
                 - App\Security\LoginFormAuthenticator
-
             logout:
                 path: app_logout
-
             remember_me:
                 secret: "%kernel.secret%"
                 lifetime: 604800
                 path: /
 
-    # -------------------------------
-    # Contrôles d'accès
-    # -------------------------------
     access_control:
-        # Routes publiques (toujours en premier)
+        # Routes publiques
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
-        - { path: ^/logout, roles: PUBLIC_ACCESS }
+        - { path: ^/vehicles, roles: PUBLIC_ACCESS }
 
-        # Autoriser le setup 2FA avant activation du TOTP
-        - { path: ^/2fa/setup, roles: IS_AUTHENTICATED_FULLY }
-
-        # Toutes les autres routes 2FA (login TOTP) requièrent l'authentification en cours
-        - { path: ^/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
-
-        # Admin
-        - { path: ^/admin, roles: ROLE_ADMIN }
-
+        # Admin / Manager
+        - { path: ^/admin, roles: [ROLE_ADMIN, ROLE_MANAGER] }

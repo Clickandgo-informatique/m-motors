@@ -1,0 +1,59 @@
+{# templates/admin/dossier/list.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}M-Motors : Liste des dossiers
+{% endblock %}
+
+{% block body %}
+	<h1>Liste des dossiers</h1>
+
+	{# Messages flash #}
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">{{ message }}</div>
+	{% endfor %}
+	{% for message in app.flashes('error') %}
+		<div class="alert alert-danger">{{ message }}</div>
+	{% endfor %}
+
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Client</th>
+				<th>Véhicule</th>
+				<th>Type</th>
+				<th>Statut</th>
+				<th>Créé le</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for dossier in dossiers %}
+				<tr>
+					<td>{{ dossier.id }}</td>
+					<td>{{ dossier.customer.lastname }}
+						{{ dossier.customer.firstname }}</td>
+					<td>{{ dossier.vehicle.model.name ?? 'N/A' }}</td>
+					<td>{{ dossier.type }}</td>
+					<td>{{ dossier.status|capitalize }}</td>
+					<td>{{ dossier.createdAt|date('d/m/Y H:i') }}</td>
+					<td>
+						<a href="{{ path('dossier_show', {'id': dossier.id}) }}" class="btn btn-sm btn-primary">Voir</a>
+						{% if dossier.isDraft %}
+							<form method="post" action="{{ path('admin_dossier_approve', {'id': dossier.id}) }}" style="display:inline-block;">
+								<button class="btn btn-sm btn-success">Approuver</button>
+							</form>
+							<form method="post" action="{{ path('admin_dossier_reject', {'id': dossier.id}) }}" style="display:inline-block;">
+								<button class="btn btn-sm btn-danger">Refuser</button>
+							</form>
+						{% endif %}
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="7">Aucun dossier trouvé.</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

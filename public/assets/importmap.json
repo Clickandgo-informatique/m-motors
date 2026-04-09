@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-J1vJDwo.js",
+        "path": "\/assets\/app-9aYFbv7.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-LAlV0iU.css",
+        "path": "\/assets\/styles\/app-9WN7-Ij.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -40,11 +40,15 @@
         "type": "js"
     },
     "\/assets\/js\/vehiclesFilters.js": {
-        "path": "\/assets\/js\/vehiclesFilters-kfc_gaG.js",
+        "path": "\/assets\/js\/vehiclesFilters-DTF3WMt.js",
         "type": "js"
     },
     "\/assets\/js\/FilterBadges.js": {
         "path": "\/assets\/js\/FilterBadges-K6ljlUh.js",
+        "type": "js"
+    },
+    "\/assets\/js\/Autocomplete.js": {
+        "path": "\/assets\/js\/Autocomplete-BW5DfQZ.js",
         "type": "js"
     },
     "\/assets\/js\/DynamicFormCollection.js": {
@@ -52,7 +56,7 @@
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-8naYQCV.js",
+        "path": "\/assets\/js\/FetchForm-8X12qKK.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
@@ -64,7 +68,7 @@
         "type": "js"
     },
     "vehiclesFilters": {
-        "path": "\/assets\/js\/vehiclesFilters-kfc_gaG.js",
+        "path": "\/assets\/js\/vehiclesFilters-DTF3WMt.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {
@@ -80,7 +84,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-8naYQCV.js",
+        "path": "\/assets\/js\/FetchForm-8X12qKK.js",
         "type": "js"
     }
 }
