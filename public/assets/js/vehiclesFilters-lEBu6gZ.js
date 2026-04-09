@@ -11,7 +11,7 @@ export default class VehiclesFilter {
     if (!(form instanceof HTMLFormElement)) return;
 
     this.form = form;
-    this.url = form.dataset.fetchUrl;
+    this.url = form.dataset.fetchUrl; // URL AJAX côté controller
 
     if (!this.url) return;
 
@@ -40,7 +40,7 @@ export default class VehiclesFilter {
       return;
     }
 
-    // INIT BADGES
+    // --- INIT BADGES ---
     if (this.summaryContainer && this.form.matches("#filters-form")) {
       this.badges = new FilterBadges(
         this.summaryContainer,
@@ -49,16 +49,16 @@ export default class VehiclesFilter {
       );
     }
 
-    // INIT SLIDERS
+    // --- INIT SLIDERS ---
     if (this.form.matches("#filters-form")) this.initSliders();
 
-    // INIT EVENTS
+    // --- INIT EVENTS ---
     this.initEvents();
 
-    // INIT AUTOCOMPLETE
+    // --- INIT AUTOCOMPLETE ---
     this.initAutocomplete();
 
-    // INIT CARDS CLICK
+    // --- INIT CARDS CLICK (delegation) ---
     this.initCardsClick();
   }
 
@@ -192,7 +192,7 @@ export default class VehiclesFilter {
   }
 
   initCardsClick() {
-    // Delegation sur resultsEl ou document
+    // Event delegation sur toutes les cards même après AJAX
     const container = this.resultsEl || document;
 
     container.addEventListener("click", e => {
@@ -204,10 +204,7 @@ export default class VehiclesFilter {
 
       console.log("Ouverture modal AJAX pour :", url);
 
-      if (
-        window.AjaxManagerInstance &&
-        typeof window.AjaxManagerInstance.loadModal === "function"
-      ) {
+      if (window.AjaxManagerInstance) {
         window.AjaxManagerInstance.loadModal(url);
       } else {
         console.warn("AjaxManagerInstance non trouvé, fallback redirection");

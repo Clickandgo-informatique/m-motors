@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Vehicle;
-use App\Form\VehicleType;
+use App\Form\VehicleFormType;
 use App\Repository\VehicleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -75,7 +75,7 @@ class VehicleController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $vehicle = new Vehicle();
-        $form = $this->createForm(VehicleType::class, $vehicle);
+        $form = $this->createForm(VehicleFormType::class, $vehicle);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -91,7 +91,7 @@ class VehicleController extends AbstractController
     #[Route('/{id<\d+>}/edit', name: 'vehicle_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Vehicle $vehicle, EntityManagerInterface $em): Response
     {
-        $form = $this->createForm(VehicleType::class, $vehicle);
+        $form = $this->createForm(VehicleFormType::class, $vehicle);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

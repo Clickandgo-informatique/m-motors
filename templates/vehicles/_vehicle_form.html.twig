@@ -1,5 +1,3 @@
-{% extends 'base.html.twig' %}
-
 {% block title %}
 	{{ title }}
 {% endblock %}
@@ -17,7 +15,8 @@
         'data-link-class': 'dropdown-link',
         'data-no-results-class': 'dropdown-no-results',
         'data-item-url': '/vehicles/models/__ID__/edit',
-        'data-ajax-form':true        
+        'data-ajax-form':true, 
+		     
     }
 }) }}
 
@@ -65,7 +64,14 @@
 			{{ form_errors(form.vehicleModelSearch) }}
 
 		</div>
-
+		{# Bouton d'ouverture fiche d'un modèle de véhicule #}
+		<a href="#">
+			<i class="fa-regular fa-folder-open"></i>
+		</a>
+		{# Bouton d'ajout d'un modèle de véhicule #}
+		<a href="{{path('vehicle_model_new')}}">
+			<i class="fa-solid fa-circle-plus"></i>
+		</a>
 	</div>
 
 	<div class="form-row">
@@ -86,11 +92,6 @@
 
 	<div class="form-row">
 
-		<div class="form-group">
-			{{ form_label(form.year) }}
-			{{ form_widget(form.year) }}
-			{{ form_errors(form.year) }}
-		</div>
 
 		<div class="form-group">
 			{{ form_label(form.mileage) }}
@@ -142,14 +143,20 @@
 
 	</div>
 
+	{# Liste des options du véhicule #}
 	<div class="form-row">
-
-		<div class="form-group">
-			{{ form_label(form.features) }}
-			{{ form_widget(form.features) }}
-			{{ form_errors(form.features) }}
+		<div class="vehicle-features-list">
+			{% for feature in vehicle.features|sort((a, b) => a.label <=> b.label) %}
+				{{ feature.label }}
+				{% if not loop.last %},
+				{% endif %}
+			{% else %}
+				<p class="alert alert-warning">Aucune option enregistrée</p>
+			{% endfor %}
 		</div>
-
+		<a href="#">
+			<i class="fa-solid fa-circle-plus"></i>
+		</a>
 	</div>
 
 	<button type="submit">

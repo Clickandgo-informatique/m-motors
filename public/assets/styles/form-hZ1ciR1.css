@@ -168,9 +168,6 @@ input[type="number"]::-webkit-outer-spin-button {
   font-size: 0.8rem;
   font-style: italic;
   color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  padding: 10px;
-  border-radius: var(--radius);
 }
 
 /* 🔥 Tablettes : labels un peu plus petits */

@@ -1,4 +1,5 @@
 export default class ToggleVehicleFavorite {
+<<<<<<< HEAD
   constructor(elementOrSelector = '[data-action="toggle-favorite"]') {
     // Support : un seul bouton ou plusieurs
     if (elementOrSelector instanceof HTMLElement) {
@@ -6,6 +7,10 @@ export default class ToggleVehicleFavorite {
     } else {
       this.buttons = document.querySelectorAll(elementOrSelector);
     }
+=======
+  constructor(selector = '[data-action="toggle-favorite"]') {
+    this.buttons = document.querySelectorAll(selector);
+>>>>>>> feature/vehicles_favorites
 
     if (!this.buttons.length) return;
 
@@ -21,7 +26,11 @@ export default class ToggleVehicleFavorite {
   async handleClick(event, button) {
     event.preventDefault();
 
+<<<<<<< HEAD
     // Anti double clic
+=======
+    // 🔒 Anti double clic
+>>>>>>> feature/vehicles_favorites
     if (button.dataset.loading === "true") return;
     button.dataset.loading = "true";
 
@@ -34,7 +43,11 @@ export default class ToggleVehicleFavorite {
 
     const isActive = button.classList.contains("is-favorite");
 
+<<<<<<< HEAD
     // UI optimiste (instant)
+=======
+    // ⚡ Optimistic UI (instantané)
+>>>>>>> feature/vehicles_favorites
     this.toggleUI(button, !isActive);
 
     try {
@@ -51,12 +64,20 @@ export default class ToggleVehicleFavorite {
 
       const data = await response.json();
 
+<<<<<<< HEAD
       // Synchronisation avec backend
+=======
+      // 🔁 Sync avec backend (sécurité)
+>>>>>>> feature/vehicles_favorites
       this.toggleUI(button, data.added);
     } catch (error) {
       console.error("Favorite toggle error:", error);
 
+<<<<<<< HEAD
       // Rollback UI
+=======
+      // 🔙 Rollback UI
+>>>>>>> feature/vehicles_favorites
       this.toggleUI(button, isActive);
     }
 
@@ -64,6 +85,7 @@ export default class ToggleVehicleFavorite {
   }
 
   toggleUI(button, isFavorite) {
+<<<<<<< HEAD
     // Classe principale
     button.classList.toggle("is-favorite", isFavorite);
 
@@ -77,6 +99,14 @@ export default class ToggleVehicleFavorite {
       icon.classList.remove("animate");
       void icon.offsetWidth; // force reflow
       icon.classList.add("animate");
+=======
+    button.classList.toggle("is-favorite", isFavorite);
+
+    // Si icône (SVG / font)
+    const icon = button.querySelector("[data-icon]");
+    if (icon) {
+      icon.classList.toggle("active", isFavorite);
+>>>>>>> feature/vehicles_favorites
     }
 
     // Accessibilité

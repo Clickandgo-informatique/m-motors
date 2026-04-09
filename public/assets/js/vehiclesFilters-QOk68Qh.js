@@ -1,4 +1,5 @@
 // assets/js/vehiclesFilters.js
+
 import FilterBadges from "./FilterBadges.js";
 import initDoubleSlider from "./rangeSelector.js";
 import Autocomplete from "./Autocomplete.js";
@@ -11,8 +12,8 @@ export default class VehiclesFilter {
     if (!(form instanceof HTMLFormElement)) return;
 
     this.form = form;
-    this.url = form.dataset.fetchUrl;
-
+    this.url = form.dataset.fetchUrl; // URL AJAX côté controller
+   
     if (!this.url) return;
 
     // Conteneurs principaux
@@ -40,7 +41,7 @@ export default class VehiclesFilter {
       return;
     }
 
-    // INIT BADGES
+    // --- INIT BADGES (si présent) ---
     if (this.summaryContainer && this.form.matches("#filters-form")) {
       this.badges = new FilterBadges(
         this.summaryContainer,
@@ -49,19 +50,19 @@ export default class VehiclesFilter {
       );
     }
 
-    // INIT SLIDERS
+    // --- INIT SLIDERS ---
     if (this.form.matches("#filters-form")) this.initSliders();
 
-    // INIT EVENTS
+    // --- INIT EVENTS ---
     this.initEvents();
 
-    // INIT AUTOCOMPLETE
+    // --- INIT AUTOCOMPLETE ---
     this.initAutocomplete();
-
-    // INIT CARDS CLICK
-    this.initCardsClick();
   }
 
+  /**
+   * Initialisation des sliders double
+   */
   initSliders() {
     const sliders = this.form.querySelectorAll(".double-slider");
     if (!sliders.length || typeof initDoubleSlider !== "function") return;
@@ -88,8 +89,11 @@ export default class VehiclesFilter {
     });
   }
 
+  /**
+   * Initialisation des événements
+   */
   initEvents() {
-    // Changement sur filtres
+    // Changement sur filtres ou toggle view
     this.form.addEventListener("change", e => {
       if (!e.target.matches("input, select")) return;
       this.submitFilters();
@@ -133,6 +137,9 @@ export default class VehiclesFilter {
     }
   }
 
+  /**
+   * Soumission AJAX du formulaire
+   */
   async submitFilters(page = 1) {
     try {
       const formData = new FormData(this.form);
@@ -150,6 +157,7 @@ export default class VehiclesFilter {
         } else filters[name] = value;
       }
 
+      // Ajout de la view
       const viewInput = this.form.querySelector("input[name='view']:checked");
       if (viewInput) filters.view = viewInput.value;
 
@@ -161,6 +169,7 @@ export default class VehiclesFilter {
 
       const data = await res.json();
 
+      // Injection des résultats dans la galerie
       if (this.resultsEl) {
         this.resultsEl.innerHTML =
           data.results && data.results.trim() !== ""
@@ -168,50 +177,30 @@ export default class VehiclesFilter {
             : "<div class='text-center text-muted'>Aucun véhicule trouvé</div>";
       }
 
+      // Pagination
       if (this.paginationTop && data.paginationTop)
         this.paginationTop.innerHTML = data.paginationTop;
       if (this.paginationBottom && data.paginationBottom)
         this.paginationBottom.innerHTML = data.paginationBottom;
 
+      // Badges
       if (this.badges) this.badges.updateBadges();
 
-      // Re-init autocomplete
+      // Re-init autocomplete sur les inputs du form
       this.initAutocomplete();
     } catch (err) {
       console.error("Erreur AJAX :", err);
     }
   }
 
+  /**
+   * Initialisation autocomplete sur tous les inputs du formulaire
+   */
   initAutocomplete() {
     this.form.querySelectorAll("[data-autocomplete]").forEach(input => {
       if (!input.dataset.autocompleteInitialized) {
         new Autocomplete(input);
         input.dataset.autocompleteInitialized = "true";
-      }
-    });
-  }
-
-  initCardsClick() {
-    // Delegation sur resultsEl ou document
-    const container = this.resultsEl || document;
-
-    container.addEventListener("click", e => {
-      const card = e.target.closest(".vehicle-card[data-item-link]");
-      if (!card) return;
-
-      const url = card.dataset.itemLink;
-      if (!url) return;
-
-      console.log("Ouverture modal AJAX pour :", url);
-
-      if (
-        window.AjaxManagerInstance &&
-        typeof window.AjaxManagerInstance.loadModal === "function"
-      ) {
-        window.AjaxManagerInstance.loadModal(url);
-      } else {
-        console.warn("AjaxManagerInstance non trouvé, fallback redirection");
-        window.location.href = url;
       }
     });
   }
@@ -232,6 +221,6 @@ function watchFetchForms() {
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  watchFetchForms();
-});
+document.addEventListener("DOMContentLoaded", watchFetchForms);
+
+
