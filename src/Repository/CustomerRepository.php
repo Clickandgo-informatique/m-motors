@@ -33,4 +33,17 @@ class CustomerRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['email' => strtolower($email)]);
     }
+    /**
+     * Récupère le dernier customer pour un préfixe donné
+     */
+    public function findLastByPrefix(string $prefix): ?Customer
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.customerCode LIKE :prefix')
+            ->setParameter('prefix', $prefix . '%')
+            ->orderBy('c.customerCode', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

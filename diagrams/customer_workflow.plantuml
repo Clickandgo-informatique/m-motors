@@ -1,0 +1,71 @@
+@startuml
+
+title Workflow M-Motors - Customer & Dossier
+
+actor Admin
+
+participant "CustomerController" as CC
+participant "CustomerCodeGenerator" as CG
+participant "EntityManager" as EM
+participant "UserPasswordHasher" as UPH
+participant "Customer" as C
+participant "User" as U
+participant "Dossier" as D
+database "Database" as DB
+
+== Création Customer ==
+
+Admin -> CC : Submit form Customer
+
+CC -> C : new Customer()
+
+CC -> CG : generateCustomerCode(lastName)
+CG --> CC : customerCode (ex: DUP001)
+
+CC -> C : setCustomerCode(code)
+
+== Création User automatique ==
+
+CC -> U : new User()
+
+CC -> U : setEmail(customer.email)
+CC -> U : setRoles(ROLE_CUSTOMER)
+
+CC -> UPH : hashPassword(tempPassword)
+UPH --> CC : hashedPassword
+
+CC -> U : setPassword(hashedPassword)
+
+CC -> C : setUser(U)
+
+== Persistance Customer + User ==
+
+CC -> EM : persist(User)
+CC -> EM : persist(Customer)
+CC -> EM : flush()
+
+EM -> DB : INSERT user
+EM -> DB : INSERT customer
+
+== Retour UI ==
+
+CC -> Admin : Flash message (customerCode)
+
+== Création Dossier (plus tard) ==
+
+Admin -> CC : Create Dossier for Customer
+
+CC -> D : new Dossier()
+
+CC -> CG : generateDossierCode(Customer)
+CG --> CC : dossierCode (DUP001-0001)
+
+CC -> D : setDossierCode(code)
+CC -> D : setCustomer(Customer)
+
+CC -> EM : persist(Dossier)
+CC -> EM : flush()
+
+EM -> DB : INSERT dossier
+
+@enduml

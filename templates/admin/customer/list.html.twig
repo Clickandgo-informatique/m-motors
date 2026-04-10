@@ -30,7 +30,7 @@
 						|
 						<a href="{{ path('customer_edit', {'id': customer.id}) }}">Éditer</a>
 						|
-						<form method="post" action="{{ path('customer_delete', {'id': customer.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce client ?');">
+						<form method="post" class="form-delete" action="{{ path('customer_delete', {'id': customer.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce client ?');">
 							<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ customer.id) }}">
 							<button type="submit">Supprimer</button>
 						</form>

@@ -3,12 +3,15 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Customer;
+use App\Entity\User;
 use App\Form\CustomerFormType;
 use App\Repository\CustomerRepository;
+use App\Service\CustomerCodeGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin/customer')]
@@ -37,21 +40,69 @@ class CustomerController extends AbstractController
      * Création d'un nouveau client
      */
     #[Route('/new', name: 'customer_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
-    {
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_MANAGER')) {
-            throw $this->createAccessDeniedException('Accès réservé aux administrateurs et managers.');
-        }
+    public function new(
+        Request $request,
+        CustomerCodeGenerator $codeGenerator,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response {
 
         $customer = new Customer();
         $form = $this->createForm(CustomerFormType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->em->persist($customer);
-            $this->em->flush();
 
-            $this->addFlash('success', 'Client créé avec succès.');
+            // =========================
+            // 1. GENERATE CUSTOMER CODE
+            // =========================
+            $code = $codeGenerator->generateCustomerCode($customer->getLastName());
+            $customer->setCustomerCode($code);
+
+            // =========================
+            // 2. CREATE USER
+            // =========================
+            $user = new User();
+            $user->setEmail($customer->getEmail());
+            $user->setRoles(['ROLE_CUSTOMER']);
+
+            // =========================
+            // 3. PASSWORD INIT BASED ON CODE
+            // =========================
+            $plainPassword = sprintf(
+                '%s-%s',
+                $code,
+                bin2hex(random_bytes(3))
+            );
+
+            $user->setPassword(
+                $passwordHasher->hashPassword($user, $plainPassword)
+            );
+
+            // =========================
+            // 4. LINK
+            // =========================
+            $customer->setUser($user);
+
+            // =========================
+            // 5. PERSIST
+            // =========================
+            $em->persist($user);
+            $em->persist($customer);
+            $em->flush();
+
+            // =========================
+            // FLASH (admin only)
+            // =========================
+            $this->addFlash(
+                'success',
+                sprintf(
+                    'Client créé. Code: %s | Mot de passe initial: %s',
+                    $code,
+                    $plainPassword
+                )
+            );
+
             return $this->redirectToRoute('customer_list');
         }
 

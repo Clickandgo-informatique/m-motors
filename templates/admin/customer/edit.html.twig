@@ -10,6 +10,7 @@
 		{{ customer is defined ? '<i class="fa-solid fa-pen-to-square"></i> modifier un client' : '<i class="fa-solid fa-person-circle-plus"></i> Créer un client'}}</h1>
 
 	{{ form_start(form) }}
+	<div class="form-row">{{ form_row(form.customerCode) }}</div>
 	<div class="form-row">
 
 		<div class="form-group">
@@ -32,6 +33,8 @@
 		</div>
 
 	</div>
+	<a href="#" class="btn">
+		<i class="fa-solid fa-circle-plus"></i>Créer dossier</a>
 	<button type="submit">{{ customer is defined ? 'Mettre à jour' : 'Créer' }}</button>
 	{{ form_end(form) }}
 	<div class="text-center btn btn-primary">

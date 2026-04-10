@@ -25,6 +25,14 @@ class CustomerFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'required' => true,
+            ])
+            ->add('customerCode', TextType::class, [
+                'label' => 'Code client',
+                'required' => false,
+                'disabled' => true,
+                'attr' => [
+                    'readonly' => true
+                ]
             ]);
     }
 
