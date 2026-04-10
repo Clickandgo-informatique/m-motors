@@ -1,15 +1,41 @@
 {% extends 'base.html.twig' %}
 {% block title %}
+	M-motors :
 	{{ customer is defined ? 'Modifier client' : 'Créer client' }}
 {% endblock %}
 
 {% block body %}
-	<h1>{{ customer is defined ? 'Modifier client' : 'Créer client' }}</h1>
+	<h1 class="text-center">
+
+		{{ customer is defined ? '<i class="fa-solid fa-pen-to-square"></i> modifier un client' : '<i class="fa-solid fa-person-circle-plus"></i> Créer un client'}}</h1>
 
 	{{ form_start(form) }}
-	{{ form_widget(form) }}
+	<div class="form-row">
+
+		<div class="form-group">
+			{{ form_label(form.lastName) }}
+			{{ form_widget(form.lastName) }}
+			{{ form_errors(form.lastName) }}
+		</div>
+		<div class="form-group">
+			{{ form_label(form.firstName) }}
+			{{ form_widget(form.firstName) }}
+			{{ form_errors(form.firstName) }}
+		</div>
+	</div>
+
+	<div class="form-row">
+		<div class="form-group">
+			{{ form_label(form.email) }}
+			{{ form_widget(form.email) }}
+			{{ form_errors(form.email) }}
+		</div>
+
+	</div>
 	<button type="submit">{{ customer is defined ? 'Mettre à jour' : 'Créer' }}</button>
 	{{ form_end(form) }}
-
-	<a href="{{ path('customer_list') }}">Retour à la liste</a>
+	<div class="text-center btn btn-primary">
+		<a href="{{ path('customer_list') }}">
+			<i class="fa-solid fa-table-list"></i>Retour à la liste</a>
+	</div>
 {% endblock %}
