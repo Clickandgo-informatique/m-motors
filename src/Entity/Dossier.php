@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\DossierRepository;
+use App\Enum\DossierType;
+use App\Enum\DossierStatus;
+use App\Enum\FinancingType;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -10,23 +13,33 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Dossier
 {
+    // ========================= IDENTIFIANT =========================
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    // ----------------- TYPE DE DOSSIER -----------------
-    #[ORM\Column(length: 20)]
-    #[Assert\NotBlank(message: 'Le type de dossier est obligatoire.')]
-    #[Assert\Choice(choices: ['purchase', 'rental'], message: 'Type de dossier invalide.')]
-    private string $type;
+    // ========================= TYPE =========================
+    // Achat ou financement
 
-    // ----------------- STATUT -----------------
-    #[ORM\Column(length: 50)]
-    #[Assert\Choice(choices: ['draft', 'submitted', 'under_review', 'approved', 'rejected'], message: 'Statut invalide.')]
-    private string $status = 'draft';
+    #[ORM\Column(enumType: DossierType::class)]
+    #[Assert\NotNull(message: 'Le type de dossier est obligatoire.')]
+    private DossierType $type;
 
-    // ----------------- RELATIONS -----------------
+    // ========================= FINANCEMENT =========================
+    // Crédit / LOA / LLD / comptant
+
+    #[ORM\Column(enumType: FinancingType::class, nullable: true)]
+    private ?FinancingType $financingType = null;
+
+    // ========================= STATUT =========================
+
+    #[ORM\Column(enumType: DossierStatus::class)]
+    private DossierStatus $status = DossierStatus::DRAFT;
+
+    // ========================= RELATIONS =========================
+
     #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: 'Le client est obligatoire.')]
@@ -37,7 +50,8 @@ class Dossier
     #[Assert\NotNull(message: 'Le véhicule est obligatoire.')]
     private ?Vehicle $vehicle = null;
 
-    // ----------------- DATES -----------------
+    // ========================= DATES =========================
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -47,124 +61,226 @@ class Dossier
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $processedAt = null;
 
-    // ----------------- LIFECYCLE -----------------
+    // ========================= DONNEES FINANCEMENT =========================
+    // Utilisées pour LLD / LOA
+
+    #[ORM\Column(nullable: true)]
+    #[Assert\Positive(message: 'La durée doit être positive.')]
+    private ?int $duration = null; // en mois
+
+    #[ORM\Column(nullable: true)]
+    #[Assert\Positive(message: 'Le kilométrage doit être positif.')]
+    private ?int $annualMileage = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Assert\Positive(message: 'La mensualité doit être positive.')]
+    private ?float $monthlyPayment = null;
+
+    // ========================= LIFECYCLE =========================
+
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
         $this->createdAt = new \DateTimeImmutable();
     }
 
-    // ----------------- GETTERS / SETTERS -----------------
+    // ========================= GETTERS =========================
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getType(): string
+    public function getType(): DossierType
     {
         return $this->type;
     }
-    public function setType(string $type): self
+
+    public function getFinancingType(): ?FinancingType
     {
-        $this->type = $type;
-        return $this;
+        return $this->financingType;
     }
 
-    public function getStatus(): string
+    public function getStatus(): DossierStatus
     {
         return $this->status;
-    }
-    public function setStatus(string $status): self
-    {
-        $this->status = $status;
-        return $this;
     }
 
     public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
-    public function setCustomer(?Customer $customer): self
-    {
-        $this->customer = $customer;
-        return $this;
-    }
 
     public function getVehicle(): ?Vehicle
     {
         return $this->vehicle;
-    }
-    public function setVehicle(?Vehicle $vehicle): self
-    {
-        $this->vehicle = $vehicle;
-        return $this;
     }
 
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
+
     public function getSubmittedAt(): ?\DateTimeImmutable
     {
         return $this->submittedAt;
     }
-    public function setSubmittedAt(?\DateTimeImmutable $submittedAt): self
-    {
-        $this->submittedAt = $submittedAt;
-        return $this;
-    }
+
     public function getProcessedAt(): ?\DateTimeImmutable
     {
         return $this->processedAt;
     }
-    public function setProcessedAt(?\DateTimeImmutable $processedAt): self
+
+    public function getDuration(): ?int
     {
-        $this->processedAt = $processedAt;
+        return $this->duration;
+    }
+
+    public function getAnnualMileage(): ?int
+    {
+        return $this->annualMileage;
+    }
+
+    public function getMonthlyPayment(): ?float
+    {
+        return $this->monthlyPayment;
+    }
+
+    // ========================= SETTERS CONTROLES =========================
+    // Pas de setStatus volontaire (piloté par logique métier)
+
+    public function setType(DossierType $type): self
+    {
+        $this->type = $type;
         return $this;
     }
 
-    // ----------------- LOGIQUE METIER -----------------
-    public function submit(): self
+    public function setFinancingType(?FinancingType $financingType): self
     {
-        $this->status = 'submitted';
+        $this->financingType = $financingType;
+        return $this;
+    }
+
+    public function setCustomer(Customer $customer): self
+    {
+        $this->customer = $customer;
+        return $this;
+    }
+
+    public function setVehicle(Vehicle $vehicle): self
+    {
+        $this->vehicle = $vehicle;
+        return $this;
+    }
+
+    public function setDuration(?int $duration): self
+    {
+        $this->duration = $duration;
+        return $this;
+    }
+
+    public function setAnnualMileage(?int $annualMileage): self
+    {
+        $this->annualMileage = $annualMileage;
+        return $this;
+    }
+
+    public function setMonthlyPayment(?float $monthlyPayment): self
+    {
+        $this->monthlyPayment = $monthlyPayment;
+        return $this;
+    }
+
+    // ========================= LOGIQUE METIER =========================
+
+    /**
+     * Soumission du dossier
+     */
+    public function submit(): void
+    {
+        if (!$this->status->canTransitionTo(DossierStatus::SUBMITTED)) {
+            throw new \LogicException('Transition invalide');
+        }
+
+        // Validation spécifique financement (LLD / LOA)
+        if ($this->isLeasing()) {
+            if (!$this->duration || !$this->monthlyPayment) {
+                throw new \LogicException('Informations de financement incomplètes');
+            }
+        }
+
+        $this->status = DossierStatus::SUBMITTED;
         $this->submittedAt = new \DateTimeImmutable();
-        return $this;
     }
-    public function approve(): self
+
+    /**
+     * Validation admin
+     */
+    public function approve(): void
     {
-        $this->status = 'approved';
+        if (!$this->status->canTransitionTo(DossierStatus::APPROVED)) {
+            throw new \LogicException('Transition invalide');
+        }
+
+        $this->status = DossierStatus::APPROVED;
         $this->processedAt = new \DateTimeImmutable();
-        return $this;
     }
-    public function reject(): self
+
+    /**
+     * Refus admin
+     */
+    public function reject(): void
     {
-        $this->status = 'rejected';
+        if (!$this->status->canTransitionTo(DossierStatus::REJECTED)) {
+            throw new \LogicException('Transition invalide');
+        }
+
+        $this->status = DossierStatus::REJECTED;
         $this->processedAt = new \DateTimeImmutable();
-        return $this;
     }
+
+    // ========================= HELPERS =========================
 
     public function isDraft(): bool
     {
-        return $this->status === 'draft';
+        return $this->status->isDraft();
     }
+
     public function isSubmitted(): bool
     {
-        return $this->status === 'submitted';
+        return $this->status->isSubmitted();
     }
+
     public function isApproved(): bool
     {
-        return $this->status === 'approved';
+        return $this->status->isApproved();
     }
+
     public function isRejected(): bool
     {
-        return $this->status === 'rejected';
+        return $this->status->isRejected();
     }
-    public function isPurchase(): bool
+
+    public function isFinancing(): bool
     {
-        return $this->type === 'purchase';
+        return $this->type->isFinancing();
     }
-    public function isRental(): bool
+
+    public function isLeasing(): bool
     {
-        return $this->type === 'rental';
+        return in_array($this->financingType, [
+            FinancingType::LOA,
+            FinancingType::LLD
+        ], true);
+    }
+
+    public function isLLD(): bool
+    {
+        return $this->financingType === FinancingType::LLD;
+    }
+
+    public function isLOA(): bool
+    {
+        return $this->financingType === FinancingType::LOA;
     }
 }
