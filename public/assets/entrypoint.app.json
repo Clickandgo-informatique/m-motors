@@ -9,6 +9,7 @@
     "\/assets\/js\/FetchForm.js",
     "\/assets\/js\/AjaxManager.js",
     "\/assets\/js\/ToggleVehicleFavorite.js",
+    "\/assets\/js\/Autocomplete.js",
     "@symfony\/stimulus-bundle",
     "\/assets\/js\/FilterBadges.js",
     "@hotwired\/stimulus",

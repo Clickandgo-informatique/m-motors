@@ -22,9 +22,7 @@ doctrine:
                 SECOND: DoctrineExtensions\Query\Postgresql\Second
 
             string_functions:
-                STRPOS: DoctrineExtensions\Query\Postgresql\Strpos
-                LOWER: DoctrineExtensions\Query\Postgresql\Lower
-                UPPER: DoctrineExtensions\Query\Postgresql\Upper
+                STRPOS: DoctrineExtensions\Query\Postgresql\Strpos           
 
             numeric_functions:
                 RANDOM: DoctrineExtensions\Query\Postgresql\Random

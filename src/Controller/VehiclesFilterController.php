@@ -52,7 +52,7 @@ class VehiclesFilterController extends AbstractController
     /**
      * Endpoint AJAX pour récupérer les filtres sidebar
      */
-    #[Route('/vehicles/ajax/filters', name: 'vehicles_ajax_filters', methods: ['GET'])]
+    #[Route('/vehicles/ajax/filters', name: 'vehicles_ajax_filters', methods: ['GET', 'POST'])]
     public function getFilters(VehicleRepository $vehicleRepo): Response
     {
         $brands = $vehicleRepo->getUsedBrands();
@@ -72,45 +72,66 @@ class VehiclesFilterController extends AbstractController
 
     /**
      * Endpoint AJAX pour recherche / filtres dynamiques
+     * Gère à la fois autocomplete et mise à jour de la page de cards
      */
-    #[Route('/vehicles/ajax/search', name: 'vehicles_ajax_search', methods: ['POST'])]
+    #[Route('/vehicles/ajax/search', name: 'vehicles_ajax_search', methods: ['POST', 'GET'])]
     public function search(
         Request $request,
         VehicleRepository $vehicleRepo,
         PaginatorInterface $paginator,
-        SessionInterface $session // nécessaire pour stocker la vue
+        SessionInterface $session
     ): JsonResponse {
-        // --- Décodage du JSON envoyé par le JS ---
-        $data = json_decode($request->getContent(), true) ?: [];
+        // --- Décodage JSON / query string ---
+        $data = json_decode($request->getContent(), true) ?: $request->query->all();
+
         $filters = $data['filters'] ?? [];
         $searchTerm = $data['q'] ?? null;
-        $page = isset($data['page']) ? (int)$data['page'] : 1;
 
-        // --- Détermination du mode view ---
+        if (isset($filters['q']) && !$searchTerm) {
+            $searchTerm = $filters['q'];
+        }
+
+        $page = $data['page'] ?? 1;
+
+        // --- Vue (grid / table) ---
         $view = $filters['view'] ?? $session->get('vehicle_view', 'grid');
-        $session->set('vehicle_view', $view); // persiste la vue côté session
+        $session->set('vehicle_view', $view);
 
-        // --- Construction de la requête avec filtres et recherche ---
+        // --- QueryBuilder avec filtres et recherche ---
         $query = $vehicleRepo->searchForPaginator($filters, $searchTerm);
 
         // --- Pagination ---
         $vehicles = $paginator->paginate($query, $page, 20);
 
-        // --- Rendu conditionnel selon view ---
+        // --- Vérifie si c'est une requête autocomplete ---
+        $isAutocomplete = $request->query->get('autocomplete') === 'true';
+
+        // --- Construction JSON pour autocomplete ---
+        $items = [];
+        foreach ($vehicles as $v) {
+            $items[] = [
+                'id' => $v->getId(),
+                'label' => $v->getVehicleModel()->getBrand()->getName() . ' ' . $v->getVehicleModel()->getModel()->getName(),
+                'url' => $this->generateUrl('vehicle_edit', ['id' => $v->getId()]) // lien direct pour dropdown
+            ];
+        }
+
+        // --- Génération HTML des cards (grid ou table) ---
         $resultsHtml = $this->renderView(
             $view === 'table'
-                ? 'vehicles/_vehicles_table_body.html.twig'   // template table
-                : 'vehicles/_vehicles_gallery_items.html.twig', // template grid
+                ? 'vehicles/_vehicles_table_body.html.twig'
+                : 'vehicles/_vehicles_gallery_items.html.twig',
             ['vehicles' => $vehicles, 'view' => $view]
         );
 
         $paginationHtml = $this->renderView('vehicles/_pagination_info.html.twig', ['vehicles' => $vehicles]);
 
-        // --- Retour JSON ---
+        // --- Retour JSON unifié ---
         return $this->json([
-            'results' => $resultsHtml,
+            'items' => $items,            // Pour dropdown autocomplete
+            'results' => $resultsHtml,    // Pour mise à jour container cards
             'paginationTop' => $paginationHtml,
-            'paginationBottom' => $paginationHtml
+            'paginationBottom' => $paginationHtml,
         ]);
     }
 }

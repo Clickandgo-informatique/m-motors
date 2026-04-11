@@ -1,7 +1,7 @@
 <div class="cards-grid">
 	{% for vehicle in vehicles %}
 		<div
-			class="vehicle-card card">
+			class="vehicle-card card" data-item-link="{{ path('vehicle_edit',{id:vehicle.id}) }}" data-ajax-modal="true">
 
 			{# Image du véhicule avec bouton favoris overlay #}
 			<div class="vehicle-image-wrapper">
@@ -10,14 +10,12 @@
 					<i class="fa-regular fa-heart" data-icon></i>
 				</button>
 			</div>
+
 			<div class="vehicle-card-header">
-				<span class="vehicle-brand">
-					{{vehicle.vehicleModel.brand.name}}
-				</span>
-				<span class="vehicle-model">
-					{{ vehicle.vehicleModel.model.name }}
-				</span>
+				<span class="vehicle-brand">{{ vehicle.vehicleModel.brand.name }}</span>
+				<span class="vehicle-model">{{ vehicle.vehicleModel.model.name }}</span>
 			</div>
+
 			{# Tableau des spécifications #}
 			<div class="vehicle-card-body">
 				<table class="vehicle-specs">

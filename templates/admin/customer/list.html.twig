@@ -1,10 +1,12 @@
 {% extends 'base.html.twig' %}
-{% block title %}Liste des clients
+{% block title %}M-Motors : Liste des clients
 {% endblock %}
 
 {% block body %}
-	<h1>Liste des clients</h1>
-	<a href="{{ path('customer_new') }}">Créer un nouveau client</a>
+	<h1 class="text-center">
+		<i class="fa-solid fa-address-book"></i>Liste des clients</h1>
+	<a href="{{ path('customer_new') }}" class="btn btn-primary">
+		<i class="fa-solid fa-person-circle-plus"></i>Créer un nouveau client</a>
 
 	<table>
 		<thead>

@@ -23,17 +23,19 @@ trait TimestampableTrait
     }
 
     #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
+    public function onPrePersist(): void
     {
+        $now = new \DateTimeImmutable();
+
         if ($this->createdAt === null) {
-            $this->createdAt = new \DateTimeImmutable();
+            $this->createdAt = $now;
         }
 
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = $now;
     }
 
     #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
+    public function onPreUpdate(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
     }

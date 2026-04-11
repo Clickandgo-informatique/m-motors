@@ -9,6 +9,7 @@ use App\Entity\Gear;
 use App\Entity\Supplier;
 use App\Entity\Vehicle;
 use App\Enum\VehicleStatus;
+use DateTime;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -20,7 +21,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class VehicleType extends AbstractType
+class VehicleFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -50,8 +51,10 @@ class VehicleType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Rechercher un modèle',
                     'data-autocomplete' => 'true',
-                    'data-result-div' => '#vehicle-model-results',
-                    'data-target-hidden' => '#vehicle_vehicleModel'
+                    'data-url' => '/vehicle-model/search',
+                    'data-target' => 'vehicle-model-results',
+                    'data-result-links' => 'true',
+                    'data-item-url' => '/vehicles/models/ID_PLACEHOLDER/edit'
                 ],
             ])
 
@@ -66,12 +69,18 @@ class VehicleType extends AbstractType
                 'label' => 'Immatriculation'
             ])
 
-            ->add('year', IntegerType::class, [
-                'label' => 'Année'
+            ->add('firstRegistrationDate', DateTimeType::class, [
+                'label' => 'Année',
+                'attr' => [
+                    'class' => 'text-right',
+                ],
             ])
 
             ->add('mileage', IntegerType::class, [
-                'label' => 'Kilométrage'
+                'label' => 'Kilométrage',
+                'attr' => [
+                    'class' => 'text-right',
+                ],
             ])
 
             ->add('price', MoneyType::class, [
@@ -103,13 +112,6 @@ class VehicleType extends AbstractType
                 'class' => Supplier::class,
                 'choice_label' => 'name',
                 'label' => 'Fournisseur'
-            ])
-
-            ->add('features', EntityType::class, [
-                'class' => Feature::class,
-                'choice_label' => 'name',
-                'multiple' => true,
-                'label' => 'Options'
             ])
         ;
     }

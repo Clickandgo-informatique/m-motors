@@ -1,0 +1,35 @@
+@startuml
+
+title Workflow simplifié - M-Motors
+
+actor Admin
+
+start
+
+:Création Customer via formulaire;
+
+:Validation du formulaire;
+
+:Génération du code Customer\n(ex: DUP001);
+
+:Création automatique du User associé;
+
+:Génération du mot de passe initial;
+
+:Liaison User ↔ Customer;
+
+:Sauvegarde en base de données;
+
+:Affichage du message de succès\n(code client + info);
+
+:Admin peut créer un Dossier;
+
+:Génération du code Dossier\n(ex: DUP001-0001);
+
+:Liaison Dossier ↔ Customer;
+
+:Sauvegarde du Dossier;
+
+stop
+
+@enduml

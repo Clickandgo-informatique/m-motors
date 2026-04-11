@@ -1,0 +1,128 @@
+// assets/app.js
+
+// ===============================
+// Import des modules principaux
+// ===============================
+import "./stimulus_bootstrap.js"; // bootstrap + Stimulus
+import "./js/theme.js"; // thème / dark mode
+import "./styles/app.css"; // CSS global
+import "./js/sidebar.js"; // gestion de la sidebar
+import "./js/rangeSelector.js"; // sliders pour filtres (prix, années)
+
+// ===============================
+// Import des modules applicatifs
+// ===============================
+import VehiclesFilter from "./js/vehiclesFilters.js"; // filtre sidebar + view switch
+import DynamicFormCollection from "./js/DynamicFormCollection.js"; // formulaire collection Symfony
+import FetchForm from "./js/FetchForm.js"; // formulaire AJAX générique
+import AjaxManager from "./js/AjaxManager.js"; // gestionnaire AJAX global
+import ToggleVehicleFavorite from "./js/ToggleVehicleFavorite.js"; // favori véhicule
+import Autocomplete from "./js/Autocomplete.js"; // autocomplete inputs
+
+// ===============================
+// DOMContentLoaded : initialisation
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  // -------------------------------
+  // Collections dynamiques (forms Symfony)
+  // -------------------------------
+  document.querySelectorAll("[data-collection]").forEach(root => {
+    new DynamicFormCollection(root);
+  });
+
+  // -------------------------------
+  // Formulaires AJAX FetchForm
+  // -------------------------------
+  document.querySelectorAll("input[data-result-div]").forEach(input => {
+    new FetchForm(input);
+  });
+
+  // -------------------------------
+  // Gestionnaire AJAX global
+  // -------------------------------
+  new AjaxManager();
+
+  // -------------------------------
+  // Initialisation VehiclesFilter (sidebar + view switch)
+  // -------------------------------
+  let filtersInitialized = false;
+
+  function initFilters() {
+    const form = document.getElementById("filters-form");
+    if (form && !filtersInitialized) {
+      new VehiclesFilter(form);
+      filtersInitialized = true;
+      console.log("VehiclesFilter initialisé");
+    }
+  }
+
+  initFilters();
+
+  // Observer pour ré-initialiser Filters si formulaire injecté dynamiquement
+  const filtersObserver = new MutationObserver(() => initFilters());
+  filtersObserver.observe(document.body, { childList: true, subtree: true });
+
+  // -------------------------------
+  // Initialisation ToggleVehicleFavorite
+  // -------------------------------
+  function initFavorites() {
+    document
+      .querySelectorAll('[data-action="toggle-favorite"]')
+      .forEach(button => {
+        if (!button.dataset.favoriteInitialized) {
+          new ToggleVehicleFavorite(button);
+          button.dataset.favoriteInitialized = "true";
+        }
+      });
+  }
+
+  initFavorites();
+
+  // Observer global pour boutons favoris injectés dynamiquement
+  const favoritesObserver = new MutationObserver(() => initFavorites());
+  favoritesObserver.observe(document.body, { childList: true, subtree: true });
+
+  // -------------------------------
+  // Initialisation Autocomplete
+  // -------------------------------
+  function initAutocomplete() {
+    document.querySelectorAll('[data-autocomplete="true"]').forEach(input => {
+      if (!input.dataset.autocompleteInitialized) {
+        new Autocomplete(input);
+        input.dataset.autocompleteInitialized = "true";
+      }
+    });
+  }
+
+  initAutocomplete();
+
+  // Observer global pour inputs autocomplete injectés dynamiquement
+  const autocompleteObserver = new MutationObserver(() => initAutocomplete());
+  autocompleteObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  // -------------------------------
+  // Réinitialisation au retour sur l'onglet
+  // -------------------------------
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      // Re-init FetchForm
+      document.querySelectorAll("input[data-result-div]").forEach(input => {
+        new FetchForm(input);
+      });
+
+      // Re-init Filters
+      initFilters();
+
+      // Re-init Favorites
+      initFavorites();
+
+      // Re-init Autocomplete
+      initAutocomplete();
+    }
+  });
+
+  console.log("app.js chargé : modules initialisés");
+});

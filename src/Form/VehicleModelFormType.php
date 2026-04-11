@@ -14,10 +14,11 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class VehicleModelType extends AbstractType
+class VehicleModelFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -31,21 +32,18 @@ class VehicleModelType extends AbstractType
             ->add('cnit')
             ->add('utacCode')
             ->add('euroNorm')
-            ->add('homologationDate', DateTimeType::class, ['label'=>'Date homologation', 'attr' => ['class' => 'text-right']])
+            ->add('homologationDate', DateTimeType::class, ['label' => 'Date homologation', 'attr' => ['class' => 'text-right']])
             ->add('brand', EntityType::class, [
                 'label' => 'Marque',
                 'class' => Brand::class,
                 'choice_label' => 'name',
             ])
-            ->add('model', EntityType::class, [
-                'label' => 'Modèle',
-                'class' => Model::class,
-                'choice_label' => 'name',
+            ->add('model', TextType::class, [
+                'label' => 'Modèle'
             ])
-            ->add('variant', EntityType::class, [
+            ->add('variant', TextType::class, [
                 'label' => 'Variante',
-                'class' => Variant::class,
-                'choice_label' => 'name',
+           
             ])
             ->add('fuelType', EntityType::class, [
                 'label' => 'Type énergie',
@@ -57,10 +55,10 @@ class VehicleModelType extends AbstractType
                 'class' => Gear::class,
                 'choice_label' => 'type',
             ])
-            ->add('bodyType',EntityType::class,[
-                'label'=>'Type carrosserie',
-                'class'=>BodyType::class,
-                'choice_label'=>'name'
+            ->add('bodyType', EntityType::class, [
+                'label' => 'Type carrosserie',
+                'class' => BodyType::class,
+                'choice_label' => 'name'
             ])
         ;
     }

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\VehicleModel;
-use App\Form\VehicleModelType;
+use App\Form\VehicleModelFormType;
 use App\Repository\VehicleModelRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -26,7 +26,7 @@ class VehicleModelController extends AbstractController
 
         if ($term === '') {
             return $this->json([
-                'results' => [],
+                'items' => [],
                 'total' => 0,
                 'page' => 1,
                 'pages' => 0,
@@ -36,8 +36,7 @@ class VehicleModelController extends AbstractController
         $models = $repo->searchPaginated($term, $limit, $offset);
         $total = $repo->countSearch($term);
 
-        $results = array_map(function ($model) {
-
+        $items = array_map(function ($model) {
             $brand = $model['brand_name'] ?? '';
             $name  = $model['model_name'] ?? '';
             $variant = $model['variant_name'] ?? '';
@@ -54,7 +53,7 @@ class VehicleModelController extends AbstractController
         }, $models);
 
         return $this->json([
-            'results' => $results,
+            'items' => $items,
             'total' => $total,
             'page' => $page,
             'pages' => (int) ceil($total / $limit),
@@ -92,7 +91,7 @@ class VehicleModelController extends AbstractController
     {
         $vm = new VehicleModel();
 
-        $form = $this->createForm(VehicleModelType::class, $vm);
+        $form = $this->createForm(VehicleModelFormType::class, $vm);
 
         $title = "Ajouter un nouveau modèle de véhicule";
 
@@ -148,7 +147,7 @@ class VehicleModelController extends AbstractController
         EntityManagerInterface $em
     ): Response {
 
-        $form = $this->createForm(VehicleModelType::class, $vm);
+        $form = $this->createForm(VehicleModelFormType::class, $vm);
 
         $title = "Modifier un modèle de véhicule";
 

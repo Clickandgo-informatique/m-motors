@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Customer;
 use App\Entity\Dossier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -50,5 +51,18 @@ class DossierRepository extends ServiceEntityRepository
             ->orderBy('d.createdAt', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+    /**
+     * Dernier dossier d’un customer
+     */
+    public function findLastByCustomer(Customer $customer): ?Dossier
+    {
+        return $this->createQueryBuilder('d')
+            ->where('d.customer = :customer')
+            ->setParameter('customer', $customer)
+            ->orderBy('d.dossierCode', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

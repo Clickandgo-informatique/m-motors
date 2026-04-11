@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-J1vJDwo.js",
+        "path": "\/assets\/app-0tUfO1-.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,6 +28,9 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
+<<<<<<< HEAD
+        "path": "\/assets\/styles\/app-bo9UToN.css",
+=======
 <<<<<<< Updated upstream
         "path": "\/assets\/styles\/app-Ix85wEA.css",
 =======
@@ -37,6 +40,7 @@
         "path": "\/assets\/styles\/app-Ix85wEA.css",
 >>>>>>> feature/customer-dossier-workflow
 >>>>>>> Stashed changes
+>>>>>>> feature/customer-dossier-workflow
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -48,11 +52,15 @@
         "type": "js"
     },
     "\/assets\/js\/vehiclesFilters.js": {
-        "path": "\/assets\/js\/vehiclesFilters-kfc_gaG.js",
+        "path": "\/assets\/js\/vehiclesFilters-_st_7Z_.js",
         "type": "js"
     },
     "\/assets\/js\/FilterBadges.js": {
         "path": "\/assets\/js\/FilterBadges-K6ljlUh.js",
+        "type": "js"
+    },
+    "\/assets\/js\/Autocomplete.js": {
+        "path": "\/assets\/js\/Autocomplete-6n7vznB.js",
         "type": "js"
     },
     "\/assets\/js\/DynamicFormCollection.js": {
@@ -60,7 +68,7 @@
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-8naYQCV.js",
+        "path": "\/assets\/js\/FetchForm-8X12qKK.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
@@ -72,7 +80,7 @@
         "type": "js"
     },
     "vehiclesFilters": {
-        "path": "\/assets\/js\/vehiclesFilters-kfc_gaG.js",
+        "path": "\/assets\/js\/vehiclesFilters-_st_7Z_.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {
@@ -88,7 +96,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-8naYQCV.js",
+        "path": "\/assets\/js\/FetchForm-8X12qKK.js",
         "type": "js"
     }
 }
