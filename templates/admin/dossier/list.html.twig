@@ -18,7 +18,7 @@
 	<table class="table table-striped">
 		<thead>
 			<tr>
-				<th>ID</th>
+				<th>Code</th>
 				<th>Client</th>
 				<th>Véhicule</th>
 				<th>Type</th>
@@ -30,7 +30,7 @@
 		<tbody>
 			{% for dossier in dossiers %}
 				<tr>
-					<td>{{ dossier.id }}</td>
+					<td>{{ dossier.customer.customerCode }}</td>
 					<td>{{ dossier.customer.lastname }}
 						{{ dossier.customer.firstname }}</td>
 					<td>{{ dossier.vehicle.model.name ?? 'N/A' }}</td>
