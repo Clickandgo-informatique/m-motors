@@ -12,6 +12,17 @@
         "doctrine/doctrine-bundle": "^3.2.2",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6.3",
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+        "endroid/qr-code-bundle": "^6.1",
+=======
+<<<<<<< HEAD
+=======
+        "endroid/qr-code-bundle": "^6.1",
+>>>>>>> feature/customer-dossier-workflow
+>>>>>>> Stashed changes
+>>>>>>> feature/customer-dossier-workflow
         "knplabs/knp-paginator-bundle": "^6.10",
         "knpuniversity/oauth2-client-bundle": ">=2.20.2",
         "league/oauth2-google": "^5.0",

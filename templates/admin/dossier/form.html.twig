@@ -1,0 +1,43 @@
+{{ form_start(form) }}
+
+<div class="form-row">
+	{{ form_label(form.type) }}
+	{{ form_widget(form.type) }}
+	{{ form_errors(form.type) }}
+</div>
+
+<div class="form-row">
+	{{ form_label(form.financingType) }}
+	{{ form_widget(form.financingType) }}
+	{{ form_errors(form.financingType) }}
+</div>
+
+{% if form.duration is defined %}
+	<div class="form-row">
+		{{ form_label(form.duration) }}
+		{{ form_widget(form.duration) }}
+		{{ form_errors(form.duration) }}
+	</div>
+{% endif %}
+
+{% if form.annualMileage is defined %}
+	<div class="form-row">
+		{{ form_label(form.annualMileage) }}
+		{{ form_widget(form.annualMileage) }}
+		{{ form_errors(form.annualMileage) }}
+	</div>
+{% endif %}
+
+{% if form.monthlyPayment is defined %}
+	<div class="form-row">
+		{{ form_label(form.monthlyPayment) }}
+		{{ form_widget(form.monthlyPayment) }}
+		{{ form_errors(form.monthlyPayment) }}
+	</div>
+{% endif %}
+
+<div class="form-row">
+	<button class="btn btn-primary">Enregistrer</button>
+</div>
+
+{{ form_end(form) }}

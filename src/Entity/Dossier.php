@@ -3,89 +3,40 @@
 namespace App\Entity;
 
 use App\Repository\DossierRepository;
+use App\Enum\DossierType;
+use App\Enum\DossierStatus;
+use App\Enum\FinancingType;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'dossier')]
-#[ORM\UniqueConstraint(name: 'uniq_dossier_code', columns: ['dossier_code'])]
 class Dossier
 {
-    // ================================
-    // CONSTANTES METIER
-    // ================================
-    public const TYPE_PURCHASE = 'purchase';
-    public const TYPE_RENTAL = 'rental';
-
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_SUBMITTED = 'submitted';
-    public const STATUS_UNDER_REVIEW = 'under_review';
-    public const STATUS_APPROVED = 'approved';
-    public const STATUS_REJECTED = 'rejected';
-
-    // ================================
-    // ID
-    // ================================
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    // ================================
-    // CODE DOSSIER (DUP001-0001)
-    // ================================
-    #[ORM\Column(name: 'dossier_code', length: 20, unique: true)]
-    #[Assert\NotBlank]
-    #[Assert\Regex(
-        pattern: '/^[A-Z0-9]{3,10}-[0-9]{4}$/',
-        message: 'Format invalide (ex: DUP001-0001)'
-    )]
-    private ?string $dossierCode = null;
+    #[ORM\Column(enumType: DossierType::class)]
+    #[Assert\NotNull]
+    private DossierType $type;
 
-    // ================================
-    // TYPE
-    // ================================
-    #[ORM\Column(length: 20)]
-    #[Assert\NotBlank(message: 'Le type de dossier est obligatoire.')]
-    #[Assert\Choice(
-        choices: [self::TYPE_PURCHASE, self::TYPE_RENTAL],
-        message: 'Type de dossier invalide.'
-    )]
-    private string $type;
+    #[ORM\Column(enumType: FinancingType::class, nullable: true)]
+    private ?FinancingType $financingType = null;
 
-    // ================================
-    // STATUT
-    // ================================
-    #[ORM\Column(length: 50)]
-    #[Assert\Choice(
-        choices: [
-            self::STATUS_DRAFT,
-            self::STATUS_SUBMITTED,
-            self::STATUS_UNDER_REVIEW,
-            self::STATUS_APPROVED,
-            self::STATUS_REJECTED
-        ],
-        message: 'Statut invalide.'
-    )]
-    private string $status = self::STATUS_DRAFT;
+    #[ORM\Column(enumType: DossierStatus::class)]
+    private DossierStatus $status = DossierStatus::DRAFT;
 
-    // ================================
-    // RELATIONS
-    // ================================
-    #[ORM\ManyToOne(inversedBy: 'dossiers')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    #[Assert\NotNull(message: 'Le client est obligatoire.')]
-    private ?Customer $customer = null;
+    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'dossiers')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Customer $customer;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Le véhicule est obligatoire.')]
-    private ?Vehicle $vehicle = null;
+    private Vehicle $vehicle;
 
-    // ================================
-    // DATES
-    // ================================
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -95,177 +46,161 @@ class Dossier
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $processedAt = null;
 
-    // ================================
-    // LIFECYCLE
-    // ================================
+    #[ORM\Column(nullable: true)]
+    private ?int $duration = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $annualMileage = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $monthlyPayment = null;
+
     #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
+    public function init(): void
     {
-        if (!isset($this->createdAt)) {
-            $this->createdAt = new \DateTimeImmutable();
-        }
+        $this->createdAt = new \DateTimeImmutable();
     }
 
-    // ================================
-    // GETTERS / SETTERS
-    // ================================
+    // ---------------- GETTERS ----------------
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    // -------- CODE --------
-    public function getDossierCode(): ?string
-    {
-        return $this->dossierCode;
-    }
-
-    public function setDossierCode(string $dossierCode): self
-    {
-        $this->dossierCode = strtoupper(trim($dossierCode));
-        return $this;
-    }
-
-    // -------- TYPE --------
-    public function getType(): string
+    public function getType(): DossierType
     {
         return $this->type;
     }
 
-    public function setType(string $type): self
+    public function getFinancingType(): ?FinancingType
     {
-        $this->type = $type;
-        return $this;
+        return $this->financingType;
     }
 
-    // -------- STATUS --------
-    public function getStatus(): string
+    public function getStatus(): DossierStatus
     {
         return $this->status;
     }
 
-    private function setStatus(string $status): self
-    {
-        $this->status = $status;
-        return $this;
-    }
-
-    // -------- RELATIONS --------
-    public function getCustomer(): ?Customer
+    public function getCustomer(): Customer
     {
         return $this->customer;
     }
 
-    public function setCustomer(?Customer $customer): self
-    {
-        $this->customer = $customer;
-        return $this;
-    }
-
-    public function getVehicle(): ?Vehicle
+    public function getVehicle(): Vehicle
     {
         return $this->vehicle;
     }
 
-    public function setVehicle(?Vehicle $vehicle): self
-    {
-        $this->vehicle = $vehicle;
-        return $this;
-    }
-
-    // -------- DATES --------
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getSubmittedAt(): ?\DateTimeImmutable
+    // ---------------- SETTERS ----------------
+
+    public function setType(DossierType $type): self
     {
-        return $this->submittedAt;
+        $this->type = $type;
+        return $this;
     }
 
-    public function getProcessedAt(): ?\DateTimeImmutable
+    public function setFinancingType(?FinancingType $financingType): self
     {
-        return $this->processedAt;
+        $this->financingType = $financingType;
+        return $this;
     }
 
-    // ================================
-    // LOGIQUE METIER SECURISEE
-    // ================================
-    public function submit(): self
+    public function setCustomer(Customer $customer): self
     {
-        if (!$this->isDraft()) {
-            throw new \LogicException('Seul un dossier draft peut être soumis.');
+        $this->customer = $customer;
+        return $this;
+    }
+
+    public function setVehicle(Vehicle $vehicle): self
+    {
+        $this->vehicle = $vehicle;
+        return $this;
+    }
+
+    public function setDuration(?int $duration): self
+    {
+        $this->duration = $duration;
+        return $this;
+    }
+
+    public function setAnnualMileage(?int $annualMileage): self
+    {
+        $this->annualMileage = $annualMileage;
+        return $this;
+    }
+
+    public function setMonthlyPayment(?float $monthlyPayment): self
+    {
+        $this->monthlyPayment = $monthlyPayment;
+        return $this;
+    }
+
+    // ---------------- BUSINESS LOGIC ----------------
+
+    public function submit(): void
+    {
+        if (!$this->status->canTransitionTo(DossierStatus::SUBMITTED)) {
+            throw new \LogicException('Transition invalide');
         }
 
-        $this->setStatus(self::STATUS_SUBMITTED);
+        $this->status = DossierStatus::SUBMITTED;
         $this->submittedAt = new \DateTimeImmutable();
-
-        return $this;
     }
 
-    public function approve(): self
+    public function approve(): void
     {
-        if (!$this->isSubmitted() && $this->status !== self::STATUS_UNDER_REVIEW) {
-            throw new \LogicException('Le dossier doit être soumis ou en review.');
+        if (!$this->status->canTransitionTo(DossierStatus::APPROVED)) {
+            throw new \LogicException('Transition invalide');
         }
 
-        $this->setStatus(self::STATUS_APPROVED);
+        $this->status = DossierStatus::APPROVED;
         $this->processedAt = new \DateTimeImmutable();
-
-        return $this;
     }
 
-    public function reject(): self
+    public function reject(): void
     {
-        if (!$this->isSubmitted() && $this->status !== self::STATUS_UNDER_REVIEW) {
-            throw new \LogicException('Le dossier doit être soumis ou en review.');
+        if (!$this->status->canTransitionTo(DossierStatus::REJECTED)) {
+            throw new \LogicException('Transition invalide');
         }
 
-        $this->setStatus(self::STATUS_REJECTED);
+        $this->status = DossierStatus::REJECTED;
         $this->processedAt = new \DateTimeImmutable();
-
-        return $this;
     }
 
-    // ================================
-    // HELPERS
-    // ================================
+    // ---------------- HELPERS ----------------
+
     public function isDraft(): bool
     {
-        return $this->status === self::STATUS_DRAFT;
+        return $this->status->isDraft();
     }
 
     public function isSubmitted(): bool
     {
-        return $this->status === self::STATUS_SUBMITTED;
+        return $this->status->isSubmitted();
     }
 
     public function isApproved(): bool
     {
-        return $this->status === self::STATUS_APPROVED;
+        return $this->status->isApproved();
     }
 
     public function isRejected(): bool
     {
-        return $this->status === self::STATUS_REJECTED;
+        return $this->status->isRejected();
     }
 
-    public function isPurchase(): bool
+    public function isLeasing(): bool
     {
-        return $this->type === self::TYPE_PURCHASE;
-    }
-
-    public function isRental(): bool
-    {
-        return $this->type === self::TYPE_RENTAL;
-    }
-
-    // ================================
-    // DEBUG / AFFICHAGE
-    // ================================
-    public function __toString(): string
-    {
-        return $this->dossierCode ?? 'Dossier #' . $this->id;
+        return in_array($this->financingType, [
+            FinancingType::LOA,
+            FinancingType::LLD
+        ], true);
     }
 }
