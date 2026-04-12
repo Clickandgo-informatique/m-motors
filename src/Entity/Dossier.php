@@ -2,25 +2,25 @@
 
 namespace App\Entity;
 
-use App\Repository\DossierRepository;
+use App\Entity\Traits\TimestampableTrait;
 use App\Enum\DossierType;
 use App\Enum\DossierStatus;
 use App\Enum\FinancingType;
+use App\Enum\VehicleStatus;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: DossierRepository::class)]
+#[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
-#[ORM\Table(name: 'dossier')]
 class Dossier
 {
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(enumType: DossierType::class)]
-    #[Assert\NotNull]
     private DossierType $type;
 
     #[ORM\Column(enumType: FinancingType::class, nullable: true)]
@@ -29,7 +29,7 @@ class Dossier
     #[ORM\Column(enumType: DossierStatus::class)]
     private DossierStatus $status = DossierStatus::DRAFT;
 
-    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'dossiers')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private Customer $customer;
 
@@ -37,31 +37,13 @@ class Dossier
     #[ORM\JoinColumn(nullable: false)]
     private Vehicle $vehicle;
 
-    #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
-
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $submittedAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $processedAt = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $duration = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $annualMileage = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?float $monthlyPayment = null;
-
-    #[ORM\PrePersist]
-    public function init(): void
-    {
-        $this->createdAt = new \DateTimeImmutable();
-    }
-
-    // ---------------- GETTERS ----------------
+    // ================= GETTERS =================
 
     public function getId(): ?int
     {
@@ -93,12 +75,17 @@ class Dossier
         return $this->vehicle;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getSubmittedAt(): ?\DateTimeImmutable
     {
-        return $this->createdAt;
+        return $this->submittedAt;
     }
 
-    // ---------------- SETTERS ----------------
+    public function getProcessedAt(): ?\DateTimeImmutable
+    {
+        return $this->processedAt;
+    }
+
+    // ================= SETTERS =================
 
     public function setType(DossierType $type): self
     {
@@ -124,77 +111,43 @@ class Dossier
         return $this;
     }
 
-    public function setDuration(?int $duration): self
-    {
-        $this->duration = $duration;
-        return $this;
-    }
-
-    public function setAnnualMileage(?int $annualMileage): self
-    {
-        $this->annualMileage = $annualMileage;
-        return $this;
-    }
-
-    public function setMonthlyPayment(?float $monthlyPayment): self
-    {
-        $this->monthlyPayment = $monthlyPayment;
-        return $this;
-    }
-
-    // ---------------- BUSINESS LOGIC ----------------
+    // ================= BUSINESS LOGIC =================
 
     public function submit(): void
     {
-        if (!$this->status->canTransitionTo(DossierStatus::SUBMITTED)) {
-            throw new \LogicException('Transition invalide');
+        if (!$this->vehicle->isAvailable()) {
+            throw new \LogicException('Véhicule indisponible');
         }
 
         $this->status = DossierStatus::SUBMITTED;
         $this->submittedAt = new \DateTimeImmutable();
+
+        $this->vehicle->setStatus(VehicleStatus::RESERVED);
     }
 
     public function approve(): void
     {
-        if (!$this->status->canTransitionTo(DossierStatus::APPROVED)) {
-            throw new \LogicException('Transition invalide');
-        }
-
         $this->status = DossierStatus::APPROVED;
         $this->processedAt = new \DateTimeImmutable();
+
+        if ($this->isLeasing()) {
+            $this->vehicle->setStatus(VehicleStatus::RENTED);
+        } else {
+            $this->vehicle->setStatus(VehicleStatus::SOLD);
+        }
     }
 
     public function reject(): void
     {
-        if (!$this->status->canTransitionTo(DossierStatus::REJECTED)) {
-            throw new \LogicException('Transition invalide');
-        }
-
         $this->status = DossierStatus::REJECTED;
         $this->processedAt = new \DateTimeImmutable();
+
+        if ($this->vehicle->isReserved()) {
+            $this->vehicle->setStatus(VehicleStatus::AVAILABLE);
+        }
     }
 
-    // ---------------- HELPERS ----------------
-
-    public function isDraft(): bool
-    {
-        return $this->status->isDraft();
-    }
-
-    public function isSubmitted(): bool
-    {
-        return $this->status->isSubmitted();
-    }
-
-    public function isApproved(): bool
-    {
-        return $this->status->isApproved();
-    }
-
-    public function isRejected(): bool
-    {
-        return $this->status->isRejected();
-    }
+    // ================= HELPERS =================
 
     public function isLeasing(): bool
     {

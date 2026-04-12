@@ -11,6 +11,7 @@ use App\Entity\Sale;
 use App\Entity\Supplier;
 use App\Entity\VehicleModel;
 use App\Entity\Favorite;
+use App\Entity\Color;
 use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,8 +27,12 @@ class Vehicle
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * Statut métier du véhicule :
+     * gestion du stock, réservation, exploitation et logistique
+     */
     #[ORM\Column(enumType: VehicleStatus::class)]
-    private ?VehicleStatus $status = null;
+    private VehicleStatus $status = VehicleStatus::AVAILABLE;
 
     /*
     ===============================
@@ -36,33 +41,30 @@ class Vehicle
     */
 
     #[ORM\Column(length: 17, unique: true)]
-    #[Assert\NotBlank(message: "Le VIN est obligatoire")]
-    #[Assert\Regex(
-        pattern: '/^[A-HJ-NPR-Z0-9]{17}$/',
-        message: "VIN invalide (17 caractères alphanumériques)"
-    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(exactly: 17)]
+    #[Assert\Regex(pattern: '/^[A-HJ-NPR-Z0-9]{17}$/')]
     private ?string $vin = null;
 
     #[ORM\Column(length: 15, unique: true)]
-    #[Assert\NotBlank(message: "Le numéro d'immatriculation est obligatoire")]
-    #[Assert\Regex(
-        pattern: '/^[A-Z0-9\-]{4,15}$/',
-        message: "Format d'immatriculation invalide"
-    )]
+    #[Assert\NotBlank]
+    #[Assert\Regex(pattern: '/^[A-Z0-9\-]{4,15}$/')]
     private ?string $registrationNumber = null;
 
     /*
     ===============================
-    INFORMATIONS VEHICULE
+    TECHNIQUE
     ===============================
     */
 
     #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero]
-    #[Assert\LessThan(value: 2000000)]
+    #[Assert\LessThan(2000000)]
     private ?int $mileage = null;
 
     #[ORM\Column(type: 'integer')]
+    #[Assert\NotBlank]
+    #[Assert\Positive]
     private ?int $price = null;
 
     #[ORM\Column(nullable: true)]
@@ -108,12 +110,6 @@ class Vehicle
     #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Sale::class)]
     private Collection $sales;
 
-    /*
-    ===============================
-    ⭐ FAVORITES
-    ===============================
-    */
-
     #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
@@ -137,16 +133,35 @@ class Vehicle
         return $this->id;
     }
 
-    public function getStatus(): ?VehicleStatus
+    public function getStatus(): VehicleStatus
     {
         return $this->status;
     }
 
+    /**
+     * Gestion des transitions métier du véhicule
+     */
     public function setStatus(VehicleStatus $status): self
     {
+        if (isset($this->status) && !$this->status->canTransitionTo($status)) {
+            throw new \LogicException(
+                sprintf(
+                    'Transition véhicule invalide : %s → %s',
+                    $this->status->value,
+                    $status->value
+                )
+            );
+        }
+
         $this->status = $status;
         return $this;
     }
+
+    /*
+    ===============================
+    IDENTIFICATION
+    ===============================
+    */
 
     public function getVin(): ?string
     {
@@ -169,6 +184,13 @@ class Vehicle
         $this->registrationNumber = strtoupper(trim($registrationNumber));
         return $this;
     }
+
+    /*
+    ===============================
+    TECHNIQUE
+    ===============================
+    */
+
     public function getMileage(): ?int
     {
         return $this->mileage;
@@ -196,20 +218,25 @@ class Vehicle
         return $this->firstRegistrationDate;
     }
 
-    public function setFirstRegistrationDate(?\DateTime $firstRegistrationDate): static
+    public function setFirstRegistrationDate(?\DateTime $date): static
     {
-        $this->firstRegistrationDate = $firstRegistrationDate;
+        $this->firstRegistrationDate = $date;
         return $this;
     }
+
+    /*
+    ===============================
+    RELATIONS
+    ===============================
+    */
 
     public function getVehicleModel(): ?VehicleModel
     {
         return $this->vehicleModel;
     }
-
-    public function setVehicleModel(?VehicleModel $vehicleModel): static
+    public function setVehicleModel(?VehicleModel $v): static
     {
-        $this->vehicleModel = $vehicleModel;
+        $this->vehicleModel = $v;
         return $this;
     }
 
@@ -217,10 +244,9 @@ class Vehicle
     {
         return $this->fuelType;
     }
-
-    public function setFuelType(?FuelType $fuelType): static
+    public function setFuelType(?FuelType $v): static
     {
-        $this->fuelType = $fuelType;
+        $this->fuelType = $v;
         return $this;
     }
 
@@ -228,10 +254,9 @@ class Vehicle
     {
         return $this->gear;
     }
-
-    public function setGear(?Gear $gear): static
+    public function setGear(?Gear $v): static
     {
-        $this->gear = $gear;
+        $this->gear = $v;
         return $this;
     }
 
@@ -239,10 +264,9 @@ class Vehicle
     {
         return $this->color;
     }
-
-    public function setColor(?Color $color): static
+    public function setColor(?Color $v): static
     {
-        $this->color = $color;
+        $this->color = $v;
         return $this;
     }
 
@@ -250,86 +274,25 @@ class Vehicle
     {
         return $this->supplier;
     }
-
-    public function setSupplier(?Supplier $supplier): static
+    public function setSupplier(?Supplier $v): static
     {
-        $this->supplier = $supplier;
+        $this->supplier = $v;
         return $this;
     }
 
     /*
     ===============================
-    FEATURES
+    HELPERS MÉTIER
     ===============================
     */
 
-    public function getFeatures(): Collection
+    public function isAvailable(): bool
     {
-        return $this->features;
+        return $this->status === VehicleStatus::AVAILABLE;
     }
 
-    public function addFeature(Feature $feature): static
+    public function isReserved(): bool
     {
-        if (!$this->features->contains($feature)) {
-            $this->features->add($feature);
-        }
-        return $this;
-    }
-
-    public function removeFeature(Feature $feature): static
-    {
-        $this->features->removeElement($feature);
-        return $this;
-    }
-
-    /*
-    ===============================
-    MAINTENANCE / RENTAL / SALES
-    ===============================
-    */
-
-    public function getMaintenances(): Collection
-    {
-        return $this->maintenances;
-    }
-
-    public function getRentals(): Collection
-    {
-        return $this->rentals;
-    }
-
-    public function getSales(): Collection
-    {
-        return $this->sales;
-    }
-
-    /*
-    ===============================
-    ⭐ FAVORITES METHODS
-    ===============================
-    */
-
-    /**
-     * @return Collection<int, Favorite>
-     */
-    public function getFavorites(): Collection
-    {
-        return $this->favorites;
-    }
-
-    public function addFavorite(Favorite $favorite): static
-    {
-        if (!$this->favorites->contains($favorite)) {
-            $this->favorites->add($favorite);
-            $favorite->setVehicle($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFavorite(Favorite $favorite): static
-    {
-        $this->favorites->removeElement($favorite);
-        return $this;
+        return $this->status === VehicleStatus::RESERVED;
     }
 }

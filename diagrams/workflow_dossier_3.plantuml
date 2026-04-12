@@ -1,0 +1,55 @@
+@startuml
+title Workflow Dossier / Véhicule / Commande fournisseur
+
+start
+
+:Création du dossier;
+:Statut = DRAFT;
+
+:Soumission du dossier;
+
+if (Véhicule disponible ?) then (oui)
+
+  :Réserver le véhicule;
+  :VehicleStatus = RESERVED;
+  :Dossier = SUBMITTED;
+
+  :Validation admin;
+
+  if (Type financement ?) then (leasing)
+
+    :Dossier approuvé;
+    :VehicleStatus = RENTED;
+
+  else (achat)
+
+    :Dossier approuvé;
+    :VehicleStatus = SOLD;
+
+  endif
+
+else (non disponible)
+
+  :Créer SupplierOrder;
+  :VehicleStatus = ORDERED;
+
+  :Commande fournisseur envoyée;
+
+  if (Commande livrée ?) then (oui)
+
+    :SupplierOrder = DELIVERED;
+    :VehicleStatus = AVAILABLE;
+
+  else (annulée)
+
+    :SupplierOrder = CANCELLED;
+    :VehicleStatus = AVAILABLE;
+
+  endif
+
+endif
+
+:Clôture du dossier;
+stop
+
+@enduml

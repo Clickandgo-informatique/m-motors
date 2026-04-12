@@ -1,0 +1,55 @@
+@startuml
+title M-Motors - Workflow Dossier / Véhicule / Fournisseur
+
+actor Client
+actor Admin
+actor Supplier
+
+participant Dossier
+participant Vehicle
+participant SupplierOrder
+
+== Création dossier ==
+
+Client -> Dossier : create(vehicle, type)
+Dossier -> Vehicle : link vehicle
+Dossier : status = DRAFT
+
+Client -> Dossier : submit()
+Dossier : status = SUBMITTED
+
+== Traitement admin ==
+
+Admin -> Dossier : review()
+
+alt Vehicle AVAILABLE
+
+    Admin -> Dossier : approve()
+    Dossier : status = APPROVED
+
+    alt type == purchase
+        Dossier -> Vehicle : setStatus(SOLD)
+    else type == rental
+        Dossier -> Vehicle : setStatus(RENTED)
+    end
+
+else Vehicle NOT AVAILABLE
+
+    Admin -> Dossier : approve + order supplier
+    Dossier : status = APPROVED_PENDING_STOCK
+
+    create SupplierOrder
+    SupplierOrder -> Vehicle : link vehicle
+    SupplierOrder : status = ORDERED
+
+    Vehicle : status = ORDERED
+
+end
+
+== Livraison fournisseur ==
+
+Supplier -> SupplierOrder : deliver()
+SupplierOrder : status = DELIVERED
+SupplierOrder -> Vehicle : setStatus(AVAILABLE)
+
+@enduml

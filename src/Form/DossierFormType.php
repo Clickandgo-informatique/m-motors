@@ -3,8 +3,11 @@
 namespace App\Form;
 
 use App\Entity\Dossier;
-use App\Enum\DossierType;
+use App\Entity\Customer;
+use App\Entity\Vehicle;
 use App\Enum\FinancingType;
+use App\Enum\DossierType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -18,72 +21,69 @@ class DossierFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // ========================= CHAMPS DE BASE =========================
+        $isAdmin = $options['is_admin'];
 
-        $builder
-            ->add('type', ChoiceType::class, [
-                'label' => 'Type de dossier',
-                'choices' => DossierType::choices(),
-                'choice_label' => fn($choice) => $choice->label(),
-                'placeholder' => 'Choisir un type',
-            ])
+        // ========================= ADMIN ONLY =========================
 
-            ->add('financingType', ChoiceType::class, [
-                'label' => 'Mode de financement',
-                'choices' => FinancingType::choices(),
-                'choice_label' => fn($choice) => $choice->label(),
-                'placeholder' => 'Choisir un financement',
-                'required' => false,
-            ]);
+        if ($isAdmin) {
+            $builder
+                ->add('customer', EntityType::class, [
+                    'class' => Customer::class,
+                    'choice_label' => fn($c) => $c->getFirstname() . ' ' . $c->getLastname(),
+                    'label' => 'Client',
+                    'placeholder' => 'Choisir un client',
+                ])
+                ->add('vehicle', EntityType::class, [
+                    'class' => Vehicle::class,
+                    'choice_label' => fn($v) => $v->getBrand() . ' ' . $v->getModel(),
+                    'label' => 'Véhicule',
+                    'placeholder' => 'Choisir un véhicule',
+                ]);
+        }
 
-        // ========================= FORM DYNAMIQUE =========================
+        // ========================= CHAMP UNIQUE =========================
 
-        /**
-         * Ajout dynamique des champs LLD / LOA
-         */
+        $builder->add('financingType', ChoiceType::class, [
+            'label' => 'Mode d’acquisition',
+            'choices' => FinancingType::choices(),
+            'choice_label' => fn($choice) => $choice->label(),
+            'placeholder' => 'Choisir une option',
+        ]);
+
+        // ========================= DYNAMIQUE =========================
+
         $formModifier = function ($form, ?FinancingType $financingType) {
 
-            // On nettoie d'abord (important en dynamique)
             foreach (['duration', 'annualMileage', 'monthlyPayment'] as $field) {
                 if ($form->has($field)) {
                     $form->remove($field);
                 }
             }
 
-            if (!$financingType) {
-                return;
-            }
+            if (!$financingType) return;
 
-            // Champs spécifiques leasing
             if (in_array($financingType, [FinancingType::LOA, FinancingType::LLD], true)) {
-
                 $form
                     ->add('duration', IntegerType::class, [
                         'label' => 'Durée (mois)',
-                        'required' => true,
                     ])
                     ->add('annualMileage', IntegerType::class, [
                         'label' => 'Kilométrage annuel',
-                        'required' => false,
                     ])
                     ->add('monthlyPayment', MoneyType::class, [
-                        'label' => 'Mensualité estimée',
+                        'label' => 'Mensualité',
                         'currency' => 'EUR',
-                        'required' => true,
                     ]);
             }
         };
 
         // ========================= EVENTS =========================
 
-        // Initialisation (édition / reload)
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($formModifier) {
-            /** @var Dossier|null $data */
             $data = $event->getData();
             $formModifier($event->getForm(), $data?->getFinancingType());
         });
 
-        // Soumission (changement du select)
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($formModifier) {
             $data = $event->getData();
 
@@ -93,12 +93,31 @@ class DossierFormType extends AbstractType
 
             $formModifier($event->getForm(), $financingType);
         });
+
+        // ========================= LOGIQUE METIER =========================
+
+        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
+
+            /** @var Dossier $dossier */
+            $dossier = $event->getData();
+
+            $financingType = $dossier->getFinancingType();
+
+            if (!$financingType) return;
+
+            if (in_array($financingType, [FinancingType::LOA, FinancingType::LLD], true)) {
+                $dossier->setType(DossierType::FINANCING);
+            } else {
+                $dossier->setType(DossierType::PURCHASE);
+            }
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Dossier::class,
+            'is_admin' => false,
         ]);
     }
 }

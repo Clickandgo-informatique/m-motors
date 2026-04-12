@@ -28,19 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-<<<<<<< HEAD
         "path": "\/assets\/styles\/app-bo9UToN.css",
-=======
-<<<<<<< Updated upstream
-        "path": "\/assets\/styles\/app-Ix85wEA.css",
-=======
-<<<<<<< HEAD
-        "path": "\/assets\/styles\/app-bo9UToN.css",
-=======
-        "path": "\/assets\/styles\/app-Ix85wEA.css",
->>>>>>> feature/customer-dossier-workflow
->>>>>>> Stashed changes
->>>>>>> feature/customer-dossier-workflow
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {

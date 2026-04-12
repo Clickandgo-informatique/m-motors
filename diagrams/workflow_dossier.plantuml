@@ -1,0 +1,41 @@
+@startuml
+title Workflow Dossier / Véhicule / Commande Fournisseur
+
+actor Client
+actor Admin
+
+participant Dossier
+participant Vehicle
+participant SupplierOrder
+
+Client -> Dossier : create(vehicle, type)
+Dossier -> Vehicle : link vehicle
+Dossier : status = DRAFT
+
+Client -> Dossier : submit()
+Dossier : status = SUBMITTED
+
+Admin -> Dossier : approve()
+
+alt Vehicle AVAILABLE
+
+    Dossier -> Vehicle : setStatus(SOLD or RENTED)
+    Dossier : status = APPROVED
+
+else Vehicle NOT AVAILABLE
+
+    Dossier -> Vehicle : setStatus(ORDERED)
+
+    create SupplierOrder
+    SupplierOrder -> Vehicle : link vehicle
+
+    SupplierOrder : status = ORDERED
+    Dossier : status = APPROVED_PENDING_STOCK
+
+end
+
+Admin -> SupplierOrder : deliver()
+SupplierOrder -> Vehicle : setStatus(AVAILABLE)
+SupplierOrder : status = DELIVERED
+
+@enduml
