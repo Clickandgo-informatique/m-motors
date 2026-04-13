@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon dossier
+{% endblock %}
+
+{% block body %}
+
+	<div class="container mt-4">
+
+		<h1>Dossier
+			{{ dossier.reference }}</h1>
+
+		<p>
+			Statut :
+			<span class="badge bg-{{ dossier.status.badge }}">
+				{{ dossier.status.label }}
+			</span>
+		</p>
+
+		<hr>
+
+		<div class="card">
+			<div class="card-body">
+
+				<p>
+					<strong>Client :</strong>
+					{{ dossier.customer }}</p>
+				<p>
+					<strong>Véhicule :</strong>
+					{{ dossier.vehicle }}</p>
+				<p>
+					<strong>Type :</strong>
+					{{ dossier.type }}</p>
+
+				<p>
+					<strong>Créé le :</strong>
+					{{ dossier.createdAt|date('d/m/Y H:i') }}</p>
+
+				{% if dossier.completedAt %}
+					<p>
+						<strong>Terminé le :</strong>
+						{{ dossier.completedAt|date('d/m/Y H:i') }}</p>
+				{% endif %}
+
+				{% if dossier.cancelledAt %}
+					<p>
+						<strong>Annulé le :</strong>
+						{{ dossier.cancelledAt|date('d/m/Y H:i') }}</p>
+				{% endif %}
+
+			</div>
+		</div>
+
+	</div>
+
+{% endblock %}

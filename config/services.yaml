@@ -1,14 +1,23 @@
-# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+# yaml-language-server:
+# $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 
 parameters:
 
 services:
-    # Configuration par défaut
     _defaults:
-        autowire: true # injection automatique
-        autoconfigure: true # enregistre automatiquement les services spéciaux
+        autowire: true
+        autoconfigure: true
 
-    # Charge automatiquement tous les services dans src/
     App\:
         resource: "../src/"
         exclude: "../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}"
+
+    # Workflow dossier client
+    workflow.dossier:
+        class: Symfony\Component\Workflow\Workflow
+        factory: ["@workflow.registry", "get"]
+        arguments:
+            - "dossier"
+
+    Symfony\Component\Workflow\WorkflowInterface $dossierWorkflow:
+        alias: workflow.dossier

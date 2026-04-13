@@ -1,21 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin - Dossiers
+{% block title %}Mes dossiers
 {% endblock %}
 
 {% block body %}
 
 	<div class="container mt-4">
 
-		<h1 class="text-center">Administration des dossiers</h1>
+		<h1>Mes dossiers</h1>
 
-		<table class="table table-hover mt-3">
+		<table class="table table-striped mt-3">
 
 			<thead>
 				<tr>
-					<th>Référence</th>				
-					<th>Véhicule</th>
-					<th>Client</th>
+					<th>Référence</th>
 					<th>Type</th>
 					<th>Statut</th>
 					<th>Date</th>
@@ -27,9 +25,7 @@
 				{% for dossier in dossiers %}
 					<tr>
 						<td>{{ dossier.reference }}</td>
-						<td>{{ dossier.vehicle.vehicleModel }}</td>
-						<td>{{ dossier.customer }}</td>
-						<td>{{ dossier.type.label }}</td>
+						<td>{{ dossier.type }}</td>
 						<td>
 							<span class="badge bg-{{ dossier.status.badge }}">
 								{{ dossier.status.label }}
@@ -37,8 +33,8 @@
 						</td>
 						<td>{{ dossier.createdAt|date('d/m/Y') }}</td>
 						<td>
-							<a href="{{ path('admin_dossier_show', {id: dossier.id}) }}" class="btn btn-sm btn-dark">
-								Gérer
+							<a href="{{ path('dossier_show', {id: dossier.id}) }}" class="btn btn-sm btn-primary">
+								Voir
 							</a>
 						</td>
 					</tr>

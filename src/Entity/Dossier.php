@@ -2,14 +2,16 @@
 
 namespace App\Entity;
 
+use App\Entity\Customer;
 use App\Entity\Traits\TimestampableTrait;
-use App\Enum\DossierType;
+use App\Entity\Vehicle;
 use App\Enum\DossierStatus;
+use App\Enum\DossierType;
 use App\Enum\FinancingType;
-use App\Enum\VehicleStatus;
+use App\Repository\DossierRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Dossier
 {
@@ -20,44 +22,72 @@ class Dossier
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(enumType: DossierType::class)]
-    private DossierType $type;
+    #[ORM\Column(length: 50, unique: true)]
+    private ?string $reference = null;
 
-    #[ORM\Column(enumType: FinancingType::class, nullable: true)]
-    private ?FinancingType $financingType = null;
+    #[ORM\ManyToOne(inversedBy: 'dossiers')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Customer $customer = null;
+
+    #[ORM\ManyToOne(inversedBy: 'dossiers')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Vehicle $vehicle = null;
 
     #[ORM\Column(enumType: DossierStatus::class)]
     private DossierStatus $status = DossierStatus::DRAFT;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private Customer $customer;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private Vehicle $vehicle;
+    #[ORM\Column(enumType: FinancingType::class, nullable: true)]
+    private ?FinancingType $financingType = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $submittedAt = null;
+    private ?\DateTimeImmutable $completedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $processedAt = null;
+    private ?\DateTimeImmutable $cancelledAt = null;
 
-    // ================= GETTERS =================
+    #[ORM\Column(enumType: DossierType::class)]
+    private ?DossierType $type = null;
+
+    // =========================
+    // GETTERS / SETTERS
+    // =========================
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getType(): DossierType
+    public function getReference(): ?string
     {
-        return $this->type;
+        return $this->reference;
     }
 
-    public function getFinancingType(): ?FinancingType
+    public function setReference(string $reference): self
     {
-        return $this->financingType;
+        $this->reference = $reference;
+        return $this;
+    }
+
+    public function getCustomer(): ?Customer
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?Customer $customer): self
+    {
+        $this->customer = $customer;
+        return $this;
+    }
+
+    public function getVehicle(): ?Vehicle
+    {
+        return $this->vehicle;
+    }
+
+    public function setVehicle(?Vehicle $vehicle): self
+    {
+        $this->vehicle = $vehicle;
+        return $this;
     }
 
     public function getStatus(): DossierStatus
@@ -65,32 +95,15 @@ class Dossier
         return $this->status;
     }
 
-    public function getCustomer(): Customer
+    public function setStatus(DossierStatus $status): self
     {
-        return $this->customer;
-    }
-
-    public function getVehicle(): Vehicle
-    {
-        return $this->vehicle;
-    }
-
-    public function getSubmittedAt(): ?\DateTimeImmutable
-    {
-        return $this->submittedAt;
-    }
-
-    public function getProcessedAt(): ?\DateTimeImmutable
-    {
-        return $this->processedAt;
-    }
-
-    // ================= SETTERS =================
-
-    public function setType(DossierType $type): self
-    {
-        $this->type = $type;
+        $this->status = $status;
         return $this;
+    }
+
+    public function getFinancingType(): ?FinancingType
+    {
+        return $this->financingType;
     }
 
     public function setFinancingType(?FinancingType $financingType): self
@@ -99,61 +112,47 @@ class Dossier
         return $this;
     }
 
-    public function setCustomer(Customer $customer): self
+    public function getCompletedAt(): ?\DateTimeImmutable
     {
-        $this->customer = $customer;
+        return $this->completedAt;
+    }
+
+    public function setCompletedAt(?\DateTimeImmutable $completedAt): self
+    {
+        $this->completedAt = $completedAt;
         return $this;
     }
 
-    public function setVehicle(Vehicle $vehicle): self
+    public function getCancelledAt(): ?\DateTimeImmutable
     {
-        $this->vehicle = $vehicle;
+        return $this->cancelledAt;
+    }
+
+    public function setCancelledAt(?\DateTimeImmutable $cancelledAt): self
+    {
+        $this->cancelledAt = $cancelledAt;
         return $this;
     }
-
-    // ================= BUSINESS LOGIC =================
-
-    public function submit(): void
+    public function getType(): ?DossierType
     {
-        if (!$this->vehicle->isAvailable()) {
-            throw new \LogicException('Véhicule indisponible');
+        return $this->type;
+    }
+    public function setType(?DossierType $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+    #[ORM\PrePersist]
+    public function generateReference(): void
+    {
+        if ($this->reference) {
+            return;
         }
 
-        $this->status = DossierStatus::SUBMITTED;
-        $this->submittedAt = new \DateTimeImmutable();
-
-        $this->vehicle->setStatus(VehicleStatus::RESERVED);
-    }
-
-    public function approve(): void
-    {
-        $this->status = DossierStatus::APPROVED;
-        $this->processedAt = new \DateTimeImmutable();
-
-        if ($this->isLeasing()) {
-            $this->vehicle->setStatus(VehicleStatus::RENTED);
-        } else {
-            $this->vehicle->setStatus(VehicleStatus::SOLD);
-        }
-    }
-
-    public function reject(): void
-    {
-        $this->status = DossierStatus::REJECTED;
-        $this->processedAt = new \DateTimeImmutable();
-
-        if ($this->vehicle->isReserved()) {
-            $this->vehicle->setStatus(VehicleStatus::AVAILABLE);
-        }
-    }
-
-    // ================= HELPERS =================
-
-    public function isLeasing(): bool
-    {
-        return in_array($this->financingType, [
-            FinancingType::LOA,
-            FinancingType::LLD
-        ], true);
+        $this->reference = sprintf(
+            'DOS-%s-%s',
+            date('Ymd'),
+            strtoupper(bin2hex(random_bytes(3)))
+        );
     }
 }

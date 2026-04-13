@@ -2,11 +2,11 @@
 
 namespace App\Form;
 
-use App\Entity\Dossier;
 use App\Entity\Customer;
+use App\Entity\Dossier;
 use App\Entity\Vehicle;
-use App\Enum\FinancingType;
 use App\Enum\DossierType;
+use App\Enum\FinancingType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -23,8 +23,9 @@ class DossierFormType extends AbstractType
     {
         $isAdmin = $options['is_admin'];
 
-        // ========================= ADMIN ONLY =========================
-
+        // =========================
+        // ADMIN ONLY FIELDS
+        // =========================
         if ($isAdmin) {
             $builder
                 ->add('customer', EntityType::class, [
@@ -41,18 +42,21 @@ class DossierFormType extends AbstractType
                 ]);
         }
 
-        // ========================= CHAMP UNIQUE =========================
-
+        // =========================
+        // COMMON FIELD
+        // =========================
         $builder->add('financingType', ChoiceType::class, [
             'label' => 'Mode d’acquisition',
             'choices' => FinancingType::choices(),
             'choice_label' => fn($choice) => $choice->label(),
             'placeholder' => 'Choisir une option',
+            'required' => false,
         ]);
 
-        // ========================= DYNAMIQUE =========================
-
-        $formModifier = function ($form, ?FinancingType $financingType) {
+        // =========================
+        // DYNAMIC FIELDS
+        // =========================
+        $formModifier = function ($form, ?FinancingType $type) {
 
             foreach (['duration', 'annualMileage', 'monthlyPayment'] as $field) {
                 if ($form->has($field)) {
@@ -60,9 +64,11 @@ class DossierFormType extends AbstractType
                 }
             }
 
-            if (!$financingType) return;
+            if (!$type) {
+                return;
+            }
 
-            if (in_array($financingType, [FinancingType::LOA, FinancingType::LLD], true)) {
+            if (in_array($type, [FinancingType::LOA, FinancingType::LLD], true)) {
                 $form
                     ->add('duration', IntegerType::class, [
                         'label' => 'Durée (mois)',
@@ -77,39 +83,45 @@ class DossierFormType extends AbstractType
             }
         };
 
-        // ========================= EVENTS =========================
+        // =========================
+        // EVENTS
+        // =========================
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($formModifier) {
-            $data = $event->getData();
-            $formModifier($event->getForm(), $data?->getFinancingType());
+            $formModifier($event->getForm(), $event->getData()?->getFinancingType());
         });
 
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($formModifier) {
             $data = $event->getData();
 
-            $financingType = isset($data['financingType'])
+            $type = isset($data['financingType'])
                 ? FinancingType::tryFrom($data['financingType'])
                 : null;
 
-            $formModifier($event->getForm(), $financingType);
+            $formModifier($event->getForm(), $type);
         });
 
-        // ========================= LOGIQUE METIER =========================
-
+        // =========================
+        // BUSINESS LOGIC
+        // =========================
         $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
 
             /** @var Dossier $dossier */
             $dossier = $event->getData();
 
-            $financingType = $dossier->getFinancingType();
-
-            if (!$financingType) return;
-
-            if (in_array($financingType, [FinancingType::LOA, FinancingType::LLD], true)) {
-                $dossier->setType(DossierType::FINANCING);
-            } else {
-                $dossier->setType(DossierType::PURCHASE);
+            if (!$dossier->getFinancingType()) {
+                return;
             }
+
+            $dossier->setType(
+                in_array(
+                    $dossier->getFinancingType(),
+                    [FinancingType::LOA, FinancingType::LLD],
+                    true
+                )
+                    ? DossierType::FINANCING
+                    : DossierType::PURCHASE
+            );
         });
     }
 

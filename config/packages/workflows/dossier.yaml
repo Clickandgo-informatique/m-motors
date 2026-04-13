@@ -1,0 +1,34 @@
+framework:
+  workflows:
+    dossier:
+      type: "state_machine"
+      marking_store:
+        type: "method"
+        property: "status"
+      supports:
+        - App\Entity\Dossier
+
+      initial_marking: draft
+
+      places:
+        - draft
+        - in_progress
+        - completed
+        - cancelled
+
+      transitions:
+        start:
+          from: draft
+          to: in_progress
+
+        complete:
+          from: in_progress
+          to: completed
+
+        cancel_from_draft:
+          from: draft
+          to: cancelled
+
+        cancel_from_progress:
+          from: in_progress
+          to: cancelled

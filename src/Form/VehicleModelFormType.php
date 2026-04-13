@@ -37,13 +37,15 @@ class VehicleModelFormType extends AbstractType
                 'label' => 'Marque',
                 'class' => Brand::class,
                 'choice_label' => 'name',
+                'placeholder' => 'Choisir une marque',
+                'required' => false
             ])
             ->add('model', TextType::class, [
-                'label' => 'Modèle'
+                'label' => 'Modèle','attr'=>['placeholder'=>'Description du modèle']
             ])
             ->add('variant', TextType::class, [
                 'label' => 'Variante',
-           
+
             ])
             ->add('fuelType', EntityType::class, [
                 'label' => 'Type énergie',
@@ -58,7 +60,9 @@ class VehicleModelFormType extends AbstractType
             ->add('bodyType', EntityType::class, [
                 'label' => 'Type carrosserie',
                 'class' => BodyType::class,
-                'choice_label' => 'name'
+                'choice_label' => 'name',
+                'placeholder' => 'Choisir un type',
+                'required' => false
             ])
         ;
     }

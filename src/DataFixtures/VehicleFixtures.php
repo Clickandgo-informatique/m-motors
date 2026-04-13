@@ -26,7 +26,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
         $vehicleModels = $this->vehicleModelRepository->findAll();
         $suppliers     = $this->supplierRepository->findAll();
-        $colors = $this->colorRepository->findAll();
+        $colors        = $this->colorRepository->findAll();
 
         if (empty($vehicleModels)) {
             throw new \RuntimeException('Aucun VehicleModel trouvé en base.');
@@ -36,31 +36,33 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
             throw new \RuntimeException('Aucun Supplier trouvé en base.');
         }
 
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 1; $i <= 50; $i++) {
 
             $vehicle = new Vehicle();
 
-            $vehicle->setVin('VIN' . str_pad((string)$i, 14, '0', STR_PAD_LEFT));
+            // VIN valide (important)
+            $vin = strtoupper($faker->regexify('[A-HJ-NPR-Z0-9]{17}'));
+            $vehicle->setVin($vin);
+
             $vehicle->setRegistrationNumber(
-                $faker->regexify('[A-Z]{2}-[0-9]{3}-[A-Z]{2}')
+                sprintf('MM-%03d-%s', $i, strtoupper($faker->lexify('??')))
             );
-            $vehicle->setMileage($faker->numberBetween(0, 200000));         
-            $vehicle->setPrice($faker->randomFloat(2, 5000, 60000));
+
+            $vehicle->setMileage($faker->numberBetween(0, 200000));
+            $vehicle->setPrice($faker->numberBetween(5000, 60000));
             $vehicle->setStatus(VehicleStatus::AVAILABLE);
             $vehicle->setFirstRegistrationDate($faker->dateTimeThisDecade());
-            $vehicle->setColor($colors[array_rand($colors)]);
 
-            // VehicleModel aléatoire depuis la base
-            $vehicle->setVehicleModel(
-                $vehicleModels[array_rand($vehicleModels)]
-            );
+            if (!empty($colors)) {
+                $vehicle->setColor($colors[array_rand($colors)]);
+            }
 
-            // Supplier aléatoire depuis la base
-            $vehicle->setSupplier(
-                $suppliers[array_rand($suppliers)]
-            );
+            $vehicle->setVehicleModel($vehicleModels[array_rand($vehicleModels)]);
+            $vehicle->setSupplier($suppliers[array_rand($suppliers)]);
 
             $manager->persist($vehicle);
+
+            $this->addReference('vehicle_' . $i, $vehicle);
         }
 
         $manager->flush();
@@ -73,5 +75,10 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
             SupplierFixtures::class,
             ColorFixtures::class
         ];
+    }
+
+    public static function getGroups(): array
+    {
+        return ['vehiclefixtures'];
     }
 }
