@@ -33,8 +33,19 @@ class Dossier
     #[ORM\JoinColumn(nullable: false)]
     private ?Vehicle $vehicle = null;
 
+    /**
+     * Statut métier (Enum).
+     * Utilisé pour la logique applicative et l'affichage.
+     */
     #[ORM\Column(enumType: DossierStatus::class)]
     private DossierStatus $status = DossierStatus::DRAFT;
+
+    /**
+     * Champ utilisé exclusivement par le Workflow Symfony.
+     * Doit contenir une valeur string correspondant aux "places" du workflow.
+     */
+    #[ORM\Column(length: 50)]
+    private string $workflowStatus = 'draft';
 
     #[ORM\Column(enumType: FinancingType::class, nullable: true)]
     private ?FinancingType $financingType = null;
@@ -48,9 +59,9 @@ class Dossier
     #[ORM\Column(enumType: DossierType::class)]
     private ?DossierType $type = null;
 
-    // =========================
+    // =========================================================
     // GETTERS / SETTERS
-    // =========================
+    // =========================================================
 
     public function getId(): ?int
     {
@@ -98,6 +109,25 @@ class Dossier
     public function setStatus(DossierStatus $status): self
     {
         $this->status = $status;
+
+        // Synchronisation avec le workflow
+        $this->workflowStatus = $status->value;
+
+        return $this;
+    }
+
+    public function getWorkflowStatus(): string
+    {
+        return $this->workflowStatus;
+    }
+
+    public function setWorkflowStatus(string $workflowStatus): self
+    {
+        $this->workflowStatus = $workflowStatus;
+
+        // Synchronisation vers l'Enum métier
+        $this->status = DossierStatus::from($workflowStatus);
+
         return $this;
     }
 
@@ -133,15 +163,22 @@ class Dossier
         $this->cancelledAt = $cancelledAt;
         return $this;
     }
+
     public function getType(): ?DossierType
     {
         return $this->type;
     }
+
     public function setType(?DossierType $type): self
     {
         $this->type = $type;
         return $this;
     }
+
+    // =========================================================
+    // LIFECYCLE
+    // =========================================================
+
     #[ORM\PrePersist]
     public function generateReference(): void
     {
@@ -154,5 +191,26 @@ class Dossier
             date('Ymd'),
             strtoupper(bin2hex(random_bytes(3)))
         );
+    }
+    // Gestion des badges de status
+    public function getStatusBadge(): string
+    {
+        return match ($this->workflowStatus) {
+            'draft' => 'secondary',
+            'in_progress' => 'primary',
+            'completed' => 'success',
+            'cancelled' => 'danger',
+            default => 'dark',
+        };
+    }
+    public function getStatusLabel(): string
+    {
+        return match ($this->workflowStatus) {
+            'draft' => 'Brouillon',
+            'in_progress' => 'En cours',
+            'completed' => 'Terminé',
+            'cancelled' => 'Annulé',
+            default => 'Inconnu',
+        };
     }
 }

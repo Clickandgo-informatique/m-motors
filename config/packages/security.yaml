@@ -1,7 +1,6 @@
-# config/packages/security.yaml
 security:
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: "auto"
+        Symfony\Component\Security\Core\User\UserInterface: "auto"
 
     providers:
         app_user_provider:
@@ -23,18 +22,26 @@ security:
             provider: app_user_provider
             custom_authenticators:
                 - App\Security\LoginFormAuthenticator
+
             logout:
                 path: app_logout
+
             remember_me:
                 secret: "%kernel.secret%"
                 lifetime: 604800
                 path: /
 
     access_control:
-        # Routes publiques
+        # PUBLIC
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/vehicles, roles: PUBLIC_ACCESS }
 
-        # Admin / Manager
+        # ADMIN UI (lecture interface uniquement)
         - { path: ^/admin, roles: [ROLE_ADMIN, ROLE_MANAGER] }
+
+        # WORKFLOW ACTIONS (IMPORTANT : séparé de /admin)
+        - { path: ^/dossier/.*/transition, roles: IS_AUTHENTICATED_FULLY }
+
+        # fallback sécurité globale admin
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

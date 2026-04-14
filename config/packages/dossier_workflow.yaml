@@ -1,10 +1,12 @@
 framework:
   workflows:
     dossier:
-      type: "state_machine"
+      type: state_machine
+
       marking_store:
-        type: "method"
-        property: "status"
+        type: method
+        property: workflowStatus # ✅ IMPORTANT : champ dédié workflow
+
       supports:
         - App\Entity\Dossier
 

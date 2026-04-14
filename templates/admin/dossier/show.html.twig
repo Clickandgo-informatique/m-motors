@@ -10,62 +10,114 @@
 		<h1>Gestion du dossier
 			{{ dossier.reference }}</h1>
 
+		{# =========================================================
+				       STATUT (source : workflowStatus = Symfony Workflow)
+				       ========================================================= #}
 		<p>
 			Statut :
-			<span class="badge bg-{{ dossier.status.badge }}">
-				{{ dossier.status.label }}
+			<span class="badge bg-{{ dossier.statusBadge }}">
+				{{ dossier.statusLabel }}
 			</span>
 		</p>
 
 		<hr>
 
+		{# =========================================================
+				       INFOS DOSSIER
+				       ========================================================= #}
 		<div class="card mb-4">
 			<div class="card-body">
 
 				<p>
 					<strong>Client :</strong>
-					{{ dossier.customer }}</p>
+					<a href="{{ path('customer_show', {id: dossier.customer.id}) }}">
+						[{{ dossier.customer.customerCode }}]
+						{{ dossier.customer.lastname }}
+						{{ dossier.customer.firstname }}
+					</a>
+				</p>
+
 				<p>
 					<strong>Véhicule :</strong>
-					{{ dossier.vehicle }}</p>
+					<a href="{{ path('vehicle_edit', {id: dossier.vehicle.id}) }}">
+						{{ dossier.vehicle.vehicleModel }}
+					</a>
+				</p>
+
 				<p>
 					<strong>Type :</strong>
-					{{ dossier.type }}</p>
+					{{ dossier.type.label }}
+				</p>
 
 			</div>
 		</div>
 
+		{# =========================================================
+				       WORKFLOW ACTIONS
+				       ========================================================= #}
 		<div class="card">
 			<div class="card-body">
 
 				<h5>Actions workflow</h5>
 
-				<div class="d-flex gap-2 flex-wrap">
+				<div
+					class="d-flex gap-2 flex-wrap">
 
-					{% if workflow.can(dossier, 'start') %}
+					{# -------------------------
+										                   START
+										                   draft → in_progress
+										                   ------------------------- #}
+					{% if workflow_can(dossier, 'start') %}
 						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'start' }) }}">
-							<button class="btn btn-primary">
+
+							<input type="hidden" name="_token" value="{{ csrf_token('workflow_transition_' ~ dossier.id) }}">
+
+							<button type="submit" class="btn btn-primary">
 								Démarrer
 							</button>
 						</form>
 					{% endif %}
 
-					{% if workflow.can(dossier, 'complete') %}
+					{# -------------------------
+										                   COMPLETE
+										                   in_progress → completed
+										                   ------------------------- #}
+					{% if workflow_can(dossier, 'complete') %}
 						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'complete' }) }}">
-							<button class="btn btn-success">
+
+							<input type="hidden" name="_token" value="{{ csrf_token('workflow_transition_' ~ dossier.id) }}">
+
+							<button type="submit" class="btn btn-success">
 								Terminer
 							</button>
 						</form>
 					{% endif %}
 
-					{% if workflow.can(dossier, 'cancel') %}
-						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'cancel' }) }}" onsubmit="return confirm('Confirmer ?');">
+					{# -------------------------
+										                   CANCEL (2 transitions possibles)
+										                   ------------------------- #}
+					{% if workflow_can(dossier, 'cancel_from_draft') %}
 
-							<button class="btn btn-danger">
+						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'cancel_from_draft' }) }}" onsubmit="return confirm('Confirmer l’annulation ?');">
+
+							<input type="hidden" name="_token" value="{{ csrf_token('workflow_transition_' ~ dossier.id) }}">
+
+							<button type="submit" class="btn btn-danger">
 								Annuler
 							</button>
-
 						</form>
+
+					{% elseif workflow_can(dossier, 'cancel_from_progress') %}
+
+						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'cancel_from_progress' }) }}" onsubmit="return confirm('Confirmer l’annulation ?');">
+
+							<input type="hidden" name="_token" value="{{ csrf_token('workflow_transition_' ~ dossier.id) }}">
+
+							<button type="submit" class="btn btn-danger">
+								Annuler
+							</button>
+						</form>
+
 					{% endif %}
 
 				</div>
@@ -74,5 +126,4 @@
 		</div>
 
 	</div>
-
 {% endblock %}

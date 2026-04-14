@@ -9,7 +9,7 @@ use App\Form\DossierFormType;
 use App\Repository\DossierRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -20,7 +20,6 @@ class DossierController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private Security $security
     ) {}
 
     // =========================================================
@@ -77,36 +76,90 @@ class DossierController extends AbstractController
     }
 
     #[Route('/{id<\d+>}', name: 'dossier_show', methods: ['GET'])]
-    public function show(Dossier $dossier, WorkflowInterface $workflow): Response
+    public function show(Dossier $dossier): Response
     {
         $this->denyAccessUnlessGranted('view', $dossier);
 
         return $this->render('dossier/show.html.twig', [
             'dossier' => $dossier,
-            'workflow' => $workflow
         ]);
     }
 
-    #[Route('/{id<\d+>}/transition/{transition}', name: 'dossier_transition', methods: ['POST'])]
+    // =========================================================
+    // WORKFLOW (ADMIN ACTIONS)
+    // =========================================================
+
+    /**
+     * Applique une transition de workflow sur un dossier.
+     *
+     * Étapes :
+     * - Vérification des droits
+     * - Validation CSRF
+     * - Vérification de la transition autorisée
+     * - Application du workflow Symfony
+     * - Persistance des changements
+     */
+    #[Route('/admin/{id<\d+>}/transition/{transition}', name: 'dossier_transition', methods: ['POST'])]
     public function transition(
+        Request $request,
         Dossier $dossier,
         string $transition,
-        WorkflowInterface $workflow
+        #[Target('dossier')] WorkflowInterface $workflow,
+        EntityManagerInterface $em
     ): Response {
-        $this->denyAccessUnlessGranted('edit', $dossier);
 
-        if (!$workflow->can($dossier, $transition)) {
-            throw $this->createAccessDeniedException('Transition non autorisée');
+        // =========================================================
+        // CSRF PROTECTION
+        // =========================================================
+        if (!$this->isCsrfTokenValid(
+            'workflow_transition_' . $dossier->getId(),
+            $request->request->get('_token')
+        )) {
+            throw $this->createAccessDeniedException('Token CSRF invalide');
         }
 
-        $workflow->apply($dossier, $transition);
-        $this->em->flush();
+        // =========================================================
+        // VERIFICATION TRANSITION SYMFONY WORKFLOW
+        // =========================================================
+        if (!$workflow->can($dossier, $transition)) {
+            $this->addFlash('error', 'Transition non autorisée');
 
-        return $this->redirectToRoute('dossier_show', [
+            return $this->redirectToRoute('admin_dossier_show', [
+                'id' => $dossier->getId()
+            ]);
+        }
+
+        // =========================================================
+        // DEBUG OPTIONNEL (TEMPORAIRE UNIQUEMENT)
+        // =========================================================
+        // dump($workflow->getMarking($dossier));
+
+        try {
+            // =========================================================
+            // APPLICATION TRANSITION
+            // =========================================================
+            $workflow->apply($dossier, $transition);
+
+            // =========================================================
+            // SYNC MANUEL SI NECESSAIRE (selon mapping)
+            // =========================================================
+            // Important si workflowStatus est source de vérité
+            $dossier->setWorkflowStatus($dossier->getWorkflowStatus());
+
+            // =========================================================
+            // PERSISTENCE
+            // =========================================================
+            $em->flush();
+
+            $this->addFlash('success', 'Statut mis à jour avec succès');
+        } catch (\Throwable $e) {
+            $this->addFlash('error', 'Erreur workflow : ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('admin_dossier_show', [
             'id' => $dossier->getId()
         ]);
     }
-
     // =========================================================
     // ADMIN
     // =========================================================
@@ -127,7 +180,7 @@ class DossierController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         return $this->render('admin/dossier/show.html.twig', [
-            'dossier' => $dossier
+            'dossier' => $dossier,
         ]);
     }
 

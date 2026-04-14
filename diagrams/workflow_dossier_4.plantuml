@@ -1,0 +1,36 @@
+@startuml DossierWorkflow
+
+title Workflow Dossier (M-Motors)
+
+[*] --> draft
+
+draft --> in_progress : start
+
+state in_progress {
+    [*] --> basic_info
+    basic_info --> vehicle_selected
+    vehicle_selected --> financing
+    financing --> documents_pending
+    documents_pending --> validation_ready
+}
+
+in_progress --> waiting_documents : submit_for_review
+waiting_documents --> in_progress : upload_documents
+
+waiting_documents --> validation_ready : all_documents_received
+
+validation_ready --> approved : validate
+validation_ready --> rejected : reject
+
+approved --> completed : finalize
+
+draft --> cancelled : cancel
+in_progress --> cancelled : cancel
+waiting_documents --> cancelled : cancel
+validation_ready --> cancelled : cancel
+
+approved --> [*]
+completed --> [*]
+cancelled --> [*]
+
+@enduml

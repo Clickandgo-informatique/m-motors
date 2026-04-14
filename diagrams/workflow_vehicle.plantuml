@@ -1,0 +1,22 @@
+@startuml VehicleWorkflow
+
+title Workflow Vehicle (M-Motors)
+
+[*] --> available
+
+available --> reserved : dossier_started
+reserved --> sold : purchase_completed
+reserved --> rented : leasing_completed
+
+available --> ordered : supplier_order_created
+ordered --> available : delivery_received
+
+sold --> archived
+rented --> archived
+
+ordered --> cancelled_order : cancel_order
+cancelled_order --> available
+
+archived --> [*]
+
+@enduml

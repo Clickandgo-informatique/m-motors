@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Dossier;
 use App\Entity\SupplierOrder;
+use App\Enum\DossierStatus;
 use App\Enum\VehicleStatus;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -50,7 +51,7 @@ class DossierWorkflowService
         Finalisation dossier
         =========================================================
         */
-        $dossier->approve();
+        $dossier->setStatus(DossierStatus::COMPLETED);
 
         $this->em->flush();
     }
