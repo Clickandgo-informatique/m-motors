@@ -11,8 +11,8 @@
 			{{ dossier.reference }}</h1>
 
 		{# =========================================================
-				       STATUT (source : workflowStatus = Symfony Workflow)
-				       ========================================================= #}
+								       STATUT (source : workflowStatus = Symfony Workflow)
+								       ========================================================= #}
 		<p>
 			Statut :
 			<span class="badge bg-{{ dossier.statusBadge }}">
@@ -23,8 +23,8 @@
 		<hr>
 
 		{# =========================================================
-				       INFOS DOSSIER
-				       ========================================================= #}
+								       INFOS DOSSIER
+								       ========================================================= #}
 		<div class="card mb-4">
 			<div class="card-body">
 
@@ -51,10 +51,47 @@
 
 			</div>
 		</div>
-
 		{# =========================================================
-				       WORKFLOW ACTIONS
-				       ========================================================= #}
+				   DOCUMENTS DU DOSSIER (DROPZONE)
+				   ========================================================= #}
+
+		<div class="card mt-4">
+			<div class="card-body">
+
+				<h5>Documents du dossier</h5>
+
+				{% if dossier.workflowStatus in ['draft', 'in_progress'] %}
+
+					<div class="dropzone" data-upload-url="{{ path('dossier_document_upload', { id: dossier.id }) }}" data-delete-url="{{ path('dossier_document_delete', { id: dossier.id }) }}" data-destination="dossier_{{ dossier.id }}/documents" data-preview-id="dossier-documents-preview"></div>
+
+				{% else %}
+
+					<p class="text-muted">
+						Les documents ne peuvent plus être modifiés à ce stade du dossier.
+					</p>
+
+				{% endif %}
+
+				<hr>
+
+				<div id="dossier-documents-preview" class="d-flex flex-wrap gap-2 mt-3">
+
+					{% for doc in dossier.documents %}
+						<div class="dz-thumb" data-file="{{ doc.filename }}">
+							<img src="/uploads/{{ doc.path }}" width="120" class="rounded border">
+							<button class="dz-delete" data-file="{{ doc.filename }}">×</button>
+						</div>
+					{% else %}
+						<p class="text-muted">Aucun document uploadé</p>
+					{% endfor %}
+
+				</div>
+
+			</div>
+		</div>
+		{# =========================================================
+								       WORKFLOW ACTIONS
+								       ========================================================= #}
 		<div class="card">
 			<div class="card-body">
 
@@ -64,9 +101,9 @@
 					class="d-flex gap-2 flex-wrap">
 
 					{# -------------------------
-										                   START
-										                   draft → in_progress
-										                   ------------------------- #}
+																				                   START
+																				                   draft → in_progress
+																				                   ------------------------- #}
 					{% if workflow_can(dossier, 'start') %}
 						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'start' }) }}">
 
@@ -79,9 +116,9 @@
 					{% endif %}
 
 					{# -------------------------
-										                   COMPLETE
-										                   in_progress → completed
-										                   ------------------------- #}
+																				                   COMPLETE
+																				                   in_progress → completed
+																				                   ------------------------- #}
 					{% if workflow_can(dossier, 'complete') %}
 						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'complete' }) }}">
 
@@ -94,8 +131,8 @@
 					{% endif %}
 
 					{# -------------------------
-										                   CANCEL (2 transitions possibles)
-										                   ------------------------- #}
+																				                   CANCEL (2 transitions possibles)
+																				                   ------------------------- #}
 					{% if workflow_can(dossier, 'cancel_from_draft') %}
 
 						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'cancel_from_draft' }) }}" onsubmit="return confirm('Confirmer l’annulation ?');">
@@ -126,4 +163,25 @@
 		</div>
 
 	</div>
+	<form id="upload-form" enctype="multipart/form-data">
+		<input type="file" name="file" id="file-input">
+		<button type="submit">Uploader</button>
+	</form>
+
+	<script>
+		document.getElementById('upload-form').addEventListener('submit', async (e) => {
+e.preventDefault();
+
+const file = document.getElementById('file-input').files[0];
+const formData = new FormData();
+formData.append('file', file);
+
+const res = await fetch('{{ path('dossier_document_upload', {id: dossier.id}) }}', {
+method: 'POST',
+body: formData
+});
+
+console.log(await res.json());
+});
+	</script>
 {% endblock %}

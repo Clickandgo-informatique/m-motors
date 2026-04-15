@@ -119,7 +119,7 @@ class DossierController extends AbstractController
         }
 
         // =========================================================
-        // VERIFICATION TRANSITION SYMFONY WORKFLOW
+        // CHECK TRANSITION
         // =========================================================
         if (!$workflow->can($dossier, $transition)) {
             $this->addFlash('error', 'Transition non autorisée');
@@ -129,26 +129,19 @@ class DossierController extends AbstractController
             ]);
         }
 
-        // =========================================================
-        // DEBUG OPTIONNEL (TEMPORAIRE UNIQUEMENT)
-        // =========================================================
-        // dump($workflow->getMarking($dossier));
-
         try {
             // =========================================================
-            // APPLICATION TRANSITION
+            // APPLY WORKFLOW
             // =========================================================
             $workflow->apply($dossier, $transition);
 
             // =========================================================
-            // SYNC MANUEL SI NECESSAIRE (selon mapping)
+            // IMPORTANT : SYNC STATUS (UNE SEULE SOURCE)
             // =========================================================
-            // Important si workflowStatus est source de vérité
-            $dossier->setWorkflowStatus($dossier->getWorkflowStatus());
+            $dossier->setStatus(
+                \App\Enum\DossierStatus::from($dossier->getWorkflowStatus())
+            );
 
-            // =========================================================
-            // PERSISTENCE
-            // =========================================================
             $em->flush();
 
             $this->addFlash('success', 'Statut mis à jour avec succès');

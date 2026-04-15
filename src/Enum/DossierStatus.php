@@ -3,12 +3,16 @@
 namespace App\Enum;
 
 /**
- * Enum représentant les statuts possibles d’un dossier
+ * Enum représentant les statuts métier du dossier
+ * Aligné avec le Symfony Workflow (workflowStatus)
  */
 enum DossierStatus: string
 {
     case DRAFT = 'draft';
-    case IN_PROGRESS = 'in_progress';
+    case CUSTOMER_INFO = 'customer_info';
+    case FINANCING = 'financing';
+    case DOCUMENTS = 'documents';
+    case VALIDATION = 'validation';
     case COMPLETED = 'completed';
     case CANCELLED = 'cancelled';
 
@@ -19,33 +23,42 @@ enum DossierStatus: string
     {
         return match ($this) {
             self::DRAFT => 'Brouillon',
-            self::IN_PROGRESS => 'En cours',
+            self::CUSTOMER_INFO => 'Informations client',
+            self::FINANCING => 'Financement',
+            self::DOCUMENTS => 'Documents',
+            self::VALIDATION => 'En validation',
             self::COMPLETED => 'Terminé',
             self::CANCELLED => 'Annulé',
         };
     }
 
     /**
-     * (Optionnel) Couleur Bootstrap / badge
+     * Badge Bootstrap
      */
     public function getBadge(): string
     {
         return match ($this) {
             self::DRAFT => 'secondary',
-            self::IN_PROGRESS => 'primary',
+            self::CUSTOMER_INFO => 'info',
+            self::FINANCING => 'primary',
+            self::DOCUMENTS => 'warning',
+            self::VALIDATION => 'dark',
             self::COMPLETED => 'success',
             self::CANCELLED => 'danger',
         };
     }
 
     /**
-     * (Optionnel) Liste pour formulaires Symfony
+     * Liste pour formulaires Symfony
      */
     public static function choices(): array
     {
         return [
             'Brouillon' => self::DRAFT,
-            'En cours' => self::IN_PROGRESS,
+            'Informations client' => self::CUSTOMER_INFO,
+            'Financement' => self::FINANCING,
+            'Documents' => self::DOCUMENTS,
+            'En validation' => self::VALIDATION,
             'Terminé' => self::COMPLETED,
             'Annulé' => self::CANCELLED,
         ];

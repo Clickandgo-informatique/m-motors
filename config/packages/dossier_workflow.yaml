@@ -5,7 +5,7 @@ framework:
 
       marking_store:
         type: method
-        property: workflowStatus # ✅ IMPORTANT : champ dédié workflow
+        property: workflowStatus
 
       supports:
         - App\Entity\Dossier
@@ -14,23 +14,48 @@ framework:
 
       places:
         - draft
-        - in_progress
+        - vehicle_selected
+        - documents_pending
+        - documents_review
+        - financing_review
         - completed
         - cancelled
 
       transitions:
-        start:
+        select_vehicle:
           from: draft
-          to: in_progress
+          to: vehicle_selected
+
+        request_documents:
+          from: vehicle_selected
+          to: documents_pending
+
+        submit_documents:
+          from: documents_pending
+          to: documents_review
+
+        validate_documents:
+          from: documents_review
+          to: financing_review
 
         complete:
-          from: in_progress
+          from: financing_review
           to: completed
 
         cancel_from_draft:
           from: draft
           to: cancelled
 
-        cancel_from_progress:
-          from: in_progress
+        cancel_from_vehicle:
+          from: vehicle_selected
+          to: cancelled
+
+        cancel_from_documents:
+          from:
+            - documents_pending
+            - documents_review
+          to: cancelled
+
+        cancel_from_financing:
+          from: financing_review
           to: cancelled

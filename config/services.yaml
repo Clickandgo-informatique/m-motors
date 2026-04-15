@@ -1,23 +1,21 @@
-# yaml-language-server:
-# $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
-
 parameters:
+    dossier_upload_dir: "%kernel.project_dir%/public/uploads/dossiers"
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            string $uploadDir: "%dossier_upload_dir%"
 
     App\:
         resource: "../src/"
         exclude: "../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}"
 
-    # Workflow dossier client
     workflow.dossier:
         class: Symfony\Component\Workflow\Workflow
         factory: ["@workflow.registry", "get"]
         arguments:
             - "dossier"
 
-    Symfony\Component\Workflow\WorkflowInterface $dossierWorkflow:
-        alias: workflow.dossier
+    Symfony\Component\Workflow\WorkflowInterface: "@workflow.dossier"
