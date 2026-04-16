@@ -158,26 +158,3 @@
   opacity: 0.55;
   filter: grayscale(1);
 }
-
-/* Légende titre du document */
-.dz-filename {
-  font-size: 12px;
-  color: #6c757d;
-  padding: 6px 8px;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  background: #fff;
-}
-
-/* optionnel : highlight extension */
-.dz-filename::after {
-  content: "";
-}
-.dz-upload-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}

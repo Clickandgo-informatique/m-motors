@@ -7,12 +7,9 @@
 
 	<div class="container mt-4">
 
-		<h1>Gestion du dossier
+		<h1>Dossier
 			{{ dossier.reference }}</h1>
 
-		{# =========================================================
-								       STATUT (source : workflowStatus = Symfony Workflow)
-								       ========================================================= #}
 		<p>
 			Statut :
 			<span class="badge bg-{{ dossier.statusBadge }}">
@@ -22,140 +19,88 @@
 
 		<hr>
 
-		{# =========================================================
-								       INFOS DOSSIER
-								       ========================================================= #}
+		{# =========================
+		       INFOS
+		    ========================= #}
+
 		<div class="card mb-4">
 			<div class="card-body">
 
 				<p>
 					<strong>Client :</strong>
-					<a href="{{ path('customer_show', {id: dossier.customer.id}) }}">
-						[{{ dossier.customer.customerCode }}]
-						{{ dossier.customer.lastname }}
-						{{ dossier.customer.firstname }}
-					</a>
+					{{ dossier.customer.lastname }}
 				</p>
 
 				<p>
 					<strong>Véhicule :</strong>
-					<a href="{{ path('vehicle_edit', {id: dossier.vehicle.id}) }}">
-						{{ dossier.vehicle.vehicleModel }}
-					</a>
-				</p>
-
-				<p>
-					<strong>Type :</strong>
-					{{ dossier.type.label }}
+					{{ dossier.vehicle.vehicleModel }}
 				</p>
 
 			</div>
 		</div>
-		{# =========================================================
-				   DOCUMENTS DU DOSSIER (DROPZONE)
-				   ========================================================= #}
 
-		<div class="card mt-4">
-			<div class="card-body">
+		{# =========================
+		       DROPZONE
+		    ========================= #}
 
-				<h5>Documents du dossier</h5>
-
-				{% if dossier.workflowStatus in ['draft', 'in_progress'] %}
-
-					<div class="dropzone" data-upload-url="{{ path('dossier_document_upload', { id: dossier.id }) }}" data-delete-url="{{ path('dossier_document_delete', { id: dossier.id }) }}" data-destination="dossier_{{ dossier.id }}/documents" data-preview-id="dossier-documents-preview"></div>
-
-				{% else %}
-
-					<p class="text-muted">
-						Les documents ne peuvent plus être modifiés à ce stade du dossier.
-					</p>
-
-				{% endif %}
-
-				<hr>
-
-				<div id="dossier-documents-preview" class="d-flex flex-wrap gap-2 mt-3">
-
-					{% for doc in dossier.documents %}
-						<div class="dz-thumb" data-file="{{ doc.filename }}">
-							<img src="/uploads/{{ doc.path }}" width="120" class="rounded border">
-							<button class="dz-delete" data-file="{{ doc.filename }}">×</button>
-						</div>
-					{% else %}
-						<p class="text-muted">Aucun document uploadé</p>
-					{% endfor %}
-
-				</div>
-
-			</div>
-		</div>
-		{# =========================================================
-								       WORKFLOW ACTIONS
-								       ========================================================= #}
 		<div class="card">
 			<div class="card-body">
 
-				<h5>Actions workflow</h5>
+				<h5>Documents</h5>
 
-				<div
-					class="d-flex gap-2 flex-wrap">
+				{% if dossier.workflowStatus in ['draft', 'in_progress'] %}
 
-					{# -------------------------
-																				                   START
-																				                   draft → in_progress
-																				                   ------------------------- #}
-					{% if workflow_can(dossier, 'start') %}
-						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'start' }) }}">
+					<div class="dropzone" data-upload-url="{{ path('dossier_document_upload', {id: dossier.id}) }}" data-delete-url="{{ path('dossier_document_delete', {id: '__id__'}) }}" data-preview-id="dossier-documents-preview" data-destination="dossiers/{{ dossier.id }}">
 
-							<input type="hidden" name="_token" value="{{ csrf_token('workflow_transition_' ~ dossier.id) }}">
+						<p class="text-muted">
+							Glissez vos fichiers ou cliquez ici
+						</p>
 
-							<button type="submit" class="btn btn-primary">
-								Démarrer
-							</button>
-						</form>
-					{% endif %}
+					</div>
 
-					{# -------------------------
-																				                   COMPLETE
-																				                   in_progress → completed
-																				                   ------------------------- #}
-					{% if workflow_can(dossier, 'complete') %}
-						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'complete' }) }}">
+					<button type="button" class="btn btn-primary mt-2 dz-upload-btn" disabled>
+						Envoyer les fichiers
+					</button>
 
-							<input type="hidden" name="_token" value="{{ csrf_token('workflow_transition_' ~ dossier.id) }}">
+				{% else %}
+					<p class="text-muted">Modification désactivée</p>
+				{% endif %}
 
-							<button type="submit" class="btn btn-success">
-								Terminer
-							</button>
-						</form>
-					{% endif %}
+				<div id="dossier-documents-preview" class="preview-container mt-3">
 
-					{# -------------------------
-																				                   CANCEL (2 transitions possibles)
-																				                   ------------------------- #}
-					{% if workflow_can(dossier, 'cancel_from_draft') %}
+					{% for doc in dossier.documents %}
 
-						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'cancel_from_draft' }) }}" onsubmit="return confirm('Confirmer l’annulation ?');">
+						{% set ext = doc.fileName|split('.')|last|lower %}
 
-							<input type="hidden" name="_token" value="{{ csrf_token('workflow_transition_' ~ dossier.id) }}">
+						<div class="dz-thumb" data-id="{{ doc.id }}">
 
-							<button type="submit" class="btn btn-danger">
-								Annuler
-							</button>
-						</form>
+							{% if ext in ['jpg','jpeg','png','webp'] %}
+								<img src="{{ asset('uploads/' ~ doc.path) }}">
 
-					{% elseif workflow_can(dossier, 'cancel_from_progress') %}
+							{% elseif ext == 'pdf' %}
+								<div class="dz-file-preview dz-pdf">PDF</div>
 
-						<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: 'cancel_from_progress' }) }}" onsubmit="return confirm('Confirmer l’annulation ?');">
+							{% elseif ext in ['doc','docx'] %}
+								<div class="dz-file-preview dz-word">WORD</div>
 
-							<input type="hidden" name="_token" value="{{ csrf_token('workflow_transition_' ~ dossier.id) }}">
+							{% elseif ext in ['xls','xlsx'] %}
+								<div class="dz-file-preview dz-excel">EXCEL</div>
 
-							<button type="submit" class="btn btn-danger">
-								Annuler
-							</button>
-						</form>
+							{% else %}
+								<div class="dz-file-preview dz-generic">FILE</div>
+							{% endif %}
 
-					{% endif %}
+							<div class="dz-filename">
+								{{ doc.originalName }}
+							</div>
+
+							<button class="dz-delete" data-id="{{ doc.id }}">×</button>
+
+						</div>
+
+					{% else %}
+						<p class="text-muted">Aucun document</p>
+					{% endfor %}
 
 				</div>
 
@@ -163,25 +108,5 @@
 		</div>
 
 	</div>
-	<form id="upload-form" enctype="multipart/form-data">
-		<input type="file" name="file" id="file-input">
-		<button type="submit">Uploader</button>
-	</form>
 
-	<script>
-		document.getElementById('upload-form').addEventListener('submit', async (e) => {
-e.preventDefault();
-
-const file = document.getElementById('file-input').files[0];
-const formData = new FormData();
-formData.append('file', file);
-
-const res = await fetch('{{ path('dossier_document_upload', {id: dossier.id}) }}', {
-method: 'POST',
-body: formData
-});
-
-console.log(await res.json());
-});
-	</script>
 {% endblock %}

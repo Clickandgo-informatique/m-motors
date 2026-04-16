@@ -27,24 +27,26 @@ class DossierDocument
 
     #[ORM\ManyToOne(inversedBy: 'documents')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'Le dossier est obligatoire')]
     private ?Dossier $dossier = null;
 
     // =========================================================
-    // TYPE DE DOCUMENT (ex: CNI, permis, justificatif...)
+    // TYPE DE DOCUMENT
+    // =========================================================
+    // Exemple : CNI, permis, justificatif, upload générique
     // =========================================================
 
-    #[ORM\Column(length: 100)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 100)]
-    private ?string $type = null;
+    #[ORM\Column(enumType: DossierDocumentType::class)]
+    #[Assert\NotNull(message: 'Le type de document est obligatoire')]
+    private DossierDocumentType $documentType = DossierDocumentType::UPLOAD;
 
     // =========================================================
     // NOM ORIGINAL DU FICHIER
     // =========================================================
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: 'Le nom original est obligatoire')]
+    #[Assert\Length(max: 255)]
     private ?string $originalName = null;
 
     // =========================================================
@@ -52,7 +54,8 @@ class DossierDocument
     // =========================================================
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: 'Le nom de fichier est obligatoire')]
+    #[Assert\Length(max: 255)]
     private ?string $fileName = null;
 
     // =========================================================
@@ -60,22 +63,19 @@ class DossierDocument
     // =========================================================
 
     #[ORM\Column(length: 500)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: 'Le chemin du fichier est obligatoire')]
+    #[Assert\Length(max: 500)]
     private ?string $path = null;
 
     // =========================================================
-    // STATUT DU DOCUMENT (UPLOAD / VALIDATION)
+    // STATUT DU DOCUMENT
     // =========================================================
 
     #[ORM\Column(enumType: DossierDocumentStatus::class)]
     private DossierDocumentStatus $status = DossierDocumentStatus::UPLOADED;
 
-    // Type de document traité
-    #[ORM\Column(enumType: DossierDocumentType::class)]
-    private DossierDocumentType $documentType;
-
     // =========================================================
-    // TIMESTAMPS (optionnel si trait déjà global)
+    // TIMESTAMPS
     // =========================================================
 
     #[ORM\Column]
@@ -104,6 +104,16 @@ class DossierDocument
         return $this;
     }
 
+    public function getDocumentType(): DossierDocumentType
+    {
+        return $this->documentType;
+    }
+
+    public function setDocumentType(DossierDocumentType $documentType): self
+    {
+        $this->documentType = $documentType;
+        return $this;
+    }
 
     public function getOriginalName(): ?string
     {
@@ -165,35 +175,14 @@ class DossierDocument
     }
 
     // =========================================================
-    // LIFECYCLE
+    // LIFECYCLE DOCTRINE
     // =========================================================
 
     #[ORM\PrePersist]
     public function initCreatedAt(): void
     {
-        $this->createdAt = new \DateTimeImmutable();
-    }
-
-
-
-
-
-
-    /**
-     * Get the value of documentType
-     */
-    public function getDocumentType(): DossierDocumentType
-    {
-        return $this->documentType;
-    }
-
-    /**
-     * Set the value of documentType
-     */
-    public function setDocumentType(DossierDocumentType $documentType): self
-    {
-        $this->documentType = $documentType;
-
-        return $this;
+        if (!isset($this->createdAt)) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
     }
 }

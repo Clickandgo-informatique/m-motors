@@ -2,7 +2,9 @@
 
 namespace App\Service;
 
+use App\Entity\DossierDocument;
 use App\Service\Utils\SluggerService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -14,16 +16,15 @@ class DossierUploadService
         private SluggerService $slugger
     ) {}
 
-    /**
-     * Upload un fichier lié à un dossier
-     *
-     * @param UploadedFile $file
-     * @param string $folder ex: dossier_12/documents_identity
-     * @return array{filename: string, path: string, originalName: string}
-     */
+    // =========================================================
+    // UPLOAD
+    // =========================================================
+
     public function upload(UploadedFile $file, string $folder): array
     {
-        $this->filesystem->mkdir($this->uploadDir . '/' . $folder);
+        $fullDir = $this->uploadDir . '/' . $folder;
+
+        $this->filesystem->mkdir($fullDir);
 
         $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeName = $this->slugger->slugify($originalName);
@@ -34,12 +35,77 @@ class DossierUploadService
 
         $newName = $safeName . '-' . bin2hex(random_bytes(16)) . '.' . $extension;
 
-        $file->move($this->uploadDir . '/' . $folder, $newName);
+        $file->move($fullDir, $newName);
 
         return [
             'filename' => $newName,
             'path' => $folder . '/' . $newName,
             'originalName' => $file->getClientOriginalName(),
         ];
+    }
+
+    // =========================================================
+    // DELETE FILE ONLY
+    // =========================================================
+
+    public function delete(string $path): void
+    {
+        $fullPath = $this->uploadDir . '/' . $path;
+
+        if ($this->filesystem->exists($fullPath)) {
+            $this->filesystem->remove($fullPath);
+        }
+    }
+
+    public function safeDelete(?string $path): void
+    {
+        if (!$path) {
+            return;
+        }
+
+        $this->delete($path);
+    }
+
+    public function deleteFromDocument(DossierDocument $document): void
+    {
+        $this->safeDelete($document->getPath());
+    }
+
+    // =========================================================
+    // DELETE ENTITY + FILE
+    // =========================================================
+
+    public function deleteEntity(DossierDocument $document, EntityManagerInterface $em): void
+    {
+        $this->deleteFromDocument($document);
+        $em->remove($document);
+        $em->flush();
+    }
+
+    // =========================================================
+    // REPLACE FILE (IMPORTANT)
+    // =========================================================
+
+    public function replace(
+        DossierDocument $document,
+        UploadedFile $file,
+        string $folder,
+        EntityManagerInterface $em
+    ): DossierDocument {
+        // 1. supprimer ancien fichier
+        $this->deleteFromDocument($document);
+
+        // 2. upload nouveau fichier
+        $upload = $this->upload($file, $folder);
+
+        // 3. update entity
+        $document->setFileName($upload['filename']);
+        $document->setOriginalName($upload['originalName']);
+        $document->setPath($upload['path']);
+
+        $em->persist($document);
+        $em->flush();
+
+        return $document;
     }
 }

@@ -1,0 +1,99 @@
+@startuml
+
+title Dropzone Upload System - Flux actuel + évolutions
+
+actor User
+
+participant "Dropzone JS" as DZ
+participant "Browser File API" as FileAPI
+participant "Symfony Controller\nDossierDocumentController" as Controller
+participant "Upload Service\nDossierUploadService" as Service
+participant "Filesystem\npublic/uploads" as FS
+database "Database\nDossierDocument" as DB
+
+== Sélection des fichiers ==
+
+User -> DZ : click / drag & drop
+DZ -> FileAPI : open file picker
+FileAPI --> DZ : FileList
+
+DZ -> DZ : addToQueue()
+DZ -> User : preview staging + bouton upload activé
+
+== Upload batch ==
+
+User -> DZ : click "Envoyer"
+DZ -> Controller : POST /dossier/{id}/upload
+
+Controller -> Controller : validation input
+
+Controller -> Service : upload(file, folder)
+
+Service -> FS : mkdir + move file
+FS --> Service : stored file
+
+Service --> Controller : filename + path + originalName
+
+Controller -> DB : persist DossierDocument
+DB --> Controller : OK
+
+Controller --> DZ : JSON response documents[]
+
+DZ -> DZ : renderUploaded()
+DZ -> User : refresh preview
+
+== Suppression fichier ==
+
+User -> DZ : click delete
+DZ -> Controller : DELETE /document/{id}
+
+Controller -> FS : remove file
+Controller -> DB : delete entity
+Controller --> DZ : success
+
+DZ -> DZ : remove DOM element
+
+== Contrôles actuels ==
+
+note right of Controller
+- NotNull / NotBlank (Entity)
+- Enum DossierDocumentType obligatoire
+- Relation Dossier obligatoire
+- JoinColumn cascade delete
+end note
+
+note right of Service
+- filename unique (random suffix)
+- slugify original name
+- auto mkdir
+end note
+
+note right of DZ
+- queue mémoire front
+- upload manuel batch
+- preview staging
+- suppression AJAX
+end note
+
+== Évolutions futures ==
+
+note right of Controller
+Backend :
+- validation MIME type
+- limite taille fichier
+- scan antivirus (optionnel)
+- détection doublons (hash)
+- quotas dossier/client
+- Voters Symfony (accès)
+end note
+
+note right of DZ
+UX :
+- progress bar upload
+- retry upload
+- preview PDF (PDF.js)
+- viewer Office embed
+- drag reorder files
+end note
+
+@enduml

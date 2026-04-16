@@ -5,30 +5,30 @@ namespace App\Controller;
 use App\Entity\Dossier;
 use App\Entity\DossierDocument;
 use App\Enum\DossierDocumentType;
-use App\Repository\DossierDocumentRepository;
 use App\Service\DossierUploadService;
+use App\Service\Utils\SluggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/dossier/document')]
 class DossierDocumentController extends AbstractController
 {
-    public function __construct(
-        private EntityManagerInterface $em,
-        private DossierUploadService $uploadService
-    ) {}
-
     // =========================================================
-    // UPLOAD DOCUMENTS (DROPZONE)
+    // UPLOAD
     // =========================================================
 
-    #[Route('/{id}/upload', name: 'dossier_document_upload', methods: ['POST'])]
-    public function upload(Dossier $dossier, Request $request): JsonResponse
-    {
-        $files = $request->files->all()['file'] ?? null;
+    #[Route('/dossier/{id}/upload', name: 'dossier_document_upload', methods: ['POST'])]
+    public function upload(
+        Dossier $dossier,
+        Request $request,
+        DossierUploadService $uploadService,
+        SluggerService $slugger,
+        EntityManagerInterface $em
+    ): JsonResponse {
+
+        $files = $request->files->get('file');
 
         if (!$files) {
             return new JsonResponse(['error' => 'No files uploaded'], 400);
@@ -38,82 +38,134 @@ class DossierDocumentController extends AbstractController
             $files = [$files];
         }
 
+        // =========================================================
+        // NORMALISATION RÉFÉRENCE DOSSIER
+        // =========================================================
+
+        $reference = $dossier->getReference()
+            ?? 'dossier-' . $dossier->getId();
+
+        $safeReference = $slugger->slugify($reference);
+
+        $folderBase = sprintf(
+            'dossiers/%s/documents',
+            $safeReference
+        );
+
         $results = [];
 
         foreach ($files as $file) {
 
-            $upload = $this->uploadService->upload(
-                $file,
-                'dossiers/' . $dossier->getId() . '/documents'
-            );
+            if (!$file) {
+                continue;
+            }
+
+            $upload = $uploadService->upload($file, $folderBase);
 
             $document = new DossierDocument();
             $document->setDossier($dossier);
-            $document->setFilename($upload['filename']);
+            $document->setFileName($upload['filename']);
             $document->setPath($upload['path']);
             $document->setOriginalName($upload['originalName']);
             $document->setDocumentType(DossierDocumentType::UPLOAD);
 
-            $this->em->persist($document);
+            $em->persist($document);
 
-            $results[] = [
-                'entity' => $document,
-                'jpg' => $upload['filename'],
-                'jpg_thumb' => $upload['filename'],
-                'path' => $upload['path'],
-            ];
+            $results[] = $document;
         }
 
-        $this->em->flush();
-
-        // reconstruction propre avec IDs après flush
-        foreach ($results as $i => $result) {
-            /** @var DossierDocument $entity */
-            $entity = $result['entity'];
-
-            $results[$i] = [
-                'id' => $entity->getId(),
-                'jpg' => $result['jpg'],
-                'jpg_thumb' => $result['jpg_thumb'],
-                'path' => $result['path'],
-            ];
-        }
+        $em->flush();
 
         return new JsonResponse([
-            'urls' => $results
+            'success' => true,
+            'folder' => $folderBase,
+            'documents' => array_map(static function (DossierDocument $d) {
+                return [
+                    'id' => $d->getId(),
+                    'fileName' => $d->getFileName(),
+                    'path' => $d->getPath(),
+                ];
+            }, $results)
         ]);
     }
 
     // =========================================================
-    // DELETE DOCUMENT
+    // DELETE
     // =========================================================
 
-    #[Route('/{id}/delete', name: 'dossier_document_delete', methods: ['POST'])]
+    #[Route('/document/{id}', name: 'dossier_document_delete', methods: ['DELETE'])]
     public function delete(
-        Dossier $dossier,
-        Request $request,
-        DossierDocumentRepository $repo,
+        DossierDocument $document,
+        DossierUploadService $uploadService,
         EntityManagerInterface $em
     ): JsonResponse {
 
-        $filename = $request->request->get('filename');
+        $id = $document->getId();
 
-        if (!$filename) {
-            return new JsonResponse(['error' => 'Missing filename'], 400);
-        }
+        $uploadService->deleteEntity($document, $em);
 
-        $document = $repo->findOneBy([
-            'dossier' => $dossier,
-            'filename' => $filename
+        return new JsonResponse([
+            'success' => true,
+            'id' => $id
         ]);
+    }
 
-        if (!$document) {
-            return new JsonResponse(['error' => 'Not found'], 404);
+    // =========================================================
+    // REPLACE FILE
+    // =========================================================
+
+    #[Route('/document/{id}/replace', name: 'dossier_document_replace', methods: ['POST'])]
+    public function replace(
+        DossierDocument $document,
+        Request $request,
+        DossierUploadService $uploadService,
+        SluggerService $slugger,
+        EntityManagerInterface $em
+    ): JsonResponse {
+
+        $file = $request->files->get('file');
+
+        if (!$file) {
+            return new JsonResponse(['error' => 'No file provided'], 400);
         }
 
-        $em->remove($document);
+        $dossier = $document->getDossier();
+
+        // =========================================================
+        // NORMALISATION RÉFÉRENCE DOSSIER
+        // =========================================================
+
+        $reference = $dossier->getReference()
+            ?? 'dossier-' . $dossier->getId();
+
+        $safeReference = $slugger->slugify($reference);
+
+        $folder = sprintf(
+            'dossiers/%s/documents',
+            $safeReference
+        );
+
+        // upload nouveau fichier
+        $upload = $uploadService->upload($file, $folder);
+
+        // suppression ancien fichier
+        $uploadService->safeDelete($document->getPath());
+
+        // update entity
+        $document->setFileName($upload['filename']);
+        $document->setPath($upload['path']);
+        $document->setOriginalName($upload['originalName']);
+
         $em->flush();
 
-        return new JsonResponse(['success' => true]);
+        return new JsonResponse([
+            'success' => true,
+            'folder' => $folder,
+            'document' => [
+                'id' => $document->getId(),
+                'fileName' => $document->getFileName(),
+                'path' => $document->getPath(),
+            ]
+        ]);
     }
 }

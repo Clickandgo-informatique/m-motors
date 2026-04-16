@@ -8,6 +8,7 @@ services:
     volumes:
       - ./:/var/www
       - vendor:/var/www/vendor
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
     depends_on:
       - db
       - redis
