@@ -28,26 +28,19 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
         $suppliers     = $this->supplierRepository->findAll();
         $colors        = $this->colorRepository->findAll();
 
-        if (empty($vehicleModels)) {
-            throw new \RuntimeException('Aucun VehicleModel trouvé en base.');
+        if (empty($vehicleModels) || empty($suppliers)) {
+            throw new \RuntimeException('Données de base manquantes.');
         }
 
-        if (empty($suppliers)) {
-            throw new \RuntimeException('Aucun Supplier trouvé en base.');
-        }
+        // 👉 IMPORTANT : on centralise les véhicules dans un pool utilisable sans références
+        $vehiclesPool = [];
 
         for ($i = 1; $i <= 50; $i++) {
 
             $vehicle = new Vehicle();
 
-            // VIN valide (important)
-            $vin = strtoupper($faker->regexify('[A-HJ-NPR-Z0-9]{17}'));
-            $vehicle->setVin($vin);
-
-            $vehicle->setRegistrationNumber(
-                sprintf('MM-%03d-%s', $i, strtoupper($faker->lexify('??')))
-            );
-
+            $vehicle->setVin(strtoupper($faker->regexify('[A-HJ-NPR-Z0-9]{17}')));
+            $vehicle->setRegistrationNumber(sprintf('MM-%03d-%s', $i, strtoupper($faker->lexify('??'))));
             $vehicle->setMileage($faker->numberBetween(0, 200000));
             $vehicle->setPrice($faker->numberBetween(5000, 60000));
             $vehicle->setStatus(VehicleStatus::AVAILABLE);
@@ -63,6 +56,9 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
             $manager->persist($vehicle);
 
             $this->addReference('vehicle_' . $i, $vehicle);
+
+            // pool interne (optionnel mais utile debug)
+            $vehiclesPool[] = $vehicle;
         }
 
         $manager->flush();
@@ -75,10 +71,5 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
             SupplierFixtures::class,
             ColorFixtures::class
         ];
-    }
-
-    public static function getGroups(): array
-    {
-        return ['vehiclefixtures'];
     }
 }

@@ -44,4 +44,4 @@ security:
         - { path: ^/dossier/.*/transition, roles: IS_AUTHENTICATED_FULLY }
 
         # fallback sécurité globale admin
-        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        # - { path: ^/, roles: ['ROLE_USER'] }

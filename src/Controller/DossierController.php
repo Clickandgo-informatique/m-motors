@@ -3,24 +3,41 @@
 namespace App\Controller;
 
 use App\Entity\Dossier;
+use App\Entity\User;
 use App\Entity\Vehicle;
 use App\Enum\DossierType;
 use App\Form\DossierFormType;
 use App\Repository\DossierRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Workflow\WorkflowInterface;
+use Symfony\Component\Workflow\Registry;
 
 #[Route('/dossier')]
 class DossierController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em,
+        private Registry $workflowRegistry
     ) {}
+
+    // =========================================================
+    // USER SAFE
+    // =========================================================
+
+    private function getAppUser(): User
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $user;
+    }
 
     // =========================================================
     // FRONT - CLIENT
@@ -29,14 +46,13 @@ class DossierController extends AbstractController
     #[Route('/create/{id}/{type}', name: 'dossier_create', methods: ['POST'])]
     public function createFromVehicle(Vehicle $vehicle, string $type): Response
     {
-        /** @var \App\Entity\User|null $user */
-        $user = $this->getUser();
-
-        if (!$user || !$user->getCustomer()) {
-            return $this->redirectToRoute('app_login');
-        }
+        $user = $this->getAppUser();
 
         $customer = $user->getCustomer();
+
+        if (!$customer) {
+            return $this->redirectToRoute('app_login');
+        }
 
         $dossierType = DossierType::tryFrom($type);
 
@@ -60,16 +76,17 @@ class DossierController extends AbstractController
     #[Route('/my/list', name: 'dossier_my_list', methods: ['GET'])]
     public function myDossiers(DossierRepository $repository): Response
     {
-        /** @var \App\Entity\User|null $user */
-        $user = $this->getUser();
+        $user = $this->getAppUser();
 
-        if (!$user || !$user->getCustomer()) {
+        $customer = $user->getCustomer();
+
+        if (!$customer) {
             throw $this->createAccessDeniedException();
         }
 
         return $this->render('dossier/index.html.twig', [
             'dossiers' => $repository->findBy(
-                ['customer' => $user->getCustomer()],
+                ['customer' => $customer],
                 ['createdAt' => 'DESC']
             )
         ]);
@@ -78,7 +95,7 @@ class DossierController extends AbstractController
     #[Route('/{id<\d+>}', name: 'dossier_show', methods: ['GET'])]
     public function show(Dossier $dossier): Response
     {
-        $this->denyAccessUnlessGranted('view', $dossier);
+        $this->denyAccessUnlessGranted('DOSSIER_VIEW', $dossier);
 
         return $this->render('dossier/show.html.twig', [
             'dossier' => $dossier,
@@ -86,31 +103,16 @@ class DossierController extends AbstractController
     }
 
     // =========================================================
-    // WORKFLOW (ADMIN ACTIONS)
+    // WORKFLOW
     // =========================================================
 
-    /**
-     * Applique une transition de workflow sur un dossier.
-     *
-     * Étapes :
-     * - Vérification des droits
-     * - Validation CSRF
-     * - Vérification de la transition autorisée
-     * - Application du workflow Symfony
-     * - Persistance des changements
-     */
     #[Route('/admin/{id<\d+>}/transition/{transition}', name: 'dossier_transition', methods: ['POST'])]
     public function transition(
         Request $request,
-        Dossier $dossier,
-        string $transition,
-        #[Target('dossier')] WorkflowInterface $workflow,
-        EntityManagerInterface $em
+        #[MapEntity(id: 'id')] Dossier $dossier,
+        string $transition
     ): Response {
 
-        // =========================================================
-        // CSRF PROTECTION
-        // =========================================================
         if (!$this->isCsrfTokenValid(
             'workflow_transition_' . $dossier->getId(),
             $request->request->get('_token')
@@ -118,9 +120,11 @@ class DossierController extends AbstractController
             throw $this->createAccessDeniedException('Token CSRF invalide');
         }
 
-        // =========================================================
-        // CHECK TRANSITION
-        // =========================================================
+        $this->denyAccessUnlessGranted('DOSSIER_TRANSITION', $dossier);
+
+        // 🔥 récupération workflow propre (IMPORTANT)
+        $workflow = $this->workflowRegistry->get($dossier);
+
         if (!$workflow->can($dossier, $transition)) {
             $this->addFlash('error', 'Transition non autorisée');
 
@@ -130,29 +134,19 @@ class DossierController extends AbstractController
         }
 
         try {
-            // =========================================================
-            // APPLY WORKFLOW
-            // =========================================================
             $workflow->apply($dossier, $transition);
+            $this->em->flush();
 
-            // =========================================================
-            // IMPORTANT : SYNC STATUS (UNE SEULE SOURCE)
-            // =========================================================
-            $dossier->setStatus(
-                \App\Enum\DossierStatus::from($dossier->getWorkflowStatus())
-            );
-
-            $em->flush();
-
-            $this->addFlash('success', 'Statut mis à jour avec succès');
+            $this->addFlash('success', 'Transition appliquée avec succès');
         } catch (\Throwable $e) {
-            $this->addFlash('error', 'Erreur workflow : ' . $e->getMessage());
+            $this->addFlash('error', 'Erreur workflow');
         }
 
         return $this->redirectToRoute('admin_dossier_show', [
             'id' => $dossier->getId()
         ]);
     }
+
     // =========================================================
     // ADMIN
     // =========================================================

@@ -2,18 +2,23 @@
 
 namespace App\Entity;
 
-use App\Entity\Customer;
-use App\Entity\Vehicle;
 use App\Entity\Traits\TimestampableTrait;
-use App\Enum\DossierStatus;
 use App\Enum\DossierType;
-use App\Enum\FinancingType;
 use App\Repository\DossierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Entité représentant un dossier métier.
+ *
+ * Le statut est piloté par Symfony Workflow (state machine).
+ * Le champ `status` contient l'état courant.
+ *
+ * Le champ `dossierCode` est l'identifiant métier unique :
+ * Exemple : DUP001-0001
+ */
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Dossier
@@ -21,7 +26,7 @@ class Dossier
     use TimestampableTrait;
 
     // =========================================================
-    // IDENTIFIANT
+    // IDENTIFIANT TECHNIQUE
     // =========================================================
 
     #[ORM\Id]
@@ -30,61 +35,51 @@ class Dossier
     private ?int $id = null;
 
     // =========================================================
-    // RÉFÉRENCE UNIQUE MÉTIER
-    // =========================================================
-
-    #[ORM\Column(length: 50, unique: true)]
-    #[Assert\Length(max: 50)]
-    private ?string $reference = null;
-
-    // =========================================================
-    // RELATIONS
+    // RELATIONS MÉTIER
     // =========================================================
 
     #[ORM\ManyToOne(inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'Un client est obligatoire')]
     private ?Customer $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'dossiers')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Vehicle $vehicle = null;
 
-    /**
-     * Documents liés au dossier (pièces justificatives, etc.)
-     *
-     * @var Collection<int, DossierDocument>
-     */
-    #[ORM\OneToMany(
-        mappedBy: 'dossier',
-        targetEntity: DossierDocument::class,
-        cascade: ['persist', 'remove'],
-        orphanRemoval: true
-    )]
-    private Collection $documents;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $assignedTo = null;
 
     // =========================================================
-    // STATUT MÉTIER (ENUM)
+    // TYPE DE DOSSIER
     // =========================================================
 
-    #[ORM\Column(enumType: DossierStatus::class)]
-    private DossierStatus $status = DossierStatus::DRAFT;
+    #[ORM\Column(enumType: DossierType::class)]
+    private ?DossierType $type = null;
 
     // =========================================================
-    // WORKFLOW SYMFONY (SOURCE DE VÉRITÉ)
+    // DOSSIER CODE (IDENTIFIANT MÉTIER UNIQUE)
+    // =========================================================
+
+    #[ORM\Column(length: 50, unique: true)]
+    #[Assert\NotBlank]
+    private ?string $dossierCode = null;
+
+    // =========================================================
+    // WORKFLOW STATUS
     // =========================================================
 
     #[ORM\Column(length: 50)]
-    #[Assert\Choice(choices: ['draft', 'in_progress', 'completed', 'cancelled'])]
-    private string $workflowStatus = 'draft';
+    #[Assert\NotBlank]
+    private string $status = 'draft';
 
     // =========================================================
     // FINANCEMENT
     // =========================================================
 
-    #[ORM\Column(enumType: FinancingType::class, nullable: true)]
-    private ?FinancingType $financingType = null;
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $financingType = null;
 
     // =========================================================
     // DATES MÉTIER
@@ -97,15 +92,22 @@ class Dossier
     private ?\DateTimeImmutable $cancelledAt = null;
 
     // =========================================================
-    // TYPE DOSSIER
+    // DOCUMENTS
     // =========================================================
 
-    #[ORM\Column(enumType: DossierType::class)]
-    #[Assert\NotNull]
-    private ?DossierType $type = null;
+    /**
+     * @var Collection<int, DossierDocument>
+     */
+    #[ORM\OneToMany(
+        mappedBy: 'dossier',
+        targetEntity: DossierDocument::class,
+        cascade: ['persist'],
+        orphanRemoval: false
+    )]
+    private Collection $documents;
 
     // =========================================================
-    // CONSTRUCTEUR
+    // CONSTRUCTOR
     // =========================================================
 
     public function __construct()
@@ -122,23 +124,12 @@ class Dossier
         return $this->id;
     }
 
-    public function getReference(): ?string
-    {
-        return $this->reference;
-    }
-
-    public function setReference(string $reference): self
-    {
-        $this->reference = $reference;
-        return $this;
-    }
-
     public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
-    public function setCustomer(?Customer $customer): self
+    public function setCustomer(Customer $customer): self
     {
         $this->customer = $customer;
         return $this;
@@ -155,37 +146,59 @@ class Dossier
         return $this;
     }
 
-    // =========================================================
-    // STATUS MÉTIER
-    // =========================================================
-
-    public function getStatus(): DossierStatus
+    public function getAssignedTo(): ?User
     {
-        return $this->status;
+        return $this->assignedTo;
     }
 
-    public function setStatus(DossierStatus $status): self
+    public function setAssignedTo(?User $assignedTo): self
     {
-        $this->status = $status;
-        $this->workflowStatus = $status->value;
-
+        $this->assignedTo = $assignedTo;
         return $this;
     }
 
     // =========================================================
-    // WORKFLOW SYNC
+    // TYPE
     // =========================================================
 
-    public function getWorkflowStatus(): string
+    public function getType(): ?DossierType
     {
-        return $this->workflowStatus;
+        return $this->type;
     }
 
-    public function setWorkflowStatus(string $workflowStatus): self
+    public function setType(DossierType $type): self
     {
-        $this->workflowStatus = $workflowStatus;
-        $this->status = DossierStatus::from($workflowStatus);
+        $this->type = $type;
+        return $this;
+    }
 
+    // =========================================================
+    // DOSSIER CODE
+    // =========================================================
+
+    public function getDossierCode(): ?string
+    {
+        return $this->dossierCode;
+    }
+
+    public function setDossierCode(string $dossierCode): self
+    {
+        $this->dossierCode = $dossierCode;
+        return $this;
+    }
+
+    // =========================================================
+    // STATUS WORKFLOW
+    // =========================================================
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
         return $this;
     }
 
@@ -193,19 +206,19 @@ class Dossier
     // FINANCEMENT
     // =========================================================
 
-    public function getFinancingType(): ?FinancingType
+    public function getFinancingType(): ?string
     {
         return $this->financingType;
     }
 
-    public function setFinancingType(?FinancingType $financingType): self
+    public function setFinancingType(?string $financingType): self
     {
         $this->financingType = $financingType;
         return $this;
     }
 
     // =========================================================
-    // DATES MÉTIER
+    // DATES
     // =========================================================
 
     public function getCompletedAt(): ?\DateTimeImmutable
@@ -231,27 +244,9 @@ class Dossier
     }
 
     // =========================================================
-    // TYPE DOSSIER
-    // =========================================================
-
-    public function getType(): ?DossierType
-    {
-        return $this->type;
-    }
-
-    public function setType(?DossierType $type): self
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    // =========================================================
     // DOCUMENTS
     // =========================================================
 
-    /**
-     * @return Collection<int, DossierDocument>
-     */
     public function getDocuments(): Collection
     {
         return $this->documents;
@@ -277,48 +272,31 @@ class Dossier
 
         return $this;
     }
-
-    // =========================================================
-    // LIFECYCLE
-    // =========================================================
-
-    #[ORM\PrePersist]
-    public function generateReference(): void
-    {
-        if ($this->reference) {
-            return;
-        }
-
-        $this->reference = sprintf(
-            'DOS-%s-%s',
-            date('Ymd'),
-            strtoupper(bin2hex(random_bytes(3)))
-        );
-    }
-
-    // =========================================================
-    // UI HELPERS
-    // =========================================================
-
-    public function getStatusBadge(): string
-    {
-        return match ($this->workflowStatus) {
-            'draft' => 'secondary',
-            'in_progress' => 'primary',
-            'completed' => 'success',
-            'cancelled' => 'danger',
-            default => 'dark',
-        };
-    }
+    // Gestion des badges
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_IN_PROGRESS = 'in_progress';
+    public const STATUS_VALIDATED = 'validated';
+    public const STATUS_REJECTED = 'rejected';
 
     public function getStatusLabel(): string
     {
-        return match ($this->workflowStatus) {
-            'draft' => 'Brouillon',
-            'in_progress' => 'En cours',
-            'completed' => 'Terminé',
-            'cancelled' => 'Annulé',
-            default => 'Inconnu',
+        return match ($this->status) {
+            self::STATUS_DRAFT => 'Brouillon',
+            self::STATUS_IN_PROGRESS => 'En cours',
+            self::STATUS_VALIDATED => 'Validé',
+            self::STATUS_REJECTED => 'Refusé',
+            default => $this->status,
+        };
+    }
+
+    public function getStatusBadge(): string
+    {
+        return match ($this->status) {
+            self::STATUS_DRAFT => 'secondary',
+            self::STATUS_IN_PROGRESS => 'warning',
+            self::STATUS_VALIDATED => 'success',
+            self::STATUS_REJECTED => 'danger',
+            default => 'secondary',
         };
     }
 }

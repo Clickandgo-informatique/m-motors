@@ -1,0 +1,74 @@
+@startuml
+title Sécurité Symfony - Architecture M-Motors
+
+package "Users" {
+    class User {
+        +id
+        +email
+        +roles
+    }
+
+    class Customer {
+        +id
+        +email
+        +customerCode
+    }
+
+    User "1" --> "0..1" Customer
+}
+
+package "Domain" {
+    class Dossier {
+        +id
+        +status
+        +type
+    }
+
+    class DossierDocument {
+        +id
+        +status
+    }
+
+    Dossier "1" --> "0..*" DossierDocument
+    Dossier --> Customer
+}
+
+package "Security" {
+
+    class SecurityService {
+        +isGranted()
+        +getUser()
+    }
+
+    abstract class Voter
+
+    class DossierVoter {
+        +VIEW
+        +EDIT
+        +TRANSITION
+        +canView()
+        +canEdit()
+        +canTransition()
+    }
+
+    Voter <|-- DossierVoter
+    DossierVoter --> SecurityService
+}
+
+package "Controller layer" {
+    class Controller {
+        +show()
+        +transition()
+    }
+
+    Controller --> DossierVoter
+    Controller --> SecurityService
+}
+
+note right of DossierVoter
+ADMIN -> full access
+SALES_MANAGER -> workflow
+CUSTOMER -> own dossiers only
+end note
+
+@enduml

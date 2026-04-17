@@ -32,9 +32,6 @@ class Vehicle
     #[ORM\Column]
     private ?int $id = null;
 
-    /**
-     * Retourne l'identifiant du véhicule.
-     */
     public function getId(): ?int
     {
         return $this->id;
@@ -47,17 +44,11 @@ class Vehicle
     #[ORM\Column(enumType: VehicleStatus::class)]
     private VehicleStatus $status = VehicleStatus::AVAILABLE;
 
-    /**
-     * Retourne le statut du véhicule.
-     */
     public function getStatus(): VehicleStatus
     {
         return $this->status;
     }
 
-    /**
-     * Définit le statut du véhicule.
-     */
     public function setStatus(VehicleStatus $status): self
     {
         $this->status = $status;
@@ -74,17 +65,11 @@ class Vehicle
     #[Assert\Regex(pattern: '/^[A-HJ-NPR-Z0-9]{17}$/')]
     private ?string $vin = null;
 
-    /**
-     * Retourne le VIN du véhicule.
-     */
     public function getVin(): ?string
     {
         return $this->vin;
     }
 
-    /**
-     * Définit le VIN du véhicule.
-     */
     public function setVin(string $vin): static
     {
         $this->vin = strtoupper(trim($vin));
@@ -96,17 +81,11 @@ class Vehicle
     #[Assert\Regex(pattern: '/^[A-Z0-9\-]{4,15}$/')]
     private ?string $registrationNumber = null;
 
-    /**
-     * Retourne le numéro d'immatriculation.
-     */
     public function getRegistrationNumber(): ?string
     {
         return $this->registrationNumber;
     }
 
-    /**
-     * Définit le numéro d'immatriculation.
-     */
     public function setRegistrationNumber(string $registrationNumber): static
     {
         $this->registrationNumber = strtoupper(trim($registrationNumber));
@@ -122,17 +101,11 @@ class Vehicle
     #[Assert\LessThan(2000000)]
     private ?int $mileage = null;
 
-    /**
-     * Retourne le kilométrage.
-     */
     public function getMileage(): ?int
     {
         return $this->mileage;
     }
 
-    /**
-     * Définit le kilométrage.
-     */
     public function setMileage(?int $mileage): static
     {
         $this->mileage = $mileage;
@@ -144,37 +117,25 @@ class Vehicle
     #[Assert\Positive]
     private ?int $price = null;
 
-    /**
-     * Retourne le prix.
-     */
     public function getPrice(): ?int
     {
         return $this->price;
     }
 
-    /**
-     * Définit le prix.
-     */
     public function setPrice(int $price): self
     {
         $this->price = $price;
         return $this;
     }
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTime $firstRegistrationDate = null;
 
-    /**
-     * Retourne la date de première immatriculation.
-     */
     public function getFirstRegistrationDate(): ?\DateTime
     {
         return $this->firstRegistrationDate;
     }
 
-    /**
-     * Définit la date de première immatriculation.
-     */
     public function setFirstRegistrationDate(?\DateTime $date): static
     {
         $this->firstRegistrationDate = $date;
@@ -182,7 +143,7 @@ class Vehicle
     }
 
     // =========================================================
-    // RELATIONS
+    // RELATIONS (ManyToOne)
     // =========================================================
 
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
@@ -256,12 +217,42 @@ class Vehicle
         return $this;
     }
 
+    // =========================================================
+    // COLLECTIONS INIT
+    // =========================================================
+
     #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Dossier::class)]
     private Collection $dossiers;
 
-    /**
-     * @return Collection<int, Dossier>
-     */
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Maintenance::class)]
+    private Collection $maintenances;
+
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Rental::class)]
+    private Collection $rentals;
+
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Sale::class)]
+    private Collection $sales;
+
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Favorite::class, orphanRemoval: true)]
+    private Collection $favorites;
+
+    #[ORM\ManyToMany(targetEntity: Feature::class, inversedBy: 'vehicles')]
+    private Collection $features;
+
+    public function __construct()
+    {
+        $this->features = new ArrayCollection();
+        $this->maintenances = new ArrayCollection();
+        $this->rentals = new ArrayCollection();
+        $this->sales = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
+        $this->dossiers = new ArrayCollection();
+    }
+
+    // =========================================================
+    // DOSSIERS
+    // =========================================================
+
     public function getDossiers(): Collection
     {
         return $this->dossiers;
@@ -273,7 +264,6 @@ class Vehicle
             $this->dossiers->add($dossier);
             $dossier->setVehicle($this);
         }
-
         return $this;
     }
 
@@ -289,11 +279,120 @@ class Vehicle
     }
 
     // =========================================================
-    // MANY TO MANY
+    // MAINTENANCES
     // =========================================================
 
-    #[ORM\ManyToMany(targetEntity: Feature::class, inversedBy: 'vehicles')]
-    private Collection $features;
+    public function getMaintenances(): Collection
+    {
+        return $this->maintenances;
+    }
+
+    public function addMaintenance(Maintenance $maintenance): self
+    {
+        if (!$this->maintenances->contains($maintenance)) {
+            $this->maintenances->add($maintenance);
+            $maintenance->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeMaintenance(Maintenance $maintenance): self
+    {
+        if ($this->maintenances->removeElement($maintenance)) {
+            if ($maintenance->getVehicle() === $this) {
+                $maintenance->setVehicle(null);
+            }
+        }
+        return $this;
+    }
+
+    // =========================================================
+    // RENTALS
+    // =========================================================
+
+    public function getRentals(): Collection
+    {
+        return $this->rentals;
+    }
+
+    public function addRental(Rental $rental): self
+    {
+        if (!$this->rentals->contains($rental)) {
+            $this->rentals->add($rental);
+            $rental->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeRental(Rental $rental): self
+    {
+        if ($this->rentals->removeElement($rental)) {
+            if ($rental->getVehicle() === $this) {
+                $rental->setVehicle(null);
+            }
+        }
+        return $this;
+    }
+
+    // =========================================================
+    // SALES
+    // =========================================================
+
+    public function getSales(): Collection
+    {
+        return $this->sales;
+    }
+
+    public function addSale(Sale $sale): self
+    {
+        if (!$this->sales->contains($sale)) {
+            $this->sales->add($sale);
+            $sale->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeSale(Sale $sale): self
+    {
+        if ($this->sales->removeElement($sale)) {
+            if ($sale->getVehicle() === $this) {
+                $sale->setVehicle(null);
+            }
+        }
+        return $this;
+    }
+
+    // =========================================================
+    // FAVORITES
+    // =========================================================
+
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite(Favorite $favorite): self
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites->add($favorite);
+            $favorite->setVehicle($this);
+        }
+        return $this;
+    }
+    public function removeFavorite(Favorite $favorite): self
+    {
+        if ($this->favorites->removeElement($favorite)) {
+            if ($favorite->getVehicle() === $this) {
+                $favorite->setVehicle(null);
+            }
+        }
+
+        return $this;
+    }
+
+    // =========================================================
+    // FEATURES (ManyToMany)
+    // =========================================================
 
     public function getFeatures(): Collection
     {
@@ -305,7 +404,6 @@ class Vehicle
         if (!$this->features->contains($feature)) {
             $this->features->add($feature);
         }
-
         return $this;
     }
 
@@ -313,36 +411,6 @@ class Vehicle
     {
         $this->features->removeElement($feature);
         return $this;
-    }
-
-    // =========================================================
-    // ONE TO MANY
-    // =========================================================
-
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Maintenance::class)]
-    private Collection $maintenances;
-
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Rental::class)]
-    private Collection $rentals;
-
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Sale::class)]
-    private Collection $sales;
-
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Favorite::class, orphanRemoval: true)]
-    private Collection $favorites;
-
-    // =========================================================
-    // CONSTRUCTOR
-    // =========================================================
-
-    public function __construct()
-    {
-        $this->features = new ArrayCollection();
-        $this->maintenances = new ArrayCollection();
-        $this->rentals = new ArrayCollection();
-        $this->sales = new ArrayCollection();
-        $this->favorites = new ArrayCollection();
-        $this->dossiers = new ArrayCollection();
     }
 
     // =========================================================

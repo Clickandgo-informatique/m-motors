@@ -4,18 +4,10 @@ namespace App\Service;
 
 use App\Entity\Dossier;
 use App\Entity\SupplierOrder;
-use App\Enum\DossierStatus;
+use App\Entity\Vehicle;
 use App\Enum\VehicleStatus;
 use Doctrine\ORM\EntityManagerInterface;
 
-/**
- * Service central du workflow métier des dossiers.
- *
- * Responsabilités :
- * - Orchestration des décisions métier
- * - Création des commandes fournisseurs
- * - Garantie de cohérence des statuts véhicule + dossier
- */
 class DossierWorkflowService
 {
     public function __construct(
@@ -23,44 +15,35 @@ class DossierWorkflowService
     ) {}
 
     /**
-     * Point d'entrée principal : validation d'un dossier
+     * Validation d’un dossier (entrée métier)
      */
     public function approve(Dossier $dossier): void
     {
         $vehicle = $dossier->getVehicle();
 
-        /*
-        =========================================================
-        CAS 1 : véhicule indisponible → commande fournisseur
-        =========================================================
-        */
-        if (!$vehicle->isAvailable()) {
-            $this->handleUnavailableVehicle($dossier, $vehicle);
+        if (!$vehicle instanceof Vehicle) {
+            return;
         }
 
-        /*
-        =========================================================
-        CAS 2 : véhicule disponible → traitement métier
-        =========================================================
-        */ else {
+        // =========================
+        // CAS : véhicule indisponible
+        // =========================
+        if (!$vehicle->isAvailable()) {
+            $this->handleUnavailableVehicle($dossier, $vehicle);
+        } else {
             $this->handleAvailableVehicle($dossier, $vehicle);
         }
 
-        /*
-        =========================================================
-        Finalisation dossier
-        =========================================================
-        */
-        $dossier->setStatus(DossierStatus::COMPLETED);
-
+        // ⚠️ IMPORTANT :
+        // On ne touche PLUS au statut du dossier ici
+        // → géré par Symfony Workflow uniquement
         $this->em->flush();
     }
 
     /**
-     * Véhicule indisponible :
-     * création commande fournisseur si nécessaire
+     * Véhicule indisponible → commande fournisseur
      */
-    private function handleUnavailableVehicle(Dossier $dossier, $vehicle): void
+    private function handleUnavailableVehicle(Dossier $dossier, Vehicle $vehicle): void
     {
         if ($vehicle->isOrdered()) {
             return;
@@ -77,17 +60,10 @@ class DossierWorkflowService
     }
 
     /**
-     * Véhicule disponible :
-     * traitement métier du dossier
+     * Véhicule disponible → logique métier
      */
-    private function handleAvailableVehicle(Dossier $dossier, $vehicle): void
+    private function handleAvailableVehicle(Dossier $dossier, Vehicle $vehicle): void
     {
-        /*
-        IMPORTANT :
-        Ne pas mettre RESERVED ici si déjà réservé via submit()
-        sinon double transition incohérente
-        */
-
         if ($dossier->isLeasing()) {
             $this->handleLeasing($vehicle);
         } else {
@@ -96,17 +72,17 @@ class DossierWorkflowService
     }
 
     /**
-     * Achat classique
+     * Achat
      */
-    private function handlePurchase($vehicle): void
+    private function handlePurchase(Vehicle $vehicle): void
     {
         $vehicle->setStatus(VehicleStatus::SOLD);
     }
 
     /**
-     * Leasing (LOA / LLD)
+     * Leasing
      */
-    private function handleLeasing($vehicle): void
+    private function handleLeasing(Vehicle $vehicle): void
     {
         $vehicle->setStatus(VehicleStatus::RENTED);
     }

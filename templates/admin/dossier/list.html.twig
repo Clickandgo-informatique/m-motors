@@ -26,13 +26,13 @@
 			<tbody>
 				{% for dossier in dossiers %}
 					<tr>
-						<td>{{ dossier.reference }}</td>
+						<td>{{ dossier.dossierCode }}</td>
 						<td>{{ dossier.vehicle.vehicleModel }}</td>
 						<td>{{ dossier.customer }}</td>
 						<td>{{ dossier.type.label }}</td>
 						<td>
-							<span class="badge bg-{{ dossier.status.badge }}">
-								{{ dossier.status.label }}
+							<span class="badge bg-{{ dossier.statusBadge }}">
+								{{ dossier.statusLabel }}
 							</span>
 						</td>
 						<td>{{ dossier.createdAt|date('d/m/Y') }}</td>

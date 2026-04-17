@@ -19,15 +19,21 @@ use Symfony\Component\Validator\Constraints as Assert;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableTrait;
-    // ----------------- CHAMPS DE BASE -----------------
+
+    // =========================
+    // IDENTIFIANT
+    // =========================
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
-    #[Assert\NotBlank(message: 'L’email est obligatoire')]
-    #[Assert\Email(message: 'Le format de l’email n’est pas valide')]
+    // =========================
+    // EMAIL
+    // =========================
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -42,30 +48,49 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $nickname = null;
 
-    // ----------------- RELATIONS -----------------
-    #[ORM\OneToMany(mappedBy: "user", targetEntity: Favorite::class, orphanRemoval: true)]
+    // =========================
+    // RELATIONS
+    // =========================
+
+    /**
+     * Favoris utilisateur
+     * orphanRemoval=true permet de supprimer automatiquement les favoris retirés
+     */
+    #[ORM\OneToMany(
+        mappedBy: "user",
+        targetEntity: Favorite::class,
+        orphanRemoval: true
+    )]
     private Collection $favorites;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Customer::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'user')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Customer $customer = null;
 
-    // ----------------- 2FA -----------------
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    // =========================
+    // 2FA
+    // =========================
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $google2FASecret = null;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column]
     private bool $is2FAEnabled = false;
 
     private bool $isTwoFactorVerified = false;
 
-    // ----------------- CONSTRUCTEUR -----------------
+    // =========================
+    // CONSTRUCTEUR
+    // =========================
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
-        $this->setRoles(['ROLE_USER']);
+        $this->roles = ['ROLE_USER'];
     }
 
-    // ----------------- BASIC -----------------
+    // =========================
+    // BASE USER
+    // =========================
+
     public function getId(): ?int
     {
         return $this->id;
@@ -78,7 +103,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->email = strtolower(trim($email));
         return $this;
     }
 
@@ -89,7 +114,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return array_unique([...$this->roles, 'ROLE_USER']);
+        return array_unique($this->roles);
     }
 
     public function setRoles(array $roles): static
@@ -111,6 +136,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void {}
 
+    // =========================
+    // VERIFICATION EMAIL
+    // =========================
+
     public function isVerified(): bool
     {
         return $this->isVerified;
@@ -122,47 +151,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // ----------------- NICKNAME -----------------
-    public function getNickname(): ?string
-    {
-        return $this->nickname;
-    }
+    // =========================
+    // CUSTOMER
+    // =========================
 
-    public function setNickname(?string $nickname): static
-    {
-        $this->nickname = $nickname;
-        return $this;
-    }
-
-    // ----------------- FAVORITES -----------------
-    /**
-     * @return Collection|Favorite[]
-     */
-    public function getFavorites(): Collection
-    {
-        return $this->favorites;
-    }
-
-    public function addFavorite(Favorite $favorite): static
-    {
-        if (!$this->favorites->contains($favorite)) {
-            $this->favorites->add($favorite);
-            $favorite->setUser($this);
-        }
-        return $this;
-    }
-
-    public function removeFavorite(Favorite $favorite): static
-    {
-        if ($this->favorites->removeElement($favorite)) {
-            if ($favorite->getUser() === $this) {
-                $favorite->setUser(null);
-            }
-        }
-        return $this;
-    }
-
-    // ----------------- RELATION CUSTOMER -----------------
     public function getCustomer(): ?Customer
     {
         return $this->customer;
@@ -171,13 +163,49 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCustomer(?Customer $customer): static
     {
         $this->customer = $customer;
-        if ($customer && $customer->getUser() !== $this) {
-            $customer->setUser($this);
-        }
         return $this;
     }
 
-    // ----------------- 2FA -----------------
+    // =========================
+    // FAVORITES
+    // =========================
+
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    /**
+     * Ajoute un favori et synchronise la relation inverse
+     */
+    public function addFavorite(Favorite $favorite): static
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites->add($favorite);
+            $favorite->setUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Retire un favori
+     * orphanRemoval=true gère la suppression automatique
+     */
+    public function removeFavorite(Favorite $favorite): static
+    {
+        $this->favorites->removeElement($favorite);
+
+        return $this;
+    }
+
+    // =========================
+    // 2FA
+    // =========================
+
     public function getGoogle2FASecret(): ?string
     {
         return $this->google2FASecret;
@@ -208,6 +236,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsTwoFactorVerified(bool $verified): self
     {
         $this->isTwoFactorVerified = $verified;
+        return $this;
+    }
+
+    // =========================
+    // NICKNAME
+    // =========================
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname(?string $nickname): self
+    {
+        $this->nickname = $nickname;
         return $this;
     }
 }

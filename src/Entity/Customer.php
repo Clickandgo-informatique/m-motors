@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ORM\Table(name: 'customer')]
 #[UniqueEntity(
@@ -26,80 +25,81 @@ class Customer
 {
     use TimestampableTrait;
 
-    // ================================
+    // =========================================================
     // IDENTIFIANT TECHNIQUE
-    // ================================
+    // =========================================================
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    // ================================
-    // CODE CLIENT
-    // ================================
+    // =========================================================
+    // CODE CLIENT (IDENTIFIANT MÉTIER UNIQUE)
+    // =========================================================
+
     #[ORM\Column(length: 10, unique: true)]
     #[Assert\NotBlank(message: 'Le code client est obligatoire')]
-    #[Assert\Length(
-        min: 3,
-        max: 10,
-        minMessage: 'Minimum {{ limit }} caractères',
-        maxMessage: 'Maximum {{ limit }} caractères'
-    )]
+    #[Assert\Length(min: 3, max: 10)]
     #[Assert\Regex(
         pattern: '/^[A-Z]{3}-?[0-9]+$/',
         message: 'Format attendu : DUP001 ou DUP-001'
     )]
     private ?string $customerCode = null;
 
-    // ================================
-    // INFOS CLIENT
-    // ================================
+    // =========================================================
+    // INFORMATIONS CLIENT
+    // =========================================================
+
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: 'Le prénom est obligatoire')]
+    #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
+    #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Assert\NotBlank(message: 'L’email est obligatoire')]
-    #[Assert\Email(message: 'Email invalide')]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     #[Assert\Length(max: 180)]
     private ?string $email = null;
 
-    // ================================
-    // USER (OBLIGATOIRE)
-    // ================================
+    // =========================================================
+    // USER (OPTIONNEL)
+    // =========================================================
     #[ORM\OneToOne(
-        inversedBy: 'customer',
+        mappedBy: 'customer',
         targetEntity: User::class,
         cascade: ['persist']
     )]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
-    // ================================
-    // DOSSIERS
-    // ================================
+    // =========================================================
+    // DOSSIERS (1 Customer → N Dossiers)
+    // =========================================================
     #[ORM\OneToMany(
         mappedBy: 'customer',
         targetEntity: Dossier::class,
-        orphanRemoval: true,
         cascade: ['persist']
+        // ⚠️ PAS de orphanRemoval ici pour éviter suppressions automatiques non maîtrisées
     )]
     private Collection $dossiers;
 
+    // =========================================================
+    // CONSTRUCTOR
+    // =========================================================
+
     public function __construct()
     {
-        $this->dossiers = new ArrayCollection();      
+        $this->dossiers = new ArrayCollection();
     }
 
-    // ================================
+    // =========================================================
     // GETTERS / SETTERS
-    // ================================
+    // =========================================================
 
     public function getId(): ?int
     {
@@ -107,6 +107,7 @@ class Customer
     }
 
     // -------- CODE CLIENT --------
+
     public function getCustomerCode(): ?string
     {
         return $this->customerCode;
@@ -114,11 +115,12 @@ class Customer
 
     public function setCustomerCode(string $customerCode): static
     {
-        $this->customerCode = $customerCode;
+        $this->customerCode = strtoupper(trim($customerCode));
         return $this;
     }
 
     // -------- FIRSTNAME --------
+
     public function getFirstName(): ?string
     {
         return $this->firstName;
@@ -131,6 +133,7 @@ class Customer
     }
 
     // -------- LASTNAME --------
+
     public function getLastName(): ?string
     {
         return $this->lastName;
@@ -143,6 +146,7 @@ class Customer
     }
 
     // -------- EMAIL --------
+
     public function getEmail(): ?string
     {
         return $this->email;
@@ -154,28 +158,30 @@ class Customer
         return $this;
     }
 
-    // ================================
-    // USER RELATION
-    // ================================
+    // =========================================================
+    // USER RELATION (1 - 1)
+    // =========================================================
+
     public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(User $user): static
+    public function setUser(?User $user): static
     {
         $this->user = $user;
 
-        if ($user->getCustomer() !== $this) {
+        if ($user && $user->getCustomer() !== $this) {
             $user->setCustomer($this);
         }
 
         return $this;
     }
 
-    // ================================
-    // DOSSIERS RELATION
-    // ================================
+    // =========================================================
+    // DOSSIERS RELATION (1 - N)
+    // =========================================================
+
     /**
      * @return Collection<int, Dossier>
      */
@@ -184,6 +190,10 @@ class Customer
         return $this->dossiers;
     }
 
+    /**
+     * Ajout d’un dossier au customer
+     * → garantit la cohérence bidirectionnelle
+     */
     public function addDossier(Dossier $dossier): static
     {
         if (!$this->dossiers->contains($dossier)) {
@@ -194,23 +204,37 @@ class Customer
         return $this;
     }
 
+    /**
+     * Retrait d’un dossier du customer
+     *
+     * ⚠ IMPORTANT :
+     * On NE met PAS customer à null car :
+     * - relation Dossier.customer est nullable=false
+     * - Doctrine déclencherait une erreur de persistance
+     *
+     * Si besoin de transfert → gérer via service métier.
+     */
     public function removeDossier(Dossier $dossier): static
     {
         $this->dossiers->removeElement($dossier);
 
+        // ❌ NE PAS FAIRE :
+        // $dossier->setCustomer(null);
+
         return $this;
     }
 
-    // ================================
-    // DEBUG
-    // ================================
+    // =========================================================
+    // DEBUG STRING
+    // =========================================================
+
     public function __toString(): string
     {
         return sprintf(
             '%s %s (%s)',
-            $this->firstName,
-            $this->lastName,
-            $this->customerCode
+            $this->firstName ?? '',
+            $this->lastName ?? '',
+            $this->customerCode ?? ''
         );
     }
 }

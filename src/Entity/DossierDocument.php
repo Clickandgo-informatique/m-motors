@@ -31,9 +31,7 @@ class DossierDocument
     private ?Dossier $dossier = null;
 
     // =========================================================
-    // TYPE DE DOCUMENT
-    // =========================================================
-    // Exemple : CNI, permis, justificatif, upload générique
+    // TYPE DOCUMENT (ENUM)
     // =========================================================
 
     #[ORM\Column(enumType: DossierDocumentType::class)]
@@ -41,45 +39,34 @@ class DossierDocument
     private DossierDocumentType $documentType = DossierDocumentType::UPLOAD;
 
     // =========================================================
-    // NOM ORIGINAL DU FICHIER
+    // FICHIER
     // =========================================================
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le nom original est obligatoire')]
-    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
     private ?string $originalName = null;
 
-    // =========================================================
-    // NOM STOCKÉ (filesystem)
-    // =========================================================
-
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le nom de fichier est obligatoire')]
-    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
     private ?string $fileName = null;
 
-    // =========================================================
-    // CHEMIN RELATIF (uploads/...)
-    // =========================================================
-
     #[ORM\Column(length: 500)]
-    #[Assert\NotBlank(message: 'Le chemin du fichier est obligatoire')]
-    #[Assert\Length(max: 500)]
+    #[Assert\NotBlank]
     private ?string $path = null;
 
     // =========================================================
-    // STATUT DU DOCUMENT
+    // STATUS (ENUM)
     // =========================================================
 
     #[ORM\Column(enumType: DossierDocumentStatus::class)]
     private DossierDocumentStatus $status = DossierDocumentStatus::UPLOADED;
 
     // =========================================================
-    // TIMESTAMPS
+    // DATES
     // =========================================================
 
     #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $validatedAt = null;
@@ -164,7 +151,7 @@ class DossierDocument
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -175,14 +162,12 @@ class DossierDocument
     }
 
     // =========================================================
-    // LIFECYCLE DOCTRINE
+    // LIFECYCLE
     // =========================================================
 
     #[ORM\PrePersist]
     public function initCreatedAt(): void
     {
-        if (!isset($this->createdAt)) {
-            $this->createdAt = new \DateTimeImmutable();
-        }
+        $this->createdAt ??= new \DateTimeImmutable();
     }
 }

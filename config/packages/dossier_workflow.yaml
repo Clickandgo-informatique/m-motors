@@ -5,7 +5,7 @@ framework:
 
       marking_store:
         type: method
-        property: workflowStatus
+        property: status
 
       supports:
         - App\Entity\Dossier

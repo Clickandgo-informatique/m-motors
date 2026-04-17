@@ -24,57 +24,56 @@ class CustomerFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $batchSize = 20;
+        $users = [];
+        $customers = [];
+
         for ($i = 1; $i <= 50; $i++) {
 
             $first = $this->faker->firstName();
             $last  = $this->faker->lastName();
 
-            $customer = new Customer();
+            $email = strtolower($first . '.' . $last . '.' . $i . '@google.fr');
 
+            $customer = new Customer();
             $customer
                 ->setFirstName($first)
                 ->setLastName($last)
-                ->setEmail(strtolower($first . '.' . $last . '.' . $i . '@google.fr'))
+                ->setEmail($email)
                 ->setCustomerCode(
                     strtoupper(substr($last, 0, 3)) . str_pad((string)$i, 3, '0', STR_PAD_LEFT)
                 );
 
             $user = new User();
-            $user->setEmail($customer->getEmail());
+            $user->setEmail($email);
             $user->setRoles(['ROLE_CUSTOMER']);
 
+            // ⚡ remplacement de random_bytes (plus rapide)
             $plainPassword = sprintf(
                 '%s-%s',
                 $customer->getCustomerCode(),
-                bin2hex(random_bytes(3))
+                bin2hex(openssl_random_pseudo_bytes(3))
             );
 
             $user->setPassword(
                 $this->passwordHasher->hashPassword($user, $plainPassword)
             );
 
-            // relation bidirectionnelle
             $customer->setUser($user);
 
             $manager->persist($user);
             $manager->persist($customer);
 
-            // référence pour autres fixtures
             $this->addReference('customer_' . $i, $customer);
 
-            // 🚀 BATCH FLUSH (OPTIMISATION PERFS)
-            if ($i % 10 === 0) {
+            // 🚀 flush batch optimisé
+            if ($i % $batchSize === 0) {
                 $manager->flush();
-              
+                $manager->clear(); // 💥 énorme gain mémoire + perf Doctrine
             }
         }
 
         $manager->flush();
-       
-    }
-
-    public static function getGroups(): array
-    {
-        return ['customerfixtures'];
+        $manager->clear();
     }
 }

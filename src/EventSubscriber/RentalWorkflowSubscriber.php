@@ -28,6 +28,10 @@ class RentalWorkflowSubscriber implements EventSubscriberInterface
         $rental = $event->getSubject();
         $vehicle = $rental->getVehicle();
 
+        if (!$vehicle instanceof \App\Entity\Vehicle) {
+            return;
+        }
+
         $workflow = $this->workflowRegistry->get($vehicle, 'vehicle_state_machine');
 
         if ($workflow->can($vehicle, 'vehicle_rent')) {
@@ -50,6 +54,10 @@ class RentalWorkflowSubscriber implements EventSubscriberInterface
     {
         $rental = $event->getSubject();
         $vehicle = $rental->getVehicle();
+
+        if (!$vehicle instanceof \App\Entity\Vehicle) {
+            return;
+        }
 
         $workflow = $this->workflowRegistry->get($vehicle, 'vehicle_state_machine');
 

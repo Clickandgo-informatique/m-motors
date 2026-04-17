@@ -1,14 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin - Dossier
+{% block title %}M-Motors: Admin - Dossier
 {% endblock %}
 
 {% block body %}
 
 	<div class="container mt-4">
 
-		<h1>Dossier
-			{{ dossier.reference }}</h1>
+		<h1 class="text-center">
+			<i class="fa-solid fa-folder-open title-icon"></i>Dossier
+			{{ dossier.dossierCode }}</h1>
 
 		<p>
 			Statut :
@@ -20,8 +21,8 @@
 		<hr>
 
 		{# =========================
-		       INFOS
-		    ========================= #}
+				       INFOS
+				    ========================= #}
 
 		<div class="card mb-4">
 			<div class="card-body">
@@ -40,15 +41,15 @@
 		</div>
 
 		{# =========================
-		       DROPZONE
-		    ========================= #}
+				       DROPZONE
+				    ========================= #}
 
 		<div class="card">
 			<div class="card-body">
 
 				<h5>Documents</h5>
 
-				{% if dossier.workflowStatus in ['draft', 'in_progress'] %}
+				{% if dossier.status in ['draft', 'in_progress'] %}
 
 					<div class="dropzone" data-upload-url="{{ path('dossier_document_upload', {id: dossier.id}) }}" data-delete-url="{{ path('dossier_document_delete', {id: '__id__'}) }}" data-preview-id="dossier-documents-preview" data-destination="dossiers/{{ dossier.id }}">
 

@@ -1,0 +1,80 @@
+@startuml
+title Workflow Dossier - M-Motors
+
+[*] --> draft
+
+' =========================
+' INITIALISATION
+' =========================
+draft --> vehicle_selected : select_vehicle
+
+' =========================
+' DEMANDE DOCUMENTS
+' =========================
+vehicle_selected --> documents_pending : request_documents
+
+documents_pending --> documents_review : submit_documents
+
+' =========================
+' VALIDATION DOCUMENTS
+' =========================
+documents_review --> financing_review : validate_documents
+
+' =========================
+' FINALISATION
+' =========================
+financing_review --> completed : complete
+
+' =========================
+' ANNULATION (depuis plusieurs états)
+' =========================
+draft --> cancelled : cancel_from_draft
+vehicle_selected --> cancelled : cancel_from_vehicle
+
+documents_pending --> cancelled : cancel_from_documents
+documents_review --> cancelled : cancel_from_documents
+
+financing_review --> cancelled : cancel_from_financing
+
+' =========================
+' ETATS FINALS
+' =========================
+completed --> [*]
+cancelled --> [*]
+
+' =========================
+' NOTES DE GESTION (ROLES)
+' =========================
+note right of draft
+Création par CUSTOMER ou ADMIN
+end note
+
+note right of vehicle_selected
+Sélection véhicule
+Accès CUSTOMER
+end note
+
+note right of documents_pending
+Upload documents requis
+CUSTOMER
+end note
+
+note right of documents_review
+Validation par SALES_MANAGER / ADMIN
+end note
+
+note right of financing_review
+Validation finale financière
+SALES_MANAGER / ADMIN
+end note
+
+note right of completed
+Dossier terminé
+Lecture seule
+end note
+
+note right of cancelled
+Arrêt du processus
+end note
+
+@enduml

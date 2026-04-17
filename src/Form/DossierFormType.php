@@ -24,31 +24,32 @@ class DossierFormType extends AbstractType
         $isAdmin = $options['is_admin'];
 
         // =========================
-        // ADMIN ONLY FIELDS
+        // ADMIN FIELDS
         // =========================
         if ($isAdmin) {
             $builder
                 ->add('customer', EntityType::class, [
                     'class' => Customer::class,
-                    'choice_label' => fn($c) => $c->getFirstname() . ' ' . $c->getLastname(),
-                    'label' => 'Client',
+                    'choice_label' => fn(Customer $c) =>
+                    $c->getFirstName() . ' ' . $c->getLastName(),
                     'placeholder' => 'Choisir un client',
                 ])
                 ->add('vehicle', EntityType::class, [
                     'class' => Vehicle::class,
-                    'choice_label' => fn($v) => $v->getBrand() . ' ' . $v->getModel(),
-                    'label' => 'Véhicule',
+                    'choice_label' => fn(Vehicle $v) =>
+                    $v->getVehicleModel()?->getBrand() . ' ' . $v->getVehicleModel()->getModel(),
                     'placeholder' => 'Choisir un véhicule',
                 ]);
         }
 
         // =========================
-        // COMMON FIELD
+        // FINANCING TYPE (ENUM SAFE)
         // =========================
         $builder->add('financingType', ChoiceType::class, [
             'label' => 'Mode d’acquisition',
-            'choices' => FinancingType::choices(),
-            'choice_label' => fn($choice) => $choice->label(),
+            'choices' => FinancingType::cases(),
+            'choice_label' => fn(FinancingType $type) => $type->name,
+            'choice_value' => fn(?FinancingType $type) => $type?->value,
             'placeholder' => 'Choisir une option',
             'required' => false,
         ]);
@@ -86,12 +87,15 @@ class DossierFormType extends AbstractType
         // =========================
         // EVENTS
         // =========================
-
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($formModifier) {
-            $formModifier($event->getForm(), $event->getData()?->getFinancingType());
+            $formModifier(
+                $event->getForm(),
+                $event->getData()?->getFinancingType()
+            );
         });
 
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($formModifier) {
+
             $data = $event->getData();
 
             $type = isset($data['financingType'])
@@ -102,7 +106,7 @@ class DossierFormType extends AbstractType
         });
 
         // =========================
-        // BUSINESS LOGIC
+        // BUSINESS RULE
         // =========================
         $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
 

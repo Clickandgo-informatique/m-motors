@@ -23,16 +23,38 @@ class VehicleStatusSubscriber implements EventSubscriber
         $entity = $args->getObject();
         $em = $args->getObjectManager();
 
+        // =========================
+        // SALE → VEHICLE SOLD
+        // =========================
         if ($entity instanceof Sale) {
+
             $vehicle = $entity->getVehicle();
+
+            if (!$vehicle) {
+                return;
+            }
+
             $vehicle->setStatus(VehicleStatus::SOLD);
-            $em->flush();
+
+            // ⚠️ PAS DE FLUSH ICI
+            $em->persist($vehicle);
         }
 
+        // =========================
+        // RENTAL → VEHICLE RENTED
+        // =========================
         if ($entity instanceof Rental) {
+
             $vehicle = $entity->getVehicle();
+
+            if (!$vehicle) {
+                return;
+            }
+
             $vehicle->setStatus(VehicleStatus::RENTED);
-            $em->flush();
+
+            // ⚠️ PAS DE FLUSH ICI
+            $em->persist($vehicle);
         }
     }
 }

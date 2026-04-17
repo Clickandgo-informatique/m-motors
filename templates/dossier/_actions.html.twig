@@ -1,14 +1,14 @@
 <div class="d-flex gap-2">
 
-	{% for transition in workflow.enabledTransitions(dossier) %}
+	{% for transition in workflow_transitions(dossier, 'dossier') %}
 
 		<form method="post" action="{{ path('dossier_transition', { id: dossier.id, transition: transition.name }) }}">
 
 			<button class="btn
-					                {% if transition.name == 'start' %}btn-primary{% endif %}
-					                {% if transition.name == 'complete' %}btn-success{% endif %}
-					                {% if transition.name == 'cancel' %}btn-danger{% endif %}
-					            ">
+									{% if transition.name == 'start' %}btn-primary{% endif %}
+									{% if transition.name == 'complete' %}btn-success{% endif %}
+									{% if transition.name == 'cancel' %}btn-danger{% endif %}
+								">
 				{{ transition.name|capitalize }}
 			</button>
 

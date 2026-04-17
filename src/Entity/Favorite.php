@@ -9,24 +9,31 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(
     name: 'favorite',
     uniqueConstraints: [
-        new ORM\UniqueConstraint(name: 'uniq_user_vehicle', columns: ['user_id', 'vehicle_id'])
+        new ORM\UniqueConstraint(
+            name: 'uniq_user_vehicle',
+            columns: ['user_id', 'vehicle_id']
+        )
     ]
 )]
 class Favorite
 {
+    // Identifiant technique
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    // Utilisateur propriétaire du favori
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'favorites')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
+    // Véhicule mis en favori
     #[ORM\ManyToOne(targetEntity: Vehicle::class, inversedBy: 'favorites')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Vehicle $vehicle = null;
 
+    // Date de création du favori
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
@@ -55,8 +62,7 @@ class Favorite
     {
         return $this->vehicle;
     }
-
-    public function setVehicle(Vehicle $vehicle): self
+    public function setVehicle(?Vehicle $vehicle): self
     {
         $this->vehicle = $vehicle;
         return $this;

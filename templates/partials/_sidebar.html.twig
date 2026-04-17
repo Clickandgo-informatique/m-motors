@@ -1,87 +1,119 @@
 {# templates/partials/_sidebar.html.twig #}
+
 <aside
 	class="sidebar" id="sidebar">
-	{# Bouton pour ouvrir/fermer la sidebar #}
+
+	{# Bouton toggle sidebar #}
 	<button id="sidebar-toggle" class="sidebar-handle">
 		<i class="fa-solid fa-chevron-left"></i>
 	</button>
 
-	<nav class="sidenav" aria-label="Navigation latérale">
+	<nav
+		class="sidenav" aria-label="Navigation latérale">
+
+		{# ========================= VEHICULES ========================= #}
 		<details open>
 			<summary>
 				<i class="fa-solid fa-car-side"></i>
 				<span>Véhicules</span>
 			</summary>
-			{# Include filtres uniquement si on est sur la page vehicles #}
+
 			<ul class="items-list">
+
 				<li>
 					<a href="{{ path('vehicles') }}">
-						<i class="fa-solid fa-car-tunnel"></i>Véhicules enregistrés
+						<i class="fa-solid fa-car-tunnel"></i>
+						Véhicules enregistrés
 					</a>
 				</li>
+
 				{% if app.request.attributes.get('_route') starts with 'vehicles' %}
 					{{ render(controller('App\\Controller\\VehiclesFilterController::getFilters')) }}
 				{% endif %}
+
 				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 					<li>
 						<a href="{{ path('vehicles_models') }}">
-							<i class="fa-solid fa-book"></i>Catalogue fabricants
+							<i class="fa-solid fa-book"></i>
+							Catalogue fabricants
 						</a>
 					</li>
+
 					<li>
 						<a href="{{ path('vehicle_model_new') }}">
-							<i class="fa-solid fa-file-circle-plus"></i>Créer un modèle de véhicule
+							<i class="fa-solid fa-file-circle-plus"></i>
+							Créer un modèle de véhicule
 						</a>
 					</li>
 				{% endif %}
+
 			</ul>
 		</details>
 
+		{# ========================= CLIENTS ========================= #}
 		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 			<details open>
 				<summary>
-					<i class="fa-regular fa-address-book"></i>Clients
+					<i class="fa-regular fa-address-book"></i>
+					Clients
 				</summary>
+
 				<ul class="items-list">
+
 					<li>
 						<a href="{{ path('customer_list') }}">
-							<i class="fa-regular fa-address-book"></i>Liste clients
+							<i class="fa-regular fa-address-book"></i>
+							Liste clients
 						</a>
 					</li>
+
 					<li>
 						<a href="{{ path('customer_new') }}">
-							<i class="fa-solid fa-user-plus"></i>Créer client
+							<i class="fa-solid fa-user-plus"></i>
+							Créer client
 						</a>
 					</li>
+
 				</ul>
 			</details>
+		{% endif %}
 
-			<details open>
-				<summary>
-					<i class="fa-solid fa-file-lines"></i>Dossiers
-				</summary>
-				<ul class="items-list">
+		{# ========================= DOSSIERS ========================= #}
+		<details open>
+			<summary>
+				<i class="fa-solid fa-file-lines"></i>
+				Dossiers
+			</summary>
 
+			<ul class="items-list">
+
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 					<li>
 						<a href="{{ path('admin_dossier_list') }}">
-							<i class="fa-solid fa-list"></i>Liste dossiers (Admin)
-						</a>
-					</li>
-					<li>
-						<a href="{{ path('admin_dossier_new') }}">
-							<i class="fa-solid fa-file-circle-plus"></i>Créer dossier
+							<i class="fa-solid fa-list"></i>
+							Liste dossiers (Admin)
 						</a>
 					</li>
 
+					<li>
+						<a href="{{ path('admin_dossier_new') }}">
+							<i class="fa-solid fa-file-circle-plus"></i>
+							Créer dossier
+						</a>
+					</li>
 				{% endif %}
+
 				{% if app.user %}
 					<li>
 						<a href="{{ path('dossier_my_list') }}">
-							<i class="fa-solid fa-folder-open"></i>Mes dossiers
+							<i class="fa-solid fa-folder-open"></i>
+							Mes dossiers
 						</a>
 					</li>
 				{% endif %}
+
 			</ul>
 		</details>
+
 	</nav>
 </aside>

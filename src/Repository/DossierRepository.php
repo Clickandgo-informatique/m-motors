@@ -17,11 +17,11 @@ class DossierRepository extends ServiceEntityRepository
     /**
      * Récupérer les dossiers d’un client
      */
-    public function findByCustomer(int $customerId): array
+    public function findByCustomer(Customer $customer): array
     {
         return $this->createQueryBuilder('d')
             ->andWhere('d.customer = :customer')
-            ->setParameter('customer', $customerId)
+            ->setParameter('customer', $customer)
             ->orderBy('d.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
@@ -47,18 +47,22 @@ class DossierRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('d')
             ->andWhere('d.status IN (:statuses)')
-            ->setParameter('statuses', ['submitted', 'under_review'])
+            ->setParameter('statuses', [
+                'submitted',
+                'under_review'
+            ])
             ->orderBy('d.createdAt', 'ASC')
             ->getQuery()
             ->getResult();
     }
+
     /**
      * Dernier dossier d’un customer
      */
     public function findLastByCustomer(Customer $customer): ?Dossier
     {
         return $this->createQueryBuilder('d')
-            ->where('d.customer = :customer')
+            ->andWhere('d.customer = :customer')
             ->setParameter('customer', $customer)
             ->orderBy('d.dossierCode', 'DESC')
             ->setMaxResults(1)

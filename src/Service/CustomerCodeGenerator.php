@@ -6,17 +6,16 @@ use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use App\Repository\DossierRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 /**
- * Service de génération des identifiants métier
- *
- * - Code customer : DUP001
- * - Code dossier : DUP001-0001
+ * Service de génération des codes métiers
  */
 class CustomerCodeGenerator
 {
-    private const MAX_RETRY = 5;
+    /**
+     * Cache mémoire pour éviter doublons en batch (fixtures, loops, API)
+     */
+    private array $dossierCounters = [];
 
     public function __construct(
         private CustomerRepository $customerRepo,
@@ -24,9 +23,6 @@ class CustomerCodeGenerator
         private EntityManagerInterface $em
     ) {}
 
-    /**
-     * Génère un code customer
-     */
     public function generateCustomerCode(string $lastName): string
     {
         $prefix = $this->buildPrefix($lastName);
@@ -43,52 +39,45 @@ class CustomerCodeGenerator
         return sprintf('%s%03d', $prefix, $number);
     }
 
-    /**
-     * Génération sécurisée avec retry
-     */
-    public function generateCustomerCodeSafe(Customer $customer): string
+    public function assignCustomerCode(Customer $customer): string
     {
-        $retry = 0;
+        $code = $this->generateCustomerCode($customer->getLastName());
+        $customer->setCustomerCode($code);
 
-        do {
-            try {
-                $code = $this->generateCustomerCode($customer->getLastName());
-                $customer->setCustomerCode($code);
-
-                $this->em->persist($customer);
-                $this->em->flush();
-
-                return $code;
-            } catch (UniqueConstraintViolationException $e) {
-                $retry++;
-            }
-        } while ($retry < self::MAX_RETRY);
-
-        throw new \RuntimeException('Impossible de générer un code customer unique');
+        return $code;
     }
 
     /**
-     * Génère un code dossier
+     * 🔥 FIX PRINCIPAL ICI
      */
     public function generateDossierCode(Customer $customer): string
     {
         $prefix = $customer->getCustomerCode();
 
-        $lastDossier = $this->dossierRepo->findLastByCustomer($customer);
+        // INIT compteur UNE SEULE FOIS
+        if (!isset($this->dossierCounters[$prefix])) {
 
-        $number = 1;
+            $lastDossier = $this->dossierRepo->findLastByCustomer($customer);
 
-        if ($lastDossier) {
-            $lastNumber = (int) substr($lastDossier->getDossierCode(), -4);
-            $number = $lastNumber + 1;
+            $this->dossierCounters[$prefix] = $lastDossier && $lastDossier->getDossierCode()
+                ? (int) substr($lastDossier->getDossierCode(), -4)
+                : 0;
         }
 
-        return sprintf('%s-%04d', $prefix, $number);
+        // INCRÉMENT LOCAL (SAFE même sans flush)
+        $this->dossierCounters[$prefix]++;
+
+        return sprintf('%s-%04d', $prefix, $this->dossierCounters[$prefix]);
     }
 
-    /**
-     * Génération du préfixe (3 lettres)
-     */
+    public function assignDossierCode(Customer $customer, $dossier): string
+    {
+        $code = $this->generateDossierCode($customer);
+        $dossier->setDossierCode($code);
+
+        return $code;
+    }
+
     private function buildPrefix(string $lastName): string
     {
         $normalized = iconv('UTF-8', 'ASCII//TRANSLIT', $lastName);
