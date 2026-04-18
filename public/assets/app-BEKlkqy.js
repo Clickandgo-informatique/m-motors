@@ -2,13 +2,13 @@
 // CORE IMPORTS
 // =========================================================
 
-import "./stimulus_bootstrap.js"; // OK même sans Turbo
+import "./stimulus_bootstrap.js";
 import "./js/theme.js";
 import "./styles/app.css";
 import "./js/sidebar.js";
 import "./js/rangeSelector.js";
 
-// Dropzone
+// Dropzone (M-MOTORS FIX)
 import Dropzone from "./js/Dropzone.js";
 
 // =========================================================
@@ -85,7 +85,7 @@ function initAutocomplete() {
 }
 
 // =========================================================
-// FETCHFORM INIT
+// FETCHFORM INIT (one-shot safe)
 // =========================================================
 
 function initFetchForms() {
@@ -98,35 +98,33 @@ function initFetchForms() {
 }
 
 // =========================================================
-// GLOBAL INIT FUNCTION
+// DOM READY
 // =========================================================
 
-function initApp() {
-  // Collections Symfony
+document.addEventListener("turbo:load", () => {
+  // -------------------------------
+  // Collections dynamiques Symfony
+  // -------------------------------
   document.querySelectorAll("[data-collection]").forEach(root => {
     new DynamicFormCollection(root);
   });
 
-  // Modules
+  // -------------------------------
+  // INIT MODULES
+  // -------------------------------
   initDropzones();
   initFilters();
   initFavorites();
   initAutocomplete();
   initFetchForms();
 
-  // AJAX global
-  if (!window.AjaxManagerInstance) {
-    window.AjaxManagerInstance = new AjaxManager();
-  }
+  // -------------------------------
+  // AJAX GLOBAL MANAGER
+  // -------------------------------
+  window.AjaxManagerInstance = new AjaxManager();
 
   console.log("app.js chargé : modules initialisés");
-}
-
-// =========================================================
-// DOM READY
-// =========================================================
-
-document.addEventListener("DOMContentLoaded", initApp);
+});
 
 // =========================================================
 // MUTATION OBSERVERS (DOM DYNAMIQUE)
@@ -137,16 +135,16 @@ const observersConfig = {
   subtree: true
 };
 
-const filtersObserver = new MutationObserver(initFilters);
+const filtersObserver = new MutationObserver(() => initFilters());
 filtersObserver.observe(document.body, observersConfig);
 
-const favoritesObserver = new MutationObserver(initFavorites);
+const favoritesObserver = new MutationObserver(() => initFavorites());
 favoritesObserver.observe(document.body, observersConfig);
 
-const autocompleteObserver = new MutationObserver(initAutocomplete);
+const autocompleteObserver = new MutationObserver(() => initAutocomplete());
 autocompleteObserver.observe(document.body, observersConfig);
 
-const dropzoneObserver = new MutationObserver(initDropzones);
+const dropzoneObserver = new MutationObserver(() => initDropzones());
 dropzoneObserver.observe(document.body, observersConfig);
 
 // =========================================================

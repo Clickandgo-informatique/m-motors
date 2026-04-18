@@ -8,8 +8,10 @@
 	<div class="container mt-4">
 
 		<h1 class="text-center">
-			<i class="fa-solid fa-folder-open title-icon"></i>Dossier
-			{{ dossier.dossierCode }}</h1>
+			<i class="fa-solid fa-folder-open title-icon"></i>
+			Dossier
+			{{ dossier.dossierCode }}
+		</h1>
 
 		<p>
 			Statut :
@@ -20,30 +22,21 @@
 
 		<hr>
 
-		{# =========================
-				       INFOS
-				    ========================= #}
-
+		{# ========================= INFO ========================= #}
 		<div class="card mb-4">
 			<div class="card-body">
-
 				<p>
 					<strong>Client :</strong>
 					{{ dossier.customer.lastname }}
 				</p>
-
 				<p>
 					<strong>Véhicule :</strong>
 					{{ dossier.vehicle.vehicleModel }}
 				</p>
-
 			</div>
 		</div>
 
-		{# =========================
-				       DROPZONE
-				    ========================= #}
-
+		{# ========================= DROPZONE ========================= #}
 		<div class="card">
 			<div class="card-body">
 
@@ -51,7 +44,7 @@
 
 				{% if dossier.status in ['draft', 'in_progress'] %}
 
-					<div class="dropzone" data-upload-url="{{ path('dossier_document_upload', {id: dossier.id}) }}" data-delete-url="{{ path('dossier_document_delete', {id: '__id__'}) }}" data-preview-id="dossier-documents-preview" data-destination="dossiers/{{ dossier.id }}">
+					<div class="dropzone" data-upload-url="{{ path('dossier_document_upload', {id: dossier.id}) }}" data-delete-url="{{ path('dossier_document_delete', {id: '__id__'}) }}" data-documents-url="{{ path('dossier_documents_list', {id: dossier.id}) }}" data-preview-id="dossier-documents-preview" data-destination="dossiers/{{ dossier.id }}">
 
 						<p class="text-muted">
 							Glissez vos fichiers ou cliquez ici
@@ -67,6 +60,7 @@
 					<p class="text-muted">Modification désactivée</p>
 				{% endif %}
 
+				{# ========================= PREVIEW ========================= #}
 				<div id="dossier-documents-preview" class="preview-container mt-3">
 
 					{% for doc in dossier.documents %}
@@ -75,24 +69,27 @@
 
 						<div class="dz-thumb" data-id="{{ doc.id }}">
 
-							{% if ext in ['jpg','jpeg','png','webp'] %}
-								<img src="{{ asset('uploads/' ~ doc.path) }}">
-
-							{% elseif ext == 'pdf' %}
-								<div class="dz-file-preview dz-pdf">PDF</div>
-
-							{% elseif ext in ['doc','docx'] %}
-								<div class="dz-file-preview dz-word">WORD</div>
-
-							{% elseif ext in ['xls','xlsx'] %}
-								<div class="dz-file-preview dz-excel">EXCEL</div>
-
-							{% else %}
-								<div class="dz-file-preview dz-generic">FILE</div>
-							{% endif %}
+							<div class="dz-preview">
+								{% if ext in ['jpg','jpeg','png','webp'] %}
+									<img src="{{ asset('uploads/' ~ doc.path) }}">
+								{% elseif ext == 'pdf' %}
+									<div class="dz-file-preview dz-pdf">PDF</div>
+								{% elseif ext in ['doc','docx'] %}
+									<div class="dz-file-preview dz-word">WORD</div>
+								{% elseif ext in ['xls','xlsx'] %}
+									<div class="dz-file-preview dz-excel">EXCEL</div>
+								{% else %}
+									<div class="dz-file-preview dz-generic">FILE</div>
+								{% endif %}
+							</div>
 
 							<div class="dz-filename">
 								{{ doc.originalName }}
+							</div>
+
+							<div class="dz-meta">
+								Envoyé le
+								{{ doc.createdAt ? doc.createdAt|date('d/m/Y H:i') : '' }}
 							</div>
 
 							<button class="dz-delete" data-id="{{ doc.id }}">×</button>

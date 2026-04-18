@@ -9,7 +9,7 @@
   padding: 25px;
   text-align: center;
 
-  background: var(--bg-primary);
+  background: #fafafa;
   cursor: pointer;
 
   transition: all 0.2s ease;
@@ -104,7 +104,7 @@
   border-radius: 10px;
 
   overflow: hidden;
-  background: var(--bg-primary);
+  background: #fff;
 
   transition: all 0.2s ease;
 }

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html
+	lang="fr" data-turbo="false">
+	{# Important: désactiver turbo #}
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,8 +22,8 @@
 	<body>
 		{{ include("partials/_header.html.twig") }}
 
-		<div class="app-layout">			
-				{{ include("partials/_sidebar.html.twig") }}		
+		<div class="app-layout">
+			{{ include("partials/_sidebar.html.twig") }}
 
 			<div class="app-main">
 

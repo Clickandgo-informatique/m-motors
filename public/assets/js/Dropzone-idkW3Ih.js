@@ -1,5 +1,7 @@
 export default class Dropzone {
+
   constructor(element) {
+
     this.el = element;
 
     this.uploadUrl = element.dataset.uploadUrl;
@@ -24,6 +26,7 @@ export default class Dropzone {
   // INIT
   // =========================================================
   init() {
+
     this.input = document.createElement("input");
     this.input.type = "file";
     this.input.multiple = true;
@@ -54,54 +57,51 @@ export default class Dropzone {
   }
 
   // =========================================================
-  // LOAD FROM SERVER (STATE SOURCE)
+  // LOAD ALL FROM SERVER (SOURCE OF TRUTH)
   // =========================================================
   async loadDocuments() {
-    const res = await fetch(this.documentsUrl);
-    const data = await res.json();
 
-    this.renderDocuments(data.documents); // 🔥 FIX IMPORTANT
+    const res = await fetch(this.documentsUrl);
+    const docs = await res.json();
+
+    this.renderDocuments(docs);
   }
 
   // =========================================================
-  // RENDER
+  // RENDER CLEAN STATE
   // =========================================================
   renderDocuments(files) {
-    if (!Array.isArray(files)) {
-      console.error("Dropzone: invalid data format", files);
-      return;
-    }
 
     this.previewContainer.innerHTML = "";
 
     files.forEach(file => {
+
       const div = document.createElement("div");
       div.classList.add("dz-thumb");
       div.dataset.id = file.id;
 
-      const ext = file.fileName
-        .split(".")
-        .pop()
-        .toLowerCase();
+      const ext = file.fileName.split(".").pop().toLowerCase();
 
       let preview = "";
 
-      if (["jpg", "jpeg", "png", "webp"].includes(ext)) {
+      if (["jpg","jpeg","png","webp"].includes(ext)) {
         preview = `<img src="/uploads/${file.path}">`;
       } else if (ext === "pdf") {
         preview = `<div class="dz-file-preview dz-pdf">PDF</div>`;
-      } else if (["doc", "docx"].includes(ext)) {
+      } else if (["doc","docx"].includes(ext)) {
         preview = `<div class="dz-file-preview dz-word">WORD</div>`;
-      } else if (["xls", "xlsx"].includes(ext)) {
+      } else if (["xls","xlsx"].includes(ext)) {
         preview = `<div class="dz-file-preview dz-excel">EXCEL</div>`;
       } else {
         preview = `<div class="dz-file-preview dz-generic">FILE</div>`;
       }
 
+      const now = file.createdAt ?? "";
+
       div.innerHTML = `
         <div class="dz-preview">${preview}</div>
         <div class="dz-filename">${file.fileName}</div>
-        <div class="dz-meta">Envoyé le ${file.createdAt ?? ""}</div>
+        <div class="dz-meta">Envoyé le ${now}</div>
       `;
 
       const btn = document.createElement("button");
@@ -114,10 +114,9 @@ export default class Dropzone {
         if (!confirm("Supprimer ce fichier ?")) return;
 
         const url = this.deleteUrlTemplate.replace("__id__", file.id);
-
         await fetch(url, { method: "DELETE" });
 
-        this.loadDocuments(); // 🔥 FULL REFRESH STATE
+        this.loadDocuments(); // 🔥 refresh full state
       });
 
       div.appendChild(btn);
@@ -130,7 +129,9 @@ export default class Dropzone {
   // QUEUE
   // =========================================================
   addToQueue(files) {
+
     Array.from(files).forEach(file => {
+
       const key = `${file.name}_${file.size}`;
 
       if (this.fileKeys.has(key)) return;
@@ -143,10 +144,7 @@ export default class Dropzone {
 
       div.innerHTML = `
         <div class="dz-file-preview dz-generic">
-          ${file.name
-            .split(".")
-            .pop()
-            .toUpperCase()}
+          ${file.name.split(".").pop().toUpperCase()}
         </div>
         <div class="dz-filename">${file.name}</div>
       `;
@@ -161,6 +159,7 @@ export default class Dropzone {
   // UPLOAD
   // =========================================================
   async uploadQueue() {
+
     if (!this.filesQueue.length) return;
 
     const formData = new FormData();
@@ -176,7 +175,7 @@ export default class Dropzone {
       body: formData
     });
 
-    // reset queue + sync server state
+    // 🔥 IMPORTANT: reload full state
     this.filesQueue = [];
     this.fileKeys.clear();
 
@@ -187,6 +186,7 @@ export default class Dropzone {
   // UI
   // =========================================================
   updateButtonState() {
+
     if (!this.uploadBtn) return;
 
     const hasFiles = this.filesQueue.length > 0;

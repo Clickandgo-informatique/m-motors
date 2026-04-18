@@ -16,9 +16,8 @@ use Symfony\Component\Routing\Attribute\Route;
 class DossierDocumentController extends AbstractController
 {
     // =========================================================
-    // UPLOAD
+    // UPLOAD (STATE SYNC VERSION)
     // =========================================================
-
     #[Route('/dossier/{id}/upload', name: 'dossier_document_upload', methods: ['POST'])]
     public function upload(
         Dossier $dossier,
@@ -39,10 +38,9 @@ class DossierDocumentController extends AbstractController
         }
 
         // =========================================================
-        // NORMALISATION RÉFÉRENCE DOSSIER
+        // DOSSIER REFERENCE
         // =========================================================
-
-        $reference = $dossier->getReference()
+        $reference = $dossier->getDossierCode()
             ?? 'dossier-' . $dossier->getId();
 
         $safeReference = $slugger->slugify($reference);
@@ -52,14 +50,28 @@ class DossierDocumentController extends AbstractController
             $safeReference
         );
 
-        $results = [];
-
         foreach ($files as $file) {
 
             if (!$file) {
                 continue;
             }
 
+            // =========================================================
+            // DUPLICATE CHECK (backend safety)
+            // =========================================================
+            $existing = $em->getRepository(DossierDocument::class)
+                ->findOneBy([
+                    'dossier' => $dossier,
+                    'originalName' => $file->getClientOriginalName(),
+                ]);
+
+            if ($existing) {
+                continue;
+            }
+
+            // =========================================================
+            // UPLOAD FILE
+            // =========================================================
             $upload = $uploadService->upload($file, $folderBase);
 
             $document = new DossierDocument();
@@ -70,29 +82,23 @@ class DossierDocumentController extends AbstractController
             $document->setDocumentType(DossierDocumentType::UPLOAD);
 
             $em->persist($document);
-
-            $results[] = $document;
         }
 
         $em->flush();
 
-        return new JsonResponse([
+        // =========================================================
+        // RETURN FULL STATE (IMPORTANT FIX)
+        // =========================================================
+        return $this->json([
             'success' => true,
             'folder' => $folderBase,
-            'documents' => array_map(static function (DossierDocument $d) {
-                return [
-                    'id' => $d->getId(),
-                    'fileName' => $d->getFileName(),
-                    'path' => $d->getPath(),
-                ];
-            }, $results)
+            'documents' => $this->serializeDocuments($dossier),
         ]);
     }
 
     // =========================================================
     // DELETE
     // =========================================================
-
     #[Route('/document/{id}', name: 'dossier_document_delete', methods: ['DELETE'])]
     public function delete(
         DossierDocument $document,
@@ -100,20 +106,20 @@ class DossierDocumentController extends AbstractController
         EntityManagerInterface $em
     ): JsonResponse {
 
-        $id = $document->getId();
+        $dossier = $document->getDossier();
 
         $uploadService->deleteEntity($document, $em);
 
-        return new JsonResponse([
+        return $this->json([
             'success' => true,
-            'id' => $id
+            'id' => $document->getId(),
+            'documents' => $this->serializeDocuments($dossier),
         ]);
     }
 
     // =========================================================
-    // REPLACE FILE
+    // REPLACE
     // =========================================================
-
     #[Route('/document/{id}/replace', name: 'dossier_document_replace', methods: ['POST'])]
     public function replace(
         DossierDocument $document,
@@ -131,11 +137,7 @@ class DossierDocumentController extends AbstractController
 
         $dossier = $document->getDossier();
 
-        // =========================================================
-        // NORMALISATION RÉFÉRENCE DOSSIER
-        // =========================================================
-
-        $reference = $dossier->getReference()
+        $reference = $dossier->getDossierCode()
             ?? 'dossier-' . $dossier->getId();
 
         $safeReference = $slugger->slugify($reference);
@@ -145,27 +147,51 @@ class DossierDocumentController extends AbstractController
             $safeReference
         );
 
-        // upload nouveau fichier
         $upload = $uploadService->upload($file, $folder);
 
-        // suppression ancien fichier
         $uploadService->safeDelete($document->getPath());
 
-        // update entity
         $document->setFileName($upload['filename']);
         $document->setPath($upload['path']);
         $document->setOriginalName($upload['originalName']);
 
         $em->flush();
 
-        return new JsonResponse([
+        return $this->json([
             'success' => true,
-            'folder' => $folder,
             'document' => [
                 'id' => $document->getId(),
                 'fileName' => $document->getFileName(),
                 'path' => $document->getPath(),
-            ]
+                'createdAt' => $document->getCreatedAt()?->format('d/m/Y H:i'),
+            ],
+            'documents' => $this->serializeDocuments($dossier),
         ]);
+    }
+
+    // =========================================================
+    // LIST (SOURCE OF TRUTH)
+    // =========================================================
+    #[Route('/dossier/{id}/documents', name: 'dossier_documents_list', methods: ['GET'])]
+    public function list(Dossier $dossier): JsonResponse
+    {
+        return $this->json([
+            'documents' => $this->serializeDocuments($dossier),
+        ]);
+    }
+
+    // =========================================================
+    // SERIALIZER (CENTRALISÉ)
+    // =========================================================
+    private function serializeDocuments(Dossier $dossier): array
+    {
+        return array_map(static function (DossierDocument $doc) {
+            return [
+                'id' => $doc->getId(),
+                'fileName' => $doc->getFileName(),
+                'path' => $doc->getPath(),
+                'createdAt' => $doc->getCreatedAt()?->format('d/m/Y H:i'),
+            ];
+        }, $dossier->getDocuments()->toArray());
     }
 }
