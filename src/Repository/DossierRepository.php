@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Entity\Dossier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\QueryBuilder;
 
 class DossierRepository extends ServiceEntityRepository
 {
@@ -14,9 +15,6 @@ class DossierRepository extends ServiceEntityRepository
         parent::__construct($registry, Dossier::class);
     }
 
-    /**
-     * Récupérer les dossiers d’un client
-     */
     public function findByCustomer(Customer $customer): array
     {
         return $this->createQueryBuilder('d')
@@ -27,9 +25,6 @@ class DossierRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Récupérer les dossiers par statut
-     */
     public function findByStatus(string $status): array
     {
         return $this->createQueryBuilder('d')
@@ -40,9 +35,6 @@ class DossierRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Back-office : dossiers à traiter
-     */
     public function findToReview(): array
     {
         return $this->createQueryBuilder('d')
@@ -56,9 +48,6 @@ class DossierRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Dernier dossier d’un customer
-     */
     public function findLastByCustomer(Customer $customer): ?Dossier
     {
         return $this->createQueryBuilder('d')
@@ -68,5 +57,63 @@ class DossierRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * 🔍 Recherche globale (pagination + search)
+     */
+    private function getSearchQueryBuilder(?string $searchTerm = null): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->leftJoin('d.customer', 'c')
+            ->leftJoin('d.vehicle', 'v')
+            ->leftJoin('v.model', 'm');
+
+        if (!empty($searchTerm)) {
+            $qb->andWhere('
+                d.dossierCode LIKE :term
+                OR c.lastName LIKE :term
+                OR m.name LIKE :term
+            ')
+                ->setParameter('term', '%' . $searchTerm . '%');
+        }
+
+        return $qb->orderBy('d.createdAt', 'DESC');
+    }
+
+    /**
+     * Pagination KnpPaginator
+     */
+    public function searchForPaginator(?string $searchTerm = null): QueryBuilder
+    {
+        return $this->getSearchQueryBuilder($searchTerm);
+    }
+
+    /**
+     * Autocomplete léger (API)
+     */
+    public function findForAutocomplete(?string $searchTerm = null): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->leftJoin('d.customer', 'c')
+            ->leftJoin('d.vehicle', 'v')
+            ->leftJoin('v.vehicleModel', 'vm')
+            ->leftJoin('vm.model', 'm')
+            ->addSelect('c', 'v', 'vm', 'm');
+
+        if (!empty($searchTerm)) {
+            $qb->andWhere('
+        d.dossierCode LIKE :term
+        OR c.lastName LIKE :term
+        OR m.name LIKE :term
+    ')
+                ->setParameter('term', '%' . $searchTerm . '%');
+        }
+
+        return $qb
+            ->orderBy('d.createdAt', 'DESC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getArrayResult();
     }
 }

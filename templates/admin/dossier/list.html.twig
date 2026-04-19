@@ -7,47 +7,33 @@
 
 	<div class="container mt-4">
 
-		<h1 class="text-center"><i class="fa-regular fa-folder-open title-icon"></i>Administration des dossiers</h1>
+		<h1 class="text-center">
+			<i class="fa-regular fa-folder-open title-icon"></i>Administration des dossiers</h1>
 
-{% include "Components/Forms/_fetch_form.html.twig" %}
-		<table class="table table-hover mt-3">
+		{% include "Components/Forms/_fetch_form.html.twig" 
+with {
+    action: path('dossiers_ajax_search'),
+    name: 'q',
+    placeholder: 'Rechercher un dossier par référence, nom client, modèle de véhicule ...',
+    resultDiv: 'autocomplete-results',          # dropdown spécifique
+    cardsContainer: 'dossiers-search-results',  # gallery principale
+    autocomplete: true,
+    pagination: true,
+    noResultsClass: 'dropdown-no-results',   
+    highlight: true
+}
+%}
 
-			<thead>
-				<tr>
-					<th>Référence</th>				
-					<th>Véhicule</th>
-					<th>Client</th>
-					<th>Type</th>
-					<th>Statut</th>
-					<th>Date</th>
-					<th></th>
-				</tr>
-			</thead>
+		{# Pagination haut #}
+		<div class="pagination-wrapper" data-target="pagination-top">
+			{% include "dossier/_pagination_info.html.twig" with {dossiers: dossiers} %} 		</div>
+		<div class="dossier-search-results">
+			{% include "dossier/_dossiers_table.html.twig" with {dossiers:dossiers} %}
+		</div>
 
-			<tbody>
-				{% for dossier in dossiers %}
-					<tr>
-						<td>{{ dossier.dossierCode }}</td>
-						<td>{{ dossier.vehicle.vehicleModel }}</td>
-						<td>{{ dossier.customer }}</td>
-						<td>{{ dossier.type.label }}</td>
-						<td>
-							<span class="badge bg-{{ dossier.statusBadge }}">
-								{{ dossier.statusLabel }}
-							</span>
-						</td>
-						<td>{{ dossier.createdAt|date('d/m/Y') }}</td>
-						<td>
-							<a href="{{ path('admin_dossier_show', {id: dossier.id}) }}" class="btn btn-sm btn-dark">
-								Gérer
-							</a>
-						</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-
-		</table>
-
+		{# Pagination bas #}
+		<div class="pagination-wrapper" data-target="pagination-bottom">
+			{% include "dossier/_pagination_info.html.twig" with {dossiers: dossiers} %} 		</div>
 	</div>
 
 {% endblock %}

@@ -9,8 +9,10 @@ use App\Enum\DossierType;
 use App\Form\DossierFormType;
 use App\Repository\DossierRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -24,10 +26,6 @@ class DossierController extends AbstractController
         private Registry $workflowRegistry
     ) {}
 
-    // =========================================================
-    // USER SAFE
-    // =========================================================
-
     private function getAppUser(): User
     {
         $user = $this->getUser();
@@ -40,14 +38,13 @@ class DossierController extends AbstractController
     }
 
     // =========================================================
-    // FRONT - CLIENT
+    // FRONT
     // =========================================================
 
     #[Route('/create/{id}/{type}', name: 'dossier_create', methods: ['POST'])]
     public function createFromVehicle(Vehicle $vehicle, string $type): Response
     {
         $user = $this->getAppUser();
-
         $customer = $user->getCustomer();
 
         if (!$customer) {
@@ -77,7 +74,6 @@ class DossierController extends AbstractController
     public function myDossiers(DossierRepository $repository): Response
     {
         $user = $this->getAppUser();
-
         $customer = $user->getCustomer();
 
         if (!$customer) {
@@ -103,61 +99,28 @@ class DossierController extends AbstractController
     }
 
     // =========================================================
-    // WORKFLOW
-    // =========================================================
-
-    #[Route('/admin/{id<\d+>}/transition/{transition}', name: 'dossier_transition', methods: ['POST'])]
-    public function transition(
-        Request $request,
-        #[MapEntity(id: 'id')] Dossier $dossier,
-        string $transition
-    ): Response {
-
-        if (!$this->isCsrfTokenValid(
-            'workflow_transition_' . $dossier->getId(),
-            $request->request->get('_token')
-        )) {
-            throw $this->createAccessDeniedException('Token CSRF invalide');
-        }
-
-        $this->denyAccessUnlessGranted('DOSSIER_TRANSITION', $dossier);
-
-        // 🔥 récupération workflow propre (IMPORTANT)
-        $workflow = $this->workflowRegistry->get($dossier);
-
-        if (!$workflow->can($dossier, $transition)) {
-            $this->addFlash('error', 'Transition non autorisée');
-
-            return $this->redirectToRoute('admin_dossier_show', [
-                'id' => $dossier->getId()
-            ]);
-        }
-
-        try {
-            $workflow->apply($dossier, $transition);
-            $this->em->flush();
-
-            $this->addFlash('success', 'Transition appliquée avec succès');
-        } catch (\Throwable $e) {
-            $this->addFlash('error', 'Erreur workflow');
-        }
-
-        return $this->redirectToRoute('admin_dossier_show', [
-            'id' => $dossier->getId()
-        ]);
-    }
-
-    // =========================================================
-    // ADMIN
+    // ADMIN LIST (FIX IMPORTANT : KNP PAGINATOR)
     // =========================================================
 
     #[Route('/admin/list', name: 'admin_dossier_list', methods: ['GET'])]
-    public function adminList(DossierRepository $repository): Response
-    {
+    public function adminList(
+        DossierRepository $repository,
+        PaginatorInterface $paginator,
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
+        $query = $repository->createQueryBuilder('d')
+            ->orderBy('d.createdAt', 'DESC');
+
+        $dossiers = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            20
+        );
+
         return $this->render('admin/dossier/list.html.twig', [
-            'dossiers' => $repository->findBy([], ['createdAt' => 'DESC'])
+            'dossiers' => $dossiers
         ]);
     }
 
@@ -177,12 +140,10 @@ class DossierController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         $dossier = new Dossier();
-
         $form = $this->createForm(DossierFormType::class, $dossier);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $this->em->persist($dossier);
             $this->em->flush();
 
@@ -194,6 +155,66 @@ class DossierController extends AbstractController
         return $this->render('admin/dossier/new.html.twig', [
             'form' => $form->createView(),
             'title' => 'Créer un dossier'
+        ]);
+    }
+
+    // =========================================================
+    // AJAX SEARCH (ARRAY + JSON UNIQUEMENT)
+    // =========================================================
+
+    #[Route('/ajax-search', name: 'dossiers_ajax_search', methods: ['GET', 'POST'])]
+    public function search(
+        Request $request,
+        DossierRepository $dossierRepo,
+        PaginatorInterface $paginator
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true) ?: $request->query->all();
+
+        $searchTerm = $data['q'] ?? '';
+        $page = (int) ($data['page'] ?? 1);
+        $isAutocomplete = ($data['autocomplete'] ?? false) === 'true';
+
+        // =========================================================
+        // AUTOCOMPLETE (ARRAY SIMPLE)
+        // =========================================================
+        if ($isAutocomplete) {
+            $results = $dossierRepo->findForAutocomplete($searchTerm);
+
+            $items = [];
+            foreach ($results as $d) {
+                $items[] = [
+                    'id' => $d['id'],
+                    'label' => $d['dossierCode'],
+                    'url' => $this->generateUrl('dossier_show', ['id' => $d['id']])
+                ];
+            }
+
+            return $this->json([
+                'items' => $items
+            ]);
+        }
+
+        // =========================================================
+        // PAGINATION AJAX (KNP OK)
+        // =========================================================
+        $query = $dossierRepo->searchForPaginator($searchTerm);
+
+        $dossiers = $paginator->paginate(
+            $query,
+            $page,
+            20
+        );
+
+        return $this->json([
+            'results' => $this->renderView('dossier/_dossiers_table.html.twig', [
+                'dossiers' => $dossiers
+            ]),
+            'pagination' => $this->renderView('dossier/_pagination_info.html.twig', [
+                'dossiers' => $dossiers
+            ]),
+
+            'totalItems' => $dossiers->getTotalItemCount(),
+            'currentPage' => $dossiers->getCurrentPageNumber(),
         ]);
     }
 }

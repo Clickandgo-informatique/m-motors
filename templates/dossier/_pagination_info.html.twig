@@ -1,0 +1,54 @@
+{% if dossiers is defined and dossiers|length > 0 %}
+
+	<div class="pagination-info-text text-center">
+		{{ dossiers.getTotalItemCount() }}
+		dossier{{ dossiers.getTotalItemCount() > 1 ? 's' : '' }}
+		-
+				Page
+		{{ dossiers.getCurrentPageNumber() }}/{{ dossiers.getPageCount() }}
+	</div>
+
+	<div class="pagination">
+
+		{% if dossiers.getCurrentPageNumber() > 1 %}
+			<a href="#" class="first-page" data-page="1">« Première</a>
+			<a href="#" class="prev-page" data-page="{{ dossiers.getCurrentPageNumber() - 1 }}">← Précédent</a>
+		{% endif %}
+
+		{% set start = dossiers.getCurrentPageNumber() - 2 %}
+		{% set end = dossiers.getCurrentPageNumber() + 2 %}
+
+		{% if start < 1 %}
+			{% set start = 1 %}
+		{% endif %}
+
+		{% if end > dossiers.getPageCount() %}
+			{% set end = dossiers.getPageCount() %}
+		{% endif %}
+
+		{% if start > 1 %}
+			<span class="dots">...</span>
+		{% endif %}
+
+		{% for i in start..end %}
+			<a href="#" class="{{ i == dossiers.getCurrentPageNumber() ? 'active' : '' }}" data-page="{{ i }}">
+				{{ i }}
+			</a>
+		{% endfor %}
+
+		{% if end < dossiers.getPageCount() %}
+			<span class="dots">...</span>
+		{% endif %}
+
+		{% if dossiers.getCurrentPageNumber() < dossiers.getPageCount() %}
+			<a href="#" class="next-page" data-page="{{ dossiers.getCurrentPageNumber() + 1 }}">Suivant →</a>
+			<a href="#" class="last-page" data-page="{{ dossiers.getPageCount() }}">Dernière »</a>
+		{% endif %}
+
+	</div>
+
+{% else %}
+	<div class="pagination-wrapper disabled">
+		Aucun dossier trouvé
+	</div>
+{% endif %}
