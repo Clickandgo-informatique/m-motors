@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Dossier;
 use App\Entity\SupplierOrder;
 use App\Entity\Vehicle;
+use App\Enum\DossierDocumentStatus;
 use App\Enum\VehicleStatus;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -34,7 +35,7 @@ class DossierWorkflowService
             $this->handleAvailableVehicle($dossier, $vehicle);
         }
 
-        // ⚠️ IMPORTANT :
+        // IMPORTANT :
         // On ne touche PLUS au statut du dossier ici
         // → géré par Symfony Workflow uniquement
         $this->em->flush();
@@ -85,5 +86,52 @@ class DossierWorkflowService
     private function handleLeasing(Vehicle $vehicle): void
     {
         $vehicle->setStatus(VehicleStatus::RENTED);
+    }
+    public function getCompletionRate(Dossier $dossier): float
+    {
+        $documents = $dossier->getDocuments();
+
+        if ($documents->isEmpty()) {
+            return 0;
+        }
+
+        $total = count($documents);
+        $validated = 0;
+
+        foreach ($documents as $doc) {
+            if ($doc->getStatus() === DossierDocumentStatus::VALIDATED) {
+                $validated++;
+            }
+        }
+
+        return round(($validated / $total) * 100);
+    }
+    // Actualise le status du dossier en cours
+    public function refreshDossierStatus(Dossier $dossier): void
+    {
+        $documents = $dossier->getDocuments();
+
+        if ($documents->isEmpty()) {
+            $dossier->setStatus('missing');
+            return;
+        }
+
+        $allValidated = true;
+
+        foreach ($documents as $doc) {
+            if ($doc->getStatus() !== \App\Enum\DossierDocumentStatus::VALIDATED) {
+                $allValidated = false;
+            }
+        }
+
+        if ($allValidated) {
+            $dossier->setStatus('validated');
+        } else {
+            $dossier->setStatus('in_progress');
+        }
+    }
+    public function isLocked(Dossier $dossier): bool
+    {
+        return $dossier->getStatus() === 'validated';
     }
 }

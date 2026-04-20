@@ -16,11 +16,8 @@ export default class Dropzone {
     this.filesQueue = [];
     this.fileKeys = new Set();
 
-    // LOCK STATE FROM BACKEND
-    this.locked = element.dataset.locked === "1";
-
     this.init();
-    this.refreshState();
+    this.loadDocuments();
   }
 
   // =========================================================
@@ -32,11 +29,6 @@ export default class Dropzone {
     this.input.multiple = true;
     this.input.classList.add("d-none");
     this.el.appendChild(this.input);
-
-    if (this.locked) {
-      this.disable();
-      return;
-    }
 
     this.el.addEventListener("click", e => {
       if (!e.target.classList.contains("dz-delete")) {
@@ -62,27 +54,13 @@ export default class Dropzone {
   }
 
   // =========================================================
-  // LOCK UI
+  // LOAD FROM SERVER (STATE SOURCE)
   // =========================================================
-  disable() {
-    this.input.disabled = true;
-
-    if (this.uploadBtn) {
-      this.uploadBtn.disabled = true;
-      this.uploadBtn.textContent = "Dossier verrouillé";
-    }
-
-    this.el.classList.add("disabled");
-  }
-
-  // =========================================================
-  // LOAD STATE
-  // =========================================================
-  async refreshState() {
+  async loadDocuments() {
     const res = await fetch(this.documentsUrl);
     const data = await res.json();
 
-    this.renderDocuments(data.documents);
+    this.renderDocuments(data.documents); // 🔥 FIX IMPORTANT
   }
 
   // =========================================================
@@ -101,7 +79,10 @@ export default class Dropzone {
       div.classList.add("dz-thumb");
       div.dataset.id = file.id;
 
-      const ext = file.fileName.split(".").pop().toLowerCase();
+      const ext = file.fileName
+        .split(".")
+        .pop()
+        .toLowerCase();
 
       let preview = "";
 
@@ -114,19 +95,26 @@ export default class Dropzone {
       } else if (["xls", "xlsx"].includes(ext)) {
         preview = `<div class="dz-file-preview dz-excel">EXCEL</div>`;
       } else {
-        preview = `<div class="dz-file-preview dz-generic">Fichier</div>`;
+        preview = `<div class="dz-file-preview dz-generic">FILE</div>`;
       }
 
       div.innerHTML = `
-        <div class="dz-preview">${preview}</div>
+      <div class="dz-preview">${preview}</div>
 
-        <div class="dz-filename">${file.originalName ?? file.fileName}</div>
+      <div class="dz-filename">${file.originalName ?? file.fileName}</div>
 
-        <div class="dz-meta">
-          Envoyé le ${file.createdAt ?? ""}
-        </div>
-      `;
+      <div class="dz-meta">
+        Envoyé le ${file.createdAt ?? ""}
+      </div>
 
+      <div class="mt-2">
+        <span class="badge bg-${file.badge ?? "secondary"}">
+          ${file.statusLabel ?? "unknown"}
+        </span>
+      </div>
+    `;
+
+      // ========================= DELETE =========================
       const btn = document.createElement("button");
       btn.classList.add("dz-delete");
       btn.textContent = "×";
@@ -140,7 +128,7 @@ export default class Dropzone {
 
         await fetch(url, { method: "DELETE" });
 
-        this.refreshState();
+        this.loadDocuments();
       });
 
       div.appendChild(btn);
@@ -148,7 +136,6 @@ export default class Dropzone {
       this.previewContainer.appendChild(div);
     });
   }
-
   // =========================================================
   // QUEUE
   // =========================================================
@@ -166,7 +153,10 @@ export default class Dropzone {
 
       div.innerHTML = `
         <div class="dz-file-preview dz-generic">
-          ${file.name.split(".").pop().toUpperCase()}
+          ${file.name
+            .split(".")
+            .pop()
+            .toUpperCase()}
         </div>
         <div class="dz-filename">${file.name}</div>
       `;
@@ -196,11 +186,11 @@ export default class Dropzone {
       body: formData
     });
 
+    // reset queue + sync server state
     this.filesQueue = [];
     this.fileKeys.clear();
 
-    await this.refreshState();
-    this.updateButtonState();
+    this.loadDocuments();
   }
 
   // =========================================================

@@ -114,7 +114,7 @@ export default class Dropzone {
       } else if (["xls", "xlsx"].includes(ext)) {
         preview = `<div class="dz-file-preview dz-excel">EXCEL</div>`;
       } else {
-        preview = `<div class="dz-file-preview dz-generic">Fichier</div>`;
+        preview = `<div class="dz-file-preview dz-generic">FILE</div>`;
       }
 
       div.innerHTML = `

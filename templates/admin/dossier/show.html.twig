@@ -18,6 +18,8 @@
 			<span class="badge bg-{{ dossier.statusBadge }}">
 				{{ dossier.statusLabel }}
 			</span>
+			<span class=text-muted">Créé le
+				{{dossier.createdAt|format_datetime(locale='fr', pattern="d MMMM yyyy à H:mm:s")}}</span>
 		</p>
 
 		<hr>
@@ -44,7 +46,7 @@
 
 				{% if dossier.status in ['draft', 'in_progress'] %}
 
-					<div class="dropzone" data-upload-url="{{ path('dossier_document_upload', {id: dossier.id}) }}" data-delete-url="{{ path('dossier_document_delete', {id: '__id__'}) }}" data-documents-url="{{ path('dossier_documents_list', {id: dossier.id}) }}" data-preview-id="dossier-documents-preview" data-destination="dossiers/{{ dossier.id }}">
+					<div class="dropzone" data-upload-url="{{ path('dossier_document_upload', {id: dossier.id}) }}" data-delete-url="{{ path('dossier_document_delete', {id: '__id__'}) }}" data-documents-url="{{ path('dossier_documents_list', {id: dossier.id}) }}" data-preview-id="dossier-documents-preview" data-locked="{{ dossier.status == 'validated' ? 1 : 0 }}">
 
 						<p class="text-muted">
 							Glissez vos fichiers ou cliquez ici
@@ -67,8 +69,10 @@
 
 						{% set ext = doc.fileName|split('.')|last|lower %}
 
-						<div class="dz-thumb" data-id="{{ doc.id }}">
+						<div
+							class="dz-thumb" data-id="{{ doc.id }}">
 
+							{# ===== PREVIEW ===== #}
 							<div class="dz-preview">
 								{% if ext in ['jpg','jpeg','png','webp'] %}
 									<img src="{{ asset('uploads/' ~ doc.path) }}">
@@ -79,20 +83,53 @@
 								{% elseif ext in ['xls','xlsx'] %}
 									<div class="dz-file-preview dz-excel">EXCEL</div>
 								{% else %}
-									<div class="dz-file-preview dz-generic">FILE</div>
+									<div class="dz-file-preview dz-generic">Fichier</div>
 								{% endif %}
 							</div>
 
+							{# ===== NOM ===== #}
 							<div class="dz-filename">
 								{{ doc.originalName }}
 							</div>
 
+							{# ===== DATE ===== #}
 							<div class="dz-meta">
 								Envoyé le
 								{{ doc.createdAt ? doc.createdAt|date('d/m/Y H:i') : '' }}
 							</div>
 
-							<button class="dz-delete" data-id="{{ doc.id }}">×</button>
+							{# ===== STATUS ===== #}
+							{# <div class="mt-2">
+								<span class="badge bg-{{ doc.status.badge }} text-center">
+									{{ doc.status.label }}
+								</span>
+							</div> #}
+
+							{# ===== ACTIONS ADMIN ===== #}
+							{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+
+								{% if doc.status.value == 'uploaded' %}
+
+									<div class="mt-2 d-flex gap-1">
+
+										<button class="btn btn-success btn-sm js-validate" data-id="{{ doc.id }}">
+											✔
+										</button>
+
+										<button class="btn btn-danger btn-sm js-reject" data-id="{{ doc.id }}">
+											✖
+										</button>
+
+									</div>
+
+								{% endif %}
+
+							{% endif %}
+
+							{# ===== DELETE USER ===== #}
+							{% if dossier.status in ['draft', 'in_progress'] %}
+								<button class="dz-delete" data-id="{{ doc.id }}">×</button>
+							{% endif %}
 
 						</div>
 

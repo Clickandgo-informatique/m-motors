@@ -5,12 +5,30 @@
 {% endblock %}
 
 {% block body %}
+	<div class="text-center btn btn-primary">
+		<a href="{{ path('customer_list') }}">
+			<i class="fa-solid fa-table-list"></i>Retour à la liste</a>
+	</div>
 	<h1 class="text-center">
 
 		{{ customer is defined ? '<i class="fa-solid fa-pen-to-square"></i> modifier un client' : '<i class="fa-solid fa-person-circle-plus"></i> Créer un client'}}</h1>
 
 	{{ form_start(form) }}
-	<div class="form-row">{{ form_row(form.customerCode) }}</div>
+
+	<div class="form-row">
+		<div class="form-group">
+			{{ form_row(form.customerCode) }}
+		</div>
+		<div class="form-group">
+			{{ form_row(form.createdAt, {
+    attr: { class: 'text-muted' }}) }}
+		</div>
+		<div class="form-group">
+			{{ form_row(form.updatedAt, {
+    attr: { class: 'text-muted' }}) }}
+		</div>
+	</div>
+
 	<div class="form-row">
 
 		<div class="form-group">
@@ -31,14 +49,94 @@
 			{{ form_widget(form.email) }}
 			{{ form_errors(form.email) }}
 		</div>
+	</div>
 
+	<div class="form-row">
+		<div class="form-group">
+			{{ form_label(form.address) }}
+			{{ form_widget(form.address) }}
+			{{ form_errors(form.address) }}
+		</div>
 	</div>
-	<a href="#" class="btn">
-		<i class="fa-solid fa-circle-plus"></i>Créer dossier</a>
-	<button type="submit">{{ customer is defined ? 'Mettre à jour' : 'Créer' }}</button>
+
+	<div class="form-row">
+		<div class="form-group flex-1">
+			{{ form_label(form.zipcode) }}
+			{{ form_widget(form.zipcode) }}
+			{{ form_errors(form.zipcode) }}
+		</div>
+		<div class="form-group flex-3">
+			{{ form_label(form.city) }}
+			{{ form_widget(form.city) }}
+			{{ form_errors(form.city) }}
+		</div>
+	</div>
+
+	<div class="form-row">
+		<div class="form-group">
+			{{ form_label(form.addressDetails) }}
+			{{ form_widget(form.addressDetails) }}
+			{{ form_errors(form.addressDetails) }}
+		</div>
+	</div>
+
+
+	<button type="submit" class="">{{ customer is defined ? 'Mettre à jour' : 'Créer' }}</button>
 	{{ form_end(form) }}
-	<div class="text-center btn btn-primary">
-		<a href="{{ path('customer_list') }}">
-			<i class="fa-solid fa-table-list"></i>Retour à la liste</a>
-	</div>
+
+	{# Tableau des dossiers client existants #}
+	{% if customer is defined and customer.dossiers|length >0 %}
+		<p>
+			Dossiers :
+			{{customer.dossiers|length}}</p>
+		<table>
+			<thead>
+				<th>Etat</th>
+				<th>Code</th>
+				<th>Suivi par</th>
+				<th>Créé le</th>
+				<th>Modifié le</th>
+			</thead>
+
+
+			<tbody>
+				{% for dossier in customer.dossiers %}
+
+
+					<tr>
+						<td data-label="Statut">
+							<span class="badge bg-{{ dossier.statusBadge }} text-center">
+								{{ dossier.statusLabel }}
+							</span>
+						</td>
+						<td data-label="Code">
+							<a href="#">{{dossier.dossierCode}}</a>
+						</td>
+						<td data-label="Suivi par">
+							<a href="#"></a>
+						</td>
+						<td data-label="Créé le">
+							<span>
+
+								{{dossier.createdAt|format_datetime(locale='fr', pattern="d MMMM yyyy à H:mm:s")}}
+
+							</span>
+						</td>
+						<td data-label="Modifié le">
+							<span>
+
+								{{dossier.updatedAt|format_datetime(locale='fr', pattern="d MMMM yyyy à H:mm:s")}}
+
+							</span>
+						</td>
+					</tr>
+				</tbody>
+			{% endfor %}
+		</table>
+
+	{% else %}
+		<a href="#" class="btn">
+			<i class="fa-solid fa-circle-plus"></i>Créer dossier</a>
+
+	{% endif %}
 {% endblock %}
