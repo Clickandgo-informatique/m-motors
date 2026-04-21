@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Vehicle
 {
     // =========================================================
-    // IDENTIFIANT
+    // ID
     // =========================================================
 
     #[ORM\Id]
@@ -56,7 +56,7 @@ class Vehicle
     }
 
     // =========================================================
-    // IDENTIFICATION
+    // IDENTIFIANTS
     // =========================================================
 
     #[ORM\Column(length: 17, unique: true)]
@@ -70,7 +70,7 @@ class Vehicle
         return $this->vin;
     }
 
-    public function setVin(string $vin): static
+    public function setVin(string $vin): self
     {
         $this->vin = strtoupper(trim($vin));
         return $this;
@@ -78,7 +78,7 @@ class Vehicle
 
     #[ORM\Column(length: 15, unique: true)]
     #[Assert\NotBlank]
-    #[Assert\Regex(pattern: '/^[A-Z0-9\-]{4,15}$/')]
+    #[Assert\Regex(pattern: '/^([A-Z]{2}-\d{3}-[A-Z]{2}|\d{1,4}\s?[A-Z]{1,3}\s?\d{1,2})$/i')]
     private ?string $registrationNumber = null;
 
     public function getRegistrationNumber(): ?string
@@ -86,11 +86,13 @@ class Vehicle
         return $this->registrationNumber;
     }
 
-    public function setRegistrationNumber(string $registrationNumber): static
+    public function setRegistrationNumber(string $registrationNumber): self
     {
         $this->registrationNumber = strtoupper(trim($registrationNumber));
         return $this;
     }
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $firstRegistrationDate = null;
 
     // =========================================================
     // TECHNIQUE
@@ -98,7 +100,6 @@ class Vehicle
 
     #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero]
-    #[Assert\LessThan(2000000)]
     private ?int $mileage = null;
 
     public function getMileage(): ?int
@@ -106,7 +107,7 @@ class Vehicle
         return $this->mileage;
     }
 
-    public function setMileage(?int $mileage): static
+    public function setMileage(?int $mileage): self
     {
         $this->mileage = $mileage;
         return $this;
@@ -128,26 +129,11 @@ class Vehicle
         return $this;
     }
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $firstRegistrationDate = null;
-
-    public function getFirstRegistrationDate(): ?\DateTime
-    {
-        return $this->firstRegistrationDate;
-    }
-
-    public function setFirstRegistrationDate(?\DateTime $date): static
-    {
-        $this->firstRegistrationDate = $date;
-        return $this;
-    }
-
     // =========================================================
-    // RELATIONS (ManyToOne)
+    // RELATIONS
     // =========================================================
 
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?VehicleModel $vehicleModel = null;
 
     public function getVehicleModel(): ?VehicleModel
@@ -155,7 +141,7 @@ class Vehicle
         return $this->vehicleModel;
     }
 
-    public function setVehicleModel(?VehicleModel $vehicleModel): static
+    public function setVehicleModel(?VehicleModel $vehicleModel): self
     {
         $this->vehicleModel = $vehicleModel;
         return $this;
@@ -169,7 +155,7 @@ class Vehicle
         return $this->fuelType;
     }
 
-    public function setFuelType(?FuelType $fuelType): static
+    public function setFuelType(?FuelType $fuelType): self
     {
         $this->fuelType = $fuelType;
         return $this;
@@ -183,7 +169,7 @@ class Vehicle
         return $this->gear;
     }
 
-    public function setGear(?Gear $gear): static
+    public function setGear(?Gear $gear): self
     {
         $this->gear = $gear;
         return $this;
@@ -197,7 +183,7 @@ class Vehicle
         return $this->color;
     }
 
-    public function setColor(?Color $color): static
+    public function setColor(?Color $color): self
     {
         $this->color = $color;
         return $this;
@@ -211,14 +197,14 @@ class Vehicle
         return $this->supplier;
     }
 
-    public function setSupplier(?Supplier $supplier): static
+    public function setSupplier(?Supplier $supplier): self
     {
         $this->supplier = $supplier;
         return $this;
     }
 
     // =========================================================
-    // COLLECTIONS INIT
+    // COLLECTIONS
     // =========================================================
 
     #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Dossier::class)]
@@ -241,22 +227,72 @@ class Vehicle
 
     public function __construct()
     {
-        $this->features = new ArrayCollection();
+        $this->dossiers = new ArrayCollection();
         $this->maintenances = new ArrayCollection();
         $this->rentals = new ArrayCollection();
         $this->sales = new ArrayCollection();
         $this->favorites = new ArrayCollection();
-        $this->dossiers = new ArrayCollection();
+        $this->features = new ArrayCollection();
     }
 
     // =========================================================
-    // DOSSIERS
+    // GETTERS COLLECTIONS (MANQUANTS IMPORTANT)
     // =========================================================
 
     public function getDossiers(): Collection
     {
         return $this->dossiers;
     }
+
+    public function getMaintenances(): Collection
+    {
+        return $this->maintenances;
+    }
+
+    public function getRentals(): Collection
+    {
+        return $this->rentals;
+    }
+
+    public function getSales(): Collection
+    {
+        return $this->sales;
+    }
+
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function addFeature(Feature $feature): self
+    {
+        if (!$this->features->contains($feature)) {
+            $this->features->add($feature);
+        }
+
+        return $this;
+    }
+
+    public function removeFeature(Feature $feature): self
+    {
+        $this->features->removeElement($feature);
+
+        return $this;
+    }
+    public function getFirstRegistrationDate(): ?\DateTime
+    {
+        return $this->firstRegistrationDate;
+    }
+
+    public function setFirstRegistrationDate(?\DateTime $date): static
+    {
+        $this->firstRegistrationDate = $date;
+        return $this;
+    }
+
+    // =========================================================
+    // ADD / REMOVE
+    // =========================================================
 
     public function addDossier(Dossier $dossier): self
     {
@@ -274,143 +310,31 @@ class Vehicle
                 $dossier->setVehicle(null);
             }
         }
-
         return $this;
     }
 
     // =========================================================
-    // MAINTENANCES
+    // MÉTIER (COMPATIBLE ENUM EXACT)
     // =========================================================
 
-    public function getMaintenances(): Collection
+    public function reserve(): void
     {
-        return $this->maintenances;
+        $this->status = VehicleStatus::RESERVED;
     }
 
-    public function addMaintenance(Maintenance $maintenance): self
+    public function markAsSold(): void
     {
-        if (!$this->maintenances->contains($maintenance)) {
-            $this->maintenances->add($maintenance);
-            $maintenance->setVehicle($this);
-        }
-        return $this;
+        $this->status = VehicleStatus::SOLD;
     }
 
-    public function removeMaintenance(Maintenance $maintenance): self
+    public function markAsRented(): void
     {
-        if ($this->maintenances->removeElement($maintenance)) {
-            if ($maintenance->getVehicle() === $this) {
-                $maintenance->setVehicle(null);
-            }
-        }
-        return $this;
+        $this->status = VehicleStatus::RENTED;
     }
 
-    // =========================================================
-    // RENTALS
-    // =========================================================
-
-    public function getRentals(): Collection
+    public function makeAvailable(): void
     {
-        return $this->rentals;
-    }
-
-    public function addRental(Rental $rental): self
-    {
-        if (!$this->rentals->contains($rental)) {
-            $this->rentals->add($rental);
-            $rental->setVehicle($this);
-        }
-        return $this;
-    }
-
-    public function removeRental(Rental $rental): self
-    {
-        if ($this->rentals->removeElement($rental)) {
-            if ($rental->getVehicle() === $this) {
-                $rental->setVehicle(null);
-            }
-        }
-        return $this;
-    }
-
-    // =========================================================
-    // SALES
-    // =========================================================
-
-    public function getSales(): Collection
-    {
-        return $this->sales;
-    }
-
-    public function addSale(Sale $sale): self
-    {
-        if (!$this->sales->contains($sale)) {
-            $this->sales->add($sale);
-            $sale->setVehicle($this);
-        }
-        return $this;
-    }
-
-    public function removeSale(Sale $sale): self
-    {
-        if ($this->sales->removeElement($sale)) {
-            if ($sale->getVehicle() === $this) {
-                $sale->setVehicle(null);
-            }
-        }
-        return $this;
-    }
-
-    // =========================================================
-    // FAVORITES
-    // =========================================================
-
-    public function getFavorites(): Collection
-    {
-        return $this->favorites;
-    }
-
-    public function addFavorite(Favorite $favorite): self
-    {
-        if (!$this->favorites->contains($favorite)) {
-            $this->favorites->add($favorite);
-            $favorite->setVehicle($this);
-        }
-        return $this;
-    }
-    public function removeFavorite(Favorite $favorite): self
-    {
-        if ($this->favorites->removeElement($favorite)) {
-            if ($favorite->getVehicle() === $this) {
-                $favorite->setVehicle(null);
-            }
-        }
-
-        return $this;
-    }
-
-    // =========================================================
-    // FEATURES (ManyToMany)
-    // =========================================================
-
-    public function getFeatures(): Collection
-    {
-        return $this->features;
-    }
-
-    public function addFeature(Feature $feature): self
-    {
-        if (!$this->features->contains($feature)) {
-            $this->features->add($feature);
-        }
-        return $this;
-    }
-
-    public function removeFeature(Feature $feature): self
-    {
-        $this->features->removeElement($feature);
-        return $this;
+        $this->status = VehicleStatus::AVAILABLE;
     }
 
     // =========================================================
@@ -422,8 +346,12 @@ class Vehicle
         return $this->status === VehicleStatus::AVAILABLE;
     }
 
-    public function isReserved(): bool
+    public function isLocked(): bool
     {
-        return $this->status === VehicleStatus::RESERVED;
+        return in_array($this->status, [
+            VehicleStatus::RESERVED,
+            VehicleStatus::RENTED,
+            VehicleStatus::SOLD
+        ], true);
     }
 }

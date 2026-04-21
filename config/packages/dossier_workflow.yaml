@@ -22,14 +22,22 @@ framework:
         - cancelled
 
       transitions:
+
+        # =========================
+        # VEHICLE SELECTION
+        # =========================
         select_vehicle:
           from: draft
           to: vehicle_selected
 
+        # véhicule réservé ici (IMPORTANT métier)
         request_documents:
           from: vehicle_selected
           to: documents_pending
 
+        # =========================
+        # DOCUMENTS FLOW
+        # =========================
         submit_documents:
           from: documents_pending
           to: documents_review
@@ -38,10 +46,24 @@ framework:
           from: documents_review
           to: financing_review
 
-        complete:
+        reject_documents:
+          from: documents_review
+          to: documents_pending
+
+        # =========================
+        # FINANCING (si applicable)
+        # =========================
+        approve_financing:
           from: financing_review
           to: completed
 
+        reject_financing:
+          from: financing_review
+          to: documents_review
+
+        # =========================
+        # CANCEL (global)
+        # =========================
         cancel_from_draft:
           from: draft
           to: cancelled

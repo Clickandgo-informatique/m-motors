@@ -11,13 +11,19 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Entité représentant un dossier métier.
+ * Dossier métier principal.
  *
- * Le statut est piloté par Symfony Workflow (state machine).
- * Le champ `status` contient l'état courant.
+ * Responsabilités :
+ * - gérer le cycle de vie du dossier
+ * - contrôler la complétude des documents
+ * - déléguer les actions véhicule au DossierType
  *
- * Le champ `dossierCode` est l'identifiant métier unique :
- * Exemple : DUP001-0001
+ * IMPORTANT :
+ * Le status ne doit jamais être modifié directement.
+ * Utiliser uniquement :
+ * - submit()
+ * - validate()
+ * - reject()
  */
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -26,7 +32,7 @@ class Dossier
     use TimestampableTrait;
 
     // =========================================================
-    // IDENTIFIANT TECHNIQUE
+    // IDENTIFIANT
     // =========================================================
 
     #[ORM\Id]
@@ -35,31 +41,34 @@ class Dossier
     private ?int $id = null;
 
     // =========================================================
-    // RELATIONS MÉTIER
+    // RELATIONS
     // =========================================================
 
     #[ORM\ManyToOne(inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Un client est obligatoire')]
     private ?Customer $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'dossiers')]
-    #[ORM\JoinColumn(nullable: true)]
     private ?Vehicle $vehicle = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
     private ?User $assignedTo = null;
 
+    #[ORM\ManyToOne]
+    private ?User $validatedBy = null;
+
+    #[ORM\ManyToOne]
+    private ?User $createdBy = null;
+
     // =========================================================
-    // TYPE DE DOSSIER
+    // TYPE DOSSIER
     // =========================================================
 
     #[ORM\Column(enumType: DossierType::class)]
     private ?DossierType $type = null;
 
     // =========================================================
-    // DOSSIER CODE (IDENTIFIANT MÉTIER UNIQUE)
+    // IDENTIFIANT MÉTIER
     // =========================================================
 
     #[ORM\Column(length: 50, unique: true)]
@@ -67,23 +76,23 @@ class Dossier
     private ?string $dossierCode = null;
 
     // =========================================================
-    // WORKFLOW STATUS
+    // STATUT WORKFLOW
     // =========================================================
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
-    private string $status = 'draft';
+    private string $status = self::STATUS_DRAFT;
+
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_IN_PROGRESS = 'in_progress';
+    public const STATUS_VALIDATED = 'validated';
+    public const STATUS_REJECTED = 'rejected';
 
     // =========================================================
-    // FINANCEMENT
+    // MÉTIER
     // =========================================================
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $financingType = null;
-
-    // =========================================================
-    // DATES MÉTIER
-    // =========================================================
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $completedAt = null;
@@ -98,17 +107,8 @@ class Dossier
     /**
      * @var Collection<int, DossierDocument>
      */
-    #[ORM\OneToMany(
-        mappedBy: 'dossier',
-        targetEntity: DossierDocument::class,
-        cascade: ['persist'],
-        orphanRemoval: false
-    )]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DossierDocument::class, cascade: ['persist'])]
     private Collection $documents;
-
-    // =========================================================
-    // CONSTRUCTOR
-    // =========================================================
 
     public function __construct()
     {
@@ -151,15 +151,21 @@ class Dossier
         return $this->assignedTo;
     }
 
-    public function setAssignedTo(?User $assignedTo): self
+    public function getValidatedBy(): ?User
     {
-        $this->assignedTo = $assignedTo;
-        return $this;
+        return $this->validatedBy;
     }
 
-    // =========================================================
-    // TYPE
-    // =========================================================
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
+        return $this;
+    }
 
     public function getType(): ?DossierType
     {
@@ -172,40 +178,26 @@ class Dossier
         return $this;
     }
 
-    // =========================================================
-    // DOSSIER CODE
-    // =========================================================
-
     public function getDossierCode(): ?string
     {
         return $this->dossierCode;
     }
 
-    public function setDossierCode(string $dossierCode): self
+    public function setDossierCode(string $code): self
     {
-        $this->dossierCode = $dossierCode;
+        $this->dossierCode = $code;
         return $this;
     }
-
-    // =========================================================
-    // STATUS WORKFLOW
-    // =========================================================
 
     public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function getDocuments(): Collection
     {
-        $this->status = $status;
-        return $this;
+        return $this->documents;
     }
-
-    // =========================================================
-    // FINANCEMENT
-    // =========================================================
-
     public function getFinancingType(): ?string
     {
         return $this->financingType;
@@ -214,69 +206,104 @@ class Dossier
     public function setFinancingType(?string $financingType): self
     {
         $this->financingType = $financingType;
-        return $this;
-    }
-
-    // =========================================================
-    // DATES
-    // =========================================================
-
-    public function getCompletedAt(): ?\DateTimeImmutable
-    {
-        return $this->completedAt;
-    }
-
-    public function setCompletedAt(?\DateTimeImmutable $completedAt): self
-    {
-        $this->completedAt = $completedAt;
-        return $this;
-    }
-
-    public function getCancelledAt(): ?\DateTimeImmutable
-    {
-        return $this->cancelledAt;
-    }
-
-    public function setCancelledAt(?\DateTimeImmutable $cancelledAt): self
-    {
-        $this->cancelledAt = $cancelledAt;
-        return $this;
-    }
-
-    // =========================================================
-    // DOCUMENTS
-    // =========================================================
-
-    public function getDocuments(): Collection
-    {
-        return $this->documents;
-    }
-
-    public function addDocument(DossierDocument $document): self
-    {
-        if (!$this->documents->contains($document)) {
-            $this->documents->add($document);
-            $document->setDossier($this);
-        }
 
         return $this;
     }
+    // =========================================================
+    // MÉTIER - DOCUMENTS
+    // =========================================================
 
-    public function removeDocument(DossierDocument $document): self
+    public function isComplete(array $requiredTypes): bool
     {
-        if ($this->documents->removeElement($document)) {
-            if ($document->getDossier() === $this) {
-                $document->setDossier(null);
+        $uploaded = array_map(
+            fn($doc) => $doc->getType(),
+            $this->documents->toArray()
+        );
+
+        foreach ($requiredTypes as $type) {
+            if (!in_array($type, $uploaded, true)) {
+                return false;
             }
         }
 
-        return $this;
+        return true;
     }
-    // Gestion des badges
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_VALIDATED = 'validated';
-    public const STATUS_REJECTED = 'rejected';
+
+    // =========================================================
+    // SUBMIT
+    // =========================================================
+
+    public function submit(array $requiredTypes, User $manager): void
+    {
+        if ($this->status !== self::STATUS_DRAFT) {
+            throw new \LogicException('Seul un brouillon peut être soumis');
+        }
+
+        if (!$this->type) {
+            throw new \LogicException('Type de dossier manquant');
+        }
+
+        if (!$this->isComplete($requiredTypes)) {
+            throw new \LogicException('Dossier incomplet');
+        }
+
+        $this->status = self::STATUS_IN_PROGRESS;
+        $this->assignedTo = $manager;
+
+        if ($this->vehicle) {
+            $this->type->applyVehicleOnSubmit($this->vehicle);
+        }
+    }
+
+    // =========================================================
+    // VALIDATE
+    // =========================================================
+
+    public function validate(User $manager): void
+    {
+        if ($this->status !== self::STATUS_IN_PROGRESS) {
+            throw new \LogicException('Validation impossible');
+        }
+
+        if (!$this->type) {
+            throw new \LogicException('Type de dossier manquant');
+        }
+
+        $this->status = self::STATUS_VALIDATED;
+        $this->validatedBy = $manager;
+        $this->completedAt = new \DateTimeImmutable();
+
+        if ($this->vehicle) {
+            $this->type->applyVehicleValidation($this->vehicle);
+        }
+    }
+
+    // =========================================================
+    // REJECT
+    // =========================================================
+
+    public function reject(User $manager): void
+    {
+        if ($this->status !== self::STATUS_IN_PROGRESS) {
+            throw new \LogicException('Refus impossible');
+        }
+
+        if (!$this->type) {
+            throw new \LogicException('Type de dossier manquant');
+        }
+
+        $this->status = self::STATUS_REJECTED;
+        $this->validatedBy = $manager;
+        $this->cancelledAt = new \DateTimeImmutable();
+
+        if ($this->vehicle) {
+            $this->type->applyVehicleRejection($this->vehicle);
+        }
+    }
+
+    // =========================================================
+    // UI
+    // =========================================================
 
     public function getStatusLabel(): string
     {
@@ -298,5 +325,15 @@ class Dossier
             self::STATUS_REJECTED => 'danger',
             default => 'secondary',
         };
+    }
+
+    /**
+     * Set the value of status
+     */
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
     }
 }

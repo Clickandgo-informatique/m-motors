@@ -1,11 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}M-Motors: Admin - Dossier
+{% block title %}M-Motors: Dossier
+	{{ dossier.dossierCode }}
 {% endblock %}
 
 {% block body %}
 
-	<div class="container mt-4">
+	<div
+		class="container mt-4">
+
+		{# =========================================================
+		       HEADER
+		    ========================================================= #}
 
 		<h1 class="text-center">
 			<i class="fa-solid fa-folder-open title-icon"></i>
@@ -13,134 +19,226 @@
 			{{ dossier.dossierCode }}
 		</h1>
 
-		<p>
+		<p class="text-center">
 			Statut :
 			<span class="badge bg-{{ dossier.statusBadge }}">
 				{{ dossier.statusLabel }}
 			</span>
-			<span class=text-muted">Créé le
-				{{dossier.createdAt|format_datetime(locale='fr', pattern="d MMMM yyyy à H:mm:s")}}</span>
+			<span class="text-muted">
+				Créé le
+				{{ dossier.createdAt|format_datetime(locale='fr', pattern="d MMMM yyyy à HH:mm") }}
+			</span>
 		</p>
 
-		<hr>
+		{# =========================================================
+		       BARRE DE PROGRESSION WORKFLOW
+		    ========================================================= #}
 
-		{# ========================= INFO ========================= #}
+		{% set steps = {
+        'draft': 1,
+        'in_progress': 2,
+        'validated': 4,
+        'rejected': 4
+    } %}
+
+		{% set currentStep = steps[dossier.status] ?? 1 %}
+
 		<div class="card mb-4">
 			<div class="card-body">
-				<p>
-					<strong>Client :</strong>
-					{{ dossier.customer.lastname }}
-				</p>
-				<p>
-					<strong>Véhicule :</strong>
-					{{ dossier.vehicle.vehicleModel }}
-				</p>
+
+				<div class="d-flex justify-content-between text-center">
+
+					<div class="w-25">
+						<div class="fw-bold">1. Création</div>
+						<small class="text-muted">Dossier</small>
+					</div>
+
+					<div class="w-25">
+						<div class="fw-bold">2. Documents</div>
+						<small class="text-muted">Upload</small>
+					</div>
+
+					<div class="w-25">
+						<div class="fw-bold">3. Traitement</div>
+						<small class="text-muted">Manager</small>
+					</div>
+
+					<div class="w-25">
+						<div class="fw-bold">4. Final</div>
+						<small class="text-muted">Résultat</small>
+					</div>
+
+				</div>
+
+				<div class="progress mt-3" style="height: 8px;">
+					<div class="progress-bar bg-success" style="width: {{ (currentStep / 4) * 100 }}%"></div>
+				</div>
+
 			</div>
 		</div>
 
-		{# ========================= DROPZONE ========================= #}
-		<div class="card">
+		{# =========================================================
+		       STEP 1 - INFOS DOSSIER
+		    ========================================================= #}
+
+		<div class="card mb-3">
 			<div class="card-body">
 
-				<h5>Documents</h5>
+				<h5>Étape 1 : Informations dossier</h5>
+
+				<p>
+					<strong>Client :</strong>
+					{{ dossier.customer.lastname }}</p>
+				<p>
+					<strong>Véhicule :</strong>
+					{{ dossier.vehicle.vehicleModel }}</p>
+				<p>
+					<strong>Type :</strong>
+					{{ dossier.type.label }}</p>
+
+			</div>
+		</div>
+
+		{# =========================================================
+		       STEP 2 - DOCUMENTS + DROPZONE + PREVIEW
+		    ========================================================= #}
+
+		<div class="card mb-3">
+			<div class="card-body">
+
+				<h5>Étape 2 : Documents</h5>
 
 				{% if dossier.status in ['draft', 'in_progress'] %}
 
 					<div class="dropzone" data-upload-url="{{ path('dossier_document_upload', {id: dossier.id}) }}" data-delete-url="{{ path('dossier_document_delete', {id: '__id__'}) }}" data-documents-url="{{ path('dossier_documents_list', {id: dossier.id}) }}" data-preview-id="dossier-documents-preview" data-locked="{{ dossier.status == 'validated' ? 1 : 0 }}">
 
 						<p class="text-muted">
-							Glissez vos fichiers ou cliquez ici
+							Glissez vos fichiers ici ou cliquez pour ajouter
 						</p>
+					</div>
+
+					{% if dossier.status == 'draft' %}
+						<button class="btn btn-primary mt-2 dz-upload-btn" disabled>
+							Soumettre les documents
+						</button>
+					{% endif %}
+
+					{# ================= PREVIEW ================= #}
+					<div id="dossier-documents-preview" class="preview-container mt-3">
+
+						{% for doc in dossier.documents %}
+
+							{% set ext = doc.fileName|split('.')|last|lower %}
+
+							<div class="dz-thumb" data-id="{{ doc.id }}">
+
+								<div class="dz-preview">
+
+									{% if ext in ['jpg','jpeg','png','webp'] %}
+										<img src="{{ asset('uploads/' ~ doc.path) }}">
+
+									{% elseif ext == 'pdf' %}
+										<div class="dz-file-preview dz-pdf">PDF</div>
+
+									{% elseif ext in ['doc','docx'] %}
+										<div class="dz-file-preview dz-word">WORD</div>
+
+									{% elseif ext in ['xls','xlsx'] %}
+										<div class="dz-file-preview dz-excel">EXCEL</div>
+
+									{% else %}
+										<div class="dz-file-preview dz-generic">Fichier</div>
+									{% endif %}
+
+								</div>
+
+								<div class="dz-filename">
+									{{ doc.originalName }}
+								</div>
+
+								<div class="dz-meta">
+									Envoyé le
+									{{ doc.createdAt|date('d/m/Y H:i') }}
+								</div>
+
+								{% if dossier.status in ['draft', 'in_progress'] %}
+									<button class="dz-delete" data-id="{{ doc.id }}">×</button>
+								{% endif %}
+
+							</div>
+
+						{% else %}
+							<p class="text-muted">Aucun document</p>
+						{% endfor %}
 
 					</div>
 
-					<button type="button" class="btn btn-primary mt-2 dz-upload-btn" disabled>
-						Envoyer les fichiers
-					</button>
-
 				{% else %}
-					<p class="text-muted">Modification désactivée</p>
+					<p class="text-muted">Documents verrouillés</p>
 				{% endif %}
-
-				{# ========================= PREVIEW ========================= #}
-				<div id="dossier-documents-preview" class="preview-container mt-3">
-
-					{% for doc in dossier.documents %}
-
-						{% set ext = doc.fileName|split('.')|last|lower %}
-
-						<div
-							class="dz-thumb" data-id="{{ doc.id }}">
-
-							{# ===== PREVIEW ===== #}
-							<div class="dz-preview">
-								{% if ext in ['jpg','jpeg','png','webp'] %}
-									<img src="{{ asset('uploads/' ~ doc.path) }}">
-								{% elseif ext == 'pdf' %}
-									<div class="dz-file-preview dz-pdf">PDF</div>
-								{% elseif ext in ['doc','docx'] %}
-									<div class="dz-file-preview dz-word">WORD</div>
-								{% elseif ext in ['xls','xlsx'] %}
-									<div class="dz-file-preview dz-excel">EXCEL</div>
-								{% else %}
-									<div class="dz-file-preview dz-generic">Fichier</div>
-								{% endif %}
-							</div>
-
-							{# ===== NOM ===== #}
-							<div class="dz-filename">
-								{{ doc.originalName }}
-							</div>
-
-							{# ===== DATE ===== #}
-							<div class="dz-meta">
-								Envoyé le
-								{{ doc.createdAt ? doc.createdAt|date('d/m/Y H:i') : '' }}
-							</div>
-
-							{# ===== STATUS ===== #}
-							{# <div class="mt-2">
-								<span class="badge bg-{{ doc.status.badge }} text-center">
-									{{ doc.status.label }}
-								</span>
-							</div> #}
-
-							{# ===== ACTIONS ADMIN ===== #}
-							{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-
-								{% if doc.status.value == 'uploaded' %}
-
-									<div class="mt-2 d-flex gap-1">
-
-										<button class="btn btn-success btn-sm js-validate" data-id="{{ doc.id }}">
-											✔
-										</button>
-
-										<button class="btn btn-danger btn-sm js-reject" data-id="{{ doc.id }}">
-											✖
-										</button>
-
-									</div>
-
-								{% endif %}
-
-							{% endif %}
-
-							{# ===== DELETE USER ===== #}
-							{% if dossier.status in ['draft', 'in_progress'] %}
-								<button class="dz-delete" data-id="{{ doc.id }}">×</button>
-							{% endif %}
-
-						</div>
-
-					{% else %}
-						<p class="text-muted">Aucun document</p>
-					{% endfor %}
-
-				</div>
 
 			</div>
 		</div>
+
+		{# =========================================================
+		       STEP 3 - ACTIONS MANAGER
+		    ========================================================= #}
+
+		{% if is_granted('ROLE_MANAGER') or is_granted('ROLE_ADMIN') %}
+
+			{% if dossier.status == 'in_progress' %}
+
+				<div class="card mb-3">
+					<div class="card-body">
+
+						<h5>Étape 3 : Traitement manager</h5>
+
+						<a href="{{ path('dossier_validate', {id: dossier.id}) }}" class="btn btn-success">
+							Valider
+						</a>
+
+						<a href="{{ path('dossier_reject', {id: dossier.id}) }}" class="btn btn-danger">
+							Refuser
+						</a>
+
+					</div>
+				</div>
+
+			{% endif %}
+
+		{% endif %}
+
+		{# =========================================================
+		       STEP 4 - RESULTAT FINAL
+		    ========================================================= #}
+
+		{% if dossier.status in ['validated', 'rejected'] %}
+
+			<div class="alert alert-info">
+				Dossier terminé :
+				{{ dossier.statusLabel }}
+			</div>
+
+			{% if dossier.vehicle %}
+
+				<div class="card mt-3">
+					<div class="card-body">
+
+						<h5>Impact véhicule</h5>
+
+						<p>
+							Statut :
+							<span class="badge bg-{{ dossier.vehicle.status.badge }}">
+								{{ dossier.vehicle.status.label }}
+							</span>
+						</p>
+
+					</div>
+				</div>
+
+			{% endif %}
+
+		{% endif %}
 
 	</div>
 

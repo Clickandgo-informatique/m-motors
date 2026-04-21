@@ -1,0 +1,76 @@
+@startuml
+
+title Séquence métier Dossier (submit / validate / reject)
+
+actor Client
+actor Manager
+
+participant "Dossier" as D
+participant "DossierType" as T
+participant "Vehicle" as V
+
+== SOUMISSION DU DOSSIER ==
+
+Client -> D : submit(requiredDocs, manager)
+
+activate D
+
+D -> D : vérifier status = DRAFT
+D -> D : vérifier complétude documents
+
+alt dossier complet
+    D -> D : status = IN_PROGRESS
+    D -> D : assignedTo = manager
+
+    opt véhicule associé
+        D -> T : applyVehicleOnSubmit(vehicle)
+        T -> V : reserve()
+    end
+
+else dossier incomplet
+    D --> Client : Exception "Dossier incomplet"
+    deactivate D
+end
+
+deactivate D
+
+== VALIDATION DU DOSSIER ==
+
+Manager -> D : validate()
+
+activate D
+
+D -> D : vérifier status = IN_PROGRESS
+D -> D : status = VALIDATED
+D -> D : validatedBy = manager
+
+alt véhicule existant
+    D -> T : applyVehicleValidation(vehicle)
+
+    alt type = SALE
+        T -> V : markAsSold()
+    else type = RENTAL
+        T -> V : markAsRented()
+    end
+end
+
+deactivate D
+
+== REFUS DU DOSSIER ==
+
+Manager -> D : reject()
+
+activate D
+
+D -> D : vérifier status = IN_PROGRESS
+D -> D : status = REJECTED
+D -> D : cancelledAt = now
+
+alt véhicule existant
+    D -> T : applyVehicleRejection(vehicle)
+    T -> V : makeAvailable()
+end
+
+deactivate D
+
+@enduml
