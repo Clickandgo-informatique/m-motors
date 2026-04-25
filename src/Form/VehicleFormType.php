@@ -9,7 +9,6 @@ use App\Entity\Gear;
 use App\Entity\Supplier;
 use App\Entity\Vehicle;
 use App\Enum\VehicleStatus;
-use DateTime;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -61,23 +60,15 @@ class VehicleFormType extends AbstractType
             ->add('vin', TextType::class, [
                 'label' => 'VIN'
             ])
-            ->add('firstRegistrationDate', DateTimeType::class, ['label' => 'Date 1ère immatriculation', 'attr' => [
-                'class' => 'text-right',
-            ],])
-
-            ->add('registrationNumber', TextType::class, [
-                'label' => 'Immatriculation'
-            ])
-
             ->add('firstRegistrationDate', DateTimeType::class, [
-<<<<<<< HEAD:src/Form/VehicleFormType.php
-                'label' => 'Année',
+                'label' => 'Date 1ère immatriculation',
                 'attr' => [
                     'class' => 'text-right',
                 ],
-=======
-                'label' => 'Date 1ère Immatriculation'
->>>>>>> feature/vehicle_search_autocomplete:src/Form/VehicleType.php
+            ])
+
+            ->add('registrationNumber', TextType::class, [
+                'label' => 'Immatriculation'
             ])
 
             ->add('mileage', IntegerType::class, [
@@ -117,8 +108,6 @@ class VehicleFormType extends AbstractType
                 'choice_label' => 'name',
                 'label' => 'Fournisseur'
             ])
-<<<<<<< HEAD:src/Form/VehicleFormType.php
-=======
 
             ->add('features', EntityType::class, [
                 'class' => Feature::class,
@@ -126,7 +115,6 @@ class VehicleFormType extends AbstractType
                 'multiple' => true,
                 'label' => 'Options'
             ])
->>>>>>> feature/vehicle_search_autocomplete:src/Form/VehicleType.php
         ;
     }
 

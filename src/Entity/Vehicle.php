@@ -236,7 +236,7 @@ class Vehicle
     }
 
     // =========================================================
-    // GETTERS COLLECTIONS (MANQUANTS IMPORTANT)
+    // GETTERS COLLECTIONS 
     // =========================================================
 
     public function getDossiers(): Collection
@@ -271,6 +271,10 @@ class Vehicle
         }
 
         return $this;
+    }
+    public function getFeatures(): Collection
+    {
+        return $this->features;
     }
 
     public function removeFeature(Feature $feature): self
