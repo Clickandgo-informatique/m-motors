@@ -10,21 +10,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Dossier métier principal.
- *
- * Responsabilités :
- * - gérer le cycle de vie du dossier
- * - contrôler la complétude des documents
- * - déléguer les actions véhicule au DossierType
- *
- * IMPORTANT :
- * Le status ne doit jamais être modifié directement.
- * Utiliser uniquement :
- * - submit()
- * - validate()
- * - reject()
- */
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Dossier
@@ -61,14 +46,14 @@ class Dossier
     private ?User $createdBy = null;
 
     // =========================================================
-    // TYPE DOSSIER
+    // TYPE
     // =========================================================
 
     #[ORM\Column(enumType: DossierType::class)]
     private ?DossierType $type = null;
 
     // =========================================================
-    // IDENTIFIANT MÉTIER
+    // BUSINESS CODE
     // =========================================================
 
     #[ORM\Column(length: 50, unique: true)]
@@ -76,19 +61,14 @@ class Dossier
     private ?string $dossierCode = null;
 
     // =========================================================
-    // STATUT WORKFLOW
+    // WORKFLOW STATUS (SYMFONY OWNER)
     // =========================================================
 
     #[ORM\Column(length: 50)]
-    private string $status = self::STATUS_DRAFT;
-
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_VALIDATED = 'validated';
-    public const STATUS_REJECTED = 'rejected';
+    private string $status = 'draft';
 
     // =========================================================
-    // MÉTIER
+    // METIER
     // =========================================================
 
     #[ORM\Column(length: 50, nullable: true)]
@@ -116,7 +96,7 @@ class Dossier
     }
 
     // =========================================================
-    // GETTERS / SETTERS
+    // GETTERS
     // =========================================================
 
     public function getId(): ?int
@@ -146,6 +126,55 @@ class Dossier
         return $this;
     }
 
+    public function getType(): ?DossierType
+    {
+        return $this->type;
+    }
+
+    public function setType(DossierType $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function getDossierCode(): ?string
+    {
+        return $this->dossierCode;
+    }
+
+    public function setDossierCode(string $code): self
+    {
+        $this->dossierCode = $code;
+        return $this;
+    }
+
+    public function getFinancingType(): ?string
+    {
+        return $this->financingType;
+    }
+
+    public function setFinancingType(?string $financingType): self
+    {
+        $this->financingType = $financingType;
+        return $this;
+    }
+
     public function getAssignedTo(): ?User
     {
         return $this->assignedTo;
@@ -167,151 +196,20 @@ class Dossier
         return $this;
     }
 
-    public function getType(): ?DossierType
-    {
-        return $this->type;
-    }
-
-    public function setType(DossierType $type): self
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    public function getDossierCode(): ?string
-    {
-        return $this->dossierCode;
-    }
-
-    public function setDossierCode(string $code): self
-    {
-        $this->dossierCode = $code;
-        return $this;
-    }
-
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    public function getDocuments(): Collection
-    {
-        return $this->documents;
-    }
-    public function getFinancingType(): ?string
-    {
-        return $this->financingType;
-    }
-
-    public function setFinancingType(?string $financingType): self
-    {
-        $this->financingType = $financingType;
-
-        return $this;
-    }
     // =========================================================
-    // MÉTIER - DOCUMENTS
-    // =========================================================
-
-    public function isComplete(array $requiredTypes): bool
-    {
-        $uploaded = array_map(
-            fn($doc) => $doc->getType(),
-            $this->documents->toArray()
-        );
-
-        foreach ($requiredTypes as $type) {
-            if (!in_array($type, $uploaded, true)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    // =========================================================
-    // SUBMIT
-    // =========================================================
-
-    public function submit(array $requiredTypes, User $manager): void
-    {
-        if ($this->status !== self::STATUS_DRAFT) {
-            throw new \LogicException('Seul un brouillon peut être soumis');
-        }
-
-        if (!$this->type) {
-            throw new \LogicException('Type de dossier manquant');
-        }
-
-        if (!$this->isComplete($requiredTypes)) {
-            throw new \LogicException('Dossier incomplet');
-        }
-
-        $this->status = self::STATUS_IN_PROGRESS;
-        $this->assignedTo = $manager;
-
-        if ($this->vehicle) {
-            $this->type->applyVehicleOnSubmit($this->vehicle);
-        }
-    }
-
-    // =========================================================
-    // VALIDATE
-    // =========================================================
-
-    public function validate(User $manager): void
-    {
-        if ($this->status !== self::STATUS_IN_PROGRESS) {
-            throw new \LogicException('Validation impossible');
-        }
-
-        if (!$this->type) {
-            throw new \LogicException('Type de dossier manquant');
-        }
-
-        $this->status = self::STATUS_VALIDATED;
-        $this->validatedBy = $manager;
-        $this->completedAt = new \DateTimeImmutable();
-
-        if ($this->vehicle) {
-            $this->type->applyVehicleValidation($this->vehicle);
-        }
-    }
-
-    // =========================================================
-    // REJECT
-    // =========================================================
-
-    public function reject(User $manager): void
-    {
-        if ($this->status !== self::STATUS_IN_PROGRESS) {
-            throw new \LogicException('Refus impossible');
-        }
-
-        if (!$this->type) {
-            throw new \LogicException('Type de dossier manquant');
-        }
-
-        $this->status = self::STATUS_REJECTED;
-        $this->validatedBy = $manager;
-        $this->cancelledAt = new \DateTimeImmutable();
-
-        if ($this->vehicle) {
-            $this->type->applyVehicleRejection($this->vehicle);
-        }
-    }
-
-    // =========================================================
-    // UI
+    // UI HELPERS
     // =========================================================
 
     public function getStatusLabel(): string
     {
         return match ($this->status) {
-            self::STATUS_DRAFT => 'Brouillon',
-            self::STATUS_IN_PROGRESS => 'En cours',
-            self::STATUS_VALIDATED => 'Validé',
-            self::STATUS_REJECTED => 'Refusé',
+            'draft' => 'Brouillon',
+            'vehicle_selected' => 'Véhicule sélectionné',
+            'documents_pending' => 'Documents à fournir',
+            'documents_review' => 'Documents en validation',
+            'financing_review' => 'Financement en cours',
+            'completed' => 'Terminé',
+            'cancelled' => 'Annulé',
             default => $this->status,
         };
     }
@@ -319,21 +217,14 @@ class Dossier
     public function getStatusBadge(): string
     {
         return match ($this->status) {
-            self::STATUS_DRAFT => 'secondary',
-            self::STATUS_IN_PROGRESS => 'warning',
-            self::STATUS_VALIDATED => 'success',
-            self::STATUS_REJECTED => 'danger',
+            'draft' => 'secondary',
+            'vehicle_selected' => 'info',
+            'documents_pending' => 'warning',
+            'documents_review' => 'warning',
+            'financing_review' => 'primary',
+            'completed' => 'success',
+            'cancelled' => 'danger',
             default => 'secondary',
         };
-    }
-
-    /**
-     * Set the value of status
-     */
-    public function setStatus(string $status): self
-    {
-        $this->status = $status;
-
-        return $this;
     }
 }

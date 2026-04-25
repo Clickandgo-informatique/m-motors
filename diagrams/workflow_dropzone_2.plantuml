@@ -1,0 +1,78 @@
+@startuml
+title Gestion de fichiers - Dossier
+
+actor User
+
+rectangle "Frontend" {
+  rectangle "Dropzone JS" as DZ
+  rectangle "Preview UI" as UI
+  rectangle "State (filesQueue, fileKeys)" as STATE
+}
+
+rectangle "Backend Symfony" {
+  rectangle "Controller" as CTRL
+  rectangle "Storage Service" as STORAGE
+  rectangle "Filesystem /uploads" as FS
+  rectangle "Entity DossierDocument" as DOC
+}
+
+rectangle "Workflow" {
+  rectangle "draft" as DRAFT
+  rectangle "in_progress" as INPROG
+  rectangle "validated" as VALID
+  rectangle "rejected" as REJECT
+}
+
+' =============================
+' USER ACTIONS
+' =============================
+
+User --> DZ : Ajouter fichiers
+User --> DZ : Cliquer "Envoyer"
+User --> CTRL : Supprimer fichier
+
+' =============================
+' FRONT
+' =============================
+
+DZ --> STATE : stocke fichiers
+DZ --> UI : génère preview
+
+STATE --> DZ : fichiers à uploader
+
+DZ --> CTRL : POST upload
+
+' =============================
+' BACK
+' =============================
+
+CTRL --> STORAGE : traiter fichiers
+STORAGE --> FS : sauvegarde
+
+CTRL --> DOC : create
+
+CTRL --> DOC : read
+CTRL --> DZ : JSON documents
+
+CTRL --> DOC : delete
+CTRL --> FS : supprimer fichier
+
+' =============================
+' SYNC
+' =============================
+
+DZ --> CTRL : refreshState
+DZ --> UI : renderDocuments
+
+' =============================
+' WORKFLOW
+' =============================
+
+DRAFT --> INPROG
+INPROG --> VALID
+INPROG --> REJECT
+
+VALID --> DZ : lock
+REJECT --> DZ : lock
+
+@enduml

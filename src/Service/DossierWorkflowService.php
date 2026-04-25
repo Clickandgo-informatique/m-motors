@@ -3,135 +3,72 @@
 namespace App\Service;
 
 use App\Entity\Dossier;
-use App\Entity\SupplierOrder;
-use App\Entity\Vehicle;
-use App\Enum\DossierDocumentStatus;
-use App\Enum\VehicleStatus;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class DossierWorkflowService
 {
     public function __construct(
-        private EntityManagerInterface $em
+        private WorkflowInterface $dossierStateMachine
     ) {}
 
-    /**
-     * Validation d’un dossier (entrée métier)
-     */
-    public function approve(Dossier $dossier): void
+    // =========================================================
+    // TRANSITION GENERIQUE
+    // =========================================================
+
+    public function apply(Dossier $dossier, string $transition): void
     {
-        $vehicle = $dossier->getVehicle();
-
-        if (!$vehicle instanceof Vehicle) {
-            return;
+        if (!$this->dossierStateMachine->can($dossier, $transition)) {
+            throw new \LogicException(sprintf(
+                'Transition "%s" impossible pour le statut "%s"',
+                $transition,
+                $dossier->getStatus()
+            ));
         }
 
-        // =========================
-        // CAS : véhicule indisponible
-        // =========================
-        if (!$vehicle->isAvailable()) {
-            $this->handleUnavailableVehicle($dossier, $vehicle);
-        } else {
-            $this->handleAvailableVehicle($dossier, $vehicle);
-        }
-
-        // IMPORTANT :
-        // On ne touche PLUS au statut du dossier ici
-        // → géré par Symfony Workflow uniquement
-        $this->em->flush();
+        $this->dossierStateMachine->apply($dossier, $transition);
     }
 
-    /**
-     * Véhicule indisponible → commande fournisseur
-     */
-    private function handleUnavailableVehicle(Dossier $dossier, Vehicle $vehicle): void
+    // =========================================================
+    // HELPERS METIER
+    // =========================================================
+
+    public function selectVehicle(Dossier $dossier): void
     {
-        if ($vehicle->isOrdered()) {
-            return;
-        }
-
-        $order = new SupplierOrder();
-        $order->setVehicle($vehicle);
-        $order->setSupplier($vehicle->getSupplier());
-        $order->setDossier($dossier);
-
-        $vehicle->setStatus(VehicleStatus::ORDERED);
-
-        $this->em->persist($order);
+        $this->apply($dossier, 'select_vehicle');
     }
 
-    /**
-     * Véhicule disponible → logique métier
-     */
-    private function handleAvailableVehicle(Dossier $dossier, Vehicle $vehicle): void
+    public function requestDocuments(Dossier $dossier): void
     {
-        if ($dossier->isLeasing()) {
-            $this->handleLeasing($vehicle);
-        } else {
-            $this->handlePurchase($vehicle);
-        }
+        $this->apply($dossier, 'request_documents');
     }
 
-    /**
-     * Achat
-     */
-    private function handlePurchase(Vehicle $vehicle): void
+    public function submitDocuments(Dossier $dossier): void
     {
-        $vehicle->setStatus(VehicleStatus::SOLD);
+        $this->apply($dossier, 'submit_documents');
     }
 
-    /**
-     * Leasing
-     */
-    private function handleLeasing(Vehicle $vehicle): void
+    public function validateDocuments(Dossier $dossier): void
     {
-        $vehicle->setStatus(VehicleStatus::RENTED);
+        $this->apply($dossier, 'validate_documents');
     }
-    public function getCompletionRate(Dossier $dossier): float
+
+    public function rejectDocuments(Dossier $dossier): void
     {
-        $documents = $dossier->getDocuments();
-
-        if ($documents->isEmpty()) {
-            return 0;
-        }
-
-        $total = count($documents);
-        $validated = 0;
-
-        foreach ($documents as $doc) {
-            if ($doc->getStatus() === DossierDocumentStatus::VALIDATED) {
-                $validated++;
-            }
-        }
-
-        return round(($validated / $total) * 100);
+        $this->apply($dossier, 'reject_documents');
     }
-    // Actualise le status du dossier en cours
-    public function refreshDossierStatus(Dossier $dossier): void
+
+    public function approveFinancing(Dossier $dossier): void
     {
-        $documents = $dossier->getDocuments();
-
-        if ($documents->isEmpty()) {
-            $dossier->setStatus('missing');
-            return;
-        }
-
-        $allValidated = true;
-
-        foreach ($documents as $doc) {
-            if ($doc->getStatus() !== \App\Enum\DossierDocumentStatus::VALIDATED) {
-                $allValidated = false;
-            }
-        }
-
-        if ($allValidated) {
-            $dossier->setStatus('validated');
-        } else {
-            $dossier->setStatus('in_progress');
-        }
+        $this->apply($dossier, 'approve_financing');
     }
-    public function isLocked(Dossier $dossier): bool
+
+    public function rejectFinancing(Dossier $dossier): void
     {
-        return $dossier->getStatus() === 'validated';
+        $this->apply($dossier, 'reject_financing');
+    }
+
+    public function cancel(Dossier $dossier): void
+    {
+        $this->apply($dossier, 'cancel');
     }
 }
