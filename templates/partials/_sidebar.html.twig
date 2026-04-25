@@ -7,7 +7,7 @@
 	</button>
 
 	<nav class="sidenav" aria-label="Navigation latérale">
-		<details>
+		<details open="true">
 			<summary>
 				<i class="fa-solid fa-car-side"></i>
 				<span>Véhicules</span>
@@ -33,12 +33,12 @@
 			</ul>
 		</details>
 
-		<details>
-			<summary>
-				<i class="fa-regular fa-address-book"></i>Clients
-			</summary>
-			<ul class="items-list">
-				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+			<details>
+				<summary>
+					<i class="fa-regular fa-address-book"></i>Clients
+				</summary>
+				<ul class="items-list">
 					<li>
 						<a href="{{ path('customer_list') }}">
 							<i class="fa-regular fa-address-book"></i>Liste clients
@@ -53,24 +53,24 @@
 			</ul>
 		</details>
 
-		<details>
-			<summary>
-				<i class="fa-solid fa-file-lines"></i>Dossiers
-			</summary>
-			<ul class="items-list">
-				{% if is_granted('ROLE_ADMIN') %}
-					<li>
-						<a href="{{ path('dossier_list') }}">
-							<i class="fa-solid fa-list"></i>Liste dossiers (Admin)
-						</a>
-					</li>
-					<li>
-						<a href="{{ path('dossier_new') }}">
-							<i class="fa-solid fa-file-circle-plus"></i>Créer dossier
-						</a>
-					</li>
-				{% endif %}
-				{% if app.user %}
+		{% if app.user and is_granted('ROLE_USER') %}
+			<details>
+				<summary>
+					<i class="fa-solid fa-file-lines"></i>Dossiers
+				</summary>
+				<ul class="items-list">
+					{% if is_granted('ROLE_ADMIN') %}
+						<li>
+							<a href="{{ path('dossier_list') }}">
+								<i class="fa-solid fa-list"></i>Liste dossiers (Admin)
+							</a>
+						</li>
+						<li>
+							<a href="{{ path('dossier_new') }}">
+								<i class="fa-solid fa-file-circle-plus"></i>Créer dossier
+							</a>
+						</li>
+					{% endif %}
 					<li>
 						<a href="{{ path('dossier_my_list') }}">
 							<i class="fa-solid fa-folder-open"></i>Mes dossiers

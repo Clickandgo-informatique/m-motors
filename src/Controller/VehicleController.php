@@ -56,7 +56,7 @@ class VehicleController extends AbstractController
         $q = $request->query->get('q', '');
 
         // Repo personnalisé pour chercher sur marque, modèle, immatriculation
-        $vehicles = $repo->searchByTerm($q); // retourne un tableau de Vehicle
+        $vehicles = $repo->searchByTerm($q); // retourne un tableau de Vehicles
 
         // Transformer les résultats pour le JS
         $items = array_map(function (Vehicle $v) {

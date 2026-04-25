@@ -66,8 +66,8 @@ class VehicleType extends AbstractType
                 'label' => 'Immatriculation'
             ])
 
-            ->add('year', IntegerType::class, [
-                'label' => 'Année'
+            ->add('firstRegistrationDate', DateTimeType::class, [
+                'label' => 'Date 1ère Immatriculation'
             ])
 
             ->add('mileage', IntegerType::class, [
@@ -107,7 +107,7 @@ class VehicleType extends AbstractType
 
             ->add('features', EntityType::class, [
                 'class' => Feature::class,
-                'choice_label' => 'name',
+                'choice_label' => 'label',
                 'multiple' => true,
                 'label' => 'Options'
             ])
