@@ -1,0 +1,85 @@
+@startuml
+
+title Workflow Dossier Métier (Achat / LLD / LOA)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #F8F9FA
+  BorderColor #2C3E50
+  ArrowColor #2C3E50
+}
+
+start
+
+partition "Client" {
+
+  :Créer dossier;
+  :DRAFT (brouillon);
+
+  :Ajouter documents;
+  :Uploader via Dropzone;
+
+  if (Dossier complet ?) then (oui)
+    :Soumettre dossier;
+  else (non)
+    stop
+  endif
+}
+
+partition "Système" {
+  :IN_PROGRESS;
+  :Attribuer manager;
+  :Réserver véhicule;
+}
+
+partition "Manager" {
+
+  :Analyser dossier;
+
+  if (Validation ?) then (oui)
+
+    :VALIDATED;
+
+    if (Type dossier ?) then (SALE)
+
+      :Vente (SALE);
+      :Véhicule = SOLD;
+
+    elseif (RENTAL)
+
+      :Location (RENTAL);
+      :Véhicule = RENTED;
+
+      if (Type location ?) then (LLD)
+
+        :LLD;
+        :Retour véhicule fin contrat;
+
+        :Véhicule = AVAILABLE;
+
+      elseif (LOA)
+
+        :LOA;
+
+        if (Option achat levée ?) then (oui)
+          :Véhicule = SOLD;
+        else (non)
+          :Véhicule = AVAILABLE;
+        endif
+
+      endif
+
+    endif
+
+  else (non)
+
+    :REJECTED;
+    :Véhicule = AVAILABLE;
+
+  endif
+}
+
+stop
+
+@enduml

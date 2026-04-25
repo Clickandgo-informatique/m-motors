@@ -42,13 +42,17 @@ class CustomerFixtures extends Fixture
                 ->setEmail($email)
                 ->setCustomerCode(
                     strtoupper(substr($last, 0, 3)) . str_pad((string)$i, 3, '0', STR_PAD_LEFT)
-                );
+                )
+                ->setAddress($this->faker->streetAddress())
+                ->setZipCode($this->faker->postcode())
+                ->setCity($this->faker->city())
+                ->setAddressDetails('Détails de l\'adresse du client');
 
             $user = new User();
             $user->setEmail($email);
             $user->setRoles(['ROLE_CUSTOMER']);
 
-            // ⚡ remplacement de random_bytes (plus rapide)
+            // remplacement de random_bytes (plus rapide)
             $plainPassword = sprintf(
                 '%s-%s',
                 $customer->getCustomerCode(),
@@ -66,14 +70,18 @@ class CustomerFixtures extends Fixture
 
             $this->addReference('customer_' . $i, $customer);
 
-            // 🚀 flush batch optimisé
+            // flush batch optimisé
             if ($i % $batchSize === 0) {
                 $manager->flush();
-                $manager->clear(); // 💥 énorme gain mémoire + perf Doctrine
+                $manager->clear(); //gain mémoire + perf Doctrine
             }
         }
 
         $manager->flush();
         $manager->clear();
+    }
+    public static function getGroups(): array
+    {
+        return ['CustomerFixtures'];
     }
 }

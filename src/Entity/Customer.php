@@ -84,9 +84,45 @@ class Customer
         mappedBy: 'customer',
         targetEntity: Dossier::class,
         cascade: ['persist']
-        // ⚠️ PAS de orphanRemoval ici pour éviter suppressions automatiques non maîtrisées
+        //PAS de orphanRemoval ici pour éviter suppressions automatiques non maîtrisées
     )]
     private Collection $dossiers;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "L'adresse ne peut pas dépasser {{ limit }} caractères."
+    )]
+    private ?string $address = null;
+
+    #[ORM\Column(length: 7, nullable: true)]
+    #[Assert\Length(
+        max: 7,
+        maxMessage: "Le code postal ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[0-9]{5}$/",
+        message: "Le code postal doit contenir exactement 5 chiffres."
+    )]
+    private ?string $zipCode = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La ville ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-ZÀ-ÿ\s\-']+$/",
+        message: "La ville contient des caractères invalides."
+    )]
+    private ?string $city = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le complément d'adresse ne peut pas dépasser {{ limit }} caractères."
+    )]
+    private ?string $addressDetails = null;
 
     // =========================================================
     // CONSTRUCTOR
@@ -236,5 +272,53 @@ class Customer
             $this->lastName ?? '',
             $this->customerCode ?? ''
         );
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getZipCode(): ?string
+    {
+        return $this->zipCode;
+    }
+
+    public function setZipCode(?string $zipCode): static
+    {
+        $this->zipCode = $zipCode;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getAddressDetails(): ?string
+    {
+        return $this->addressDetails;
+    }
+
+    public function setAddressDetails(?string $addressDetails): static
+    {
+        $this->addressDetails = $addressDetails;
+
+        return $this;
     }
 }

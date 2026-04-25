@@ -22,6 +22,7 @@ framework:
         - cancelled
 
       transitions:
+
         select_vehicle:
           from: draft
           to: vehicle_selected
@@ -38,24 +39,23 @@ framework:
           from: documents_review
           to: financing_review
 
-        complete:
+        reject_documents:
+          from: documents_review
+          to: documents_pending
+
+        approve_financing:
           from: financing_review
           to: completed
 
-        cancel_from_draft:
-          from: draft
-          to: cancelled
+        reject_financing:
+          from: financing_review
+          to: documents_review
 
-        cancel_from_vehicle:
-          from: vehicle_selected
-          to: cancelled
-
-        cancel_from_documents:
+        cancel:
           from:
+            - draft
+            - vehicle_selected
             - documents_pending
             - documents_review
-          to: cancelled
-
-        cancel_from_financing:
-          from: financing_review
+            - financing_review
           to: cancelled

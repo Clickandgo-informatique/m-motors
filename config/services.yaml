@@ -8,14 +8,47 @@ services:
         bind:
             string $uploadDir: "%dossier_upload_dir%"
 
+    # =========================================================
+    # AUTOWIRE GLOBAL APP
+    # =========================================================
+
     App\:
         resource: "../src/"
-        exclude: "../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}"
+        exclude:
+            - "../src/DependencyInjection/"
+            - "../src/Entity/"
+            - "../src/Migrations/"
+            - "../src/Tests/"
+            - "../src/Kernel.php"
 
-    workflow.dossier:
-        class: Symfony\Component\Workflow\Workflow
-        factory: ["@workflow.registry", "get"]
-        arguments:
-            - "dossier"
+    # =========================================================
+    # UPLOAD SERVICE
+    # =========================================================
 
-    Symfony\Component\Workflow\WorkflowInterface: "@workflow.dossier"
+    App\Service\DossierDocumentUploadService: ~
+
+    # =========================================================
+    # TYPE RESOLVER (METIER)
+    # =========================================================
+
+    App\Service\DossierDocumentTypeResolver: ~
+
+    # =========================================================
+    # WORKFLOW GUARD
+    # =========================================================
+
+    App\Workflow\Guard\DossierWorkflowGuard:
+        tags:
+            - {
+                  name: kernel.event_listener,
+                  event: workflow.dossier.guard.submit_documents,
+                  method: guardSubmitDocuments,
+              }
+
+    App\Listener\DocumentUploadedListener:
+    tags:
+        - {
+              name: kernel.event_listener,
+              event: App\Event\DocumentUploadedEvent,
+              method: __invoke,
+          }

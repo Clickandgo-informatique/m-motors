@@ -3,87 +3,72 @@
 namespace App\Service;
 
 use App\Entity\Dossier;
-use App\Entity\SupplierOrder;
-use App\Entity\Vehicle;
-use App\Enum\VehicleStatus;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class DossierWorkflowService
 {
     public function __construct(
-        private EntityManagerInterface $em
+        private WorkflowInterface $dossierStateMachine
     ) {}
 
-    /**
-     * Validation d’un dossier (entrée métier)
-     */
-    public function approve(Dossier $dossier): void
-    {
-        $vehicle = $dossier->getVehicle();
+    // =========================================================
+    // TRANSITION GENERIQUE
+    // =========================================================
 
-        if (!$vehicle instanceof Vehicle) {
-            return;
+    public function apply(Dossier $dossier, string $transition): void
+    {
+        if (!$this->dossierStateMachine->can($dossier, $transition)) {
+            throw new \LogicException(sprintf(
+                'Transition "%s" impossible pour le statut "%s"',
+                $transition,
+                $dossier->getStatus()
+            ));
         }
 
-        // =========================
-        // CAS : véhicule indisponible
-        // =========================
-        if (!$vehicle->isAvailable()) {
-            $this->handleUnavailableVehicle($dossier, $vehicle);
-        } else {
-            $this->handleAvailableVehicle($dossier, $vehicle);
-        }
-
-        // ⚠️ IMPORTANT :
-        // On ne touche PLUS au statut du dossier ici
-        // → géré par Symfony Workflow uniquement
-        $this->em->flush();
+        $this->dossierStateMachine->apply($dossier, $transition);
     }
 
-    /**
-     * Véhicule indisponible → commande fournisseur
-     */
-    private function handleUnavailableVehicle(Dossier $dossier, Vehicle $vehicle): void
+    // =========================================================
+    // HELPERS METIER
+    // =========================================================
+
+    public function selectVehicle(Dossier $dossier): void
     {
-        if ($vehicle->isOrdered()) {
-            return;
-        }
-
-        $order = new SupplierOrder();
-        $order->setVehicle($vehicle);
-        $order->setSupplier($vehicle->getSupplier());
-        $order->setDossier($dossier);
-
-        $vehicle->setStatus(VehicleStatus::ORDERED);
-
-        $this->em->persist($order);
+        $this->apply($dossier, 'select_vehicle');
     }
 
-    /**
-     * Véhicule disponible → logique métier
-     */
-    private function handleAvailableVehicle(Dossier $dossier, Vehicle $vehicle): void
+    public function requestDocuments(Dossier $dossier): void
     {
-        if ($dossier->isLeasing()) {
-            $this->handleLeasing($vehicle);
-        } else {
-            $this->handlePurchase($vehicle);
-        }
+        $this->apply($dossier, 'request_documents');
     }
 
-    /**
-     * Achat
-     */
-    private function handlePurchase(Vehicle $vehicle): void
+    public function submitDocuments(Dossier $dossier): void
     {
-        $vehicle->setStatus(VehicleStatus::SOLD);
+        $this->apply($dossier, 'submit_documents');
     }
 
-    /**
-     * Leasing
-     */
-    private function handleLeasing(Vehicle $vehicle): void
+    public function validateDocuments(Dossier $dossier): void
     {
-        $vehicle->setStatus(VehicleStatus::RENTED);
+        $this->apply($dossier, 'validate_documents');
+    }
+
+    public function rejectDocuments(Dossier $dossier): void
+    {
+        $this->apply($dossier, 'reject_documents');
+    }
+
+    public function approveFinancing(Dossier $dossier): void
+    {
+        $this->apply($dossier, 'approve_financing');
+    }
+
+    public function rejectFinancing(Dossier $dossier): void
+    {
+        $this->apply($dossier, 'reject_financing');
+    }
+
+    public function cancel(Dossier $dossier): void
+    {
+        $this->apply($dossier, 'cancel');
     }
 }

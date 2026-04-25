@@ -26,7 +26,7 @@ button[type="submit"] {
   background: var(--btn-primary-bg);
   color: var(--btn-primary-text);
   border-color: var(--btn-primary-bg);
-  margin: 10px auto;
+  margin: 10 auto;
 }
 
 button.primary:hover,

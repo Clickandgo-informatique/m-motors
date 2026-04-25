@@ -10,15 +10,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Entité représentant un dossier métier.
- *
- * Le statut est piloté par Symfony Workflow (state machine).
- * Le champ `status` contient l'état courant.
- *
- * Le champ `dossierCode` est l'identifiant métier unique :
- * Exemple : DUP001-0001
- */
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Dossier
@@ -26,7 +17,7 @@ class Dossier
     use TimestampableTrait;
 
     // =========================================================
-    // IDENTIFIANT TECHNIQUE
+    // IDENTIFIANT
     // =========================================================
 
     #[ORM\Id]
@@ -35,31 +26,34 @@ class Dossier
     private ?int $id = null;
 
     // =========================================================
-    // RELATIONS MÉTIER
+    // RELATIONS
     // =========================================================
 
     #[ORM\ManyToOne(inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Un client est obligatoire')]
     private ?Customer $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'dossiers')]
-    #[ORM\JoinColumn(nullable: true)]
     private ?Vehicle $vehicle = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
     private ?User $assignedTo = null;
 
+    #[ORM\ManyToOne]
+    private ?User $validatedBy = null;
+
+    #[ORM\ManyToOne]
+    private ?User $createdBy = null;
+
     // =========================================================
-    // TYPE DE DOSSIER
+    // TYPE
     // =========================================================
 
     #[ORM\Column(enumType: DossierType::class)]
     private ?DossierType $type = null;
 
     // =========================================================
-    // DOSSIER CODE (IDENTIFIANT MÉTIER UNIQUE)
+    // BUSINESS CODE
     // =========================================================
 
     #[ORM\Column(length: 50, unique: true)]
@@ -67,23 +61,18 @@ class Dossier
     private ?string $dossierCode = null;
 
     // =========================================================
-    // WORKFLOW STATUS
+    // WORKFLOW STATUS (SYMFONY OWNER)
     // =========================================================
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
     private string $status = 'draft';
 
     // =========================================================
-    // FINANCEMENT
+    // METIER
     // =========================================================
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $financingType = null;
-
-    // =========================================================
-    // DATES MÉTIER
-    // =========================================================
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $completedAt = null;
@@ -98,17 +87,8 @@ class Dossier
     /**
      * @var Collection<int, DossierDocument>
      */
-    #[ORM\OneToMany(
-        mappedBy: 'dossier',
-        targetEntity: DossierDocument::class,
-        cascade: ['persist'],
-        orphanRemoval: false
-    )]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DossierDocument::class, cascade: ['persist'])]
     private Collection $documents;
-
-    // =========================================================
-    // CONSTRUCTOR
-    // =========================================================
 
     public function __construct()
     {
@@ -116,7 +96,7 @@ class Dossier
     }
 
     // =========================================================
-    // GETTERS / SETTERS
+    // GETTERS
     // =========================================================
 
     public function getId(): ?int
@@ -146,21 +126,6 @@ class Dossier
         return $this;
     }
 
-    public function getAssignedTo(): ?User
-    {
-        return $this->assignedTo;
-    }
-
-    public function setAssignedTo(?User $assignedTo): self
-    {
-        $this->assignedTo = $assignedTo;
-        return $this;
-    }
-
-    // =========================================================
-    // TYPE
-    // =========================================================
-
     public function getType(): ?DossierType
     {
         return $this->type;
@@ -171,25 +136,6 @@ class Dossier
         $this->type = $type;
         return $this;
     }
-
-    // =========================================================
-    // DOSSIER CODE
-    // =========================================================
-
-    public function getDossierCode(): ?string
-    {
-        return $this->dossierCode;
-    }
-
-    public function setDossierCode(string $dossierCode): self
-    {
-        $this->dossierCode = $dossierCode;
-        return $this;
-    }
-
-    // =========================================================
-    // STATUS WORKFLOW
-    // =========================================================
 
     public function getStatus(): string
     {
@@ -202,9 +148,21 @@ class Dossier
         return $this;
     }
 
-    // =========================================================
-    // FINANCEMENT
-    // =========================================================
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function getDossierCode(): ?string
+    {
+        return $this->dossierCode;
+    }
+
+    public function setDossierCode(string $code): self
+    {
+        $this->dossierCode = $code;
+        return $this;
+    }
 
     public function getFinancingType(): ?string
     {
@@ -217,74 +175,41 @@ class Dossier
         return $this;
     }
 
-    // =========================================================
-    // DATES
-    // =========================================================
-
-    public function getCompletedAt(): ?\DateTimeImmutable
+    public function getAssignedTo(): ?User
     {
-        return $this->completedAt;
+        return $this->assignedTo;
     }
 
-    public function setCompletedAt(?\DateTimeImmutable $completedAt): self
+    public function getValidatedBy(): ?User
     {
-        $this->completedAt = $completedAt;
-        return $this;
+        return $this->validatedBy;
     }
 
-    public function getCancelledAt(): ?\DateTimeImmutable
+    public function getCreatedBy(): ?User
     {
-        return $this->cancelledAt;
+        return $this->createdBy;
     }
 
-    public function setCancelledAt(?\DateTimeImmutable $cancelledAt): self
+    public function setCreatedBy(?User $createdBy): self
     {
-        $this->cancelledAt = $cancelledAt;
+        $this->createdBy = $createdBy;
         return $this;
     }
 
     // =========================================================
-    // DOCUMENTS
+    // UI HELPERS
     // =========================================================
-
-    public function getDocuments(): Collection
-    {
-        return $this->documents;
-    }
-
-    public function addDocument(DossierDocument $document): self
-    {
-        if (!$this->documents->contains($document)) {
-            $this->documents->add($document);
-            $document->setDossier($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDocument(DossierDocument $document): self
-    {
-        if ($this->documents->removeElement($document)) {
-            if ($document->getDossier() === $this) {
-                $document->setDossier(null);
-            }
-        }
-
-        return $this;
-    }
-    // Gestion des badges
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_VALIDATED = 'validated';
-    public const STATUS_REJECTED = 'rejected';
 
     public function getStatusLabel(): string
     {
         return match ($this->status) {
-            self::STATUS_DRAFT => 'Brouillon',
-            self::STATUS_IN_PROGRESS => 'En cours',
-            self::STATUS_VALIDATED => 'Validé',
-            self::STATUS_REJECTED => 'Refusé',
+            'draft' => 'Brouillon',
+            'vehicle_selected' => 'Véhicule sélectionné',
+            'documents_pending' => 'Documents à fournir',
+            'documents_review' => 'Documents en validation',
+            'financing_review' => 'Financement en cours',
+            'completed' => 'Terminé',
+            'cancelled' => 'Annulé',
             default => $this->status,
         };
     }
@@ -292,10 +217,13 @@ class Dossier
     public function getStatusBadge(): string
     {
         return match ($this->status) {
-            self::STATUS_DRAFT => 'secondary',
-            self::STATUS_IN_PROGRESS => 'warning',
-            self::STATUS_VALIDATED => 'success',
-            self::STATUS_REJECTED => 'danger',
+            'draft' => 'secondary',
+            'vehicle_selected' => 'info',
+            'documents_pending' => 'warning',
+            'documents_review' => 'warning',
+            'financing_review' => 'primary',
+            'completed' => 'success',
+            'cancelled' => 'danger',
             default => 'secondary',
         };
     }

@@ -54,8 +54,8 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
                 [FinancingType::LOA, FinancingType::LLD],
                 true
             )
-                ? DossierType::FINANCING
-                : DossierType::PURCHASE;
+                ? DossierType::RENTAL
+                : DossierType::SALE;
 
             $dossier = new Dossier();
 

@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Customer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -33,6 +34,17 @@ class CustomerFormType extends AbstractType
                 'attr' => [
                     'readonly' => true
                 ]
+            ])
+
+            ->add('zipcode', TextType::class, ['label' => 'Code postal'])
+            ->add('city', TextType::class, ['label' => 'Ville'])
+            ->add('address', TextType::class, ['label' => 'Adresse'])
+            ->add('addressDetails', TextType::class, ['label' => 'Détails adresse'])
+            ->add('createdAt',DateTimeType::class,[
+                'label'=>'Créé le','disabled'=>true
+            ])
+            ->add('updatedAt',DateTimeType::class,[
+                'label'=>'Modifié le','disabled'=>true
             ]);
     }
 
