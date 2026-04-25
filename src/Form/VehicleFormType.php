@@ -70,10 +70,14 @@ class VehicleFormType extends AbstractType
             ])
 
             ->add('firstRegistrationDate', DateTimeType::class, [
+<<<<<<< HEAD:src/Form/VehicleFormType.php
                 'label' => 'Année',
                 'attr' => [
                     'class' => 'text-right',
                 ],
+=======
+                'label' => 'Date 1ère Immatriculation'
+>>>>>>> feature/vehicle_search_autocomplete:src/Form/VehicleType.php
             ])
 
             ->add('mileage', IntegerType::class, [
@@ -113,6 +117,16 @@ class VehicleFormType extends AbstractType
                 'choice_label' => 'name',
                 'label' => 'Fournisseur'
             ])
+<<<<<<< HEAD:src/Form/VehicleFormType.php
+=======
+
+            ->add('features', EntityType::class, [
+                'class' => Feature::class,
+                'choice_label' => 'label',
+                'multiple' => true,
+                'label' => 'Options'
+            ])
+>>>>>>> feature/vehicle_search_autocomplete:src/Form/VehicleType.php
         ;
     }
 

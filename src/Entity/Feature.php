@@ -16,15 +16,15 @@ class Feature
     #[ORM\Column]
     private ?int $id = null;
 
-    // 🔥 CODE TECHNIQUE (stable, utilisé partout)
+    // CODE TECHNIQUE (stable, utilisé partout)
     #[ORM\Column(length: 100, unique: true)]
     private ?string $code = null;
 
-    // 🖥️ LABEL AFFICHÉ
+    // LABEL AFFICHÉ
     #[ORM\Column(length: 100)]
     private ?string $label = null;
 
-    // 📂 CATÉGORIE
+    // CATÉGORIE
     #[ORM\ManyToOne(inversedBy: 'features')]
     #[ORM\JoinColumn(nullable: false)]
     private ?FeatureCategory $category = null;
