@@ -53,23 +53,36 @@ class VehicleController extends AbstractController
     #[Route('/ajax/search', name: 'vehicles_ajax_search', methods: ['GET'])]
     public function ajaxSearch(Request $request, VehicleRepository $repo): JsonResponse
     {
-        $q = $request->query->get('q', '');
+        $q = trim((string) $request->query->get('q', ''));
 
-        // Repo personnalisé pour chercher sur marque, modèle, immatriculation
-        $vehicles = $repo->searchByTerm($q); // retourne un tableau de Vehicles
+        if (mb_strlen($q) < 2) {
+            return $this->json(['items' => []]);
+        }
 
-        // Transformer les résultats pour le JS
+        $vehicles = $repo->searchByTerm($q);
+
         $items = array_map(function (Vehicle $v) {
+
+            $vm = $v->getVehicleModel();
+            $brand = $vm?->getBrand()?->getName() ?? '';
+            $model = $vm?->getModel()?->getName() ?? '';
+
             return [
                 'id' => $v->getId(),
-                'label' => sprintf('%s - %s %s', $v->getRegistrationNumber(), $v->getVehicleModel()->getBrand()->getName(), $v->getVehicleModel()->getModel()->getName()),
+                'label' => trim(sprintf(
+                    '%s - %s %s',
+                    $v->getRegistrationNumber(),
+                    $brand,
+                    $model
+                )),
                 'url' => $this->generateUrl('vehicle_show', ['id' => $v->getId()])
             ];
         }, $vehicles);
 
-        return $this->json(['items' => $items]);
+        return $this->json([
+            'items' => $items
+        ]);
     }
-
     // --- CRUD classiques ---
     #[Route('/new', name: 'vehicle_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em): Response

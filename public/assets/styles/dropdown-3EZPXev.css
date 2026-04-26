@@ -13,7 +13,7 @@
 /* Dropdown */
 .dropdown-wrapper {
   position: relative;
-
+  border: none;
 }
 .dropdown-results {
   position: absolute;

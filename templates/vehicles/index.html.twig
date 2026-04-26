@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Catalogue véhicules
+{% block title %}M-Motors : Catalogue véhicules
 {% endblock %}
 
 {% block body %}
@@ -26,7 +26,7 @@
 	{% include "Components/Forms/_fetch_form.html.twig" with {
     action: path('vehicles_ajax_search'),
     name: 'q',
-    placeholder: 'Rechercher un véhicule...',
+    placeholder: 'Rechercher un véhicule par marque ou modèle ...',
     resultDiv: 'autocomplete-results',          # dropdown spécifique
     cardsContainer: 'vehicles-search-results',  # gallery principale
     autocomplete: true,

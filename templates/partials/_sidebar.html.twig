@@ -79,15 +79,15 @@
 		{% endif %}
 
 		{# ========================= DOSSIERS ========================= #}
-		<details open>
-			<summary>
-				<i class="fa-solid fa-file-lines"></i>
-				Dossiers
-			</summary>
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+			<details open>
+				<summary>
+					<i class="fa-solid fa-file-lines"></i>
+					Dossiers
+				</summary>
 
-			<ul class="items-list">
+				<ul class="items-list">
 
-				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 					<li>
 						<a href="{{ path('admin_dossier_list') }}">
 							<i class="fa-solid fa-list"></i>

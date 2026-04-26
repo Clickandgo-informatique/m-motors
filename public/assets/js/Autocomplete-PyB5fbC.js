@@ -1,25 +1,13 @@
-/**
- * Debounce SANS casser le contexte this
- */
 function debounce(fn, delay = 300) {
   let timer;
-
-  return function(...args) {
+  return (...args) => {
     clearTimeout(timer);
-
-    timer = setTimeout(() => {
-      fn.apply(this, args);
-    }, delay);
+    timer = setTimeout(() => fn.apply(null, args), delay);
   };
 }
 
 export default class Autocomplete {
   constructor(input) {
-    if (!(input instanceof HTMLInputElement)) {
-      console.error("Autocomplete: input invalide");
-      return;
-    }
-
     this.input = input;
     this.url = input.dataset.url;
     this.itemUrlTemplate = input.dataset.itemUrl || "";
@@ -36,24 +24,16 @@ export default class Autocomplete {
   init() {
     this.dropdown = document.createElement("div");
     this.dropdown.className = "dropdown-results";
-
     this.dropdown.style.position = "absolute";
     this.dropdown.style.zIndex = "1000";
     this.dropdown.style.display = "none";
 
-    const parent = this.input.parentNode;
-
-    if (parent) {
-      const style = getComputedStyle(parent);
-      if (style.position === "static") {
-        parent.style.position = "relative";
-      }
-      parent.appendChild(this.dropdown);
-    }
+    this.input.parentNode.style.position = "relative";
+    this.input.parentNode.appendChild(this.dropdown);
 
     this.input.addEventListener(
       "input",
-      debounce(this.onInput.bind(this), 300)
+      debounce(() => this.onInput(), 300)
     );
 
     document.addEventListener("click", e => {
@@ -63,11 +43,8 @@ export default class Autocomplete {
     });
   }
 
-  /**
-   * Input handler sécurisé
-   */
   onInput() {
-    const value = (this.input?.value || "").trim();
+    const value = this.input.value.trim();
 
     if (value.length < 2) {
       this.clear();
@@ -78,9 +55,6 @@ export default class Autocomplete {
     this.fetch(value);
   }
 
-  /**
-   * Fetch sécurisé anti-race condition
-   */
   async fetch(query) {
     this.requestId++;
 
@@ -108,14 +82,11 @@ export default class Autocomplete {
       this.render(items, query);
     } catch (e) {
       if (e.name !== "AbortError") {
-        console.error("Autocomplete error:", e);
+        console.error(e);
       }
     }
   }
 
-  /**
-   * Render stable + highlight propre
-   */
   render(items, query) {
     this.clear();
 
@@ -130,13 +101,13 @@ export default class Autocomplete {
 
     items.forEach(item => {
       const el = document.createElement("a");
-
       el.className = "dropdown-item";
 
       const href = this.itemUrlTemplate.replace("ID_PLACEHOLDER", item.id);
       el.href = href;
 
-      el.appendChild(this.buildHighlightedLabel(item.label, query));
+      // 🔥 highlight PROPRE (sans innerHTML dangereux)
+      el.appendChild(this.highlightText(item.label, query));
 
       el.addEventListener("click", e => {
         e.preventDefault();
@@ -151,10 +122,7 @@ export default class Autocomplete {
     this.open();
   }
 
-  /**
-   * Highlight propre sans innerHTML
-   */
-  buildHighlightedLabel(text, query) {
+  highlightText(text, query) {
     const span = document.createElement("span");
 
     if (!query) {
@@ -167,12 +135,7 @@ export default class Autocomplete {
     let lastIndex = 0;
     const matches = [...text.matchAll(regex)];
 
-    if (!matches.length) {
-      span.textContent = text;
-      return span;
-    }
-
-    for (const match of matches) {
+    matches.forEach(match => {
       const index = match.index;
 
       span.appendChild(document.createTextNode(text.slice(lastIndex, index)));
@@ -182,16 +145,13 @@ export default class Autocomplete {
       span.appendChild(mark);
 
       lastIndex = index + match[0].length;
-    }
+    });
 
     span.appendChild(document.createTextNode(text.slice(lastIndex)));
 
     return span;
   }
 
-  /**
-   * Sélection item
-   */
   select(item) {
     this.input.value = item.label;
 

@@ -137,15 +137,32 @@ class VehicleRepository extends ServiceEntityRepository
     public function searchForAutocomplete(
         array $filters = [],
         ?string $searchTerm = null,
-        ?int $limit = null,
+        ?int $limit = 10,
         ?int $offset = null
     ): array {
         $qb = $this->getFilteredQueryBuilder($filters, $searchTerm);
 
-        if ($limit !== null) $qb->setMaxResults($limit);
-        if ($offset !== null) $qb->setFirstResult($offset);
+        if ($limit !== null) {
+            $qb->setMaxResults($limit);
+        }
 
-        return $qb->getQuery()->getResult();
+        if ($offset !== null) {
+            $qb->setFirstResult($offset);
+        }
+
+        $vehicles = $qb->getQuery()->getResult();
+
+        // IMPORTANT : transformation en tableau simple
+        return array_map(function (Vehicle $v) {
+            $vm = $v->getVehicleModel();
+
+            return [
+                'id' => $v->getId(),
+                'label' => ($v->getRegistrationNumber() ?? '') . ' ' .
+                    ($vm?->getBrand()?->getName() ?? '') . ' ' .
+                    ($vm?->getModel()?->getName() ?? ''),
+            ];
+        }, $vehicles);
     }
 
     /**
