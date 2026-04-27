@@ -20,67 +20,47 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-        // =========================================================
-        // CHECK REFERENCES (STRICT MODE DOCTRINE)
-        // =========================================================
-        if (
-            !$this->hasReference('customer_1', Customer::class) ||
-            !$this->hasReference('vehicle_1', Vehicle::class)
-        ) {
-            throw new \RuntimeException('Customers ou Vehicles non chargés correctement.');
-        }
-
-        // =========================================================
-        // DOSSIERS
-        // =========================================================
         for ($i = 0; $i < 30; $i++) {
 
-            /** @var Customer $customer */
+            // =========================================================
+            // RÉFÉRENCES STABLES
+            // =========================================================
             $customer = $this->getReference(
                 'customer_' . random_int(1, 50),
                 Customer::class
             );
 
-            /** @var Vehicle $vehicle */
             $vehicle = $this->getReference(
                 'vehicle_' . random_int(1, 50),
                 Vehicle::class
             );
 
+            // =========================================================
+            // FINANCING TYPE
+            // =========================================================
             $financingType = FinancingType::cases()[array_rand(FinancingType::cases())];
 
             $type = in_array(
                 $financingType,
                 [FinancingType::LOA, FinancingType::LLD],
                 true
-            )
-                ? DossierType::RENTAL
-                : DossierType::SALE;
+            ) ? DossierType::RENTAL : DossierType::SALE;
 
+            // =========================================================
+            // DOSSIER
+            // =========================================================
             $dossier = new Dossier();
 
-            // =====================================================
-            // RELATIONS
-            // =====================================================
             $dossier->setCustomer($customer);
             $dossier->setVehicle($vehicle);
             $dossier->setType($type);
 
-            // =====================================================
-            // STATUS
-            // =====================================================
             $dossier->setStatus('draft');
 
-            // =====================================================
-            // CODE
-            // =====================================================
             $dossier->setDossierCode(
                 $this->codeGenerator->generateDossierCode($customer)
             );
 
-            // =====================================================
-            // FINANCING
-            // =====================================================
             $dossier->setFinancingType($financingType->value);
 
             $manager->persist($dossier);

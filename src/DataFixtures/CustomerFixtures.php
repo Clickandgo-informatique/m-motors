@@ -25,8 +25,6 @@ class CustomerFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $batchSize = 20;
-        $users = [];
-        $customers = [];
 
         for ($i = 1; $i <= 50; $i++) {
 
@@ -52,7 +50,6 @@ class CustomerFixtures extends Fixture
             $user->setEmail($email);
             $user->setRoles(['ROLE_CUSTOMER']);
 
-            // remplacement de random_bytes (plus rapide)
             $plainPassword = sprintf(
                 '%s-%s',
                 $customer->getCustomerCode(),
@@ -68,20 +65,14 @@ class CustomerFixtures extends Fixture
             $manager->persist($user);
             $manager->persist($customer);
 
+            // IMPORTANT : références stables pour autres fixtures
             $this->addReference('customer_' . $i, $customer);
 
-            // flush batch optimisé
             if ($i % $batchSize === 0) {
-                $manager->flush();
-                $manager->clear(); //gain mémoire + perf Doctrine
+                $manager->flush();                
             }
         }
 
         $manager->flush();
-        $manager->clear();
-    }
-    public static function getGroups(): array
-    {
-        return ['CustomerFixtures'];
     }
 }

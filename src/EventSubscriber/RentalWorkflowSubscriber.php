@@ -32,11 +32,10 @@ class RentalWorkflowSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $workflow = $this->workflowRegistry->get($vehicle, 'vehicle_state_machine');
+        $workflow = $this->workflowRegistry->get($vehicle, 'vehicle');
 
         if ($workflow->can($vehicle, 'vehicle_rent')) {
-            $workflow->apply($vehicle, 'vehicle_rent');
-            $this->em->flush();
+            $workflow->apply($vehicle, 'vehicle_rent');            
         }
     }
 
@@ -59,11 +58,10 @@ class RentalWorkflowSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $workflow = $this->workflowRegistry->get($vehicle, 'vehicle_state_machine');
+        $workflow = $this->workflowRegistry->get($vehicle, 'vehicle');
 
         if ($workflow->can($vehicle, 'vehicle_return')) {
-            $workflow->apply($vehicle, 'vehicle_return');
-            $this->em->flush();
+            $workflow->apply($vehicle, 'vehicle_return');            
         }
     }
 }

@@ -1,0 +1,74 @@
+@startuml
+
+title Workflow Dossier + Cycle de vie Vehicle
+
+skinparam state {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+}
+
+' =========================================================
+' DOSSIER WORKFLOW
+' =========================================================
+
+state "Dossier Workflow" as Dossier {
+
+  [*] --> draft
+
+  draft --> vehicle_selected : select_vehicle
+  vehicle_selected --> documents_pending : request_documents
+  documents_pending --> documents_review : submit_documents
+  documents_review --> financing_review : validate_documents
+  documents_review --> documents_pending : reject_documents
+  financing_review --> completed : approve_financing
+  financing_review --> documents_review : reject_financing
+
+  draft --> cancelled : cancel
+  vehicle_selected --> cancelled : cancel
+  documents_pending --> cancelled : cancel
+  documents_review --> cancelled : cancel
+  financing_review --> cancelled : cancel
+}
+
+' =========================================================
+' VEHICLE LIFECYCLE
+' =========================================================
+
+state "Vehicle Lifecycle" as Vehicle {
+
+  [*] --> AVAILABLE
+
+  AVAILABLE --> RESERVED : select_vehicle
+  RESERVED --> SOLD : approve_financing (SALE)
+  RESERVED --> RENTED : approve_financing (RENTAL)
+
+  RESERVED --> AVAILABLE : cancel
+  SOLD --> [*]
+  RENTED --> [*]
+}
+
+' =========================================================
+' SYNCHRONISATION LOGIQUE
+' =========================================================
+
+note right of RESERVED
+  Réservation liée au dossier
+  (select_vehicle)
+end note
+
+note right of SOLD
+  Vente finale du véhicule
+  (dossier SALE)
+end note
+
+note right of RENTED
+  Location active du véhicule
+  (dossier RENTAL)
+end note
+
+note right of AVAILABLE
+  Retour en stock après annulation
+end note
+
+@enduml

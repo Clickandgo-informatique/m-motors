@@ -3,34 +3,93 @@
 namespace App\EventSubscriber;
 
 use App\Entity\Dossier;
-use App\Enum\DossierStatus;
+use App\Enum\DossierType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
+use Symfony\Component\Workflow\Registry;
 
 class DossierWorkflowSubscriber implements EventSubscriberInterface
 {
+    public function __construct(
+        private EntityManagerInterface $em,
+        private Registry $workflowRegistry
+    ) {}
+
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.dossier.completed.complete' => 'onCompleted',
-            'workflow.dossier.completed.cancel_from_draft' => 'onCancelled',
-            'workflow.dossier.completed.cancel_from_progress' => 'onCancelled',
+            'workflow.dossier.transition' => 'onTransition',
         ];
     }
 
-    public function onCompleted(Event $event): void
+    public function onTransition(Event $event): void
     {
-        /** @var Dossier $dossier */
         $dossier = $event->getSubject();
 
-        $dossier->setCompletedAt(new \DateTimeImmutable());
-    }
+        if (!$dossier instanceof Dossier) {
+            return;
+        }
 
-    public function onCancelled(Event $event): void
-    {
-        /** @var Dossier $dossier */
-        $dossier = $event->getSubject();
+        $vehicle = $dossier->getVehicle();
 
-        $dossier->setCancelledAt(new \DateTimeImmutable());
+        if (!$vehicle) {
+            return;
+        }
+
+        /**
+         * IMPORTANT :
+         * on force le bon workflow explicite
+         */
+        $workflow = $this->workflowRegistry->get($vehicle, 'vehicle_state_machine');
+
+        $transition = $event->getTransition()->getName();
+
+        // =========================================================
+        // SELECT VEHICLE
+        // =========================================================
+        if ($transition === 'select_vehicle') {
+
+            // available -> reserved
+            if ($workflow->can($vehicle, 'reserve')) {
+                $workflow->apply($vehicle, 'reserve');
+            }
+
+            return;
+        }
+
+        // =========================================================
+        // APPROVE FINANCING
+        // =========================================================
+        if ($transition === 'approve_financing') {
+
+            $targetTransition = $dossier->getType() === DossierType::SALE
+                ? 'vehicle_sell'
+                : 'vehicle_rent';
+
+            // sécurité : workflow guard
+            if ($workflow->can($vehicle, $targetTransition)) {
+                $workflow->apply($vehicle, $targetTransition);
+            }
+
+            return;
+        }
+
+        // =========================================================
+        // CANCEL DOSSIER
+        // =========================================================
+        if ($transition === 'cancel') {
+
+            // réservé → available ou rented → available selon état réel
+            if ($workflow->can($vehicle, 'cancel_reservation')) {
+                $workflow->apply($vehicle, 'cancel_reservation');
+            } elseif ($workflow->can($vehicle, 'vehicle_return')) {
+                $workflow->apply($vehicle, 'vehicle_return');
+            }
+
+            return;
+        }
+
+        $this->em->flush();
     }
 }

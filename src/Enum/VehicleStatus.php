@@ -174,7 +174,7 @@ enum VehicleStatus: string
     {
         return match ($this) {
             self::AVAILABLE => 'success',
-            self::RESERVED => 'warning',
+            self::RESERVED => 'warning text-dark',
             self::RENTED => 'info',
             self::SOLD => 'dark',
             self::ORDERED => 'primary',

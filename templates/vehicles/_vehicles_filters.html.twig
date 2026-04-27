@@ -1,6 +1,66 @@
 {# templates/vehicles/_vehicles_filters.html.twig #}
-<form
-	id="filters-form" data-fetch-form data-fetch-url="{{ path('vehicles_ajax_search') }}">
+<form id="filters-form" data-fetch-form data-fetch-url="{{ path('vehicles_ajax_search') }}">
+
+	{# ========================================================= #}
+	{# STATUT VÉHICULE (STOCK) #}
+	{# ========================================================= #}
+
+		<details open> <summary>Disponibilité</summary>
+
+		<ul class="status-list">
+
+			<li>
+				<input type="checkbox" name="filters[status][]" id="status-available" value="available">
+				<label for="status-available">Disponible</label>
+			</li>
+
+			<li>
+				<input type="checkbox" name="filters[status][]" id="status-ordered" value="ordered">
+				<label for="status-ordered">Commande</label>
+			</li>
+
+			<li>
+				<input type="checkbox" name="filters[status][]" id="status-rented" value="rented">
+				<label for="status-rented">Location</label>
+			</li>
+
+			<li>
+				<input type="checkbox" name="filters[status][]" id="status-sold" value="sold">
+				<label for="status-sold">Vendu</label>
+			</li>
+
+		</ul>
+	</details>
+
+	{# ========================================================= #}
+	{# TYPE COMMERCIAL (DOSSIER) #}
+	{# ========================================================= #}
+
+		<details><summary>Type de financement
+		</summary>
+
+			<ul class="type-list"> <li>
+				<input type="checkbox" name="filters[type][]" id="type-sale" value="sale">
+				<label for="type-sale">Vente</label>
+			</li>
+
+			<li>
+				<input type="checkbox" name="filters[type][]" id="type-rental" value="rental">
+				<label for="type-rental">Location</label>
+			</li>
+
+			<li>
+				<input type="checkbox" name="filters[financing][]" id="financing-loa" value="loa">
+				<label for="financing-loa">LOA</label>
+			</li>
+
+			<li>
+				<input type="checkbox" name="filters[financing][]" id="financing-lld" value="lld">
+				<label for="financing-lld">LLD</label>
+			</li>
+
+		</ul>
+	</details>
 	{# Marques #}
 	{% if brands|length > 0 %}
 		<details>

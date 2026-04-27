@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Vehicle
 {
     // =========================================================
-    // ID
+    // IDENTIFIANT
     // =========================================================
 
     #[ORM\Id]
@@ -38,7 +38,7 @@ class Vehicle
     }
 
     // =========================================================
-    // STATUS
+    // STATUS (GÉRÉ UNIQUEMENT PAR WORKFLOW)
     // =========================================================
 
     #[ORM\Column(enumType: VehicleStatus::class)]
@@ -49,9 +49,24 @@ class Vehicle
         return $this->status;
     }
 
-    public function setStatus(VehicleStatus $status): self
+    /**
+     * Interdit : modification directe du statut.
+     * Le statut doit être modifié uniquement via Symfony Workflow.
+     */
+    public function setStatus(VehicleStatus $status, bool $force = false): self
     {
+        if (!$force && !$this->status->canTransitionTo($status)) {
+            throw new \LogicException(
+                sprintf(
+                    'Transition impossible de %s vers %s',
+                    $this->status->value,
+                    $status->value
+                )
+            );
+        }
+
         $this->status = $status;
+
         return $this;
     }
 
@@ -76,8 +91,7 @@ class Vehicle
         return $this;
     }
 
-    #[ORM\Column(length: 15, unique: true)]
-    #[Assert\NotBlank]
+    #[ORM\Column(length: 15, unique: true, nullable: true)]
     #[Assert\Regex(pattern: '/^([A-Z]{2}-\d{3}-[A-Z]{2}|\d{1,4}\s?[A-Z]{1,3}\s?\d{1,2})$/i')]
     private ?string $registrationNumber = null;
 
@@ -86,13 +100,32 @@ class Vehicle
         return $this->registrationNumber;
     }
 
-    public function setRegistrationNumber(string $registrationNumber): self
+    public function setRegistrationNumber(?string $registrationNumber): self
     {
-        $this->registrationNumber = strtoupper(trim($registrationNumber));
+        $this->registrationNumber = $registrationNumber
+            ? strtoupper(trim($registrationNumber))
+            : null;
+
         return $this;
     }
+
+    // =========================================================
+    // DATES
+    // =========================================================
+
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTime $firstRegistrationDate = null;
+
+    public function getFirstRegistrationDate(): ?\DateTime
+    {
+        return $this->firstRegistrationDate;
+    }
+
+    public function setFirstRegistrationDate(?\DateTime $date): self
+    {
+        $this->firstRegistrationDate = $date;
+        return $this;
+    }
 
     // =========================================================
     // TECHNIQUE
@@ -236,12 +269,33 @@ class Vehicle
     }
 
     // =========================================================
-    // GETTERS COLLECTIONS 
+    // COLLECTION GETTERS
     // =========================================================
 
     public function getDossiers(): Collection
     {
         return $this->dossiers;
+    }
+
+    public function addDossier(Dossier $dossier): self
+    {
+        if (!$this->dossiers->contains($dossier)) {
+            $this->dossiers->add($dossier);
+            $dossier->setVehicle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDossier(Dossier $dossier): self
+    {
+        if ($this->dossiers->removeElement($dossier)) {
+            if ($dossier->getVehicle() === $this) {
+                $dossier->setVehicle(null);
+            }
+        }
+
+        return $this;
     }
 
     public function getMaintenances(): Collection
@@ -264,6 +318,11 @@ class Vehicle
         return $this->favorites;
     }
 
+    public function getFeatures(): Collection
+    {
+        return $this->features;
+    }
+
     public function addFeature(Feature $feature): self
     {
         if (!$this->features->contains($feature)) {
@@ -272,73 +331,11 @@ class Vehicle
 
         return $this;
     }
-    public function getFeatures(): Collection
-    {
-        return $this->features;
-    }
 
     public function removeFeature(Feature $feature): self
     {
         $this->features->removeElement($feature);
-
         return $this;
-    }
-    public function getFirstRegistrationDate(): ?\DateTime
-    {
-        return $this->firstRegistrationDate;
-    }
-
-    public function setFirstRegistrationDate(?\DateTime $date): static
-    {
-        $this->firstRegistrationDate = $date;
-        return $this;
-    }
-
-    // =========================================================
-    // ADD / REMOVE
-    // =========================================================
-
-    public function addDossier(Dossier $dossier): self
-    {
-        if (!$this->dossiers->contains($dossier)) {
-            $this->dossiers->add($dossier);
-            $dossier->setVehicle($this);
-        }
-        return $this;
-    }
-
-    public function removeDossier(Dossier $dossier): self
-    {
-        if ($this->dossiers->removeElement($dossier)) {
-            if ($dossier->getVehicle() === $this) {
-                $dossier->setVehicle(null);
-            }
-        }
-        return $this;
-    }
-
-    // =========================================================
-    // MÉTIER (COMPATIBLE ENUM EXACT)
-    // =========================================================
-
-    public function reserve(): void
-    {
-        $this->status = VehicleStatus::RESERVED;
-    }
-
-    public function markAsSold(): void
-    {
-        $this->status = VehicleStatus::SOLD;
-    }
-
-    public function markAsRented(): void
-    {
-        $this->status = VehicleStatus::RENTED;
-    }
-
-    public function makeAvailable(): void
-    {
-        $this->status = VehicleStatus::AVAILABLE;
     }
 
     // =========================================================

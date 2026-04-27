@@ -10,7 +10,6 @@ use App\Form\DossierFormType;
 use App\Repository\DossierRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,6 +50,14 @@ class DossierController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        // =========================================================
+        // 🔒 CHECK DISPONIBILITÉ VÉHICULE
+        // =========================================================
+        if ($vehicle->isLocked()) {
+            $this->addFlash('danger', 'Ce véhicule n’est plus disponible.');
+            return $this->redirectToRoute('vehicles');
+        }
+
         $dossierType = DossierType::tryFrom($type);
 
         if (!$dossierType) {
@@ -69,7 +76,6 @@ class DossierController extends AbstractController
             'id' => $dossier->getId()
         ]);
     }
-
     #[Route('/my/list', name: 'dossier_my_list', methods: ['GET'])]
     public function myDossiers(DossierRepository $repository): Response
     {

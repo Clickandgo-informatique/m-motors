@@ -1,26 +1,36 @@
 framework:
   workflows:
     vehicle_state_machine:
-      type: "state_machine"
+      type: state_machine
 
       supports:
         - App\Entity\Vehicle
 
       marking_store:
-        type: "method"
-        property: "status"
+        type: method
+        property: status
 
       initial_marking: available
 
       places:
         - available
+        - reserved
         - rented
         - sold
+        - ordered
         - maintenance
 
       transitions:
-        vehicle_rent:
+        reserve:
           from: available
+          to: reserved
+
+        cancel_reservation:
+          from: reserved
+          to: available
+
+        vehicle_rent:
+          from: reserved
           to: rented
 
         vehicle_return:
@@ -30,6 +40,10 @@ framework:
         vehicle_sell:
           from: available
           to: sold
+
+        vehicle_order:
+          from: available
+          to: ordered
 
         vehicle_send_to_maintenance:
           from: available
