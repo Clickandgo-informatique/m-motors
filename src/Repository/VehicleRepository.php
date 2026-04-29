@@ -2,10 +2,11 @@
 
 namespace App\Repository;
 
-use App\Entity\Vehicle;
-use App\Entity\Brand;
 use App\Entity\BodyType;
+use App\Entity\Brand;
 use App\Entity\FuelType;
+use App\Entity\Vehicle;
+use App\Enum\VehicleStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,7 +31,7 @@ class VehicleRepository extends ServiceEntityRepository
             ->leftJoin('vm.model', 'm')
             ->leftJoin('vm.brand', 'b')
             ->addSelect('vm', 'm', 'b')
-            ->orderBy('vm.brand', 'ASC');
+            ->orderBy('b.name', 'ASC');
     }
 
     /**
@@ -47,7 +48,14 @@ class VehicleRepository extends ServiceEntityRepository
             ->leftJoin('vm.model', 'm')
             ->leftJoin('vm.bodyType', 'bt')
             ->leftJoin('vm.fuelType', 'ft')
-            ->addSelect('vm', 'b', 'm', 'bt', 'ft');
+            ->addSelect('vm', 'b', 'm', 'bt', 'ft')
+            // 🔥 Filtrage métier : uniquement véhicules visibles
+            ->andWhere('v.status IN (:visibleStatuses)')
+            ->setParameter('visibleStatuses', [
+                VehicleStatus::AVAILABLE_FOR_SALE,
+                VehicleStatus::AVAILABLE_FOR_RENT,
+                VehicleStatus::RESERVED
+            ]);
 
         // Normalisation des filtres
         $normalize = function ($value) {
@@ -106,6 +114,7 @@ class VehicleRepository extends ServiceEntityRepository
                 ->setParameter('yearMax', new \DateTime($filters['yearMax'] . '-12-31'));
         }
 
+        // Recherche texte
         if (!empty($searchTerm)) {
             $searchTermParam = '%' . mb_strtolower($searchTerm) . '%';
 
@@ -142,17 +151,17 @@ class VehicleRepository extends ServiceEntityRepository
     ): array {
         $qb = $this->getFilteredQueryBuilder($filters, $searchTerm);
 
-        // 🔥 amélioration UX autocomplete
+        // Amélioration UX autocomplete
         if (!empty($searchTerm)) {
             $search = '%' . mb_strtolower(trim($searchTerm)) . '%';
 
             $qb->addOrderBy(
                 "CASE 
-                WHEN LOWER(CONCAT(b.name, ' ', m.name)) LIKE :search THEN 0
-                WHEN LOWER(b.name) LIKE :search THEN 1
-                WHEN LOWER(m.name) LIKE :search THEN 2
-                ELSE 3
-            END",
+                    WHEN LOWER(CONCAT(b.name, ' ', m.name)) LIKE :search THEN 0
+                    WHEN LOWER(b.name) LIKE :search THEN 1
+                    WHEN LOWER(m.name) LIKE :search THEN 2
+                    ELSE 3
+                END",
                 'ASC'
             )->setParameter('search', $search);
         }
@@ -175,85 +184,58 @@ class VehicleRepository extends ServiceEntityRepository
                 'label' => trim(
                     ($vm?->getBrand()?->getName() ?? '') . ' ' .
                         ($vm?->getModel()?->getName() ?? '') . ' ' .
-                        ($vm?->getBodyType() ?? '')
+                        ($vm?->getBodyType()?->getName() ?? '')
                 )
             ];
         }, $vehicles);
     }
 
     /**
-     * Marques utilisées
+     * Marques utilisées (optimisé, sans N+1)
      */
     public function getUsedBrands(): array
     {
-        $em = $this->getEntityManager();
-        $results = $em->createQueryBuilder()
-            ->select('b.id, b.name')
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('DISTINCT b')
             ->from(Vehicle::class, 'v')
             ->innerJoin('v.vehicleModel', 'vm')
             ->innerJoin('vm.brand', 'b')
-            ->groupBy('b.id, b.name')
             ->orderBy('b.name', 'ASC')
             ->getQuery()
-            ->getArrayResult();
-
-        $brands = [];
-        foreach ($results as $row) {
-            $brand = $em->getRepository(Brand::class)->find($row['id']);
-            if ($brand) $brands[] = $brand;
-        }
-
-        return $brands;
+            ->getResult();
     }
 
     /**
-     * Carrosseries utilisées
+     * Carrosseries utilisées (optimisé)
      */
     public function getUsedBodyTypes(): array
     {
-        $em = $this->getEntityManager();
-        $results = $em->createQueryBuilder()
-            ->select('bt.id, bt.name')
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('DISTINCT bt')
             ->from(Vehicle::class, 'v')
             ->innerJoin('v.vehicleModel', 'vm')
             ->innerJoin('vm.bodyType', 'bt')
-            ->groupBy('bt.id, bt.name')
             ->orderBy('bt.name', 'ASC')
             ->getQuery()
-            ->getArrayResult();
-
-        $bodyTypes = [];
-        foreach ($results as $row) {
-            $bt = $em->getRepository(BodyType::class)->find($row['id']);
-            if ($bt) $bodyTypes[] = $bt;
-        }
-
-        return $bodyTypes;
+            ->getResult();
     }
 
     /**
-     * Carburants utilisés
+     * Carburants utilisés (optimisé)
      */
     public function getUsedFuelTypes(): array
     {
-        $em = $this->getEntityManager();
-        $results = $em->createQueryBuilder()
-            ->select('ft.id, ft.name')
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('DISTINCT ft')
             ->from(Vehicle::class, 'v')
             ->innerJoin('v.vehicleModel', 'vm')
             ->innerJoin('vm.fuelType', 'ft')
-            ->groupBy('ft.id, ft.name')
             ->orderBy('ft.name', 'ASC')
             ->getQuery()
-            ->getArrayResult();
-
-        $fuelTypes = [];
-        foreach ($results as $row) {
-            $ft = $em->getRepository(FuelType::class)->find($row['id']);
-            if ($ft) $fuelTypes[] = $ft;
-        }
-
-        return $fuelTypes;
+            ->getResult();
     }
 
     /**

@@ -9,8 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VehicleModelRepository::class)]
-#[ORM\Index(columns: ['cnit'])]
-#[ORM\Index(columns: ['utac_code'])]
+#[ORM\Table(indexes: [
+    new ORM\Index(columns: ['cnit']),
+    new ORM\Index(columns: ['utac_code'])
+])]
 class VehicleModel
 {
     #[ORM\Id]
@@ -46,13 +48,13 @@ class VehicleModel
     #[ORM\JoinColumn(nullable: true)]
     private ?Gear $gear = null;
 
-    #[ORM\OneToMany(mappedBy: "vehicleModel", targetEntity: Vehicle::class, orphanRemoval: true)]
-    private Collection $vehicles;
-
     #[ORM\ManyToOne(targetEntity: BodyType::class, inversedBy: 'vehicleModels')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "Le type de carrosserie est obligatoire.")]
     private ?BodyType $bodyType = null;
+
+    #[ORM\OneToMany(mappedBy: "vehicleModel", targetEntity: Vehicle::class, orphanRemoval: true)]
+    private Collection $vehicles;
 
     /*
     |--------------------------------------------------------------------------
@@ -68,35 +70,15 @@ class VehicleModel
     private ?string $euroNorm = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Range(
-        min: 1,
-        max: 2000,
-        notInRangeMessage: "La puissance doit être comprise entre {{ min }} et {{ max }} chevaux."
-    )]
     private ?int $powerHp = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Range(
-        min: 1,
-        max: 100,
-        notInRangeMessage: "La puissance fiscale doit être comprise entre {{ min }} et {{ max }}."
-    )]
     private ?float $powerFiscal = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Range(
-        min: 0,
-        max: 50,
-        notInRangeMessage: "La consommation doit être comprise entre {{ min }} et {{ max }}."
-    )]
     private ?float $consumption = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Range(
-        min: 0,
-        max: 2000,
-        notInRangeMessage: "Le CO2 doit être compris entre {{ min }} et {{ max }}."
-    )]
     private ?int $co2 = null;
 
     /*
@@ -106,43 +88,29 @@ class VehicleModel
     */
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\Length(
-        min: 4,
-        max: 50,
-        minMessage: "CNIT trop court.",
-        maxMessage: "CNIT trop long."
-    )]
-    #[Assert\Regex(
-        pattern: "/^[A-Z0-9]+$/",
-        message: "Le CNIT ne doit contenir que des lettres majuscules et chiffres."
-    )]
     private ?string $cnit = null;
 
-    #[ORM\Column(length: 50, nullable: true, name: "utac_code")]
-    #[Assert\Length(
-        min: 3,
-        max: 50,
-        minMessage: "Code UTAC trop court.",
-        maxMessage: "Code UTAC trop long."
-    )]
-    #[Assert\Regex(
-        pattern: "/^[A-Z0-9\-]+$/",
-        message: "Le code UTAC ne doit contenir que des lettres majuscules, chiffres et tirets."
-    )]
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $utacCode = null;
 
     #[ORM\Column(type: "date", nullable: true)]
     private ?\DateTimeInterface $homologationDate = null;
 
     #[ORM\Column(type: "integer", nullable: true)]
-    #[Assert\PositiveOrZero(message: "La masse minimale doit être positive.")]
-    #[Assert\LessThanOrEqual(propertyPath: "massMax", message: "La masse minimale doit être inférieure ou égale à la masse maximale.")]
     private ?int $massMin = null;
 
     #[ORM\Column(type: "integer", nullable: true)]
-    #[Assert\PositiveOrZero(message: "La masse maximale doit être positive.")]
-    #[Assert\GreaterThanOrEqual(propertyPath: "massMin", message: "La masse maximale doit être supérieure ou égale à la masse minimale.")]
     private ?int $massMax = null;
+
+    /*
+    |--------------------------------------------------------------------------
+    | STOCK (NON PERSISTÉ)
+    |--------------------------------------------------------------------------
+    */
+
+    private ?int $availableStock = null;
+    private ?int $availableForSale = null;
+    private ?int $availableForRent = null;
 
     /*
     |--------------------------------------------------------------------------
@@ -157,11 +125,55 @@ class VehicleModel
 
     /*
     |--------------------------------------------------------------------------
-    | TO STRING
+    | STOCK GETTERS / SETTERS
+    |--------------------------------------------------------------------------
+    */
+
+    public function getAvailableStock(): int
+    {
+        return $this->availableStock ?? 0;
+    }
+
+    public function setAvailableStock(int $stock): self
+    {
+        $this->availableStock = $stock;
+        return $this;
+    }
+
+    public function getAvailableForSale(): int
+    {
+        return $this->availableForSale ?? 0;
+    }
+
+    public function setAvailableForSale(int $stock): self
+    {
+        $this->availableForSale = $stock;
+        return $this;
+    }
+
+    public function getAvailableForRent(): int
+    {
+        return $this->availableForRent ?? 0;
+    }
+
+    public function setAvailableForRent(int $stock): self
+    {
+        $this->availableForRent = $stock;
+        return $this;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | MÉTIER
     |--------------------------------------------------------------------------
     */
 
     public function __toString(): string
+    {
+        return $this->getDisplayName();
+    }
+
+    public function getDisplayName(): string
     {
         return trim(
             ($this->brand?->getName() ?? '') . ' ' .
@@ -172,7 +184,7 @@ class VehicleModel
 
     /*
     |--------------------------------------------------------------------------
-    | GETTERS / SETTERS
+    | GETTERS / SETTERS SIMPLES
     |--------------------------------------------------------------------------
     */
 
@@ -244,12 +256,55 @@ class VehicleModel
     public function setBodyType(?BodyType $bodyType): static
     {
         $this->bodyType = $bodyType;
+        return $this;
+    }
 
-        // Assure la cohérence bidirectionnelle
-        if ($bodyType && !$bodyType->getVehicleModels()->contains($this)) {
-            $bodyType->addVehicleModel($this);
+    /*
+    |--------------------------------------------------------------------------
+    | VEHICLES
+    |--------------------------------------------------------------------------
+    */
+
+    public function getVehicles(): Collection
+    {
+        return $this->vehicles;
+    }
+
+    public function addVehicle(Vehicle $vehicle): static
+    {
+        if (!$this->vehicles->contains($vehicle)) {
+            $this->vehicles->add($vehicle);
+            $vehicle->setVehicleModel($this);
         }
 
+        return $this;
+    }
+
+    public function removeVehicle(Vehicle $vehicle): static
+    {
+        if ($this->vehicles->removeElement($vehicle)) {
+            if ($vehicle->getVehicleModel() === $this) {
+                $vehicle->setVehicleModel(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TECH
+    |--------------------------------------------------------------------------
+    */
+
+    public function getEuroNorm(): ?string
+    {
+        return $this->euroNorm;
+    }
+
+    public function setEuroNorm(?string $euroNorm): static
+    {
+        $this->euroNorm = $euroNorm;
         return $this;
     }
 
@@ -296,6 +351,12 @@ class VehicleModel
         $this->co2 = $co2;
         return $this;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HOMOLOGATION
+    |--------------------------------------------------------------------------
+    */
 
     public function getCnit(): ?string
     {
@@ -349,47 +410,6 @@ class VehicleModel
     public function setMassMax(?int $massMax): static
     {
         $this->massMax = $massMax;
-        return $this;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | RELATION VEHICLES
-    |--------------------------------------------------------------------------
-    */
-
-    public function getVehicles(): Collection
-    {
-        return $this->vehicles;
-    }
-
-    public function addVehicle(Vehicle $vehicle): static
-    {
-        if (!$this->vehicles->contains($vehicle)) {
-            $this->vehicles->add($vehicle);
-            $vehicle->setVehicleModel($this);
-        }
-        return $this;
-    }
-
-    public function removeVehicle(Vehicle $vehicle): static
-    {
-        if ($this->vehicles->removeElement($vehicle)) {
-            if ($vehicle->getVehicleModel() === $this) {
-                $vehicle->setVehicleModel(null);
-            }
-        }
-        return $this;
-    }
-
-    public function getEuroNorm(): ?string
-    {
-        return $this->euroNorm;
-    }
-
-    public function setEuroNorm(?string $euroNorm): static
-    {
-        $this->euroNorm = $euroNorm;
         return $this;
     }
 }

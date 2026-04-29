@@ -38,35 +38,20 @@ class Vehicle
     }
 
     // =========================================================
-    // STATUS (GÉRÉ UNIQUEMENT PAR WORKFLOW)
+    // STATUS (Workflow uniquement)
     // =========================================================
 
     #[ORM\Column(enumType: VehicleStatus::class)]
-    private VehicleStatus $status = VehicleStatus::AVAILABLE;
+    private VehicleStatus $status = VehicleStatus::AVAILABLE_FOR_SALE;
 
     public function getStatus(): VehicleStatus
     {
         return $this->status;
     }
 
-    /**
-     * Interdit : modification directe du statut.
-     * Le statut doit être modifié uniquement via Symfony Workflow.
-     */
-    public function setStatus(VehicleStatus $status, bool $force = false): self
+    public function setStatus(VehicleStatus $status): self
     {
-        if (!$force && !$this->status->canTransitionTo($status)) {
-            throw new \LogicException(
-                sprintf(
-                    'Transition impossible de %s vers %s',
-                    $this->status->value,
-                    $status->value
-                )
-            );
-        }
-
         $this->status = $status;
-
         return $this;
     }
 
@@ -92,7 +77,6 @@ class Vehicle
     }
 
     #[ORM\Column(length: 15, unique: true, nullable: true)]
-    #[Assert\Regex(pattern: '/^([A-Z]{2}-\d{3}-[A-Z]{2}|\d{1,4}\s?[A-Z]{1,3}\s?\d{1,2})$/i')]
     private ?string $registrationNumber = null;
 
     public function getRegistrationNumber(): ?string
@@ -113,15 +97,15 @@ class Vehicle
     // DATES
     // =========================================================
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $firstRegistrationDate = null;
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $firstRegistrationDate = null;
 
-    public function getFirstRegistrationDate(): ?\DateTime
+    public function getFirstRegistrationDate(): ?\DateTimeImmutable
     {
         return $this->firstRegistrationDate;
     }
 
-    public function setFirstRegistrationDate(?\DateTime $date): self
+    public function setFirstRegistrationDate(?\DateTimeImmutable $date): self
     {
         $this->firstRegistrationDate = $date;
         return $this;
@@ -132,7 +116,6 @@ class Vehicle
     // =========================================================
 
     #[ORM\Column(nullable: true)]
-    #[Assert\PositiveOrZero]
     private ?int $mileage = null;
 
     public function getMileage(): ?int
@@ -147,8 +130,6 @@ class Vehicle
     }
 
     #[ORM\Column(type: 'integer')]
-    #[Assert\NotBlank]
-    #[Assert\Positive]
     private ?int $price = null;
 
     public function getPrice(): ?int
@@ -183,58 +164,14 @@ class Vehicle
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?FuelType $fuelType = null;
 
-    public function getFuelType(): ?FuelType
-    {
-        return $this->fuelType;
-    }
-
-    public function setFuelType(?FuelType $fuelType): self
-    {
-        $this->fuelType = $fuelType;
-        return $this;
-    }
-
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Gear $gear = null;
-
-    public function getGear(): ?Gear
-    {
-        return $this->gear;
-    }
-
-    public function setGear(?Gear $gear): self
-    {
-        $this->gear = $gear;
-        return $this;
-    }
 
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Color $color = null;
 
-    public function getColor(): ?Color
-    {
-        return $this->color;
-    }
-
-    public function setColor(?Color $color): self
-    {
-        $this->color = $color;
-        return $this;
-    }
-
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Supplier $supplier = null;
-
-    public function getSupplier(): ?Supplier
-    {
-        return $this->supplier;
-    }
-
-    public function setSupplier(?Supplier $supplier): self
-    {
-        $this->supplier = $supplier;
-        return $this;
-    }
 
     // =========================================================
     // COLLECTIONS
@@ -269,82 +206,17 @@ class Vehicle
     }
 
     // =========================================================
-    // COLLECTION GETTERS
-    // =========================================================
-
-    public function getDossiers(): Collection
-    {
-        return $this->dossiers;
-    }
-
-    public function addDossier(Dossier $dossier): self
-    {
-        if (!$this->dossiers->contains($dossier)) {
-            $this->dossiers->add($dossier);
-            $dossier->setVehicle($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDossier(Dossier $dossier): self
-    {
-        if ($this->dossiers->removeElement($dossier)) {
-            if ($dossier->getVehicle() === $this) {
-                $dossier->setVehicle(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getMaintenances(): Collection
-    {
-        return $this->maintenances;
-    }
-
-    public function getRentals(): Collection
-    {
-        return $this->rentals;
-    }
-
-    public function getSales(): Collection
-    {
-        return $this->sales;
-    }
-
-    public function getFavorites(): Collection
-    {
-        return $this->favorites;
-    }
-
-    public function getFeatures(): Collection
-    {
-        return $this->features;
-    }
-
-    public function addFeature(Feature $feature): self
-    {
-        if (!$this->features->contains($feature)) {
-            $this->features->add($feature);
-        }
-
-        return $this;
-    }
-
-    public function removeFeature(Feature $feature): self
-    {
-        $this->features->removeElement($feature);
-        return $this;
-    }
-
-    // =========================================================
     // HELPERS
     // =========================================================
 
-    public function isAvailable(): bool
+    public function isAvailableForSale(): bool
     {
-        return $this->status === VehicleStatus::AVAILABLE;
+        return $this->status === VehicleStatus::AVAILABLE_FOR_SALE;
+    }
+
+    public function isAvailableForRent(): bool
+    {
+        return $this->status === VehicleStatus::AVAILABLE_FOR_RENT;
     }
 
     public function isLocked(): bool
@@ -352,7 +224,8 @@ class Vehicle
         return in_array($this->status, [
             VehicleStatus::RESERVED,
             VehicleStatus::RENTED,
-            VehicleStatus::SOLD
+            VehicleStatus::SOLD,
+            VehicleStatus::MAINTENANCE
         ], true);
     }
 }

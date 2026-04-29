@@ -3,8 +3,7 @@
 namespace App\Enum;
 
 /**
- * Statuts métier d’un véhicule dans le cycle complet :
- * stock, réservation, exploitation, logistique et sortie définitive.
+ * Statuts métier d’un véhicule dans le cycle complet
  */
 enum VehicleStatus: string
 {
@@ -13,54 +12,43 @@ enum VehicleStatus: string
     // =========================================================
 
     /**
-     * Véhicule disponible dans le catalogue (vente / location possible)
+     * Disponible à la vente
      */
-    case AVAILABLE = 'available';
+    case AVAILABLE_FOR_SALE = 'available_sale';
 
     /**
-     * Véhicule réservé par un dossier client (bloqué temporairement)
+     * Disponible à la location
+     */
+    case AVAILABLE_FOR_RENT = 'available_rent';
+
+    /**
+     * Véhicule réservé
      */
     case RESERVED = 'reserved';
 
-    // =========================================================
-    // EXPLOITATION (UTILISATION DU VÉHICULE)
-    // =========================================================
+        // =========================================================
+        // EXPLOITATION
+        // =========================================================
 
-    /**
-     * Véhicule actuellement en location
-     */
     case RENTED = 'rented';
-
-    /**
-     * Véhicule vendu définitivement
-     */
     case SOLD = 'sold';
 
-    // =========================================================
-    // LOGISTIQUE / FOURNISSEUR
-    // =========================================================
+        // =========================================================
+        // LOGISTIQUE
+        // =========================================================
 
-    /**
-     * Véhicule commandé chez le fournisseur (non encore livré)
-     */
     case ORDERED = 'ordered';
-
-    /**
-     * Véhicule temporairement indisponible (maintenance atelier)
-     */
     case MAINTENANCE = 'maintenance';
 
     // =========================================================
-    // LABELS (AFFICHAGE)
+    // LABELS
     // =========================================================
 
-    /**
-     * Libellé lisible pour l’UI
-     */
     public function label(): string
     {
         return match ($this) {
-            self::AVAILABLE => 'Disponible',
+            self::AVAILABLE_FOR_SALE => 'Disponible (vente)',
+            self::AVAILABLE_FOR_RENT => 'Disponible (location)',
             self::RESERVED => 'Réservé',
             self::RENTED => 'Loué',
             self::SOLD => 'Vendu',
@@ -73,122 +61,116 @@ enum VehicleStatus: string
     // HELPERS MÉTIER
     // =========================================================
 
-    /**
-     * Véhicule disponible pour action commerciale
-     */
     public function isAvailable(): bool
     {
-        return $this === self::AVAILABLE;
+        return in_array($this, [
+            self::AVAILABLE_FOR_SALE,
+            self::AVAILABLE_FOR_RENT
+        ], true);
     }
 
-    /**
-     * Véhicule bloqué par un dossier ou une action client
-     */
+    public function isAvailableForSale(): bool
+    {
+        return $this === self::AVAILABLE_FOR_SALE;
+    }
+
+    public function isAvailableForRent(): bool
+    {
+        return $this === self::AVAILABLE_FOR_RENT;
+    }
+
     public function isReserved(): bool
     {
         return $this === self::RESERVED;
     }
 
-    /**
-     * Véhicule en utilisation (location en cours)
-     */
     public function isInUse(): bool
     {
-        return in_array($this, [
-            self::RENTED
-        ], true);
+        return $this === self::RENTED;
     }
 
-    /**
-     * Véhicule définitivement sorti du stock (vente)
-     */
     public function isFinal(): bool
     {
         return $this === self::SOLD;
     }
 
-    /**
-     * Véhicule indisponible globalement
-     */
     public function isUnavailable(): bool
     {
-        return in_array($this, [
-            self::RESERVED,
-            self::RENTED,
-            self::SOLD,
-            self::ORDERED,
-            self::MAINTENANCE
-        ], true);
+        return !$this->isAvailable();
     }
 
-    /**
-     * Véhicule visible dans le catalogue public
-     */
     public function isVisible(): bool
     {
         return in_array($this, [
-            self::AVAILABLE,
+            self::AVAILABLE_FOR_SALE,
+            self::AVAILABLE_FOR_RENT,
             self::RESERVED
         ], true);
     }
 
     // =========================================================
-    // TRANSITIONS D’ÉTAT
+    // TRANSITIONS
     // =========================================================
 
-    /**
-     * Vérifie si une transition de statut est autorisée
-     */
     public function canTransitionTo(self $target): bool
     {
         return match ($this) {
 
-            self::AVAILABLE => in_array($target, [
+            self::AVAILABLE_FOR_SALE => in_array($target, [
                 self::RESERVED,
-                self::MAINTENANCE
+                self::MAINTENANCE,
+            ], true),
+
+            self::AVAILABLE_FOR_RENT => in_array($target, [
+                self::RESERVED,
+                self::MAINTENANCE,
+                self::RENTED,
             ], true),
 
             self::RESERVED => in_array($target, [
-                self::AVAILABLE,
+                self::AVAILABLE_FOR_SALE,
+                self::AVAILABLE_FOR_RENT,
                 self::SOLD,
                 self::RENTED
             ], true),
 
-            self::ORDERED => $target === self::AVAILABLE,
+            self::ORDERED => in_array($target, [
+                self::AVAILABLE_FOR_SALE,
+                self::AVAILABLE_FOR_RENT
+            ], true),
 
-            self::MAINTENANCE => $target === self::AVAILABLE,
+            self::MAINTENANCE => in_array($target, [
+                self::AVAILABLE_FOR_SALE,
+                self::AVAILABLE_FOR_RENT
+            ], true),
 
+            self::RENTED => $target === self::AVAILABLE_FOR_RENT,
             self::SOLD => false,
-            self::RENTED => false,
         };
     }
 
     // =========================================================
-    // UI / AFFICHAGE
+    // UI
     // =========================================================
 
-    /**
-     * Classe CSS pour badge UI
-     */
     public function badge(): string
     {
         return match ($this) {
-            self::AVAILABLE => 'success',
+            self::AVAILABLE_FOR_SALE => 'success',
+            self::AVAILABLE_FOR_RENT => 'primary',
             self::RESERVED => 'warning text-dark',
             self::RENTED => 'info',
             self::SOLD => 'dark',
-            self::ORDERED => 'primary',
-            self::MAINTENANCE => 'secondary',
+            self::ORDERED => 'secondary',
+            self::MAINTENANCE => 'danger',
         };
     }
 
-    /**
-     * Options pour formulaires Symfony
-     */
     public static function choices(): array
     {
         return [
-            'Disponible' => self::AVAILABLE,
+            'Disponible (vente)' => self::AVAILABLE_FOR_SALE,
+            'Disponible (location)' => self::AVAILABLE_FOR_RENT,
             'Réservé' => self::RESERVED,
             'Loué' => self::RENTED,
             'Vendu' => self::SOLD,

@@ -31,41 +31,56 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
             $vehicle = new Vehicle();
 
-            // =========================================================
-            // STATUS
-            // =========================================================
-            $vehicle->setStatus(VehicleStatus::AVAILABLE, true);
+            /*
+            |--------------------------------------------------------------------------
+            | STATUS (cohérent métier)
+            |--------------------------------------------------------------------------
+            */
+            $status = $faker->randomElement([
+                VehicleStatus::AVAILABLE_FOR_SALE,
+                VehicleStatus::AVAILABLE_FOR_RENT,
+                VehicleStatus::RESERVED,
+                VehicleStatus::MAINTENANCE,
+                VehicleStatus::SOLD,
+            ]);
 
-            // =========================================================
-            // VIN
-            // =========================================================
+            $vehicle->setStatus($status);
+
+            /*
+            |--------------------------------------------------------------------------
+            | VIN
+            |--------------------------------------------------------------------------
+            */
             $vehicle->setVin(strtoupper($faker->regexify('[A-HJ-NPR-Z0-9]{17}')));
 
-            // =========================================================
-            // NEUF / OCCASION
-            // =========================================================
+            /*
+            |--------------------------------------------------------------------------
+            | NEUF / OCCASION
+            |--------------------------------------------------------------------------
+            */
             $isNew = $faker->boolean(35);
 
             if ($isNew) {
-                $vehicle->setRegistrationNumber(null);
                 $vehicle->setMileage(0);
                 $vehicle->setFirstRegistrationDate(null);
+                $vehicle->setStatus(VehicleStatus::AVAILABLE_FOR_SALE);
             } else {
-                $vehicle->setRegistrationNumber(
-                    sprintf('AA-%03d-%s', $i, strtoupper($faker->lexify('??')))
-                );
                 $vehicle->setMileage($faker->numberBetween(500, 220000));
                 $vehicle->setFirstRegistrationDate($faker->dateTimeBetween('-10 years', 'now'));
             }
 
-            // =========================================================
-            // PRICE
-            // =========================================================
+            /*
+            |--------------------------------------------------------------------------
+            | PRIX
+            |--------------------------------------------------------------------------
+            */
             $vehicle->setPrice($faker->numberBetween(8000, 90000));
 
-            // =========================================================
-            // RELATIONS
-            // =========================================================
+            /*
+            |--------------------------------------------------------------------------
+            | RELATIONS
+            |--------------------------------------------------------------------------
+            */
             $vehicle->setVehicleModel($vehicleModels[array_rand($vehicleModels)]);
             $vehicle->setSupplier($suppliers[array_rand($suppliers)]);
 
@@ -73,23 +88,23 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
                 $vehicle->setColor($colors[array_rand($colors)]);
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | PERSIST
+            |--------------------------------------------------------------------------
+            */
             $manager->persist($vehicle);
 
-            // =========================================================
-            // ⭐ IMPORTANT : REFERENCES FIXTURES
-            // =========================================================
             $this->addReference('vehicle_' . $i, $vehicle);
 
-            // =========================================================
-            // BATCH
-            // =========================================================
+            /*
+            |--------------------------------------------------------------------------
+            | BATCH OPTIMISÉ
+            |--------------------------------------------------------------------------
+            */
             if ($i % 100 === 0) {
                 $manager->flush();
                 $manager->clear();
-
-                $vehicleModels = $manager->getRepository(VehicleModel::class)->findAll();
-                $suppliers     = $manager->getRepository(Supplier::class)->findAll();
-                $colors        = $manager->getRepository(Color::class)->findAll();
             }
         }
 
