@@ -8,48 +8,46 @@ class VehicleFilterService
 {
     public function apply(QueryBuilder $qb, array $filters, ?string $searchTerm = null): QueryBuilder
     {
+        dump($filters);
         $normalize = fn($v) => empty($v) ? [] : (is_array($v) ? $v : [$v]);
 
-        // JOIN DOSSIERS (clé métier)
-        $qb->leftJoin('v.dossiers', 'd');
+        // JOIN DOSSIERS (OK ici car spécifique au filtre)
+        $qb->leftJoin('v.dossiers', 'd')->addSelect('d');
 
-        // =========================================================
-        // VEHICLE STATUS
-        // =========================================================
+        // STATUS
         $status = $normalize($filters['status'] ?? null);
         if ($status) {
             $qb->andWhere('v.status IN (:status)')
                 ->setParameter('status', $status);
         }
 
-        // =========================================================
-        // DOSSIER TYPE
-        // =========================================================
+        // TYPE
         $type = $normalize($filters['type'] ?? null);
         if ($type) {
             $qb->andWhere('d.type IN (:type)')
                 ->setParameter('type', $type);
         }
 
-        // =========================================================
-        // FINANCING (LOA / LLD)
-        // =========================================================
+        // FINANCING
         $financing = $normalize($filters['financing'] ?? null);
         if ($financing) {
             $qb->andWhere('d.financingType IN (:financing)')
                 ->setParameter('financing', $financing);
         }
 
-        // =========================================================
         // SEARCH
-        // =========================================================
-        if ($searchTerm) {
+        if (!empty($searchTerm)) {
+
+            $searchTerm = trim($searchTerm);
             $search = '%' . mb_strtolower($searchTerm) . '%';
 
             $qb->andWhere(
                 $qb->expr()->orX(
                     'LOWER(v.registrationNumber) LIKE :search',
-                    'LOWER(v.vin) LIKE :search'
+                    'LOWER(v.vin) LIKE :search',
+                    'LOWER(m.name) LIKE :search',
+                    'LOWER(b.name) LIKE :search',
+                    "LOWER(CONCAT(b.name, ' ', m.name)) LIKE :search"
                 )
             )
                 ->setParameter('search', $search);
@@ -58,9 +56,6 @@ class VehicleFilterService
         return $qb;
     }
 
-    /**
-     * compteur UX sidebar
-     */
     public function count(array $filters): int
     {
         $count = 0;

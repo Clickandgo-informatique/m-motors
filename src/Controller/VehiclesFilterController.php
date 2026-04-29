@@ -45,7 +45,6 @@ class VehiclesFilterController extends AbstractController
         return $this->render('vehicles/index.html.twig', [
             'vehicles' => $vehicles,
 
-            // sidebar filters
             'brands' => $brands,
             'bodyTypes' => $bodyTypes,
             'fuelTypes' => $fuelTypes,
@@ -53,13 +52,12 @@ class VehiclesFilterController extends AbstractController
             'registrationYearsMin' => $registrationYears['min'],
             'registrationYearsMax' => $registrationYears['max'],
 
-            // UX
             'activeFiltersCount' => $filterService->count($filters),
         ]);
     }
 
     /**
-     * SIDEBAR FILTERS PARTIAL (AJAX LOAD)
+     * SIDEBAR FILTERS (AJAX)
      */
     #[Route('/ajax/filters', name: 'vehicles_ajax_filters', methods: ['GET'])]
     public function getFilters(VehicleRepository $vehicleRepo): Response
@@ -75,7 +73,7 @@ class VehiclesFilterController extends AbstractController
     }
 
     /**
-     * AJAX SEARCH + FILTERS + PAGINATION + AUTOCOMPLETE
+     * AJAX SEARCH + AUTOCOMPLETE
      */
     #[Route('/ajax/search', name: 'vehicles_ajax_search', methods: ['GET', 'POST'])]
     public function search(
@@ -92,39 +90,27 @@ class VehiclesFilterController extends AbstractController
         $searchTerm = $data['q'] ?? null;
         $page = $data['page'] ?? 1;
 
-        // view state
+        // vue
         $view = $filters['view'] ?? $session->get('vehicle_view', 'grid');
         $session->set('vehicle_view', $view);
 
-        // QUERY CENTRALISÉE
+        // QUERY PRINCIPALE (pagination)
         $query = $filterService->apply(
             $vehicleRepo->getAllVehiclesQueryBuilder(),
             $filters,
             $searchTerm
         );
 
-        // PAGINATION
         $vehicles = $paginator->paginate($query, $page, 20);
 
-        // AUTOCOMPLETE ITEMS
-        $items = [];
-        foreach ($vehicles as $v) {
-            $vm = $v->getVehicleModel();
+        // ✅ AUTOCOMPLETE (indépendant)
+        $items = $vehicleRepo->searchForAutocomplete(
+            $filters,
+            $searchTerm,
+            10
+        );
 
-            $items[] = [
-                'id' => $v->getId(),
-                'label' => trim(
-                    ($v->getRegistrationNumber() ?? '') . ' ' .
-                        ($vm?->getBrand()?->getName() ?? '') . ' ' .
-                        ($vm?->getModel()?->getName() ?? '')
-                ),
-                'url' => $this->generateUrl('vehicle_edit', [
-                    'id' => $v->getId()
-                ])
-            ];
-        }
-
-        // HTML GRID / TABLE
+        // HTML
         $resultsHtml = $this->renderView(
             $view === 'table'
                 ? 'vehicles/_vehicles_table_body.html.twig'

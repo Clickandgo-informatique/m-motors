@@ -30,7 +30,7 @@ class VehicleRepository extends ServiceEntityRepository
             ->leftJoin('vm.model', 'm')
             ->leftJoin('vm.brand', 'b')
             ->addSelect('vm', 'm', 'b')
-            ->orderBy('v.id', 'DESC');
+            ->orderBy('vm.brand', 'ASC');
     }
 
     /**
@@ -142,6 +142,21 @@ class VehicleRepository extends ServiceEntityRepository
     ): array {
         $qb = $this->getFilteredQueryBuilder($filters, $searchTerm);
 
+        // 🔥 amélioration UX autocomplete
+        if (!empty($searchTerm)) {
+            $search = '%' . mb_strtolower(trim($searchTerm)) . '%';
+
+            $qb->addOrderBy(
+                "CASE 
+                WHEN LOWER(CONCAT(b.name, ' ', m.name)) LIKE :search THEN 0
+                WHEN LOWER(b.name) LIKE :search THEN 1
+                WHEN LOWER(m.name) LIKE :search THEN 2
+                ELSE 3
+            END",
+                'ASC'
+            )->setParameter('search', $search);
+        }
+
         if ($limit !== null) {
             $qb->setMaxResults($limit);
         }
@@ -152,15 +167,16 @@ class VehicleRepository extends ServiceEntityRepository
 
         $vehicles = $qb->getQuery()->getResult();
 
-        // IMPORTANT : transformation en tableau simple
         return array_map(function (Vehicle $v) {
             $vm = $v->getVehicleModel();
 
             return [
                 'id' => $v->getId(),
-                'label' => ($v->getRegistrationNumber() ?? '') . ' ' .
+                'label' => trim(
                     ($vm?->getBrand()?->getName() ?? '') . ' ' .
-                    ($vm?->getModel()?->getName() ?? ''),
+                        ($vm?->getModel()?->getName() ?? '') . ' ' .
+                        ($vm?->getBodyType() ?? '')
+                )
             ];
         }, $vehicles);
     }
