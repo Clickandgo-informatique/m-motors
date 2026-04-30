@@ -2,20 +2,20 @@ import FilterBadges from "./FilterBadges.js";
 import initDoubleSlider from "./rangeSelector.js";
 import Autocomplete from "./Autocomplete.js";
 
+console.log("VehiclesFilter init");
 export default class VehiclesFilter {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) return;
 
-    // anti double init
-    if (form.dataset.vehiclesFilterInit === "1") return;
-    form.dataset.vehiclesFilterInit = "1";
+    // Anti double instanciation
+    if (form._vehiclesFilterInstance) return;
+    form._vehiclesFilterInstance = this;
 
     this.form = form;
     this.url = form.dataset.fetchUrl;
 
     if (!this.url) return;
 
-    // compat page + sidebar
     this.mainForm = document.querySelector("#filters-form") || this.form;
 
     this.container =
@@ -45,7 +45,7 @@ export default class VehiclesFilter {
 
     this.loading = false;
 
-    if (this.summaryContainer) {
+    if (this.summaryContainer && this.mainForm.matches("#filters-form")) {
       this.badges = new FilterBadges(
         this.summaryContainer,
         this.mainForm,
@@ -53,7 +53,10 @@ export default class VehiclesFilter {
       );
     }
 
-    this.initSliders();
+    if (this.mainForm.matches("#filters-form")) {
+      this.initSliders();
+    }
+
     this.initEvents();
     this.initAutocomplete();
     this.initCardsClick();
@@ -93,9 +96,21 @@ export default class VehiclesFilter {
     this.eventsBound = true;
 
     this.mainForm.addEventListener("change", e => {
-      if (!e.target.matches("input, select")) return;
+      if (
+        !e.target.matches("input[type='checkbox'], select, input[type='radio']")
+      )
+        return;
+
       this.submitFilters();
     });
+
+    if (this.form !== this.mainForm) {
+      this.form.addEventListener("change", e => {
+        if (e.target.name === "view") {
+          this.submitFilters();
+        }
+      });
+    }
 
     this.container.addEventListener("click", e => {
       const btn = e.target.closest("[data-page]");
@@ -157,6 +172,7 @@ export default class VehiclesFilter {
       }
 
       const viewInput = document.querySelector("input[name='view']:checked");
+
       if (viewInput) {
         filters.view = viewInput.value;
       }
@@ -203,7 +219,7 @@ export default class VehiclesFilter {
       if (input.dataset.autocompleteInitialized) return;
 
       new Autocomplete(input);
-      input.dataset.autocompleteInitialized = "1";
+      input.dataset.autocompleteInitialized = "true";
     });
   }
 
@@ -220,7 +236,14 @@ export default class VehiclesFilter {
       const url = card.dataset.itemLink;
       if (!url) return;
 
-      window.location.href = url;
+      if (
+        window.AjaxManagerInstance &&
+        typeof window.AjaxManagerInstance.loadModal === "function"
+      ) {
+        window.AjaxManagerInstance.loadModal(url);
+      } else {
+        window.location.href = url;
+      }
     });
   }
 }

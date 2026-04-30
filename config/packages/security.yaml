@@ -13,13 +13,10 @@ security:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
 
-        public:
-            pattern: ^/vehicles
-            security: false
-
         main:
             lazy: true
             provider: app_user_provider
+
             custom_authenticators:
                 - App\Security\LoginFormAuthenticator
 
@@ -37,11 +34,10 @@ security:
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/vehicles, roles: PUBLIC_ACCESS }
 
-        # ADMIN UI (lecture interface uniquement)
-        - { path: ^/admin, roles: [ROLE_ADMIN, ROLE_MANAGER] }
+        # ADMIN UI
+        - { path: ^/admin, roles: [ ROLE_ADMIN, ROLE_MANAGER ] }
 
-        # WORKFLOW ACTIONS (IMPORTANT : séparé de /admin)
+        # WORKFLOW ACTIONS
         - { path: ^/dossier/.*/transition, roles: IS_AUTHENTICATED_FULLY }
-
-        # fallback sécurité globale admin
+        # fallback (optionnel)
         # - { path: ^/, roles: ['ROLE_USER'] }

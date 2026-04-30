@@ -1,31 +1,34 @@
+// assets/js/FetchForm.js
+
 export default class FetchForm {
   constructor(input) {
     if (!input) return;
 
     this.input = input;
-    this.form = input.form;
-
-    this.url = this.form?.action || "";
 
     this.gridContainer = document.getElementById("vehicles-search-results");
+
     this.paginationTop = document.querySelector(
       '[data-target="pagination-top"]'
     );
+
     this.paginationBottom = document.querySelector(
       '[data-target="pagination-bottom"]'
     );
 
-    this.requestId = 0;
-    this.controller = null;
+    this.url = input.form?.action || "";
+
     this.timeout = null;
+    this.controller = null;
+    this.requestId = 0;
 
-    this.init();
-  }
-
-  init() {
     this.input.addEventListener("input", e => this.onInput(e));
+
     this.bindFilters();
+    this.bindExternalForms();
     this.bindViewSwitch();
+
+    console.log("[FetchForm] initialized");
   }
 
   getSearchValue() {
@@ -37,20 +40,11 @@ export default class FetchForm {
     return checked ? checked.value : "grid";
   }
 
-  onInput(e) {
-    clearTimeout(this.timeout);
-
-    const value = (e.target.value || "").trim();
-
-    this.timeout = setTimeout(() => {
-      this.fetchResults(value);
-    }, 300);
-  }
-
   bindFilters() {
-    if (!this.form) return;
+    const form = this.input.form;
+    if (!form) return;
 
-    this.form.querySelectorAll("input, select").forEach(el => {
+    form.querySelectorAll("input, select").forEach(el => {
       if (el === this.input) return;
 
       el.addEventListener("change", () => {
@@ -59,16 +53,33 @@ export default class FetchForm {
     });
   }
 
+  bindExternalForms() {
+    const externalForm = document.querySelector("#view-switch-form");
+    if (!externalForm) return;
+
+    externalForm.querySelectorAll('input[name="view"]').forEach(input => {
+      input.addEventListener("change", () => {
+        this.fetchResults(this.getSearchValue());
+      });
+    });
+  }
+
   bindViewSwitch() {
-    const switchForm = document.getElementById("view-switch-form");
-
-    if (!switchForm) return;
-
-    switchForm.addEventListener("change", e => {
+    document.addEventListener("change", e => {
       if (!e.target.matches('input[name="view"]')) return;
 
       this.fetchResults(this.getSearchValue());
     });
+  }
+
+  onInput(e) {
+    clearTimeout(this.timeout);
+
+    const value = (e.target.value || "").trim();
+
+    this.timeout = setTimeout(() => {
+      this.fetchResults(value);
+    }, 300);
   }
 
   async fetchResults(query) {
@@ -83,7 +94,8 @@ export default class FetchForm {
 
       this.controller = new AbortController();
 
-      const formData = new FormData(this.form);
+      const form = this.input.form;
+      const formData = new FormData(form);
 
       formData.set("q", query);
       formData.set("filters[view]", this.getViewValue());

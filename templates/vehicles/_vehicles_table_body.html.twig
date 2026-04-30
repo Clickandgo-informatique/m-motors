@@ -1,63 +1,117 @@
-{# templates/vehicles/_vehicles_table.html.twig #}
 <table class="table table-striped">
 	<thead>
 		<tr>
 			<th>Statut</th>
-			<th>Immatriculation</th>
 			<th>Marque</th>
 			<th>Modèle</th>
 			<th>Kilométrage</th>
 			<th>Carrosserie</th>
 			<th>Énergie</th>
 			<th>Prix</th>
+
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+				<th>Immatriculation</th>
+				<th>Stock</th>
+				<th>Disponibilité</th>
+				<th>Créé le</th>
+			{% endif %}
 		</tr>
 	</thead>
+
 	<tbody>
 		{% for vehicle in vehicles %}
 			<tr>
+
+				{# =========================
+				   STATUT GLOBAL VEHICULE
+				   ========================= #}
 				<td data-label="Statut">
 					<span class="badge bg-{{ vehicle.status.badge }}">
 						{{ vehicle.status.label }}
 					</span>
 				</td>
 
-				<td data-label="Immatriculation">
-					<span>{{ vehicle.registrationNumber }}</span>
-				</td>
-
 				<td data-label="Marque">
-					<span>{{ vehicle.vehicleModel.brand.name }}</span>
+					<strong>{{ vehicle.vehicleModel.brand.name }}</strong>
 				</td>
 
 				<td data-label="Modèle">
-					<span>{{ vehicle.vehicleModel.model.name }}</span>
+					{{ vehicle.vehicleModel.model.name }}
 				</td>
 
 				<td data-label="Kilométrage">
-					<span class="text-right">
-						{{ vehicle.mileage|number_format(0, ',', '.') }}
-						km
-					</span>
+					{{ vehicle.mileage|number_format(0, ',', '.') }} km
 				</td>
 
 				<td data-label="Carrosserie">
-					<span>{{ vehicle.vehicleModel.bodyType.name }}</span>
+					{{ vehicle.vehicleModel.bodyType.name }}
 				</td>
 
 				<td data-label="Énergie">
-					<span>{{ vehicle.vehicleModel.fuelType.name }}</span>
+					{{ vehicle.vehicleModel.fuelType.name }}
 				</td>
 
 				<td data-label="Prix">
-					<span class="text-right">
-						{{ vehicle.price|number_format(0, ',', '.') }}
-						€
-					</span>
+					{{ vehicle.price|number_format(0, ',', '.') }} €
 				</td>
+
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+
+					{# =========================
+					   IMMATRICULATION
+					   ========================= #}
+					<td data-label="Immatriculation">
+						{{ vehicle.registrationNumber ?? '-' }}
+					</td>
+
+					{# =========================
+					   STOCK (ETAT METIER)
+					   ========================= #}
+					<td data-label="Stock">
+						<span class="badge bg-{{ vehicle.status.badge }}">
+							{{ vehicle.status.label }}
+						</span>
+					</td>
+
+					{# =========================
+					   DISPONIBILITE LOGIQUE
+					   ========================= #}
+					<td data-label="Disponibilité">
+
+						{% if vehicle.status.isAvailable %}
+							<span class="badge bg-success">Disponible</span>
+
+						{% elseif vehicle.status.isReserved %}
+							<span class="badge bg-warning text-dark">Réservé</span>
+
+						{% elseif vehicle.status.isInUse %}
+							<span class="badge bg-info">En utilisation</span>
+
+						{% elseif vehicle.status.isUnavailable %}
+							<span class="badge bg-danger">Indisponible</span>
+
+						{% else %}
+							<span class="badge bg-secondary">-</span>
+						{% endif %}
+
+					</td>
+
+					{# =========================
+					   DATE CREATION
+					   ========================= #}
+					<td data-label="Créé le">
+						{{ vehicle.createdAt ? vehicle.createdAt|date('d/m/Y') : '-' }}
+					</td>
+
+				{% endif %}
+
 			</tr>
+
 		{% else %}
 			<tr>
-				<td colspan="8" class="text-center">Aucun véhicule trouvé</td>
+				<td colspan="11" class="text-center">
+					Aucun véhicule trouvé
+				</td>
 			</tr>
 		{% endfor %}
 	</tbody>

@@ -86,7 +86,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
             if (!empty($colors)) {
                 $vehicle->setColor($colors[array_rand($colors)]);
-            }
+            }          
 
             /*
             |--------------------------------------------------------------------------

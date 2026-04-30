@@ -1,5 +1,6 @@
-// assets/js/Autocomplete.js
-
+/**
+ * Debounce sans casser le contexte this
+ */
 function debounce(fn, delay = 300) {
   let timer;
 
@@ -16,17 +17,14 @@ export default class Autocomplete {
   constructor(input) {
     if (!(input instanceof HTMLInputElement)) return;
 
+    // anti double init propre (scopé instance)
     if (input.dataset.autocompleteInitialized === "1") return;
     input.dataset.autocompleteInitialized = "1";
 
     this.input = input;
     this.url = input.dataset.url;
-
-    // FLAG IMPORTANT
-    this.isLinkMode = input.dataset.resultLinks === "true";
-
-    // template URL (si mode link)
     this.itemUrlTemplate = input.dataset.itemUrl || "";
+    this.hiddenSelector = input.dataset.hiddenTarget || "";
 
     this.dropdown = null;
 
@@ -37,7 +35,7 @@ export default class Autocomplete {
   }
 
   init() {
-    this.bindDropdown();
+    this.createDropdown();
 
     this.input.addEventListener(
       "input",
@@ -47,22 +45,33 @@ export default class Autocomplete {
     document.addEventListener("click", e => this.handleOutsideClick(e));
   }
 
-  bindDropdown() {
+  createDropdown() {
     const wrapper = this.input.closest(".dropdown-wrapper");
-    if (!wrapper) return;
+
+    if (!wrapper) {
+      console.warn("Autocomplete: wrapper introuvable");
+      return;
+    }
 
     this.dropdown = wrapper.querySelector(".dropdown-results");
-    if (!this.dropdown) return;
 
+    if (!this.dropdown) {
+      console.warn("Autocomplete: dropdown introuvable");
+      return;
+    }
+
+    // sécurité CSS minimale
     this.dropdown.style.position = "absolute";
     this.dropdown.style.zIndex = "1000";
     this.dropdown.style.display = "none";
   }
-
   handleOutsideClick(e) {
-    if (!this.dropdown) return;
+    if (!this.dropdown || !this.input) return;
 
-    if (!this.dropdown.contains(e.target) && !this.input.contains(e.target)) {
+    const insideInput = this.input.contains(e.target);
+    const insideDropdown = this.dropdown.contains(e.target);
+
+    if (!insideInput && !insideDropdown) {
       this.close();
     }
   }
@@ -81,6 +90,7 @@ export default class Autocomplete {
 
   async fetch(query) {
     this.requestId++;
+
     const currentRequest = this.requestId;
 
     if (this.abortController) {
@@ -91,7 +101,7 @@ export default class Autocomplete {
 
     try {
       const res = await fetch(
-        `${this.url}?mode=autocomplete&q=${encodeURIComponent(query)}`,
+        `${this.url}?autocomplete=1&q=${encodeURIComponent(query)}`,
         { signal: this.abortController.signal }
       );
 
@@ -101,15 +111,15 @@ export default class Autocomplete {
 
       const items = Array.isArray(data.items) ? data.items : [];
 
-      this.render(items);
+      this.render(items, query);
     } catch (e) {
       if (e.name !== "AbortError") {
-        console.error(e);
+        console.error("Autocomplete error:", e);
       }
     }
   }
 
-  render(items) {
+  render(items, query) {
     this.clear();
 
     if (!items.length) {
@@ -122,24 +132,19 @@ export default class Autocomplete {
     const fragment = document.createDocumentFragment();
 
     items.forEach(item => {
-      const el = document.createElement(this.isLinkMode ? "a" : "div");
-
+      const el = document.createElement("a");
       el.className = "dropdown-item";
 
-      el.textContent = item.label;
+      const href = this.itemUrlTemplate.replace("ID_PLACEHOLDER", item.id);
+      el.href = href;
 
-      if (this.isLinkMode) {
-        el.href = this.itemUrlTemplate.replace("ID_PLACEHOLDER", item.id);
+      el.appendChild(this.buildHighlightedLabel(item.label, query));
 
-        // navigation directe
-        el.addEventListener("click", () => {
-          window.location.href = el.href;
-        });
-      } else {
-        el.addEventListener("click", () => {
-          this.select(item);
-        });
-      }
+      el.addEventListener("click", e => {
+        e.preventDefault();
+        this.select(item);
+        window.location.href = href;
+      });
 
       fragment.appendChild(el);
     });
@@ -148,8 +153,50 @@ export default class Autocomplete {
     this.open();
   }
 
+  buildHighlightedLabel(text, query) {
+    const span = document.createElement("span");
+
+    if (!query) {
+      span.textContent = text;
+      return span;
+    }
+
+    const regex = new RegExp(`(${query})`, "gi");
+
+    let lastIndex = 0;
+    const matches = [...text.matchAll(regex)];
+
+    if (!matches.length) {
+      span.textContent = text;
+      return span;
+    }
+
+    for (const match of matches) {
+      const index = match.index;
+
+      span.appendChild(document.createTextNode(text.slice(lastIndex, index)));
+
+      const mark = document.createElement("mark");
+      mark.textContent = match[0];
+
+      span.appendChild(mark);
+
+      lastIndex = index + match[0].length;
+    }
+
+    span.appendChild(document.createTextNode(text.slice(lastIndex)));
+
+    return span;
+  }
+
   select(item) {
     this.input.value = item.label;
+
+    if (this.hiddenSelector) {
+      const hidden = document.querySelector(this.hiddenSelector);
+      if (hidden) hidden.value = item.id;
+    }
+
     this.clear();
     this.close();
   }

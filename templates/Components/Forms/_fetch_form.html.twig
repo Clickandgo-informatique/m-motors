@@ -16,17 +16,19 @@
   - highlight : surligner le texte correspondant
 #}
 
-	<form method="get" action="{{ action|default('') }}" class="fetch-form" data-fetch-form data-result-div="{{ resultDiv|default('autocomplete-results') }}" {# dropdown autocomplete #} data-cards-container="{{ cardsContainer|default('vehicles-search-results') }}" {# container gallery #} data-item-class="{{ itemClass|default('vehicle-item') }}" data-link-class="{{ linkClass|default('vehicle-link') }}" data-no-results-class="{{ noResultsClass|default('dropdown-no-results') }}" data-item-url="{{ itemUrl|default('') }}" data-result-links="{{ resultLinks|default(true) ? 'true' : 'false' }}" data-ajax-modal="{{ ajaxModal|default(false) ? 'true' : 'false' }}" data-autocomplete="{{ autocomplete|default(true) ? 'true' : 'false' }}" data-pagination="{{ pagination|default(false) ? 'true' : 'false' }}" data-highlight="{{ highlight|default(false) ? 'true' : 'false' }}" data-url="{{ action|default('') }}"> <div
+	<form method="get" action="{{ action|default('') }}" class="fetch-form" data-fetch-form data-url="{{ action|default('') }}" data-result-div="{{ resultDiv|default('autocomplete-results') }}" data-cards-container="{{ cardsContainer|default('vehicles-search-results') }}" data-item-class="{{ itemClass|default('vehicle-item') }}" data-link-class="{{ linkClass|default('vehicle-link') }}" data-no-results-class="{{ noResultsClass|default('dropdown-no-results') }}" data-item-url="{{ itemUrl|default('') }}" data-result-links="{{ resultLinks|default(true) ? 'true' : 'false' }}" data-ajax-modal="{{ ajaxModal|default(false) ? 'true' : 'false' }}" data-autocomplete="{{ autocomplete|default(true) ? 'true' : 'false' }}" data-pagination="{{ pagination|default(false) ? 'true' : 'false' }}" data-highlight="{{ highlight|default(false) ? 'true' : 'false' }}"> <div
 		class="form-row dropdown-wrapper">
 
-		{# INPUT Autocomplete #}
+		{# INPUT AUTOCOMPLETE + SEARCH #}
 		<input
-		type="text" name="{{ name|default('q') }}" placeholder="{{ placeholder|default('Rechercher...') }}" autocomplete="off" id="autocomplete-input" data-autocomplete="true" data-url="{{ action|default('') }}" data-result-div="{{ resultDiv|default('autocomplete-results') }}" {# dropdown suggestions #} data-cards-container="{{ cardsContainer|default('vehicles-search-results') }}" {# gallery principal #} data-item-url="{{ itemUrl|default('') }}" data-result-links="{{ resultLinks|default(true) ? 'true' : 'false' }}" data-pagination="{{ pagination|default(false) ? 'true' : 'false' }}" data-highlight="{{ highlight|default(false) ? 'true' : 'false' }}"/>
+		type="text" name="{{ name|default('q') }}" placeholder="{{ placeholder|default('Rechercher...') }}" autocomplete="off" id="autocomplete-input" data-autocomplete="true" data-url="{{ action|default('') }}" data-result-div="{{ resultDiv|default('autocomplete-results') }}" data-cards-container="{{ cardsContainer|default('vehicles-search-results') }}" data-item-url="{{ itemUrl|default('') }}" data-result-links="{{ resultLinks|default(true) ? 'true' : 'false' }}" data-pagination="{{ pagination|default(false) ? 'true' : 'false' }}" data-highlight="{{ highlight|default(false) ? 'true' : 'false' }}"/>
 
-		{# Bouton recherche pour fallback / manuel #}
-		<button type="button" class="search-toggle-btn" data-search-toggle>Rechercher</button>
+		{# bouton fallback manuel #}
+		<button type="button" class="search-toggle-btn" data-search-toggle>
+			Rechercher
+		</button>
 
-		{# Dropdown Autocomplete #}
+		{# dropdown autocomplete UNIQUEMENT #}
 		<div id="{{ resultDiv|default('autocomplete-results') }}" class="{{ dropdownClass|default('dropdown-results') }}"></div>
 
 	</div>
