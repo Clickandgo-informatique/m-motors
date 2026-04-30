@@ -22,12 +22,6 @@ export default class Autocomplete {
     this.input = input;
     this.url = input.dataset.url;
 
-    // FLAG IMPORTANT
-    this.isLinkMode = input.dataset.resultLinks === "true";
-
-    // template URL (si mode link)
-    this.itemUrlTemplate = input.dataset.itemUrl || "";
-
     this.dropdown = null;
 
     this.abortController = null;
@@ -70,23 +64,36 @@ export default class Autocomplete {
   onInput() {
     const value = (this.input.value || "").trim();
 
+    // CONDITION 1 : champ vide → reset immédiat
+    if (value.length === 0) {
+      this.clear();
+      this.close();
+      this.abortRequest();
+      return;
+    }
+
+    // CONDITION 2 : moins de 2 caractères → reset + pas de requête
     if (value.length < 2) {
       this.clear();
       this.close();
       return;
     }
 
+    // OK → requête
     this.fetch(value);
+  }
+
+  abortRequest() {
+    if (this.abortController) {
+      this.abortController.abort();
+    }
   }
 
   async fetch(query) {
     this.requestId++;
     const currentRequest = this.requestId;
 
-    if (this.abortController) {
-      this.abortController.abort();
-    }
-
+    this.abortRequest();
     this.abortController = new AbortController();
 
     try {
@@ -101,17 +108,18 @@ export default class Autocomplete {
 
       const items = Array.isArray(data.items) ? data.items : [];
 
-      this.render(items);
+      this.render(items, query);
     } catch (e) {
       if (e.name !== "AbortError") {
-        console.error(e);
+        console.error("Autocomplete error:", e);
       }
     }
   }
 
-  render(items) {
+  render(items, query) {
     this.clear();
 
+    // vide → reset visuel immédiat
     if (!items.length) {
       this.dropdown.innerHTML =
         "<div class='dropdown-no-results'>Aucun résultat</div>";
@@ -122,24 +130,16 @@ export default class Autocomplete {
     const fragment = document.createDocumentFragment();
 
     items.forEach(item => {
-      const el = document.createElement(this.isLinkMode ? "a" : "div");
-
+      const el = document.createElement("a");
+      el.href = "#";
       el.className = "dropdown-item";
 
       el.textContent = item.label;
 
-      if (this.isLinkMode) {
-        el.href = this.itemUrlTemplate.replace("ID_PLACEHOLDER", item.id);
-
-        // navigation directe
-        el.addEventListener("click", () => {
-          window.location.href = el.href;
-        });
-      } else {
-        el.addEventListener("click", () => {
-          this.select(item);
-        });
-      }
+      el.addEventListener("click", e => {
+        e.preventDefault();
+        this.select(item);
+      });
 
       fragment.appendChild(el);
     });

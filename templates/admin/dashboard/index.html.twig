@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Admin
+{% endblock %}
+
+{% block body %}
+
+	<div
+		class="container mt-4">
+
+		{# =========================================================
+		       KPI
+		    ========================================================= #}
+
+		<div class="row mb-4">
+			<div class="col">Total
+				{{ stats.total }}</div>
+			<div class="col">Dispo
+				{{ stats.available }}</div>
+			<div class="col">Loué
+				{{ stats.rented }}</div>
+			<div class="col">Réservé
+				{{ stats.reserved }}</div>
+			<div class="col">Vendu
+				{{ stats.sold }}</div>
+		</div>
+
+		{# =========================================================
+		       MARQUES
+		    ========================================================= #}
+
+		<h3>Marques</h3>
+
+		<ul class="list-group mb-3">
+
+			{% for b in brands %}
+
+				<li class="list-group-item d-flex justify-content-between">
+
+					<span>{{ b.name }}</span>
+
+					<a href="?brandId={{ b.id }}">
+						Voir modèles
+					</a>
+
+				</li>
+
+			{% endfor %}
+
+		</ul>
+
+		{{ knp_pagination_render(brands) }}
+
+		{# =========================================================
+		       MODELES (PAGINATION ACTIVE)
+		    ========================================================= #}
+
+		{% if models %}
+
+			<h3 class="mt-4">Modèles</h3>
+
+			<table class="table">
+
+				<thead>
+					<tr>
+						<th>Modèle</th>
+						<th>Total</th>
+						<th>Dispo</th>
+						<th>Loué</th>
+					</tr>
+				</thead>
+
+				<tbody>
+
+					{% for m in models %}
+
+						{% set s = stockMap[m.id] ?? null %}
+
+						<tr>
+							<td>{{ m.model.name }}</td>
+							<td>{{ s.total ?? 0 }}</td>
+							<td>{{ s.available ?? 0 }}</td>
+							<td>{{ s.rented ?? 0 }}</td>
+						</tr>
+
+					{% endfor %}
+
+				</tbody>
+
+			</table>
+
+			{{ knp_pagination_render(models) }}
+
+		{% endif %}
+
+	</div>
+
+{% endblock %}

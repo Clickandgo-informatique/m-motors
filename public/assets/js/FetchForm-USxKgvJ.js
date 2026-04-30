@@ -1,42 +1,110 @@
+// assets/js/FetchForm.js
+
 export default class FetchForm {
   constructor(input) {
     if (!input) return;
 
     this.input = input;
-    this.form = input.form;
 
-    this.url = this.form?.action || "";
-
+    // =========================
+    // Containers
+    // =========================
     this.gridContainer = document.getElementById("vehicles-search-results");
+
     this.paginationTop = document.querySelector(
       '[data-target="pagination-top"]'
     );
+
     this.paginationBottom = document.querySelector(
       '[data-target="pagination-bottom"]'
     );
 
-    this.requestId = 0;
-    this.controller = null;
+    // =========================
+    // URL AJAX
+    // =========================
+    this.url = input.form?.action || "";
+
+    // =========================
+    // State
+    // =========================
     this.timeout = null;
+    this.controller = null;
+    this.requestId = 0;
 
-    this.init();
-  }
-
-  init() {
+    // =========================
+    // Events
+    // =========================
     this.input.addEventListener("input", e => this.onInput(e));
+
     this.bindFilters();
+    this.bindExternalForms();
     this.bindViewSwitch();
+
+    console.log("[FetchForm] initialized");
   }
 
+  // =========================
+  // SEARCH VALUE
+  // =========================
   getSearchValue() {
     return this.input?.value?.trim() || "";
   }
 
+  // =========================
+  // VIEW VALUE
+  // =========================
   getViewValue() {
     const checked = document.querySelector('input[name="view"]:checked');
     return checked ? checked.value : "grid";
   }
 
+  // =========================
+  // FILTERS
+  // =========================
+  bindFilters() {
+    const form = this.input.form;
+    if (!form) return;
+
+    form.querySelectorAll("input, select").forEach(el => {
+      if (el === this.input) return;
+
+      el.addEventListener("change", () => {
+        this.fetchResults(this.getSearchValue());
+      });
+    });
+  }
+
+  // =========================
+  // EXTERNAL FORMS
+  // =========================
+  bindExternalForms() {
+    const externalForm = document.querySelector("#view-switch-form");
+    if (!externalForm) return;
+
+    externalForm.querySelectorAll('input[name="view"]').forEach(input => {
+      input.addEventListener("change", () => {
+        this.fetchResults(this.getSearchValue());
+      });
+    });
+  }
+
+  // =========================
+  // VIEW SWITCH (IMPORTANT FIX)
+  // Event delegation pour éviter perte après AJAX
+  // =========================
+  bindViewSwitch() {
+    document.addEventListener("change", e => {
+      if (!e.target.matches('input[name="view"]')) return;
+
+      console.log("[FetchForm] view changed:", e.target.value);
+
+      this.fetchResults(this.getSearchValue());
+    });
+  }
+
+  // =========================
+  // INPUT SEARCH
+  // =========================
   onInput(e) {
     clearTimeout(this.timeout);
 
@@ -47,32 +115,14 @@ export default class FetchForm {
     }, 300);
   }
 
-  bindFilters() {
-    if (!this.form) return;
-
-    this.form.querySelectorAll("input, select").forEach(el => {
-      if (el === this.input) return;
-
-      el.addEventListener("change", () => {
-        this.fetchResults(this.getSearchValue());
-      });
-    });
-  }
-
-  bindViewSwitch() {
-    const switchForm = document.getElementById("view-switch-form");
-
-    if (!switchForm) return;
-
-    switchForm.addEventListener("change", e => {
-      if (!e.target.matches('input[name="view"]')) return;
-
-      this.fetchResults(this.getSearchValue());
-    });
-  }
-
+  // =========================
+  // FETCH CORE
+  // =========================
   async fetchResults(query) {
-    if (!this.url) return;
+    if (!this.url) {
+      console.warn("[FetchForm] No URL defined");
+      return;
+    }
 
     const currentRequest = ++this.requestId;
 
@@ -83,7 +133,8 @@ export default class FetchForm {
 
       this.controller = new AbortController();
 
-      const formData = new FormData(this.form);
+      const form = this.input.form;
+      const formData = new FormData(form);
 
       formData.set("q", query);
       formData.set("filters[view]", this.getViewValue());
@@ -99,6 +150,8 @@ export default class FetchForm {
         }
       });
 
+      if (!response.ok) throw new Error(response.status);
+
       const data = await response.json();
 
       if (currentRequest !== this.requestId) return;
@@ -111,6 +164,9 @@ export default class FetchForm {
     }
   }
 
+  // =========================
+  // RENDER
+  // =========================
   render(data) {
     if (!data) return;
 

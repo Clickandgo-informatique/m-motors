@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Repository\VehicleRepository;
-use App\Service\VehicleFilterService;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,18 +14,23 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/vehicles')]
 class VehiclesFilterController extends AbstractController
 {
-    /**
-     * PAGE PRINCIPALE CATALOGUE
-     */
     #[Route('', name: 'vehicles', methods: ['GET'])]
     public function index(
         VehicleRepository $vehicleRepo,
         Request $request,
         PaginatorInterface $paginator,
-        VehicleFilterService $filterService
+        SessionInterface $session
     ): Response {
 
-        $query = $vehicleRepo->getAllVehiclesQueryBuilder();
+        $filters = $request->query->all('filters') ?? [];
+        $searchTerm = $request->query->get('q');
+
+        $view = $filters['view']
+            ?? $session->get('vehicle_view', 'grid');
+
+        $session->set('vehicle_view', $view);
+
+        $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
 
         $vehicles = $paginator->paginate(
             $query,
@@ -34,31 +38,78 @@ class VehiclesFilterController extends AbstractController
             10
         );
 
-        // filtres sidebar
-        $brands = $vehicleRepo->getUsedBrands();
-        $bodyTypes = $vehicleRepo->getUsedBodyTypes();
-        $fuelTypes = $vehicleRepo->getUsedFuelTypes();
-        $registrationYears = $vehicleRepo->getRegistrationYears();
-
-        $filters = $request->query->all('filters') ?? [];
-
         return $this->render('vehicles/index.html.twig', [
             'vehicles' => $vehicles,
-
-            'brands' => $brands,
-            'bodyTypes' => $bodyTypes,
-            'fuelTypes' => $fuelTypes,
-            'registrationYears' => $registrationYears['years'],
-            'registrationYearsMin' => $registrationYears['min'],
-            'registrationYearsMax' => $registrationYears['max'],
-
-            'activeFiltersCount' => $filterService->count($filters),
+            'brands' => $vehicleRepo->getUsedBrands(),
+            'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
+            'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
+            'registrationYears' => $vehicleRepo->getRegistrationYears()['years'],
+            'registrationYearsMin' => $vehicleRepo->getRegistrationYears()['min'],
+            'registrationYearsMax' => $vehicleRepo->getRegistrationYears()['max'],
+            'view' => $view
         ]);
     }
 
-    /**
-     * SIDEBAR FILTERS (AJAX)
-     */
+    #[Route('/ajax/search', name: 'vehicles_ajax_search', methods: ['GET', 'POST'])]
+    public function search(
+        Request $request,
+        VehicleRepository $vehicleRepo,
+        PaginatorInterface $paginator,
+        SessionInterface $session
+    ): JsonResponse {
+
+        $data = $request->query->all();
+
+        $mode = $data['mode'] ?? 'search';
+
+        if ($mode === 'autocomplete') {
+            $items = $vehicleRepo->searchForAutocomplete(
+                [],
+                $data['q'] ?? null,
+                10
+            );
+
+            return $this->json([
+                'items' => $items
+            ]);
+        }
+
+        $filters = $data['filters'] ?? [];
+        $searchTerm = $data['q'] ?? null;
+        $page = $data['page'] ?? 1;
+
+        $view = $filters['view']
+            ?? $session->get('vehicle_view', 'grid');
+
+        $session->set('vehicle_view', $view);
+
+        $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
+
+        $vehicles = $paginator->paginate($query, $page, 20);
+
+        $resultsHtml = $this->renderView(
+            $view === 'table'
+                ? 'vehicles/_vehicles_table_body.html.twig'
+                : 'vehicles/_vehicles_gallery_items.html.twig',
+            [
+                'vehicles' => $vehicles
+            ]
+        );
+
+        $paginationHtml = $this->renderView(
+            'vehicles/_pagination_info.html.twig',
+            [
+                'vehicles' => $vehicles
+            ]
+        );
+
+        return $this->json([
+            'results' => $resultsHtml,
+            'paginationTop' => $paginationHtml,
+            'paginationBottom' => $paginationHtml,
+        ]);
+    }
+
     #[Route('/ajax/filters', name: 'vehicles_ajax_filters', methods: ['GET'])]
     public function getFilters(VehicleRepository $vehicleRepo): Response
     {
@@ -69,68 +120,6 @@ class VehiclesFilterController extends AbstractController
             'registrationYears' => $vehicleRepo->getRegistrationYears()['years'],
             'registrationYearsMin' => $vehicleRepo->getRegistrationYears()['min'],
             'registrationYearsMax' => $vehicleRepo->getRegistrationYears()['max'],
-        ]);
-    }
-
-    /**
-     * AJAX SEARCH + AUTOCOMPLETE
-     */
-    #[Route('/ajax/search', name: 'vehicles_ajax_search', methods: ['GET', 'POST'])]
-    public function search(
-        Request $request,
-        VehicleRepository $vehicleRepo,
-        PaginatorInterface $paginator,
-        SessionInterface $session,
-        VehicleFilterService $filterService
-    ): JsonResponse {
-
-        $data = json_decode($request->getContent(), true) ?: $request->query->all();
-
-        $filters = $data['filters'] ?? [];
-        $searchTerm = $data['q'] ?? null;
-        $page = $data['page'] ?? 1;
-
-        // vue
-        $view = $filters['view'] ?? $session->get('vehicle_view', 'grid');
-        $session->set('vehicle_view', $view);
-
-        // QUERY PRINCIPALE (pagination)
-        $query = $filterService->apply(
-            $vehicleRepo->getAllVehiclesQueryBuilder(),
-            $filters,
-            $searchTerm
-        );
-
-        $vehicles = $paginator->paginate($query, $page, 20);
-
-        // ✅ AUTOCOMPLETE (indépendant)
-        $items = $vehicleRepo->searchForAutocomplete(
-            $filters,
-            $searchTerm,
-            10
-        );
-
-        // HTML
-        $resultsHtml = $this->renderView(
-            $view === 'table'
-                ? 'vehicles/_vehicles_table_body.html.twig'
-                : 'vehicles/_vehicles_gallery_items.html.twig',
-            [
-                'vehicles' => $vehicles,
-                'view' => $view
-            ]
-        );
-
-        $paginationHtml = $this->renderView(
-            'vehicles/_pagination_info.html.twig',
-            ['vehicles' => $vehicles]
-        );
-
-        return $this->json([
-            'items' => $items,
-            'results' => $resultsHtml,
-            'paginationTop' => $paginationHtml,
-            'paginationBottom' => $paginationHtml,
         ]);
     }
 }

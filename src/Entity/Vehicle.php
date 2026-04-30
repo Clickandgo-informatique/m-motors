@@ -13,6 +13,7 @@ use App\Entity\VehicleModel;
 use App\Entity\Favorite;
 use App\Entity\Color;
 use App\Entity\Dossier;
+use App\Entity\Traits\TimestampableTrait;
 use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,8 +22,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VehicleRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Vehicle
 {
+    use TimestampableTrait;
     // =========================================================
     // IDENTIFIANT
     // =========================================================

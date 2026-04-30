@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/vehicle')]
+#[Route('/vehicles')]
 class VehicleController extends AbstractController
 {
     #[Route('/new', name: 'vehicle_new', methods: ['GET', 'POST'])]

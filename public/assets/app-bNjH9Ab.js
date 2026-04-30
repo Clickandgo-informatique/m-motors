@@ -23,7 +23,7 @@ import ToggleVehicleFavorite from "./js/ToggleVehicleFavorite.js";
 import Autocomplete from "./js/Autocomplete.js";
 
 // =========================================================
-// TRACKERS (ANTI DOUBLE INIT)
+// REGISTERS (ANTI DOUBLE INIT)
 // =========================================================
 
 const filtersForms = new Set();
@@ -88,7 +88,7 @@ function initAutocomplete() {
 }
 
 // =========================================================
-// FETCHFORM INIT (SCOPÉ UNIQUEMENT)
+// FETCHFORM INIT (CORRIGÉ SCOPING PROPRE)
 // =========================================================
 
 function initFetchForms() {
@@ -133,10 +133,23 @@ function initApp() {
 document.addEventListener("DOMContentLoaded", initApp);
 
 // =========================================================
-// IMPORTANT : SUPPRESSION MUTATION OBSERVER GLOBAL
+// MUTATION OBSERVER (SCOPED UNIQUEMENT AJAX)
 // =========================================================
-// Aucun observer sur document.body
-// uniquement init contrôlé au chargement et navigation
+
+// IMPORTANT : on limite l'observer au container AJAX
+const ajaxRoot = document.getElementById("vehicles-search-results");
+
+if (ajaxRoot) {
+  const observer = new MutationObserver(() => {
+    initFavorites();
+    initFetchForms();
+  });
+
+  observer.observe(ajaxRoot, {
+    childList: true,
+    subtree: true
+  });
+}
 
 // =========================================================
 // VISIBILITY CHANGE

@@ -1,3 +1,4 @@
+// assets/js/vehiclesFilters.js
 import FilterBadges from "./FilterBadges.js";
 import initDoubleSlider from "./rangeSelector.js";
 import Autocomplete from "./Autocomplete.js";
@@ -6,17 +7,14 @@ export default class VehiclesFilter {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) return;
 
-    // anti double init
-    if (form.dataset.vehiclesFilterInit === "1") return;
-    form.dataset.vehiclesFilterInit = "1";
+    // 🔥 Anti double init
+    if (form._vehiclesFilterInstance) return;
+    form._vehiclesFilterInstance = this;
 
     this.form = form;
     this.url = form.dataset.fetchUrl;
 
     if (!this.url) return;
-
-    // compat page + sidebar
-    this.mainForm = document.querySelector("#filters-form") || this.form;
 
     this.container =
       document.querySelector("#vehicles-results") ||
@@ -43,24 +41,23 @@ export default class VehiclesFilter {
       return;
     }
 
-    this.loading = false;
-
-    if (this.summaryContainer) {
+    if (this.summaryContainer && this.form.matches("#filters-form")) {
       this.badges = new FilterBadges(
         this.summaryContainer,
-        this.mainForm,
+        this.form,
         this.submitFilters.bind(this)
       );
     }
 
-    this.initSliders();
+    if (this.form.matches("#filters-form")) this.initSliders();
+
     this.initEvents();
     this.initAutocomplete();
     this.initCardsClick();
   }
 
   initSliders() {
-    const sliders = this.mainForm.querySelectorAll(".double-slider");
+    const sliders = this.form.querySelectorAll(".double-slider");
     if (!sliders.length || typeof initDoubleSlider !== "function") return;
 
     sliders.forEach(slider => {
@@ -71,11 +68,10 @@ export default class VehiclesFilter {
       slider.addEventListener("sliderChanged", e => {
         const { filter, min, max } = e.detail;
 
-        const inputMin = this.mainForm.querySelector(
+        const inputMin = this.form.querySelector(
           `input[name="filters[${filter}Min]"]`
         );
-
-        const inputMax = this.mainForm.querySelector(
+        const inputMax = this.form.querySelector(
           `input[name="filters[${filter}Max]"]`
         );
 
@@ -92,8 +88,12 @@ export default class VehiclesFilter {
     if (this.eventsBound) return;
     this.eventsBound = true;
 
-    this.mainForm.addEventListener("change", e => {
-      if (!e.target.matches("input, select")) return;
+    this.form.addEventListener("change", e => {
+      if (
+        !e.target.matches("input[type='checkbox'], select, input[type='radio']")
+      )
+        return;
+
       this.submitFilters();
     });
 
@@ -103,20 +103,18 @@ export default class VehiclesFilter {
 
       e.preventDefault();
 
-      const page = parseInt(btn.dataset.page, 10);
-      if (!isNaN(page)) {
-        this.submitFilters(page);
-      }
+      const page = Number.parseInt(btn.dataset.page);
+      if (!isNaN(page)) this.submitFilters(page);
     });
 
-    if (this.badges && this.summaryContainer) {
+    if (this.badges) {
       this.summaryContainer.addEventListener("click", e => {
         if (!e.target.matches(".badge-remove")) return;
 
         const filter = e.target.dataset.filter;
         const value = e.target.dataset.value;
 
-        const checkboxes = this.mainForm.querySelectorAll(
+        const checkboxes = this.form.querySelectorAll(
           `input[name="filters[${filter}][]"]`
         );
 
@@ -131,11 +129,8 @@ export default class VehiclesFilter {
   }
 
   async submitFilters(page = 1) {
-    if (this.loading) return;
-    this.loading = true;
-
     try {
-      const formData = new FormData(this.mainForm);
+      const formData = new FormData(this.form);
       const filters = {};
 
       for (const [key, value] of formData.entries()) {
@@ -145,27 +140,20 @@ export default class VehiclesFilter {
         const name = match[1];
         const isArray = !!match[2];
 
-        if (!filters[name]) {
-          filters[name] = isArray ? [] : null;
-        }
-
         if (isArray) {
+          if (!filters[name]) filters[name] = [];
           filters[name].push(value);
         } else {
           filters[name] = value;
         }
       }
 
-      const viewInput = document.querySelector("input[name='view']:checked");
-      if (viewInput) {
-        filters.view = viewInput.value;
-      }
+      const viewInput = this.form.querySelector("input[name='view']:checked");
+      if (viewInput) filters.view = viewInput.value;
 
       const res = await fetch(this.url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filters, page })
       });
 
@@ -178,32 +166,28 @@ export default class VehiclesFilter {
             : "<div class='text-center text-muted'>Aucun véhicule trouvé</div>";
       }
 
-      if (this.paginationTop) {
+      if (this.paginationTop && data.paginationTop) {
         this.paginationTop.innerHTML = data.paginationTop;
       }
 
-      if (this.paginationBottom) {
+      if (this.paginationBottom && data.paginationBottom) {
         this.paginationBottom.innerHTML = data.paginationBottom;
       }
 
-      if (this.badges) {
-        this.badges.updateBadges();
-      }
+      if (this.badges) this.badges.updateBadges();
 
       this.initAutocomplete();
     } catch (err) {
       console.error("Erreur AJAX :", err);
-    } finally {
-      this.loading = false;
     }
   }
 
   initAutocomplete() {
-    this.mainForm.querySelectorAll("[data-autocomplete]").forEach(input => {
-      if (input.dataset.autocompleteInitialized) return;
-
-      new Autocomplete(input);
-      input.dataset.autocompleteInitialized = "1";
+    this.form.querySelectorAll("[data-autocomplete]").forEach(input => {
+      if (!input.dataset.autocompleteInitialized) {
+        new Autocomplete(input);
+        input.dataset.autocompleteInitialized = "true";
+      }
     });
   }
 
@@ -220,7 +204,41 @@ export default class VehiclesFilter {
       const url = card.dataset.itemLink;
       if (!url) return;
 
-      window.location.href = url;
+      if (
+        window.AjaxManagerInstance &&
+        typeof window.AjaxManagerInstance.loadModal === "function"
+      ) {
+        window.AjaxManagerInstance.loadModal(url);
+      } else {
+        window.location.href = url;
+      }
     });
   }
 }
+
+/**
+ * INIT GLOBAL SAFE
+ */
+function watchFetchForms() {
+  const initForm = form => {
+    if (form._vehiclesFilterInstance) return;
+    new VehiclesFilter(form);
+  };
+
+  document.querySelectorAll("[data-fetch-form]").forEach(initForm);
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (!(node instanceof HTMLElement)) return;
+
+        if (node.matches?.("[data-fetch-form]")) initForm(node);
+        node.querySelectorAll?.("[data-fetch-form]").forEach(initForm);
+      });
+    });
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+document.addEventListener("DOMContentLoaded", watchFetchForms);

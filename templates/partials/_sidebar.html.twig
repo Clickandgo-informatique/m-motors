@@ -1,9 +1,5 @@
-{# templates/partials/_sidebar.html.twig #}
+<aside class="sidebar" id="sidebar">
 
-<aside
-	class="sidebar" id="sidebar">
-
-	{# Bouton toggle sidebar #}
 	<button id="sidebar-toggle" class="sidebar-handle">
 		<i class="fa-solid fa-chevron-left"></i>
 	</button>
@@ -28,6 +24,11 @@
 				</li>
 
 				{% if app.request.attributes.get('_route') starts with 'vehicles' %}
+					{# <div id="sidebar-filters" data-url="{{ path('vehicles_ajax_filters') }}">
+											<div class="text-center text-muted">
+												Chargement des filtres...
+											</div>
+										</div> #}
 					{{ render(controller('App\\Controller\\VehiclesFilterController::getFilters')) }}
 				{% endif %}
 
@@ -101,7 +102,8 @@
 							Créer dossier
 						</a>
 					</li>
-				{% endif %}
+
+				</ul>
 
 				{% if app.user %}
 					<li>
@@ -112,8 +114,8 @@
 					</li>
 				{% endif %}
 
-			</ul>
-		</details>
+			</details>
+		{% endif %}
 
 	</nav>
 </aside>

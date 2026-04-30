@@ -1,5 +1,9 @@
 // assets/js/Autocomplete.js
 
+/**
+ * Debounce
+ * Permet de limiter les appels réseau pendant la saisie
+ */
 function debounce(fn, delay = 300) {
   let timer;
 
@@ -16,16 +20,14 @@ export default class Autocomplete {
   constructor(input) {
     if (!(input instanceof HTMLInputElement)) return;
 
+    // Empêche double initialisation
     if (input.dataset.autocompleteInitialized === "1") return;
     input.dataset.autocompleteInitialized = "1";
 
     this.input = input;
     this.url = input.dataset.url;
 
-    // FLAG IMPORTANT
-    this.isLinkMode = input.dataset.resultLinks === "true";
-
-    // template URL (si mode link)
+    // Template URL pour navigation éventuelle (optionnel)
     this.itemUrlTemplate = input.dataset.itemUrl || "";
 
     this.dropdown = null;
@@ -47,12 +49,23 @@ export default class Autocomplete {
     document.addEventListener("click", e => this.handleOutsideClick(e));
   }
 
+  /**
+   * Récupère le dropdown existant dans le DOM
+   */
   bindDropdown() {
     const wrapper = this.input.closest(".dropdown-wrapper");
-    if (!wrapper) return;
+
+    if (!wrapper) {
+      console.warn("Autocomplete: wrapper introuvable");
+      return;
+    }
 
     this.dropdown = wrapper.querySelector(".dropdown-results");
-    if (!this.dropdown) return;
+
+    if (!this.dropdown) {
+      console.warn("Autocomplete: dropdown introuvable");
+      return;
+    }
 
     this.dropdown.style.position = "absolute";
     this.dropdown.style.zIndex = "1000";
@@ -60,13 +73,19 @@ export default class Autocomplete {
   }
 
   handleOutsideClick(e) {
-    if (!this.dropdown) return;
+    if (!this.dropdown || !this.input) return;
 
-    if (!this.dropdown.contains(e.target) && !this.input.contains(e.target)) {
+    const insideInput = this.input.contains(e.target);
+    const insideDropdown = this.dropdown.contains(e.target);
+
+    if (!insideInput && !insideDropdown) {
       this.close();
     }
   }
 
+  /**
+   * Déclenché à la saisie
+   */
   onInput() {
     const value = (this.input.value || "").trim();
 
@@ -79,6 +98,9 @@ export default class Autocomplete {
     this.fetch(value);
   }
 
+  /**
+   * Appel AJAX autocomplete
+   */
   async fetch(query) {
     this.requestId++;
     const currentRequest = this.requestId;
@@ -101,15 +123,18 @@ export default class Autocomplete {
 
       const items = Array.isArray(data.items) ? data.items : [];
 
-      this.render(items);
+      this.render(items, query);
     } catch (e) {
       if (e.name !== "AbortError") {
-        console.error(e);
+        console.error("Autocomplete error:", e);
       }
     }
   }
 
-  render(items) {
+  /**
+   * Render dropdown
+   */
+  render(items, query) {
     this.clear();
 
     if (!items.length) {
@@ -122,24 +147,18 @@ export default class Autocomplete {
     const fragment = document.createDocumentFragment();
 
     items.forEach(item => {
-      const el = document.createElement(this.isLinkMode ? "a" : "div");
-
+      const el = document.createElement("div");
       el.className = "dropdown-item";
 
-      el.textContent = item.label;
+      el.appendChild(this.buildHighlightedLabel(item.label, query));
 
-      if (this.isLinkMode) {
-        el.href = this.itemUrlTemplate.replace("ID_PLACEHOLDER", item.id);
+      el.addEventListener("click", () => {
+        this.select(item);
 
-        // navigation directe
-        el.addEventListener("click", () => {
-          window.location.href = el.href;
-        });
-      } else {
-        el.addEventListener("click", () => {
-          this.select(item);
-        });
-      }
+        // IMPORTANT :
+        // on déclenche FetchForm via input event
+        this.input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
 
       fragment.appendChild(el);
     });
@@ -148,8 +167,51 @@ export default class Autocomplete {
     this.open();
   }
 
+  /**
+   * Highlight du texte
+   */
+  buildHighlightedLabel(text, query) {
+    const span = document.createElement("span");
+
+    if (!query) {
+      span.textContent = text;
+      return span;
+    }
+
+    const regex = new RegExp(`(${query})`, "gi");
+
+    let lastIndex = 0;
+    const matches = [...text.matchAll(regex)];
+
+    if (!matches.length) {
+      span.textContent = text;
+      return span;
+    }
+
+    for (const match of matches) {
+      const index = match.index;
+
+      span.appendChild(document.createTextNode(text.slice(lastIndex, index)));
+
+      const mark = document.createElement("mark");
+      mark.textContent = match[0];
+
+      span.appendChild(mark);
+
+      lastIndex = index + match[0].length;
+    }
+
+    span.appendChild(document.createTextNode(text.slice(lastIndex)));
+
+    return span;
+  }
+
+  /**
+   * Sélection d’un item
+   */
   select(item) {
     this.input.value = item.label;
+
     this.clear();
     this.close();
   }

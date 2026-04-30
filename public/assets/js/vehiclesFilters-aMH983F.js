@@ -1,23 +1,36 @@
+// assets/js/vehiclesFilters.js
+
 import FilterBadges from "./FilterBadges.js";
 import initDoubleSlider from "./rangeSelector.js";
 import Autocomplete from "./Autocomplete.js";
 
+/**
+ * Gestion principale des filtres véhicules
+ */
 export default class VehiclesFilter {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) return;
 
-    // anti double init
-    if (form.dataset.vehiclesFilterInit === "1") return;
-    form.dataset.vehiclesFilterInit = "1";
+    /**
+     * Anti double instanciation
+     * Empêche les re-bind lors des mutations DOM
+     */
+    if (form._vehiclesFilterInstance) return;
+    form._vehiclesFilterInstance = true;
 
     this.form = form;
     this.url = form.dataset.fetchUrl;
 
     if (!this.url) return;
 
-    // compat page + sidebar
+    /**
+     * Form principal (sidebar filters)
+     */
     this.mainForm = document.querySelector("#filters-form") || this.form;
 
+    /**
+     * Container principal résultats
+     */
     this.container =
       document.querySelector("#vehicles-results") ||
       document.querySelector("#vehicles-container");
@@ -43,9 +56,10 @@ export default class VehiclesFilter {
       return;
     }
 
-    this.loading = false;
-
-    if (this.summaryContainer) {
+    /**
+     * Badges filtres actifs
+     */
+    if (this.summaryContainer && this.mainForm.matches("#filters-form")) {
       this.badges = new FilterBadges(
         this.summaryContainer,
         this.mainForm,
@@ -53,12 +67,26 @@ export default class VehiclesFilter {
       );
     }
 
-    this.initSliders();
+    /**
+     * Sliders double range
+     */
+    if (this.mainForm.matches("#filters-form")) {
+      this.initSliders();
+    }
+
     this.initEvents();
     this.initAutocomplete();
     this.initCardsClick();
+
+    /**
+     * Chargement sidebar (UNE SEULE FOIS)
+     */
+    this.loadSidebarFilters();
   }
 
+  /**
+   * Init sliders double range
+   */
   initSliders() {
     const sliders = this.mainForm.querySelectorAll(".double-slider");
     if (!sliders.length || typeof initDoubleSlider !== "function") return;
@@ -88,28 +116,42 @@ export default class VehiclesFilter {
     });
   }
 
+  /**
+   * Events globaux filtres + pagination
+   */
   initEvents() {
     if (this.eventsBound) return;
     this.eventsBound = true;
 
+    /**
+     * Changement filtres classiques
+     */
     this.mainForm.addEventListener("change", e => {
-      if (!e.target.matches("input, select")) return;
+      if (
+        !e.target.matches("input[type='checkbox'], select, input[type='radio']")
+      )
+        return;
+
       this.submitFilters();
     });
 
+    /**
+     * Pagination AJAX
+     */
     this.container.addEventListener("click", e => {
       const btn = e.target.closest("[data-page]");
       if (!btn) return;
 
       e.preventDefault();
 
-      const page = parseInt(btn.dataset.page, 10);
-      if (!isNaN(page)) {
-        this.submitFilters(page);
-      }
+      const page = Number.parseInt(btn.dataset.page);
+      if (!isNaN(page)) this.submitFilters(page);
     });
 
-    if (this.badges && this.summaryContainer) {
+    /**
+     * Suppression badges filtres
+     */
+    if (this.badges) {
       this.summaryContainer.addEventListener("click", e => {
         if (!e.target.matches(".badge-remove")) return;
 
@@ -130,10 +172,10 @@ export default class VehiclesFilter {
     }
   }
 
+  /**
+   * Soumission AJAX filtres + pagination
+   */
   async submitFilters(page = 1) {
-    if (this.loading) return;
-    this.loading = true;
-
     try {
       const formData = new FormData(this.mainForm);
       const filters = {};
@@ -157,20 +199,22 @@ export default class VehiclesFilter {
       }
 
       const viewInput = document.querySelector("input[name='view']:checked");
+
       if (viewInput) {
         filters.view = viewInput.value;
       }
 
       const res = await fetch(this.url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filters, page })
       });
 
       const data = await res.json();
 
+      /**
+       * Injection résultats
+       */
       if (this.resultsEl) {
         this.resultsEl.innerHTML =
           data.results && data.results.trim() !== ""
@@ -178,11 +222,14 @@ export default class VehiclesFilter {
             : "<div class='text-center text-muted'>Aucun véhicule trouvé</div>";
       }
 
-      if (this.paginationTop) {
+      /**
+       * Pagination
+       */
+      if (this.paginationTop && data.paginationTop) {
         this.paginationTop.innerHTML = data.paginationTop;
       }
 
-      if (this.paginationBottom) {
+      if (this.paginationBottom && data.paginationBottom) {
         this.paginationBottom.innerHTML = data.paginationBottom;
       }
 
@@ -193,20 +240,24 @@ export default class VehiclesFilter {
       this.initAutocomplete();
     } catch (err) {
       console.error("Erreur AJAX :", err);
-    } finally {
-      this.loading = false;
     }
   }
 
+  /**
+   * Autocomplete init sécurisé
+   */
   initAutocomplete() {
     this.mainForm.querySelectorAll("[data-autocomplete]").forEach(input => {
       if (input.dataset.autocompleteInitialized) return;
 
       new Autocomplete(input);
-      input.dataset.autocompleteInitialized = "1";
+      input.dataset.autocompleteInitialized = "true";
     });
   }
 
+  /**
+   * Click cards véhicules (modal AJAX)
+   */
   initCardsClick() {
     if (this.cardsClickBound) return;
     this.cardsClickBound = true;
@@ -220,7 +271,72 @@ export default class VehiclesFilter {
       const url = card.dataset.itemLink;
       if (!url) return;
 
-      window.location.href = url;
+      if (
+        window.AjaxManagerInstance &&
+        typeof window.AjaxManagerInstance.loadModal === "function"
+      ) {
+        window.AjaxManagerInstance.loadModal(url);
+      } else {
+        window.location.href = url;
+      }
     });
   }
+
+  /**
+   * Chargement sidebar filtres (UNE SEULE FOIS)
+   */
+  loadSidebarFilters() {
+    if (this.sidebarLoaded) return;
+    this.sidebarLoaded = true;
+
+    const container = document.querySelector("#sidebar-filters");
+    if (!container || !container.dataset.url) return;
+
+    fetch(container.dataset.url)
+      .then(res => res.text())
+      .then(html => {
+        container.innerHTML = html;
+      })
+      .catch(err => {
+        console.error("Erreur chargement sidebar filters", err);
+      });
+  }
 }
+
+/**
+ * Initialisation globale sécurisée
+ */
+function watchFetchForms() {
+  const initForm = form => {
+    if (form._vehiclesFilterInstance) return;
+
+    new VehiclesFilter(form);
+  };
+
+  document.querySelectorAll("[data-fetch-form]").forEach(initForm);
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (!(node instanceof HTMLElement)) return;
+
+        /**
+         * IMPORTANT :
+         * on ignore la sidebar pour éviter boucle infinie
+         */
+        if (node.closest && node.closest("#sidebar-filters")) return;
+
+        if (node.matches?.("[data-fetch-form]")) initForm(node);
+
+        node.querySelectorAll?.("[data-fetch-form]").forEach(initForm);
+      });
+    });
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+}
+
+document.addEventListener("DOMContentLoaded", watchFetchForms);
