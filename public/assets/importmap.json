@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-CZIx6c7.js",
+        "path": "\/assets\/app-bND1zEj.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,11 +28,11 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-L8i09t0.css",
+        "path": "\/assets\/styles\/app-JhjI352.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
-        "path": "\/assets\/js\/sidebar-mwUYV2W.js",
+        "path": "\/assets\/js\/sidebar-5KRP-II.js",
         "type": "js"
     },
     "\/assets\/js\/rangeSelector.js": {
@@ -44,7 +44,7 @@
         "type": "js"
     },
     "\/assets\/js\/vehiclesFilters.js": {
-        "path": "\/assets\/js\/vehiclesFilters-nTeCcQ_.js",
+        "path": "\/assets\/js\/vehiclesFilters-OCbUX7r.js",
         "type": "js"
     },
     "\/assets\/js\/FilterBadges.js": {
@@ -60,11 +60,11 @@
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-a-iL5JH.js",
+        "path": "\/assets\/js\/FetchForm-AKf4JRP.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
-        "path": "\/assets\/js\/AjaxManager-B5H9Cur.js",
+        "path": "\/assets\/js\/AjaxManager-bdq2Le7.js",
         "type": "js"
     },
     "\/assets\/js\/ToggleVehicleFavorite.js": {
@@ -72,7 +72,7 @@
         "type": "js"
     },
     "vehiclesFilters": {
-        "path": "\/assets\/js\/vehiclesFilters-nTeCcQ_.js",
+        "path": "\/assets\/js\/vehiclesFilters-OCbUX7r.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {
@@ -88,7 +88,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-a-iL5JH.js",
+        "path": "\/assets\/js\/FetchForm-AKf4JRP.js",
         "type": "js"
     }
 }

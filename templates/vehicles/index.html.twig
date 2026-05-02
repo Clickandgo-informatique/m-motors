@@ -1,83 +1,34 @@
 {% extends "base.html.twig" %}
 
-{% block title %}M-Motors : Catalogue véhicules
-{% endblock %}
-
 {% block body %}
 	<h1 class="text-center">Catalogue véhicules</h1>
 
-	{# Toggle view grid/table #}
-	<div class="view-switch-wrapper text-center mb-3">
-		<form id="view-switch-form" class="unset-form fetch-form" data-fetch-form data-fetch-url="{{ path('vehicles_ajax_filters') }}" method="post">
-			{% set defaultView = app.user is not null and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')) ? 'table' : 'grid' %}
-			{% set currentView = view|default(defaultView) %}
+	<div class="layout">
 
-			<div id="view-toggle">
-				<input type="radio" name="view" id="view-grid" value="grid" {{ currentView == 'grid' ? 'checked' }}>
-				<input type="radio" name="view" id="view-table" value="table" {{ currentView == 'table' ? 'checked' }}>
-				<div class="toggle-thumb"></div>
-				<i class="fas fa-th icon-grid"></i>
-				<i class="fas fa-table icon-table"></i>
-			</div>
-		</form>
-	</div>
+		<main>
 
-	{# Formulaire autocomplete (dropdown séparé) #}
-	{% include "Components/Forms/_fetch_form.html.twig" with {
-    action: path('vehicles_ajax_search'),
-    name: 'q',
-    placeholder: 'Rechercher un véhicule par marque ou modèle ...',
-    resultDiv: 'autocomplete-results',          # dropdown spécifique
-    cardsContainer: 'vehicles-search-results',  # gallery principale
-    autocomplete: true,
-    pagination: true,
-    itemUrl: '/vehicles/ID_PLACEHOLDER/edit',
-    ajaxModal: true,
-    itemClass: 'vehicle-item',
-    linkClass: 'vehicle-link',
-    noResultsClass: 'dropdown-no-results',
-    resultLinks: true,
-    highlight: true
-} %}
+			{# Toggle view #}
+			<form id="view-switch-form" data-fetch-form data-fetch-url="{{ path('vehicles_ajax_list') }}" data-target="#vehicles-results">
 
-	{# Wrapper global pour VehiclesFilter #}
-	<div
-		id="vehicles-container">
-
-		{# Sidebar / filtres #}
-		<div id="filters-summary" data-target="filters-summary">
-			<p class="text-center text-muted">Aucun filtre appliqué</p>
-		</div>
-
-		{# Pagination haut #}
-		<div class="pagination-wrapper" data-target="pagination-top">
-			{% include "vehicles/_pagination_info.html.twig" with {vehicles: vehicles} %}
-		</div>
-
-		{# Galerie véhicules #}
-		<div class="vehicles-cards-grid" id="vehicles-search-results" data-target="vehicles-search-results">
-			{% for vehicle in vehicles %}
-				<div class="vehicle-item" data-id="{{ vehicle.id }}" data-url="{{ path('vehicle_edit', {'id': vehicle.id}) }}">
-					<div class="vehicle-card">
-						<h5>{{ vehicle.vehicleModel.brand.name }}
-							{{ vehicle.vehicleModel.model.name }}</h5>
-						<p>{{ vehicle.registrationNumber }}</p>
-						<p>{{ vehicle.mileage|number_format(0, ',', ' ') }}
-							km</p>
-						<p>{{ vehicle.price|number_format(0, ',', ' ') }}
-							€</p>
-					</div>
+				<div id="view-toggle">
+					<input type="radio" name="filters[view]" value="grid" checked>
+					<input type="radio" name="filters[view]" value="table">
 				</div>
-			{% else %}
-				<div class="text-center text-muted">Aucun véhicule trouvé</div>
-			{% endfor %}
-		</div>
+			</form>
 
-		{# Pagination bas #}
-		<div class="pagination-wrapper" data-target="pagination-bottom">
-			{% include "vehicles/_pagination_info.html.twig" with {vehicles: vehicles} %}
-		</div>
+			{# SEARCH #}
+			{% include "Components/Forms/_fetch_form.html.twig" with {
+            action: path('vehicles_ajax_search'),
+            name: 'q',
+            resultDiv: 'autocomplete-results'
+        } %}
+
+			{# RESULTS #}
+			<div id="vehicles-results">
+				{% include 'vehicles/_vehicles_list.html.twig' %}
+			</div>
+
+		</main>
 
 	</div>
-	{# /#vehicles-container #}
 {% endblock %}

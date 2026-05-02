@@ -9,11 +9,21 @@ use App\Entity\FuelType;
 use App\Entity\VehicleModel;
 use App\Entity\BodyType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class VehicleModelFixtures extends Fixture
+/**
+ * Import des VehicleModel depuis le fichier UTAC CSV.
+ *
+ * Objectifs :
+ * - construire un référentiel cohérent de modèles
+ * - éviter les doublons via CNIT
+ * - garantir la présence des relations obligatoires
+ * - optimiser via cache mémoire
+ */
+class VehicleModelFixtures extends Fixture implements DependentFixtureInterface
 {
     private array $brandCache = [];
     private array $modelCache = [];
@@ -26,10 +36,7 @@ class VehicleModelFixtures extends Fixture
     {
         ini_set('memory_limit', '-1');
 
-        $batchSize = 500;
-
-        $projectDir = dirname(__DIR__, 2);
-        $path = $projectDir . '/data/utac.csv';
+        $path = dirname(__DIR__, 2) . '/data/utac.csv';
 
         if (!file_exists($path)) {
             throw new \RuntimeException("CSV introuvable : $path");
@@ -38,39 +45,49 @@ class VehicleModelFixtures extends Fixture
         $file = fopen($path, 'r');
 
         $header = fgetcsv($file, 0, ';');
+
+        // Nettoyage BOM UTF-8 éventuel
         foreach ($header as &$col) {
             $col = preg_replace('/^\xEF\xBB\xBF/', '', $col);
         }
 
+        // Mapping colonne => index
         $map = [];
         foreach ($header as $i => $col) {
             $map[strtolower(trim($col))] = $i;
         }
 
+        /*
+         * Chargement des BodyTypes (obligatoires pour VehicleModel)
+         */
         $this->bodyTypes = $em->getRepository(BodyType::class)->findAll();
+
+        if (empty($this->bodyTypes)) {
+            throw new \RuntimeException('Aucun BodyType disponible');
+        }
 
         $output = new ConsoleOutput();
         $progressBar = new ProgressBar($output);
-
         $progressBar->start();
 
         $i = 0;
 
         while (($row = fgetcsv($file, 0, ';')) !== false) {
 
+            /*
+             * CNIT utilisé comme clé d’unicité
+             */
             $cnit = $this->sanitizeString($this->col($row, $map, 'cnit'), 50);
 
-            if (!$cnit) {
-                continue;
-            }
-
-            // évite doublons
-            if (isset($this->cnitCache[$cnit])) {
+            if (!$cnit || isset($this->cnitCache[$cnit])) {
                 continue;
             }
 
             $this->cnitCache[$cnit] = true;
 
+            /*
+             * Données principales
+             */
             $brandName   = $this->normalize($this->col($row, $map, 'lib_mrq_doss'));
             $modelName   = $this->normalize($this->col($row, $map, 'dscom'));
             $variantName = $this->normalize($this->col($row, $map, 'mod_utac'));
@@ -80,15 +97,22 @@ class VehicleModelFixtures extends Fixture
                 continue;
             }
 
+            /*
+             * Récupération / création des entités liées
+             */
             $brand   = $this->getBrand($em, $brandName);
             $model   = $this->getModel($em, $brand, $modelName);
             $variant = $this->getVariant($em, $model, $variantName);
             $fuel    = $fuelName ? $this->getFuel($em, $fuelName) : null;
 
+            /*
+             * Création VehicleModel
+             */
             $vm = new VehicleModel();
+
             $vm->setBrand($brand);
             $vm->setModel($model);
-            $vm->setBodyType($this->randomBodyType());
+            $vm->setBodyType($this->bodyTypes[array_rand($this->bodyTypes)]);
 
             if ($variant) {
                 $vm->setVariant($variant);
@@ -98,6 +122,12 @@ class VehicleModelFixtures extends Fixture
                 $vm->setFuelType($fuel);
             }
 
+            $vm->setCnit($cnit);
+            $vm->setUtacCode($this->sanitizeString($this->col($row, $map, 'tvv'), 50));
+
+            /*
+             * Données techniques
+             */
             $vm->setPowerHp($this->sanitizeNumber($this->col($row, $map, 'puiss_max'), 2000));
             $vm->setPowerFiscal($this->sanitizeNumber($this->col($row, $map, 'puiss_admin'), 100));
             $vm->setConsumption($this->sanitizeNumber($this->col($row, $map, 'conso_mixte'), 50));
@@ -106,10 +136,11 @@ class VehicleModelFixtures extends Fixture
             $vm->setMassMin($this->sanitizeNumber($this->col($row, $map, 'masse_ordma_min'), 10000));
             $vm->setMassMax($this->sanitizeNumber($this->col($row, $map, 'masse_ordma_max'), 10000));
 
-            $vm->setCnit($cnit);
-            $vm->setUtacCode($this->sanitizeString($this->col($row, $map, 'tvv'), 50));
-
+            /*
+             * Date homologation
+             */
             $date = $this->col($row, $map, 'date_maj');
+
             if ($date && strtotime($date)) {
                 $vm->setHomologationDate(new \DateTime($date));
             }
@@ -119,11 +150,14 @@ class VehicleModelFixtures extends Fixture
             $i++;
             $progressBar->advance();
 
-            if ($i % $batchSize === 0) {
-                $em->flush();                
+            /*
+             * Batch flush pour éviter surcharge mémoire
+             */
+            if ($i % 500 === 0) {
+                $em->flush();
+                $em->clear();
 
                 $this->resetCache();
-
                 $this->bodyTypes = $em->getRepository(BodyType::class)->findAll();
             }
         }
@@ -137,67 +171,11 @@ class VehicleModelFixtures extends Fixture
         $output->writeln("\nImport terminé.");
     }
 
-    private function randomBodyType(): ?BodyType
-    {
-        return $this->bodyTypes ? $this->bodyTypes[array_rand($this->bodyTypes)] : null;
-    }
-
-    private function resetCache(): void
-    {
-        $this->brandCache = [];
-        $this->modelCache = [];
-        $this->variantCache = [];
-        $this->fuelCache = [];
-    }
-
-    private function col(array $row, array $map, string $name)
-    {
-        $i = $map[$name] ?? null;
-        return $i !== null ? ($row[$i] ?? null) : null;
-    }
-
-    private function normalize(?string $value): ?string
-    {
-        if (!$value) return null;
-        return mb_convert_case(mb_strtolower(trim($value)), MB_CASE_TITLE);
-    }
-
-    private function normalizeFuel(?string $fuel): ?string
-    {
-        if (!$fuel) return null;
-
-        $fuel = strtolower(trim($fuel));
-
-        return match ($fuel) {
-            'ess', 'es', 'essence' => 'Essence',
-            'go', 'gazole', 'diesel' => 'Diesel',
-            'el', 'elec', 'electric' => 'Électrique',
-            'hy', 'hybride' => 'Hybride',
-            'gnv', 'gn' => 'Gaz Naturel (GNV)',
-            'gpl' => 'GPL',
-            default => ucfirst($fuel),
-        };
-    }
-
-    private function sanitizeNumber($value, $max)
-    {
-        if (!$value) return null;
-        $value = str_replace([' ', ','], ['', '.'], $value);
-        if (!is_numeric($value)) return null;
-
-        $num = (float)$value;
-
-        return $num > $max ? null : $num;
-    }
-
-    private function sanitizeString(?string $value, int $max): ?string
-    {
-        if (!$value) return null;
-
-        $value = trim($value);
-
-        return mb_strlen($value) > $max ? null : $value;
-    }
+    /*
+     * =========================
+     * HELPERS ENTITÉS
+     * =========================
+     */
 
     private function getBrand(ObjectManager $em, string $name): Brand
     {
@@ -241,7 +219,9 @@ class VehicleModelFixtures extends Fixture
 
     private function getVariant(ObjectManager $em, Model $model, ?string $name): ?Variant
     {
-        if (!$name) return null;
+        if (!$name) {
+            return null;
+        }
 
         $key = $model->getName() . '|' . $name;
 
@@ -279,5 +259,88 @@ class VehicleModelFixtures extends Fixture
         }
 
         return $this->fuelCache[$name] = $fuel;
+    }
+
+    /*
+     * =========================
+     * HELPERS UTILS
+     * =========================
+     */
+
+    private function resetCache(): void
+    {
+        $this->brandCache = [];
+        $this->modelCache = [];
+        $this->variantCache = [];
+        $this->fuelCache = [];
+    }
+
+    private function col(array $row, array $map, string $name)
+    {
+        $i = $map[$name] ?? null;
+        return $i !== null ? ($row[$i] ?? null) : null;
+    }
+
+    private function normalize(?string $value): ?string
+    {
+        if (!$value) {
+            return null;
+        }
+
+        return mb_convert_case(mb_strtolower(trim($value)), MB_CASE_TITLE);
+    }
+
+    private function normalizeFuel(?string $fuel): ?string
+    {
+        if (!$fuel) {
+            return null;
+        }
+
+        $fuel = strtolower(trim($fuel));
+
+        return match ($fuel) {
+            'ess', 'es', 'essence' => 'Essence',
+            'go', 'gazole', 'diesel' => 'Diesel',
+            'el', 'elec', 'electric' => 'Électrique',
+            'hy', 'hybride' => 'Hybride',
+            'gnv', 'gn' => 'Gaz Naturel (GNV)',
+            'gpl' => 'GPL',
+            default => ucfirst($fuel),
+        };
+    }
+
+    private function sanitizeString(?string $value, int $max): ?string
+    {
+        if (!$value) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return mb_strlen($value) > $max ? null : $value;
+    }
+
+    private function sanitizeNumber($value, $max)
+    {
+        if (!$value) {
+            return null;
+        }
+
+        $value = str_replace([' ', ','], ['', '.'], $value);
+
+        if (!is_numeric($value)) {
+            return null;
+        }
+
+        $num = (float)$value;
+
+        return $num > $max ? null : $num;
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            BodyTypeFixtures::class,
+        ];
     }
 }

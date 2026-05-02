@@ -10,10 +10,11 @@ framework:
         type: method
         property: status
 
-      initial_marking: available
+      initial_marking: available_sale
 
       places:
-        - available
+        - available_sale
+        - available_rent
         - reserved
         - rented
         - sold
@@ -21,34 +22,53 @@ framework:
         - maintenance
 
       transitions:
+
         reserve:
-          from: available
+          from:
+            - available_sale
+            - available_rent
           to: reserved
 
-        cancel_reservation:
+        cancel_reservation_to_sale:
           from: reserved
-          to: available
+          to: available_sale
+
+        cancel_reservation_to_rent:
+          from: reserved
+          to: available_rent
 
         vehicle_rent:
-          from: reserved
+          from:
+            - reserved
+            - available_rent
           to: rented
 
         vehicle_return:
           from: rented
-          to: available
+          to: available_rent
 
         vehicle_sell:
-          from: available
+          from:
+            - available_sale
+            - reserved
           to: sold
 
         vehicle_order:
-          from: available
+          from:
+            - available_sale
+            - available_rent
           to: ordered
 
         vehicle_send_to_maintenance:
-          from: available
+          from:
+            - available_sale
+            - available_rent
           to: maintenance
 
-        vehicle_back_from_maintenance:
+        vehicle_back_from_maintenance_to_sale:
           from: maintenance
-          to: available
+          to: available_sale
+
+        vehicle_back_from_maintenance_to_rent:
+          from: maintenance
+          to: available_rent

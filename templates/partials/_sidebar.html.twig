@@ -5,7 +5,7 @@
 	</button>
 
 	<nav
-		class="sidenav" aria-label="Navigation latérale">
+		class="sidenav sidenav-filters" aria-label="Navigation latérale">
 
 		{# ========================= VEHICULES ========================= #}
 		<details open>
@@ -17,19 +17,14 @@
 			<ul class="items-list">
 
 				<li>
-					<a href="{{ path('vehicles') }}">
+					<a href="{{ path('vehicles_index') }}">
 						<i class="fa-solid fa-car-tunnel"></i>
 						Véhicules enregistrés
 					</a>
 				</li>
 
 				{% if app.request.attributes.get('_route') starts with 'vehicles' %}
-					{# <div id="sidebar-filters" data-url="{{ path('vehicles_ajax_filters') }}">
-											<div class="text-center text-muted">
-												Chargement des filtres...
-											</div>
-										</div> #}
-					{{ render(controller('App\\Controller\\VehiclesFilterController::getFilters')) }}
+					{% include 'vehicles/_vehicles_filters.html.twig' %}
 				{% endif %}
 
 				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}

@@ -5,30 +5,29 @@ namespace App\Controller;
 use App\Repository\VehicleRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/vehicles')]
 class VehiclesFilterController extends AbstractController
 {
-    #[Route('', name: 'vehicles', methods: ['GET'])]
+    /**
+     * PAGE PRINCIPALE
+     */
+#[Route('', name: 'vehicles_index', methods: ['GET'])]
     public function index(
         VehicleRepository $vehicleRepo,
         Request $request,
-        PaginatorInterface $paginator,
-        SessionInterface $session
+        PaginatorInterface $paginator
     ): Response {
 
-        $filters = $request->query->all('filters') ?? [];
-        $searchTerm = $request->query->get('q');
+        $data = $request->query->all();
 
-        $view = $filters['view']
-            ?? $session->get('vehicle_view', 'grid');
+        $filters = $data['filters'] ?? [];
+        $searchTerm = $data['q'] ?? null;
 
-        $session->set('vehicle_view', $view);
+        $view = $filters['view'] ?? 'grid';
 
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
 
@@ -50,76 +49,73 @@ class VehiclesFilterController extends AbstractController
         ]);
     }
 
-    #[Route('/ajax/search', name: 'vehicles_ajax_search', methods: ['GET', 'POST'])]
-    public function search(
+    /**
+     * LISTE AJAX (GRID / TABLE + PAGINATION)
+     */
+    #[Route('/ajax/list', name: 'vehicles_ajax_list', methods: ['GET', 'POST'])]
+    public function list(
         Request $request,
         VehicleRepository $vehicleRepo,
-        PaginatorInterface $paginator,
-        SessionInterface $session
-    ): JsonResponse {
+        PaginatorInterface $paginator
+    ): Response {
 
         $data = $request->query->all();
 
-        $mode = $data['mode'] ?? 'search';
-
-        if ($mode === 'autocomplete') {
-            $items = $vehicleRepo->searchForAutocomplete(
-                [],
-                $data['q'] ?? null,
-                10
-            );
-
-            return $this->json([
-                'items' => $items
-            ]);
-        }
-
         $filters = $data['filters'] ?? [];
         $searchTerm = $data['q'] ?? null;
-        $page = $data['page'] ?? 1;
 
-        $view = $filters['view']
-            ?? $session->get('vehicle_view', 'grid');
-
-        $session->set('vehicle_view', $view);
+        $page = max(1, (int) ($data['page'] ?? 1));
+        $view = $filters['view'] ?? 'grid';
 
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
 
-        $vehicles = $paginator->paginate($query, $page, 20);
+        $vehicles = $paginator->paginate($query, $page, 10);
 
-        $resultsHtml = $this->renderView(
-            $view === 'table'
-                ? 'vehicles/_vehicles_table_body.html.twig'
-                : 'vehicles/_vehicles_gallery_items.html.twig',
-            [
-                'vehicles' => $vehicles
-            ]
-        );
-
-        $paginationHtml = $this->renderView(
-            'vehicles/_pagination_info.html.twig',
-            [
-                'vehicles' => $vehicles
-            ]
-        );
-
-        return $this->json([
-            'results' => $resultsHtml,
-            'paginationTop' => $paginationHtml,
-            'paginationBottom' => $paginationHtml,
+        return $this->render('vehicles/_vehicles_list.html.twig', [
+            'vehicles' => $vehicles,
+            'view' => $view
         ]);
     }
 
-    #[Route('/ajax/filters', name: 'vehicles_ajax_filters', methods: ['GET'])]
-    public function getFilters(VehicleRepository $vehicleRepo): Response
-    {
+    /**
+     * SIDEBAR FILTRES (DYNAMIQUE)
+     */
+    #[Route('/ajax/filters', name: 'vehicles_ajax_filters', methods: ['GET', 'POST'])]
+    public function filters(
+        Request $request,
+        VehicleRepository $vehicleRepo
+    ): Response {
+
+        $data = $request->query->all();
+
+        $filters = $data['filters'] ?? [];
+        $searchTerm = $data['q'] ?? null;
+
         return $this->render('vehicles/_vehicles_filters.html.twig', [
-            'brands' => $vehicleRepo->getUsedBrands(),
-            'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
-            'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
+            'brands' => $vehicleRepo->getUsedBrands($filters, $searchTerm),
+            'bodyTypes' => $vehicleRepo->getUsedBodyTypes($filters, $searchTerm),
+            'fuelTypes' => $vehicleRepo->getUsedFuelTypes($filters, $searchTerm),
             'registrationYears' => $vehicleRepo->getRegistrationYears()['years'],
             'registrationYearsMin' => $vehicleRepo->getRegistrationYears()['min'],
             'registrationYearsMax' => $vehicleRepo->getRegistrationYears()['max'],
+        ]);
+    }
+
+    /**
+     * AUTOCOMPLETE
+     */
+    #[Route('/ajax/search', name: 'vehicles_ajax_search', methods: ['GET'])]
+    public function search(
+        Request $request,
+        VehicleRepository $vehicleRepo
+    ): Response {
+
+        $q = $request->query->get('q');
+
+        $items = $vehicleRepo->searchForAutocomplete([], $q, 10);
+
+        return $this->json([
+            'items' => $items
         ]);
     }
 }

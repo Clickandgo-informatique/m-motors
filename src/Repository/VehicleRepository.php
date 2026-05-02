@@ -19,7 +19,7 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     // =========================================================
-    // QUERY BUILDER PRINCIPAL (FILTRES + SEARCH)
+    // QUERY BUILDER PRINCIPAL
     // =========================================================
 
     public function getFilteredQueryBuilder(array $filters = [], ?string $searchTerm = null): QueryBuilder
@@ -34,11 +34,15 @@ class VehicleRepository extends ServiceEntityRepository
             ->addSelect('vm', 'b', 'm', 'bt', 'ft', 'd');
 
         $normalize = function ($value) {
-            if (empty($value)) {
+            if ($value === null || $value === '') {
                 return [];
             }
 
-            return is_array($value) ? $value : [$value];
+            if (is_array($value)) {
+                return array_filter($value, fn($v) => $v !== '' && $v !== null);
+            }
+
+            return [$value];
         };
 
         // =====================================================
@@ -46,17 +50,17 @@ class VehicleRepository extends ServiceEntityRepository
         // =====================================================
 
         $status = $normalize($filters['status'] ?? null);
-        if ($status) {
+        if (!empty($status)) {
             $qb->andWhere('v.status IN (:status)')
                 ->setParameter('status', $status);
         }
 
         // =====================================================
-        // TYPE (DOSSIERS)
+        // DOSSIERS TYPE
         // =====================================================
 
         $type = $normalize($filters['type'] ?? null);
-        if ($type) {
+        if (!empty($type)) {
             $qb->andWhere('d.type IN (:type)')
                 ->setParameter('type', $type);
         }
@@ -66,7 +70,7 @@ class VehicleRepository extends ServiceEntityRepository
         // =====================================================
 
         $financing = $normalize($filters['financing'] ?? null);
-        if ($financing) {
+        if (!empty($financing)) {
             $qb->andWhere('d.financingType IN (:financing)')
                 ->setParameter('financing', $financing);
         }
@@ -76,7 +80,7 @@ class VehicleRepository extends ServiceEntityRepository
         // =====================================================
 
         $brands = $normalize($filters['brand'] ?? null);
-        if ($brands) {
+        if (!empty($brands)) {
             $qb->andWhere('b.id IN (:brands)')
                 ->setParameter('brands', $brands);
         }
@@ -86,7 +90,7 @@ class VehicleRepository extends ServiceEntityRepository
         // =====================================================
 
         $bodyTypes = $normalize($filters['bodyType'] ?? null);
-        if ($bodyTypes) {
+        if (!empty($bodyTypes)) {
             $qb->andWhere('bt.id IN (:bodyTypes)')
                 ->setParameter('bodyTypes', $bodyTypes);
         }
@@ -96,7 +100,7 @@ class VehicleRepository extends ServiceEntityRepository
         // =====================================================
 
         $fuelTypes = $normalize($filters['fuelType'] ?? null);
-        if ($fuelTypes) {
+        if (!empty($fuelTypes)) {
             $qb->andWhere('ft.id IN (:fuelTypes)')
                 ->setParameter('fuelTypes', $fuelTypes);
         }
@@ -130,7 +134,7 @@ class VehicleRepository extends ServiceEntityRepository
         }
 
         // =====================================================
-        // REGISTRATION YEAR
+        // YEAR
         // =====================================================
 
         $yearMin = $filters['registrationYearMin'] ?? null;
@@ -160,9 +164,12 @@ class VehicleRepository extends ServiceEntityRepository
                     'LOWER(m.name) LIKE :search',
                     'LOWER(b.name) LIKE :search'
                 )
-            )
-                ->setParameter('search', $search);
+            )->setParameter('search', $search);
         }
+
+        // =====================================================
+        // ORDER SAFE (DOCTRINE COMPATIBLE)
+        // =====================================================
 
         return $qb->orderBy('b.name', 'ASC');
     }
@@ -229,7 +236,7 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     // =========================================================
-    // REGISTRATION YEARS
+    // YEARS
     // =========================================================
 
     public function getRegistrationYears(): array
@@ -255,84 +262,13 @@ class VehicleRepository extends ServiceEntityRepository
             ? $result['maxDate']
             : new \DateTime($result['maxDate']);
 
-        $minYear = (int) $minDate->format('Y');
-        $maxYear = (int) $maxDate->format('Y');
-
         return [
-            'min' => $minYear,
-            'max' => $maxYear,
-            'years' => range($minYear, $maxYear),
-        ];
-    }
-
-    // =========================================================
-    // STOCK COUNTS
-    // =========================================================
-
-    public function getStockCounts(array $filters = [], ?string $searchTerm = null): array
-    {
-        $qb = $this->createQueryBuilder('v')
-            ->leftJoin('v.vehicleModel', 'vm')
-            ->leftJoin('vm.brand', 'b')
-            ->leftJoin('vm.model', 'm')
-            ->leftJoin('vm.bodyType', 'bt')
-            ->leftJoin('vm.fuelType', 'ft')
-            ->leftJoin('v.dossiers', 'd')
-            ->addSelect('vm', 'b', 'm', 'bt', 'ft', 'd');
-
-        $this->applyFiltersToQueryBuilder($qb, $filters);
-
-        if (!empty($searchTerm)) {
-            $search = '%' . mb_strtolower(trim($searchTerm)) . '%';
-
-            $qb->andWhere(
-                $qb->expr()->orX(
-                    'LOWER(v.registrationNumber) LIKE :search',
-                    'LOWER(v.vin) LIKE :search',
-                    'LOWER(m.name) LIKE :search',
-                    'LOWER(b.name) LIKE :search'
-                )
-            )
-                ->setParameter('search', $search);
-        }
-
-        $qb->select('v.status, COUNT(v.id) AS count')
-            ->groupBy('v.status');
-
-        $rows = $qb->getQuery()->getResult();
-
-        $counts = ['total' => 0];
-
-        foreach (VehicleStatus::cases() as $case) {
-            $counts[$case->value] = 0;
-        }
-
-        foreach ($rows as $row) {
-            $status = $row['status'];
-            $count = (int) $row['count'];
-
-            $counts[$status] = $count;
-            $counts['total'] += $count;
-        }
-
-        return $counts;
-    }
-
-    // =========================================================
-    // GROUPED STOCK COUNTS
-    // =========================================================
-
-    public function getStockCountsGrouped(array $filters = []): array
-    {
-        $counts = $this->getStockCounts($filters);
-
-        return [
-            'stock' => ($counts['available'] ?? 0) + ($counts['reserved'] ?? 0),
-            'in_use' => $counts['rented'] ?? 0,
-            'out' => $counts['sold'] ?? 0,
-            'maintenance' => $counts['maintenance'] ?? 0,
-            'ordered' => $counts['ordered'] ?? 0,
-            'total' => $counts['total'] ?? 0,
+            'min' => (int) $minDate->format('Y'),
+            'max' => (int) $maxDate->format('Y'),
+            'years' => range(
+                (int) $minDate->format('Y'),
+                (int) $maxDate->format('Y')
+            ),
         ];
     }
 }

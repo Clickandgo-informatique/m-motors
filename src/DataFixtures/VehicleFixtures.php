@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures;
 
-use App\DataFixtures\VehicleModelFixtures;
 use App\Entity\Color;
 use App\Entity\Supplier;
 use App\Entity\Vehicle;
@@ -13,8 +12,18 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
+/**
+ * Génération des véhicules.
+ *
+ * Objectif :
+ * - dataset stable
+ * - sans références Doctrine
+ * - compatible clear + batch
+ */
 class VehicleFixtures extends Fixture implements DependentFixtureInterface
 {
+    private const MIN_PER_STATUS = 100;
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
@@ -23,88 +32,33 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
         $suppliers     = $manager->getRepository(Supplier::class)->findAll();
         $colors        = $manager->getRepository(Color::class)->findAll();
 
-        if (!$vehicleModels || !$suppliers) {
-            throw new \RuntimeException('Données de base manquantes.');
-        }
+        $statuses = [
+            VehicleStatus::AVAILABLE_FOR_SALE,
+            VehicleStatus::AVAILABLE_FOR_RENT,
+            VehicleStatus::RESERVED,
+            VehicleStatus::MAINTENANCE,
+            VehicleStatus::SOLD,
+        ];
 
-        for ($i = 1; $i <= 1000; $i++) {
+        foreach ($statuses as $status) {
 
-            $vehicle = new Vehicle();
+            for ($i = 0; $i < self::MIN_PER_STATUS; $i++) {
 
-            /*
-            |--------------------------------------------------------------------------
-            | STATUS (cohérent métier)
-            |--------------------------------------------------------------------------
-            */
-            $status = $faker->randomElement([
-                VehicleStatus::AVAILABLE_FOR_SALE,
-                VehicleStatus::AVAILABLE_FOR_RENT,
-                VehicleStatus::RESERVED,
-                VehicleStatus::MAINTENANCE,
-                VehicleStatus::SOLD,
-            ]);
+                $vehicle = new Vehicle();
 
-            $vehicle->setStatus($status);
+                $vehicle->setStatus($status);
+                $vehicle->setVin(strtoupper($faker->regexify('[A-HJ-NPR-Z0-9]{17}')));
 
-            /*
-            |--------------------------------------------------------------------------
-            | VIN
-            |--------------------------------------------------------------------------
-            */
-            $vehicle->setVin(strtoupper($faker->regexify('[A-HJ-NPR-Z0-9]{17}')));
+                $vehicle->setVehicleModel($vehicleModels[array_rand($vehicleModels)]);
+                $vehicle->setSupplier($suppliers[array_rand($suppliers)]);
 
-            /*
-            |--------------------------------------------------------------------------
-            | NEUF / OCCASION
-            |--------------------------------------------------------------------------
-            */
-            $isNew = $faker->boolean(35);
+                if ($colors) {
+                    $vehicle->setColor($colors[array_rand($colors)]);
+                }
 
-            if ($isNew) {
-                $vehicle->setMileage(0);
-                $vehicle->setFirstRegistrationDate(null);
-                $vehicle->setStatus(VehicleStatus::AVAILABLE_FOR_SALE);
-            } else {
-                $vehicle->setMileage($faker->numberBetween(500, 220000));
-                $vehicle->setFirstRegistrationDate($faker->dateTimeBetween('-10 years', 'now'));
-            }
+                $vehicle->setPrice($faker->numberBetween(8000, 90000));
 
-            /*
-            |--------------------------------------------------------------------------
-            | PRIX
-            |--------------------------------------------------------------------------
-            */
-            $vehicle->setPrice($faker->numberBetween(8000, 90000));
-
-            /*
-            |--------------------------------------------------------------------------
-            | RELATIONS
-            |--------------------------------------------------------------------------
-            */
-            $vehicle->setVehicleModel($vehicleModels[array_rand($vehicleModels)]);
-            $vehicle->setSupplier($suppliers[array_rand($suppliers)]);
-
-            if (!empty($colors)) {
-                $vehicle->setColor($colors[array_rand($colors)]);
-            }          
-
-            /*
-            |--------------------------------------------------------------------------
-            | PERSIST
-            |--------------------------------------------------------------------------
-            */
-            $manager->persist($vehicle);
-
-            $this->addReference('vehicle_' . $i, $vehicle);
-
-            /*
-            |--------------------------------------------------------------------------
-            | BATCH OPTIMISÉ
-            |--------------------------------------------------------------------------
-            */
-            if ($i % 100 === 0) {
-                $manager->flush();
-                $manager->clear();
+                $manager->persist($vehicle);
             }
         }
 
@@ -116,7 +70,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
         return [
             VehicleModelFixtures::class,
             SupplierFixtures::class,
-            ColorFixtures::class
+            ColorFixtures::class,
         ];
     }
 }

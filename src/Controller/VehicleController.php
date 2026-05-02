@@ -10,9 +10,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Controller dédié au CRUD des véhicules
+ * IMPORTANT : aucune logique frontend / listing ici
+ */
 #[Route('/vehicles')]
 class VehicleController extends AbstractController
 {
+    /**
+     * Création d’un véhicule
+     */
     #[Route('/new', name: 'vehicle_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,
@@ -26,17 +33,12 @@ class VehicleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // sécurité métier possible ici (optionnel)
-            // if ($vehicle->isLocked()) {
-            //     throw new \LogicException('Vehicle already in use');
-            // }
-
             $em->persist($vehicle);
             $em->flush();
 
             $this->addFlash('success', 'Véhicule créé.');
 
-            return $this->redirectToRoute('vehicles');
+            return $this->redirectToRoute('vehicles_index');
         }
 
         return $this->render('vehicles/new.html.twig', [
@@ -45,6 +47,9 @@ class VehicleController extends AbstractController
         ]);
     }
 
+    /**
+     * Edition d’un véhicule
+     */
     #[Route('/{id<\d+>}/edit', name: 'vehicle_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
@@ -61,7 +66,7 @@ class VehicleController extends AbstractController
 
             $this->addFlash('success', 'Véhicule modifié.');
 
-            return $this->redirectToRoute('vehicles');
+            return $this->redirectToRoute('vehicles_index');
         }
 
         return $this->render('vehicles/_vehicle_form.html.twig', [
@@ -71,6 +76,9 @@ class VehicleController extends AbstractController
         ]);
     }
 
+    /**
+     * Suppression d’un véhicule
+     */
     #[Route('/{id<\d+>}', name: 'vehicle_delete', methods: ['POST'])]
     public function delete(
         Request $request,
@@ -85,6 +93,6 @@ class VehicleController extends AbstractController
             $this->addFlash('success', 'Véhicule supprimé.');
         }
 
-        return $this->redirectToRoute('vehicles');
+        return $this->redirectToRoute('vehicles_index');
     }
 }

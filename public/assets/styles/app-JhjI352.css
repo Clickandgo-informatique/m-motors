@@ -1,0 +1,51 @@
+@import "reset-XQl7hhL.css";
+@import "variables-pSxgaRP.css";
+@import "typography-ee66n3W.css";
+@import "layout-Cf_uSo5.css";
+@import "form-sIewQSS.css";
+@import "button-yv5zmlv.css";
+@import "checkbox-kNdxc6D.css";
+@import "header-RNc30IM.css";
+@import "navbar-BoWVCL0.css";
+@import "table-BenhpGm.css";
+@import "pagination-lcoycK0.css";
+@import "dropdown-mJtYiCe.css";
+@import "modal-wQ-VujO.css";
+@import "badge-70ZtVbK.css";
+@import "footer-0x0TEN2.css";
+@import "card-YBIUa3m.css";
+@import "flashbag-qdCQRD8.css";
+@import "sidebar-_NWizi2.css";
+@import "range-9Dkt16P.css";
+@import "filters-form-XI5blBg.css";
+@import "switch-MRoZzur.css";
+@import "grid-KqgtRqX.css";
+@import "dropzone-zRr9u8b.css";
+
+/* ========================================================= */
+/* BASE GLOBALE */
+/* ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+
+  font-family: var(--font-family);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

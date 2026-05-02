@@ -2,17 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Feature;
-use App\Entity\FuelType;
-use App\Entity\Gear;
-use App\Entity\Maintenance;
-use App\Entity\Rental;
-use App\Entity\Sale;
-use App\Entity\Supplier;
-use App\Entity\VehicleModel;
-use App\Entity\Favorite;
-use App\Entity\Color;
-use App\Entity\Dossier;
 use App\Entity\Traits\TimestampableTrait;
 use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
@@ -26,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Vehicle
 {
     use TimestampableTrait;
+
     // =========================================================
     // IDENTIFIANT
     // =========================================================
@@ -147,7 +137,7 @@ class Vehicle
     }
 
     // =========================================================
-    // RELATIONS
+    // RELATIONS (ManyToOne)
     // =========================================================
 
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
@@ -167,29 +157,73 @@ class Vehicle
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?FuelType $fuelType = null;
 
+    public function getFuelType(): ?FuelType
+    {
+        return $this->fuelType;
+    }
+
+    public function setFuelType(?FuelType $fuelType): self
+    {
+        $this->fuelType = $fuelType;
+        return $this;
+    }
+
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Gear $gear = null;
+
+    public function getGear(): ?Gear
+    {
+        return $this->gear;
+    }
+
+    public function setGear(?Gear $gear): self
+    {
+        $this->gear = $gear;
+        return $this;
+    }
 
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Color $color = null;
 
+    public function getColor(): ?Color
+    {
+        return $this->color;
+    }
+
+    public function setColor(?Color $color): self
+    {
+        $this->color = $color;
+        return $this;
+    }
+
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     private ?Supplier $supplier = null;
+
+    public function getSupplier(): ?Supplier
+    {
+        return $this->supplier;
+    }
+
+    public function setSupplier(?Supplier $supplier): self
+    {
+        $this->supplier = $supplier;
+        return $this;
+    }
 
     // =========================================================
     // COLLECTIONS
     // =========================================================
 
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Dossier::class)]
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Dossier::class, orphanRemoval: true)]
     private Collection $dossiers;
 
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Maintenance::class)]
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Maintenance::class, orphanRemoval: true)]
     private Collection $maintenances;
 
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Rental::class)]
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Rental::class, orphanRemoval: true)]
     private Collection $rentals;
 
-    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Sale::class)]
+    #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Sale::class, orphanRemoval: true)]
     private Collection $sales;
 
     #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Favorite::class, orphanRemoval: true)]
@@ -208,8 +242,159 @@ class Vehicle
         $this->features = new ArrayCollection();
     }
 
+    // ========================= DOSSIERS =========================
+
+    public function getDossiers(): Collection
+    {
+        return $this->dossiers;
+    }
+
+    public function addDossier(Dossier $dossier): self
+    {
+        if (!$this->dossiers->contains($dossier)) {
+            $this->dossiers[] = $dossier;
+            $dossier->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeDossier(Dossier $dossier): self
+    {
+        if ($this->dossiers->removeElement($dossier)) {
+            if ($dossier->getVehicle() === $this) {
+                $dossier->setVehicle(null);
+            }
+        }
+        return $this;
+    }
+
+    // ========================= MAINTENANCES =========================
+
+    public function getMaintenances(): Collection
+    {
+        return $this->maintenances;
+    }
+
+    public function addMaintenance(Maintenance $maintenance): self
+    {
+        if (!$this->maintenances->contains($maintenance)) {
+            $this->maintenances[] = $maintenance;
+            $maintenance->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeMaintenance(Maintenance $maintenance): self
+    {
+        if ($this->maintenances->removeElement($maintenance)) {
+            if ($maintenance->getVehicle() === $this) {
+                $maintenance->setVehicle(null);
+            }
+        }
+        return $this;
+    }
+
+    // ========================= RENTALS =========================
+
+    public function getRentals(): Collection
+    {
+        return $this->rentals;
+    }
+
+    public function addRental(Rental $rental): self
+    {
+        if (!$this->rentals->contains($rental)) {
+            $this->rentals[] = $rental;
+            $rental->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeRental(Rental $rental): self
+    {
+        if ($this->rentals->removeElement($rental)) {
+            if ($rental->getVehicle() === $this) {
+                $rental->setVehicle(null);
+            }
+        }
+        return $this;
+    }
+
+    // ========================= SALES =========================
+
+    public function getSales(): Collection
+    {
+        return $this->sales;
+    }
+
+    public function addSale(Sale $sale): self
+    {
+        if (!$this->sales->contains($sale)) {
+            $this->sales[] = $sale;
+            $sale->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeSale(Sale $sale): self
+    {
+        if ($this->sales->removeElement($sale)) {
+            if ($sale->getVehicle() === $this) {
+                $sale->setVehicle(null);
+            }
+        }
+        return $this;
+    }
+
+    // ========================= FAVORITES =========================
+
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite(Favorite $favorite): self
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites[] = $favorite;
+            $favorite->setVehicle($this);
+        }
+        return $this;
+    }
+
+    public function removeFavorite(Favorite $favorite): self
+    {
+        if ($this->favorites->removeElement($favorite)) {
+            if ($favorite->getVehicle() === $this) {
+                $favorite->setVehicle(null);
+            }
+        }
+        return $this;
+    }
+
+    // ========================= FEATURES =========================
+
+    public function getFeatures(): Collection
+    {
+        return $this->features;
+    }
+
+    public function addFeature(Feature $feature): self
+    {
+        if (!$this->features->contains($feature)) {
+            $this->features[] = $feature;
+        }
+        return $this;
+    }
+
+    public function removeFeature(Feature $feature): self
+    {
+        $this->features->removeElement($feature);
+        return $this;
+    }
+
     // =========================================================
-    // HELPERS
+    // HELPERS MÉTIER
     // =========================================================
 
     public function isAvailableForSale(): bool

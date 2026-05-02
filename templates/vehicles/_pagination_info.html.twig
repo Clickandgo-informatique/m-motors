@@ -1,4 +1,6 @@
-{% if vehicles is defined and vehicles|length > 0 %}
+{# Pagination véhicules (AJAX safe) #}
+
+{% if vehicles is defined and vehicles.getTotalItemCount() > 0 %}
 
 	<div class="pagination-info-text text-center">
 		{{ vehicles.getTotalItemCount() }}
@@ -8,13 +10,16 @@
 		{{ vehicles.getCurrentPageNumber() }}/{{ vehicles.getPageCount() }}
 	</div>
 
-	<div class="pagination">
+	<div
+		class="pagination">
 
+		{# Première / précédente #}
 		{% if vehicles.getCurrentPageNumber() > 1 %}
 			<a href="#" class="first-page" data-page="1">« Première</a>
 			<a href="#" class="prev-page" data-page="{{ vehicles.getCurrentPageNumber() - 1 }}">← Précédent</a>
 		{% endif %}
 
+		{# Calcul plage de pages #}
 		{% set start = vehicles.getCurrentPageNumber() - 2 %}
 		{% set end = vehicles.getCurrentPageNumber() + 2 %}
 
@@ -26,20 +31,24 @@
 			{% set end = vehicles.getPageCount() %}
 		{% endif %}
 
+		{# Ellipsis début #}
 		{% if start > 1 %}
 			<span class="dots">...</span>
 		{% endif %}
 
+		{# Pages #}
 		{% for i in start..end %}
 			<a href="#" class="{{ i == vehicles.getCurrentPageNumber() ? 'active' : '' }}" data-page="{{ i }}">
 				{{ i }}
 			</a>
 		{% endfor %}
 
+		{# Ellipsis fin #}
 		{% if end < vehicles.getPageCount() %}
 			<span class="dots">...</span>
 		{% endif %}
 
+		{# Suivant / dernière #}
 		{% if vehicles.getCurrentPageNumber() < vehicles.getPageCount() %}
 			<a href="#" class="next-page" data-page="{{ vehicles.getCurrentPageNumber() + 1 }}">Suivant →</a>
 			<a href="#" class="last-page" data-page="{{ vehicles.getPageCount() }}">Dernière »</a>
@@ -49,7 +58,7 @@
 
 {% else %}
 
-	<div class="pagination-wrapper disabled">
+	<div class="pagination-wrapper disabled text-center">
 		Aucun véhicule trouvé
 	</div>
 

@@ -12,6 +12,14 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
+/**
+ * Création de dossiers réalistes.
+ *
+ * Objectif :
+ * - suppression des références fragiles
+ * - sélection aléatoire dans la base réelle
+ * - compatibilité avec import UTAC
+ */
 class DossierFixtures extends Fixture implements DependentFixtureInterface
 {
     public function __construct(
@@ -20,24 +28,24 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
+        $customers = $manager->getRepository(Customer::class)->findAll();
+        $vehicles  = $manager->getRepository(Vehicle::class)->findAll();
+
+        if (!$customers || !$vehicles) {
+            throw new \RuntimeException('Customers ou Vehicles manquants.');
+        }
+
         for ($i = 0; $i < 30; $i++) {
 
-            // =========================================================
-            // RÉFÉRENCES STABLES
-            // =========================================================
-            $customer = $this->getReference(
-                'customer_' . random_int(1, 50),
-                Customer::class
-            );
+            /*
+             * Sélection aléatoire stable
+             */
+            $customer = $customers[array_rand($customers)];
+            $vehicle  = $vehicles[array_rand($vehicles)];
 
-            $vehicle = $this->getReference(
-                'vehicle_' . random_int(1, 50),
-                Vehicle::class
-            );
-
-            // =========================================================
-            // FINANCING TYPE
-            // =========================================================
+            /*
+             * Type de financement
+             */
             $financingType = FinancingType::cases()[array_rand(FinancingType::cases())];
 
             $type = in_array(
@@ -46,15 +54,14 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
                 true
             ) ? DossierType::RENTAL : DossierType::SALE;
 
-            // =========================================================
-            // DOSSIER
-            // =========================================================
+            /*
+             * Création dossier
+             */
             $dossier = new Dossier();
 
             $dossier->setCustomer($customer);
             $dossier->setVehicle($vehicle);
             $dossier->setType($type);
-
             $dossier->setStatus('draft');
 
             $dossier->setDossierCode(
