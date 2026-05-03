@@ -1,25 +1,31 @@
-{# Pagination véhicules (AJAX safe) #}
+{# =========================================================
+   PAGINATION VEHICULES
+   - Compatible KNP Paginator
+   - Compatible AJAX (data-page)
+   - Utilisé en haut et en bas de page
+   ========================================================= #}
 
 {% if vehicles is defined and vehicles.getTotalItemCount() > 0 %}
 
+	{# INFOS PAGINATION #}
 	<div class="pagination-info-text text-center">
 		{{ vehicles.getTotalItemCount() }}
 		véhicule{{ vehicles.getTotalItemCount() > 1 ? 's' : '' }}
-		-
-				Page
+		- Page
 		{{ vehicles.getCurrentPageNumber() }}/{{ vehicles.getPageCount() }}
 	</div>
 
+	{# PAGINATION LINKS #}
 	<div
-		class="pagination">
+		class="pagination" data-pagination>
 
-		{# Première / précédente #}
+		{# PREMIERE / PRECEDENTE #}
 		{% if vehicles.getCurrentPageNumber() > 1 %}
 			<a href="#" class="first-page" data-page="1">« Première</a>
 			<a href="#" class="prev-page" data-page="{{ vehicles.getCurrentPageNumber() - 1 }}">← Précédent</a>
 		{% endif %}
 
-		{# Calcul plage de pages #}
+		{# CALCUL DE LA PLAGE #}
 		{% set start = vehicles.getCurrentPageNumber() - 2 %}
 		{% set end = vehicles.getCurrentPageNumber() + 2 %}
 
@@ -31,24 +37,24 @@
 			{% set end = vehicles.getPageCount() %}
 		{% endif %}
 
-		{# Ellipsis début #}
+		{# ELLIPSIS DE DEBUT #}
 		{% if start > 1 %}
 			<span class="dots">...</span>
 		{% endif %}
 
-		{# Pages #}
+		{# PAGES #}
 		{% for i in start..end %}
 			<a href="#" class="{{ i == vehicles.getCurrentPageNumber() ? 'active' : '' }}" data-page="{{ i }}">
 				{{ i }}
 			</a>
 		{% endfor %}
 
-		{# Ellipsis fin #}
+		{# ELLIPSIS DE FIN #}
 		{% if end < vehicles.getPageCount() %}
 			<span class="dots">...</span>
 		{% endif %}
 
-		{# Suivant / dernière #}
+		{# SUIVANT / DERNIERE #}
 		{% if vehicles.getCurrentPageNumber() < vehicles.getPageCount() %}
 			<a href="#" class="next-page" data-page="{{ vehicles.getCurrentPageNumber() + 1 }}">Suivant →</a>
 			<a href="#" class="last-page" data-page="{{ vehicles.getPageCount() }}">Dernière »</a>

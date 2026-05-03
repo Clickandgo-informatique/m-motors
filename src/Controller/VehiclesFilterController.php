@@ -15,7 +15,7 @@ class VehiclesFilterController extends AbstractController
     /**
      * PAGE PRINCIPALE
      */
-#[Route('', name: 'vehicles_index', methods: ['GET'])]
+    #[Route('', name: 'vehicles_index', methods: ['GET'])]
     public function index(
         VehicleRepository $vehicleRepo,
         Request $request,
@@ -26,7 +26,6 @@ class VehiclesFilterController extends AbstractController
 
         $filters = $data['filters'] ?? [];
         $searchTerm = $data['q'] ?? null;
-
         $view = $filters['view'] ?? 'grid';
 
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
@@ -59,17 +58,24 @@ class VehiclesFilterController extends AbstractController
         PaginatorInterface $paginator
     ): Response {
 
-        $data = $request->query->all();
+        // Gestion POST (FetchForm) + fallback GET
+        $data = $request->request->all();
+        if (empty($data)) {
+            $data = $request->query->all();
+        }
 
         $filters = $data['filters'] ?? [];
         $searchTerm = $data['q'] ?? null;
-
         $page = max(1, (int) ($data['page'] ?? 1));
         $view = $filters['view'] ?? 'grid';
 
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
 
-        $vehicles = $paginator->paginate($query, $page, 10);
+        $vehicles = $paginator->paginate(
+            $query,
+            $page,
+            10
+        );
 
         return $this->render('vehicles/_vehicles_list.html.twig', [
             'vehicles' => $vehicles,
@@ -86,15 +92,19 @@ class VehiclesFilterController extends AbstractController
         VehicleRepository $vehicleRepo
     ): Response {
 
-        $data = $request->query->all();
+        // Gestion POST + GET
+        $data = $request->request->all();
+        if (empty($data)) {
+            $data = $request->query->all();
+        }
 
         $filters = $data['filters'] ?? [];
         $searchTerm = $data['q'] ?? null;
 
         return $this->render('vehicles/_vehicles_filters.html.twig', [
-            'brands' => $vehicleRepo->getUsedBrands($filters, $searchTerm),
-            'bodyTypes' => $vehicleRepo->getUsedBodyTypes($filters, $searchTerm),
-            'fuelTypes' => $vehicleRepo->getUsedFuelTypes($filters, $searchTerm),
+            'brands' => $vehicleRepo->getUsedBrands(),
+            'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
+            'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
             'registrationYears' => $vehicleRepo->getRegistrationYears()['years'],
             'registrationYearsMin' => $vehicleRepo->getRegistrationYears()['min'],
             'registrationYearsMax' => $vehicleRepo->getRegistrationYears()['max'],

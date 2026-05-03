@@ -1,35 +1,16 @@
 {# Components/Forms/_fetch_form.html.twig #}
-{# ==========================
-   Formulaire AJAX / Autocomplete
-   ========================== #}
 
-{# 
-  - action : URL AJAX pour FetchForm / Autocomplete
-  - resultDiv : container du dropdown autocomplete
-  - cardsContainer : container des cards pour la galerie
-  - itemClass / linkClass : classes CSS pour chaque item / link
-  - itemUrl : URL de l'item pour link / modal
-  - resultLinks : si les items doivent être cliquables
-  - ajaxModal : ouvrir le link en modal si true
-  - autocomplete : activer autocomplete (dropdown)
-  - pagination : scroll infini pour autocomplete seulement
-  - highlight : surligner le texte correspondant
-#}
+<form method="get" action="{{ action|default('') }}" class="fetch-form" data-module="fetch-form" data-fetch-url="{{ fetchUrl|default(action|default('')) }}" data-target="#{{ resultDiv|default('autocomplete-results') }}">
 
-	<form method="get" action="{{ action|default('') }}" class="fetch-form" data-fetch-form data-url="{{ action|default('') }}" data-result-div="{{ resultDiv|default('autocomplete-results') }}" data-cards-container="{{ cardsContainer|default('vehicles-search-results') }}" data-item-class="{{ itemClass|default('vehicle-item') }}" data-link-class="{{ linkClass|default('vehicle-link') }}" data-no-results-class="{{ noResultsClass|default('dropdown-no-results') }}" data-item-url="{{ itemUrl|default('') }}" data-result-links="{{ resultLinks|default(true) ? 'true' : 'false' }}" data-autocomplete="{{ autocomplete|default(true) ? 'true' : 'false' }}" data-pagination="{{ pagination|default(false) ? 'true' : 'false' }}" data-highlight="{{ highlight|default(false) ? 'true' : 'false' }}"> <div
-		class="form-row dropdown-wrapper">
+	<div class="form-row dropdown-wrapper">
 
-		{# INPUT AUTOCOMPLETE + SEARCH #}
-		<input
-		type="text" name="{{ name|default('q') }}" placeholder="{{ placeholder|default('Rechercher par marque, modèle') }}" autocomplete="off" id="autocomplete-input" data-autocomplete="true" data-url="{{ action|default('') }}" data-result-div="{{ resultDiv|default('autocomplete-results') }}" data-cards-container="{{ cardsContainer|default('vehicles-search-results') }}" data-item-url="{{ itemUrl|default('') }}" data-result-links="{{ resultLinks|default(true) ? 'true' : 'false' }}" data-pagination="{{ pagination|default(false) ? 'true' : 'false' }}" data-highlight="{{ highlight|default(false) ? 'true' : 'false' }}"/>
+		<input type="text" name="{{ name|default('q') }}" placeholder="{{ placeholder|default('Rechercher') }}" autocomplete="off" data-module="autocomplete" data-url="{{ autocompleteUrl|default('') }}" data-link-mode="{{ linkMode|default('0') }}" data-base-url="{{ baseUrl|default('') }}">
 
-		{# bouton fallback manuel #}
-		<button type="button" class="search-toggle-btn" data-search-toggle>
+		<button type="button" class="search-toggle-btn">
 			Rechercher
 		</button>
 
-		{# dropdown autocomplete UNIQUEMENT #}
-		<div id="{{ resultDiv|default('autocomplete-results') }}" class="{{ dropdownClass|default('dropdown-results') }}"></div>
+		<div class="dropdown-results" id="{{ resultDiv|default('autocomplete-results') }}"></div>
 
 	</div>
 </form>

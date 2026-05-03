@@ -1,0 +1,79 @@
+/* ========================================================= */
+/* SWITCH GRID / TABLE (CORRIGÉ) */
+/* ========================================================= */
+
+#view-toggle {
+  width: 70px;
+  height: 32px;
+  border-radius: 32px;
+  background: var(--border-light);
+  border: 1px solid var(--border-color);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+}
+
+/* Radios cachés */
+#view-toggle input[type="radio"] {
+  display: none;
+}
+
+/* Labels cliquables */
+#view-toggle label {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* Icônes */
+#view-toggle .icon-grid,
+#view-toggle .icon-table {
+  pointer-events: none;
+  opacity: 0.4;
+  transition: opacity 0.25s ease;
+}
+
+/* Thumb */
+#view-toggle .toggle-thumb {
+  width: 28px;
+  height: 28px;
+  background: var(--bg-primary);
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.25s ease;
+  box-shadow: var(--shadow-light);
+  z-index: 1;
+}
+
+/* ========================================================= */
+/* LOGIQUE BASÉE SUR :checked + structure réelle */
+/* ========================================================= */
+
+/* GRID actif */
+#view-toggle input[value="grid"]:checked ~ .toggle-thumb {
+  transform: translateX(0);
+}
+
+/* TABLE actif */
+#view-toggle input[value="table"]:checked ~ .toggle-thumb {
+  transform: translateX(34px);
+}
+
+/* ========================================================= */
+/* ICÔNES ACTIVES (version robuste sans :has obligatoire) */
+/* ========================================================= */
+
+#view-toggle input[value="grid"]:checked ~ label .icon-grid {
+  opacity: 1;
+}
+
+#view-toggle input[value="table"]:checked ~ label .icon-table {
+  opacity: 1;
+}

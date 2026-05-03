@@ -4,31 +4,56 @@
 	<h1 class="text-center">Catalogue véhicules</h1>
 
 	<div class="layout">
-
 		<main>
 
-			{# Toggle view #}
-			<form id="view-switch-form" data-fetch-form data-fetch-url="{{ path('vehicles_ajax_list') }}" data-target="#vehicles-results">
+			<form id="filters-form" data-fetch-form data-fetch-url="{{ path('vehicles_ajax_list') }}" data-target="#vehicles-results">
 
 				<div id="view-toggle">
-					<input type="radio" name="filters[view]" value="grid" checked>
-					<input type="radio" name="filters[view]" value="table">
+
+					<input type="radio" id="view-grid" name="filters[view]" value="grid" checked>
+					<input type="radio" id="view-table" name="filters[view]" value="table">
+
+					<label for="view-grid">
+						<span class="icon-grid"></span>
+					</label>
+					<label for="view-table">
+						<span class="icon-table"></span>
+					</label>
+
+					<div class="toggle-thumb"></div>
 				</div>
+
+				<input type="hidden" name="page" value="1">
+
 			</form>
 
-			{# SEARCH #}
 			{% include "Components/Forms/_fetch_form.html.twig" with {
-            action: path('vehicles_ajax_search'),
-            name: 'q',
-            resultDiv: 'autocomplete-results'
-        } %}
+    action: path('vehicles_index'),
+    fetchUrl: path('vehicles_ajax_list'),
+    autocompleteUrl: path('vehicles_ajax_search'),
+    name: 'q',
+    placeholder: 'Rechercher un véhicule par marque, modèle',
+    baseUrl: '/vehicles/',
+    linkMode: '1',
+    resultDiv: 'autocomplete-results',
+    autocomplete: true,
+    resultLinks: true
+} %}
 
-			{# RESULTS #}
+			<div data-target="filters-summary"></div>
+
+			<div data-target="pagination-top">
+				{% include 'vehicles/_pagination_info.html.twig' with { vehicles: vehicles } %}
+			</div>
+
 			<div id="vehicles-results">
 				{% include 'vehicles/_vehicles_list.html.twig' %}
 			</div>
 
-		</main>
+			<div data-target="pagination-bottom">
+				{% include 'vehicles/_pagination_info.html.twig' with { vehicles: vehicles } %}
+			</div>
 
+		</main>
 	</div>
 {% endblock %}
