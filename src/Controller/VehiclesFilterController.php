@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,22 +13,20 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/vehicles')]
 class VehiclesFilterController extends AbstractController
 {
-    /**
-     * PAGE PRINCIPALE
-     */
     #[Route('', name: 'vehicles_index', methods: ['GET'])]
     public function index(
         VehicleRepository $vehicleRepo,
         Request $request,
         PaginatorInterface $paginator
     ): Response {
-
+        // Récupération filtres URL
         $data = $request->query->all();
 
         $filters = $data['filters'] ?? [];
         $searchTerm = $data['q'] ?? null;
         $view = $filters['view'] ?? 'grid';
 
+        // Query principale
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
 
         $vehicles = $paginator->paginate(
@@ -36,30 +35,23 @@ class VehiclesFilterController extends AbstractController
             10
         );
 
-        return $this->render('vehicles/index.html.twig', [
+        $context = $this->buildFiltersContext($vehicleRepo);
+
+        return $this->render('vehicles/index.html.twig', array_merge([
             'vehicles' => $vehicles,
-            'brands' => $vehicleRepo->getUsedBrands(),
-            'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
-            'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
-            'registrationYears' => $vehicleRepo->getRegistrationYears()['years'],
-            'registrationYearsMin' => $vehicleRepo->getRegistrationYears()['min'],
-            'registrationYearsMax' => $vehicleRepo->getRegistrationYears()['max'],
             'view' => $view
-        ]);
+        ], $context));
     }
 
-    /**
-     * LISTE AJAX (GRID / TABLE + PAGINATION)
-     */
     #[Route('/ajax/list', name: 'vehicles_ajax_list', methods: ['GET', 'POST'])]
     public function list(
         Request $request,
         VehicleRepository $vehicleRepo,
         PaginatorInterface $paginator
     ): Response {
-
-        // Gestion POST (FetchForm) + fallback GET
+        // Support GET + POST
         $data = $request->request->all();
+
         if (empty($data)) {
             $data = $request->query->all();
         }
@@ -67,59 +59,35 @@ class VehiclesFilterController extends AbstractController
         $filters = $data['filters'] ?? [];
         $searchTerm = $data['q'] ?? null;
         $page = max(1, (int) ($data['page'] ?? 1));
-        $view = $filters['view'] ?? 'grid';
 
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
 
-        $vehicles = $paginator->paginate(
-            $query,
-            $page,
-            10
-        );
+        $vehicles = $paginator->paginate($query, $page, 10);
 
-        return $this->render('vehicles/_vehicles_list.html.twig', [
+        $context = $this->buildFiltersContext($vehicleRepo);
+
+        $listHtml = $this->renderView('vehicles/_vehicles_list.html.twig', [
             'vehicles' => $vehicles,
-            'view' => $view
+            'view' => $filters['view'] ?? 'grid'
+        ]);
+
+        $pagination = $this->renderView('vehicles/_pagination_info.html.twig', [
+            'vehicles' => $vehicles
+        ]);
+
+        return $this->json([
+            'list' => $listHtml,
+            'pagination_top' => $pagination,
+            'pagination_bottom' => $pagination,
+            'filters' => $this->renderView('vehicles/_vehicles_filters.html.twig', $context)
         ]);
     }
 
-    /**
-     * SIDEBAR FILTRES (DYNAMIQUE)
-     */
-    #[Route('/ajax/filters', name: 'vehicles_ajax_filters', methods: ['GET', 'POST'])]
-    public function filters(
-        Request $request,
-        VehicleRepository $vehicleRepo
-    ): Response {
-
-        // Gestion POST + GET
-        $data = $request->request->all();
-        if (empty($data)) {
-            $data = $request->query->all();
-        }
-
-        $filters = $data['filters'] ?? [];
-        $searchTerm = $data['q'] ?? null;
-
-        return $this->render('vehicles/_vehicles_filters.html.twig', [
-            'brands' => $vehicleRepo->getUsedBrands(),
-            'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
-            'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
-            'registrationYears' => $vehicleRepo->getRegistrationYears()['years'],
-            'registrationYearsMin' => $vehicleRepo->getRegistrationYears()['min'],
-            'registrationYearsMax' => $vehicleRepo->getRegistrationYears()['max'],
-        ]);
-    }
-
-    /**
-     * AUTOCOMPLETE
-     */
     #[Route('/ajax/search', name: 'vehicles_ajax_search', methods: ['GET'])]
     public function search(
         Request $request,
         VehicleRepository $vehicleRepo
     ): Response {
-
         $q = $request->query->get('q');
 
         $items = $vehicleRepo->searchForAutocomplete([], $q, 10);
@@ -128,4 +96,38 @@ class VehiclesFilterController extends AbstractController
             'items' => $items
         ]);
     }
+
+    /**
+     * Contexte unique filtres + sliders
+     */
+  private function buildFiltersContext(
+    VehicleRepository $vehicleRepo
+): array {
+    $years = $vehicleRepo->getRegistrationYears();
+
+    $yearMin = isset($years['min']) ? (int) $years['min'] : null;
+    $yearMax = isset($years['max']) ? (int) $years['max'] : null;
+
+    // =========================
+    // STATUS ENUM
+    // =========================
+    $statuses = [];
+
+    foreach (VehicleStatus::cases() as $status) {
+        $statuses[] = [
+            'value' => $status->value,
+            'label' => $status->label(),
+        ];
+    }
+
+    return [
+        'brands' => $vehicleRepo->getUsedBrands(),
+        'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
+        'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
+        'registrationYears' => $years['years'] ?? [],
+        'registrationYearsMin' => $yearMin,
+        'registrationYearsMax' => $yearMax,      
+        'statuses' => $statuses,
+    ];
+}
 }

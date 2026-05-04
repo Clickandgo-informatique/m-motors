@@ -3,12 +3,15 @@ function debounce(fn, delay = 250) {
 
   return (...args) => {
     clearTimeout(timer);
+
     timer = setTimeout(() => fn(...args), delay);
   };
 }
 
 export default class Autocomplete {
   constructor(input) {
+    console.log("[Autocomplete] constructor appelé", input);
+
     if (!(input instanceof HTMLInputElement)) return;
 
     this.input = input;
@@ -21,7 +24,10 @@ export default class Autocomplete {
     this.abortController = null;
     this.requestId = 0;
 
-    if (!this.url) return;
+    if (!this.url) {
+      console.warn("[Autocomplete] dataset.url manquant");
+      return;
+    }
 
     this.init();
   }
@@ -29,6 +35,8 @@ export default class Autocomplete {
   init() {
     const wrapper = this.input.closest(".dropdown-wrapper");
     this.dropdown = wrapper?.querySelector(".dropdown-results");
+
+    console.log("[Autocomplete] dropdown trouvé :", this.dropdown);
 
     if (!this.dropdown) return;
 
@@ -55,6 +63,13 @@ export default class Autocomplete {
     }
 
     this.fetch(value);
+
+    // IMPORTANT : déclenche le vrai submit natif
+    const form = this.input.closest("form");
+
+    if (form) {
+      form.requestSubmit(); // <- CRITIQUE (remplace dispatchEvent)
+    }
   }
 
   async fetch(query) {
@@ -69,6 +84,8 @@ export default class Autocomplete {
 
     const url = `${this.url}?q=${encodeURIComponent(query)}`;
 
+    console.log("[Autocomplete] FETCH URL :", url);
+
     try {
       const res = await fetch(url, {
         signal: this.abortController.signal,
@@ -77,31 +94,34 @@ export default class Autocomplete {
         }
       });
 
+      console.log("[Autocomplete] STATUS :", res.status);
+
       const data = await res.json();
 
-      if (current !== this.requestId) return;
+      console.log("[Autocomplete] RESPONSE DATA :", data);
+
+      if (current !== this.requestId) {
+        console.warn("[Autocomplete] requête ignorée (stale)");
+        return;
+      }
 
       this.render(data.items || []);
     } catch (e) {
       if (e.name !== "AbortError") {
-        console.error("[Autocomplete] error", e);
+        console.error("[Autocomplete] ERROR FETCH :", e);
       }
     }
   }
 
   render(items) {
-    if (!this.dropdown) return;
+    console.log("[Autocomplete] RENDER appelé avec :", items);
 
     this.clear();
-
-    if (!Array.isArray(items)) {
-      console.error("[Autocomplete] items invalid", items);
-      return;
-    }
 
     if (!items.length) {
       this.dropdown.innerHTML =
         "<div class='dropdown-no-results'>Aucun résultat</div>";
+
       this.open();
       return;
     }
@@ -109,53 +129,43 @@ export default class Autocomplete {
     const fragment = document.createDocumentFragment();
 
     items.forEach(item => {
-      const el = document.createElement("div");
+      const el = document.createElement(this.linkMode ? "a" : "div");
+
       el.className = "dropdown-item";
+      el.textContent = item.label;
 
-      if (this.linkMode) {
-        const a = document.createElement("a");
-
+      if (this.linkMode && this.baseUrl) {
         const url = `${this.baseUrl}${item.id}/edit`;
 
-        a.textContent = item.label;
-        a.href = url;
-        a.setAttribute("data-ajax-modal", url);
+        el.href = url;
+        el.setAttribute("data-ajax-modal", url);
 
-        el.appendChild(a);
-
-        a.addEventListener("click", e => {
+        el.addEventListener("click", e => {
           e.preventDefault();
           window.location.href = url;
         });
       } else {
-        el.textContent = item.label;
-
         el.addEventListener("click", () => {
-          this.select(item.label);
+          console.log("[Autocomplete] item sélectionné :", item);
+
+          this.input.value = item.label;
+          this.clear();
+          this.close();
         });
       }
 
       fragment.appendChild(el);
     });
 
+    console.log("[Autocomplete] injection DOM dropdown");
+
     this.dropdown.appendChild(fragment);
     this.open();
   }
 
-  select(value) {
-    this.input.value = value;
-
-    const form = this.input.closest("form");
-
-    if (form) {
-      form.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-
-    this.clear();
-    this.close();
-  }
-
   clear() {
+    console.log("[Autocomplete] CLEAR dropdown");
+
     if (this.dropdown) this.dropdown.innerHTML = "";
   }
 

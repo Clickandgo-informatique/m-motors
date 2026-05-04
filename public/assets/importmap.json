@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-x08dAIg.js",
+        "path": "\/assets\/app-wGU87Zr.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-BGaVnFV.css",
+        "path": "\/assets\/styles\/app-e8CW3-V.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -36,7 +36,7 @@
         "type": "js"
     },
     "\/assets\/js\/rangeSelector.js": {
-        "path": "\/assets\/js\/rangeSelector-V6GoThb.js",
+        "path": "\/assets\/js\/rangeSelector-_-7tYTw.js",
         "type": "js"
     },
     "\/assets\/js\/Dropzone.js": {
@@ -52,7 +52,7 @@
         "type": "js"
     },
     "\/assets\/js\/Autocomplete.js": {
-        "path": "\/assets\/js\/Autocomplete-6BkXanX.js",
+        "path": "\/assets\/js\/Autocomplete-grgegoA.js",
         "type": "js"
     },
     "\/assets\/js\/DynamicFormCollection.js": {
@@ -60,11 +60,7 @@
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-TCETQC1.js",
-        "type": "js"
-    },
-    "\/assets\/js\/EventBus.js": {
-        "path": "\/assets\/js\/EventBus-w5Yn_zE.js",
+        "path": "\/assets\/js\/FetchForm-bAwsU2g.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
@@ -73,6 +69,10 @@
     },
     "\/assets\/js\/ToggleVehicleFavorite.js": {
         "path": "\/assets\/js\/ToggleVehicleFavorite-_AEJVjI.js",
+        "type": "js"
+    },
+    "\/assets\/js\/EventBus.js": {
+        "path": "\/assets\/js\/EventBus-w5Yn_zE.js",
         "type": "js"
     },
     "vehiclesFilters": {
@@ -92,7 +92,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-TCETQC1.js",
+        "path": "\/assets\/js\/FetchForm-bAwsU2g.js",
         "type": "js"
     }
 }

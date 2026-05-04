@@ -6,7 +6,6 @@ use App\Entity\BodyType;
 use App\Entity\Brand;
 use App\Entity\FuelType;
 use App\Entity\Vehicle;
-use App\Enum\VehicleStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,8 +29,7 @@ class VehicleRepository extends ServiceEntityRepository
             ->leftJoin('vm.model', 'm')
             ->leftJoin('vm.bodyType', 'bt')
             ->leftJoin('vm.fuelType', 'ft')
-            ->leftJoin('v.dossiers', 'd')
-            ->addSelect('vm', 'b', 'm', 'bt', 'ft', 'd');
+            ->addSelect('vm', 'b', 'm', 'bt', 'ft');
 
         $normalize = function ($value) {
             if ($value === null || $value === '') {
@@ -39,7 +37,7 @@ class VehicleRepository extends ServiceEntityRepository
             }
 
             if (is_array($value)) {
-                return array_filter($value, fn($v) => $v !== '' && $v !== null);
+                return array_values(array_filter($value, fn($v) => $v !== '' && $v !== null));
             }
 
             return [$value];
@@ -56,23 +54,33 @@ class VehicleRepository extends ServiceEntityRepository
         }
 
         // =====================================================
-        // DOSSIERS TYPE
+        // DOSSIERS TYPE (CORRIGÉ - EXISTS AU LIEU DE JOIN FILTRÉ)
         // =====================================================
 
         $type = $normalize($filters['type'] ?? null);
         if (!empty($type)) {
-            $qb->andWhere('d.type IN (:type)')
-                ->setParameter('type', $type);
+            $qb->andWhere(
+                $qb->expr()->exists(
+                    'SELECT 1 FROM App\Entity\Dossier d 
+                     WHERE d.vehicle = v 
+                     AND d.type IN (:type)'
+                )
+            )->setParameter('type', $type);
         }
 
         // =====================================================
-        // FINANCING
+        // FINANCING (CORRIGÉ - EXISTS)
         // =====================================================
 
         $financing = $normalize($filters['financing'] ?? null);
         if (!empty($financing)) {
-            $qb->andWhere('d.financingType IN (:financing)')
-                ->setParameter('financing', $financing);
+            $qb->andWhere(
+                $qb->expr()->exists(
+                    'SELECT 1 FROM App\Entity\Dossier d2 
+                     WHERE d2.vehicle = v 
+                     AND d2.financingType IN (:financing)'
+                )
+            )->setParameter('financing', $financing);
         }
 
         // =====================================================
@@ -168,7 +176,7 @@ class VehicleRepository extends ServiceEntityRepository
         }
 
         // =====================================================
-        // ORDER SAFE (DOCTRINE COMPATIBLE)
+        // ORDER SAFE
         // =====================================================
 
         return $qb->orderBy('b.name', 'ASC');
@@ -245,7 +253,7 @@ class VehicleRepository extends ServiceEntityRepository
             ->select('MIN(v.firstRegistrationDate) as minDate, MAX(v.firstRegistrationDate) as maxDate')
             ->getQuery()
             ->getOneOrNullResult();
-
+      
         if (!$result || !$result['minDate'] || !$result['maxDate']) {
             return [
                 'min' => null,

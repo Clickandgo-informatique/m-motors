@@ -2,11 +2,13 @@ export default class FetchForm {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) return;
 
+    if (form.dataset.module === "autocomplete") return;
+
     this.form = form;
     this.isLoading = false;
     this.timer = null;
 
-    // Empêche les triggers init DOM (sliders, radios, etc.)
+    // 🔥 NO AUTO TRIGGER
     this.ready = false;
 
     this.init();
@@ -21,14 +23,16 @@ export default class FetchForm {
       this.send();
     });
 
-    // Activation différée pour éviter auto-trigger au chargement
-    setTimeout(() => {
-      this.ready = true;
-    }, 400);
+    //ARMEMENT APRES STABILISATION DOM
+    window.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        this.ready = true;
+      }, 300);
+    });
   }
 
   onChange(e) {
-    if (!this.ready) return;
+    if (!this.ready) return; // BLOQUAGE CRITIQUE
 
     const el = e.target;
     if (!(el instanceof HTMLElement)) return;
@@ -47,28 +51,20 @@ export default class FetchForm {
   }
 
   send() {
-    console.log([...new FormData(this.form).entries()]);
     if (this.isLoading) return;
 
     const url = this.form.dataset.fetchUrl;
-
     const target = document.querySelector(this.form.dataset.target);
-    const paginationTop = document.querySelector(
-      '[data-target="pagination-top"]'
+    const filtersTarget = document.querySelector(
+      this.form.dataset.filtersTarget
     );
-    const paginationBottom = document.querySelector(
-      '[data-target="pagination-bottom"]'
+    const paginationTarget = document.querySelector(
+      this.form.dataset.paginationTarget
     );
 
     if (!url || !target) return;
 
     this.isLoading = true;
-
-    // Reset page à chaque filtre (évite pagination incohérente)
-    const pageInput = this.form.querySelector('input[name="page"]');
-    if (pageInput) {
-      pageInput.value = 1;
-    }
 
     const params = new URLSearchParams(new FormData(this.form));
 
@@ -78,22 +74,18 @@ export default class FetchForm {
     })
       .then(res => res.json())
       .then(data => {
-        // Liste véhicules
-        if (data.list) {
+        if (data.list && target) {
           target.innerHTML = data.list;
         }
 
-        // Pagination top
-        if (data.pagination_top && paginationTop) {
-          paginationTop.innerHTML = data.pagination_top;
+        if (data.filters && filtersTarget) {
+          filtersTarget.innerHTML = data.filters;
         }
 
-        // Pagination bottom
-        if (data.pagination_bottom && paginationBottom) {
-          paginationBottom.innerHTML = data.pagination_bottom;
+        if (data.pagination && paginationTarget) {
+          paginationTarget.innerHTML = data.pagination;
         }
 
-        // Re-init UI après remplacement DOM
         window.dispatchEvent(new Event("ui:updated"));
       })
       .catch(err => {

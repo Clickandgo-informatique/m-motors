@@ -2,11 +2,13 @@ export default class FetchForm {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) return;
 
+    if (form.dataset.module === "autocomplete") return;
+
     this.form = form;
     this.isLoading = false;
     this.timer = null;
 
-    // Empêche les triggers init DOM (sliders, radios, etc.)
+    // bloque les triggers init DOM
     this.ready = false;
 
     this.init();
@@ -21,7 +23,7 @@ export default class FetchForm {
       this.send();
     });
 
-    // Activation différée pour éviter auto-trigger au chargement
+    // ARMEMENT après stabilisation complète UI
     setTimeout(() => {
       this.ready = true;
     }, 400);
@@ -47,24 +49,23 @@ export default class FetchForm {
   }
 
   send() {
-    console.log([...new FormData(this.form).entries()]);
     if (this.isLoading) return;
 
     const url = this.form.dataset.fetchUrl;
 
     const target = document.querySelector(this.form.dataset.target);
-    const paginationTop = document.querySelector(
-      '[data-target="pagination-top"]'
+    const filtersTarget = document.querySelector(
+      this.form.dataset.filtersTarget
     );
-    const paginationBottom = document.querySelector(
-      '[data-target="pagination-bottom"]'
+    const paginationTarget = document.querySelector(
+      this.form.dataset.paginationTarget
     );
 
     if (!url || !target) return;
 
     this.isLoading = true;
 
-    // Reset page à chaque filtre (évite pagination incohérente)
+    //reset pagination à chaque action filtre
     const pageInput = this.form.querySelector('input[name="page"]');
     if (pageInput) {
       pageInput.value = 1;
@@ -78,22 +79,22 @@ export default class FetchForm {
     })
       .then(res => res.json())
       .then(data => {
-        // Liste véhicules
-        if (data.list) {
+        // LISTING
+        if (data.list !== undefined && target) {
           target.innerHTML = data.list;
         }
 
-        // Pagination top
-        if (data.pagination_top && paginationTop) {
-          paginationTop.innerHTML = data.pagination_top;
+        // FILTERS (sidebar dynamique si utilisé)
+        if (data.filters !== undefined && filtersTarget) {
+          filtersTarget.innerHTML = data.filters;
         }
 
-        // Pagination bottom
-        if (data.pagination_bottom && paginationBottom) {
-          paginationBottom.innerHTML = data.pagination_bottom;
+        // PAGINATION
+        if (data.pagination !== undefined && paginationTarget) {
+          paginationTarget.innerHTML = data.pagination;
         }
 
-        // Re-init UI après remplacement DOM
+        //reset ready state des composants
         window.dispatchEvent(new Event("ui:updated"));
       })
       .catch(err => {

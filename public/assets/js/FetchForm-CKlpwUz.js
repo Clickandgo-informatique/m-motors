@@ -47,7 +47,6 @@ export default class FetchForm {
   }
 
   send() {
-    console.log([...new FormData(this.form).entries()]);
     if (this.isLoading) return;
 
     const url = this.form.dataset.fetchUrl;

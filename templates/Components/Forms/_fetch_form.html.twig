@@ -1,16 +1,30 @@
-{# Components/Forms/_fetch_form.html.twig #}
+<form
+    method="get"
+    action="{{ action }}"
+    data-module="fetch-form"
+    data-fetch-url="{{ fetchUrl }}"
+    data-target="{{ target }}"
+    data-filters-target="{{ filtersTarget|default('') }}"
+    data-pagination-target="{{ paginationTarget|default('') }}"
+    class="fetch-form"
+>
 
-<form method="get" action="{{ action|default('') }}" class="fetch-form" data-module="fetch-form" data-fetch-url="{{ fetchUrl|default(action|default('')) }}" data-target="#{{ resultDiv|default('autocomplete-results') }}">
+    <div class="form-row dropdown-wrapper">
 
-	<div class="form-row dropdown-wrapper">
+        <input
+            type="text"
+            name="{{ name }}"
+            value="{{ app.request.get(name) }}"
+            placeholder="{{ placeholder }}"
+            autocomplete="off"
+            data-module="autocomplete"
+            data-url="{{ autocompleteUrl }}"
+            data-base-url="{{ baseUrl }}"
+            data-link-mode="{{ linkMode }}"
+        >
 
-		<input type="text" name="{{ name|default('q') }}" placeholder="{{ placeholder|default('Rechercher') }}" autocomplete="off" data-module="autocomplete" data-url="{{ autocompleteUrl|default('') }}" data-link-mode="{{ linkMode|default('0') }}" data-base-url="{{ baseUrl|default('') }}">
+        <div id="{{ resultDiv }}" class="dropdown-results"></div>
 
-		<button type="button" class="search-toggle-btn">
-			Rechercher
-		</button>
+    </div>
 
-		<div class="dropdown-results" id="{{ resultDiv|default('autocomplete-results') }}"></div>
-
-	</div>
 </form>

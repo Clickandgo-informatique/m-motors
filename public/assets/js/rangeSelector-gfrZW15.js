@@ -134,51 +134,17 @@ export default function initDoubleSlider(slider) {
     thumbs.rangeBar.style.left = left + "px";
     thumbs.rangeBar.style.width = right - left + "px";
 
-    // =========================
-    // LABELS INTERNES SLIDER
-    // =========================
-    if (thumbs.valueMin) {
-      thumbs.valueMin.textContent = currentMin.toLocaleString("fr-FR");
-    }
-
-    if (thumbs.valueMax) {
-      thumbs.valueMax.textContent = currentMax.toLocaleString("fr-FR");
-    }
-
-    // =========================
-    // LABELS EXTERNES (TWIG)
-    // =========================
-    const targetMin = document.querySelector(slider.dataset.targetMin);
-    const targetMax = document.querySelector(slider.dataset.targetMax);
-
-    if (targetMin) {
-      targetMin.textContent = currentMin.toLocaleString("fr-FR");
-    }
-
-    if (targetMax) {
-      targetMax.textContent = currentMax.toLocaleString("fr-FR");
-    }
-
-    // =========================
-    // INPUTS HIDDEN (FILTRES)
-    // =========================
-    const inputMin = document.querySelector(slider.dataset.inputMin);
-    const inputMax = document.querySelector(slider.dataset.inputMax);
-
-    if (inputMin) inputMin.value = currentMin;
-    if (inputMax) inputMax.value = currentMax;
+    thumbs.valueMin.textContent = currentMin;
+    thumbs.valueMax.textContent = currentMax;
 
     slider.dispatchEvent(
       new CustomEvent("sliderChanged", {
         bubbles: true,
-        detail: {
-          filter: FILTER,
-          min: currentMin,
-          max: currentMax
-        }
+        detail: { filter: FILTER, min: currentMin, max: currentMax }
       })
     );
   };
+
   buildSlider();
   updateUI();
 

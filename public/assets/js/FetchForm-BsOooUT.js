@@ -2,12 +2,11 @@ export default class FetchForm {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) return;
 
+    if (form.dataset.module === "autocomplete") return;
+
     this.form = form;
     this.isLoading = false;
     this.timer = null;
-
-    // Empêche les triggers init DOM (sliders, radios, etc.)
-    this.ready = false;
 
     this.init();
   }
@@ -20,17 +19,11 @@ export default class FetchForm {
       e.preventDefault();
       this.send();
     });
-
-    // Activation différée pour éviter auto-trigger au chargement
-    setTimeout(() => {
-      this.ready = true;
-    }, 400);
   }
 
   onChange(e) {
-    if (!this.ready) return;
-
     const el = e.target;
+
     if (!(el instanceof HTMLElement)) return;
 
     if (el.closest("[data-module='autocomplete']")) return;
@@ -43,32 +36,18 @@ export default class FetchForm {
 
     this.timer = setTimeout(() => {
       this.send();
-    }, 250);
+    }, 200);
   }
 
   send() {
-    console.log([...new FormData(this.form).entries()]);
     if (this.isLoading) return;
 
     const url = this.form.dataset.fetchUrl;
-
     const target = document.querySelector(this.form.dataset.target);
-    const paginationTop = document.querySelector(
-      '[data-target="pagination-top"]'
-    );
-    const paginationBottom = document.querySelector(
-      '[data-target="pagination-bottom"]'
-    );
 
     if (!url || !target) return;
 
     this.isLoading = true;
-
-    // Reset page à chaque filtre (évite pagination incohérente)
-    const pageInput = this.form.querySelector('input[name="page"]');
-    if (pageInput) {
-      pageInput.value = 1;
-    }
 
     const params = new URLSearchParams(new FormData(this.form));
 
@@ -76,24 +55,10 @@ export default class FetchForm {
       method: "POST",
       body: params
     })
-      .then(res => res.json())
-      .then(data => {
-        // Liste véhicules
-        if (data.list) {
-          target.innerHTML = data.list;
-        }
+      .then(res => res.text())
+      .then(html => {
+        target.innerHTML = html;
 
-        // Pagination top
-        if (data.pagination_top && paginationTop) {
-          paginationTop.innerHTML = data.pagination_top;
-        }
-
-        // Pagination bottom
-        if (data.pagination_bottom && paginationBottom) {
-          paginationBottom.innerHTML = data.pagination_bottom;
-        }
-
-        // Re-init UI après remplacement DOM
         window.dispatchEvent(new Event("ui:updated"));
       })
       .catch(err => {

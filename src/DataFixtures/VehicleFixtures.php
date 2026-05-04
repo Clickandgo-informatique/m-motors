@@ -13,12 +13,12 @@ use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
 /**
- * Génération des véhicules.
+ * Génération des véhicules
  *
  * Objectif :
- * - dataset stable
- * - sans références Doctrine
- * - compatible clear + batch
+ * - dataset réaliste
+ * - compatible filtres (mileage + année)
+ * - stable pour pagination / sliders
  */
 class VehicleFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -41,22 +41,43 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
         ];
 
         foreach ($statuses as $status) {
-
             for ($i = 0; $i < self::MIN_PER_STATUS; $i++) {
 
                 $vehicle = new Vehicle();
 
+                // =========================
+                // STATUS + IDENTIFIANT
+                // =========================
                 $vehicle->setStatus($status);
                 $vehicle->setVin(strtoupper($faker->regexify('[A-HJ-NPR-Z0-9]{17}')));
 
+                // =========================
+                // RELATIONS
+                // =========================
                 $vehicle->setVehicleModel($vehicleModels[array_rand($vehicleModels)]);
                 $vehicle->setSupplier($suppliers[array_rand($suppliers)]);
 
-                if ($colors) {
+                if (!empty($colors)) {
                     $vehicle->setColor($colors[array_rand($colors)]);
                 }
 
+                // =========================
+                // PRIX
+                // =========================
                 $vehicle->setPrice($faker->numberBetween(8000, 90000));
+
+                // =========================
+                // MILEAGE (IMPORTANT SLIDER)
+                // =========================
+                $vehicle->setMileage($faker->numberBetween(0, 300000));
+
+                // =========================
+                // DATE IMMATRICULATION (IMPORTANT SLIDER ANNÉES)
+                // =========================
+                $year = $faker->numberBetween(2005, (int) date('Y'));
+                $vehicle->setFirstRegistrationDate(
+                    \DateTimeImmutable::createFromFormat('Y-m-d', $year . '-01-01')
+                );
 
                 $manager->persist($vehicle);
             }

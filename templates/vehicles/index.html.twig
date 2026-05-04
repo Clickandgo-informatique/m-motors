@@ -6,7 +6,7 @@
 	<div class="layout">
 		<main>
 
-			<form id="filters-form" data-fetch-form data-fetch-url="{{ path('vehicles_ajax_list') }}" data-target="#vehicles-results">
+			<form id="view-switcher-form" class="fetch-form" data-module="fetch-form" data-fetch-url="{{ path('vehicles_ajax_list') }}" data-target="#vehicles-results" data-filters-target="#vehicles-filters" data-pagination-target="#vehicles-pagination">
 
 				<div id="view-toggle">
 
@@ -16,6 +16,7 @@
 					<label for="view-grid">
 						<span class="icon-grid"></span>
 					</label>
+
 					<label for="view-table">
 						<span class="icon-table"></span>
 					</label>
@@ -24,34 +25,38 @@
 				</div>
 
 				<input type="hidden" name="page" value="1">
-
 			</form>
 
 			{% include "Components/Forms/_fetch_form.html.twig" with {
-    action: path('vehicles_index'),
-    fetchUrl: path('vehicles_ajax_list'),
-    autocompleteUrl: path('vehicles_ajax_search'),
-    name: 'q',
-    placeholder: 'Rechercher un véhicule par marque, modèle',
-    baseUrl: '/vehicles/',
-    linkMode: '1',
-    resultDiv: 'autocomplete-results',
-    autocomplete: true,
-    resultLinks: true
-} %}
+            action: path('vehicles_index'),
+            fetchUrl: path('vehicles_ajax_list'),
+            autocompleteUrl: path('vehicles_ajax_search'),
+            name: 'q',
+            placeholder: 'Rechercher un véhicule par marque, modèle',
+            baseUrl: '/vehicles/',
+            linkMode: '1',
+            resultDiv: 'autocomplete-results',
+            target: '#vehicles-results',
+            filtersTarget: '#vehicles-filters',
+            paginationTarget: '#vehicles-pagination'
+        } %}
 
-			<div data-target="filters-summary"></div>
+			<div id="vehicles-filters"></div>
 
-			<div data-target="pagination-top">
-				{% include 'vehicles/_pagination_info.html.twig' with { vehicles: vehicles } %}
+			<div id="vehicles-pagination">
+				<div class="pagination-top">
+					{% include 'vehicles/_pagination_info.html.twig' with { vehicles: vehicles } %}
+				</div>
 			</div>
 
 			<div id="vehicles-results">
 				{% include 'vehicles/_vehicles_list.html.twig' %}
 			</div>
 
-			<div data-target="pagination-bottom">
-				{% include 'vehicles/_pagination_info.html.twig' with { vehicles: vehicles } %}
+			<div id="vehicles-pagination-bottom">
+				<div class="pagination-bottom">
+					{% include 'vehicles/_pagination_info.html.twig' with { vehicles: vehicles } %}
+				</div>
 			</div>
 
 		</main>

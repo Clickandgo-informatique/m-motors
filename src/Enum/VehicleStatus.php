@@ -165,17 +165,4 @@ enum VehicleStatus: string
             self::MAINTENANCE => 'danger',
         };
     }
-
-    public static function choices(): array
-    {
-        return [
-            'Disponible (vente)' => self::AVAILABLE_FOR_SALE,
-            'Disponible (location)' => self::AVAILABLE_FOR_RENT,
-            'Réservé' => self::RESERVED,
-            'Loué' => self::RENTED,
-            'Vendu' => self::SOLD,
-            'Commandé fournisseur' => self::ORDERED,
-            'En maintenance' => self::MAINTENANCE,
-        ];
-    }
 }

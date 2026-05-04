@@ -16,24 +16,10 @@ import EventBus from "./js/EventBus.js";
 console.log("app.js initialisé");
 
 /* ==========================================================
-   HELPERS
-========================================================== */
-function resetInitFlags(root) {
-  root.querySelectorAll("[data-initialized='1']").forEach(el => {
-    el.dataset.initialized = "0";
-  });
-
-  root.querySelectorAll("*").forEach(el => {
-    if (el.__fetchFormBound) el.__fetchFormBound = false;
-    if (el.__autocompleteBound) el.__autocompleteBound = false;
-  });
-}
-
-/* ==========================================================
    DROPZONES
 ========================================================== */
-function initDropzones(root = document) {
-  root.querySelectorAll(".dropzone").forEach(el => {
+function initDropzones() {
+  document.querySelectorAll(".dropzone").forEach(el => {
     if (el.dataset.initialized === "1") return;
 
     el.dataset.initialized = "1";
@@ -44,8 +30,8 @@ function initDropzones(root = document) {
 /* ==========================================================
    FILTRES VEHICULES
 ========================================================== */
-function initFilters(root = document) {
-  const form = root.querySelector("#filters-form");
+function initFilters() {
+  const form = document.getElementById("filters-form");
   if (!form) return;
 
   if (form.dataset.initialized === "1") return;
@@ -57,8 +43,8 @@ function initFilters(root = document) {
 /* ==========================================================
    FAVORIS
 ========================================================== */
-function initFavorites(root = document) {
-  root.querySelectorAll('[data-action="toggle-favorite"]').forEach(btn => {
+function initFavorites() {
+  document.querySelectorAll('[data-action="toggle-favorite"]').forEach(btn => {
     if (btn.dataset.initialized === "1") return;
 
     btn.dataset.initialized = "1";
@@ -86,49 +72,48 @@ function initFetchForms(root = document) {
     if (form.__fetchFormBound) return;
 
     form.__fetchFormBound = true;
-    new FetchForm(form);
+
+    try {
+      new FetchForm(form);
+    } catch (e) {
+      console.error("[initFetchForms] error", e, form);
+    }
   });
 }
 
 /* ==========================================================
-   COLLECTIONS
+   COLLECTIONS DYNAMIQUES
 ========================================================== */
-function initCollections(root = document) {
-  root.querySelectorAll("[data-collection]").forEach(el => {
-    if (el.dataset.initialized === "1") return;
+function initCollections() {
+  document.querySelectorAll("[data-collection]").forEach(root => {
+    if (root.dataset.initialized === "1") return;
 
-    el.dataset.initialized = "1";
-    new DynamicFormCollection(el);
+    root.dataset.initialized = "1";
+    new DynamicFormCollection(root);
   });
 }
 
 /* ==========================================================
-   SLIDERS (CRITIQUE FIX)
+   AJAX MANAGER (MODALES)
 ========================================================== */
-function initSliders(root = document) {
-  root.querySelectorAll(".double-slider").forEach(slider => {
-    // IMPORTANT: reset après AJAX
-    if (slider.dataset.initialized === "1" && !slider.dataset.forceReinit)
-      return;
+function initAjaxManager() {
+  window.ajaxManager = new AjaxManager();
+}
+
+/* ==========================================================
+   SLIDERS
+========================================================== */
+function initSliders() {
+  document.querySelectorAll(".double-slider").forEach(slider => {
+    if (slider.dataset.initialized === "1") return;
 
     slider.dataset.initialized = "1";
-    delete slider.dataset.forceReinit;
-
     initDoubleSlider(slider);
   });
 }
 
 /* ==========================================================
-   AJAX MANAGER
-========================================================== */
-function initAjaxManager() {
-  if (!window.ajaxManager) {
-    window.ajaxManager = new AjaxManager();
-  }
-}
-
-/* ==========================================================
-   INIT GLOBAL
+   INIT PRINCIPAL
 ========================================================== */
 function initApp() {
   initSidebar?.();
@@ -149,19 +134,15 @@ function initApp() {
 document.addEventListener("DOMContentLoaded", initApp);
 
 /* ==========================================================
-   UI UPDATE (AJAX)
+   REINIT APRES AJAX
 ========================================================== */
 EventBus.on("ui:updated", ({ target }) => {
   const root = target || document;
 
-  // RESET STATE BEFORE REINIT
-  resetInitFlags(root);
-
   initAutocomplete(root);
   initFetchForms(root);
-  initFavorites(root);
-  initCollections(root);
-  initSliders(root);
-
-  // ⚠️ IMPORTANT: pas besoin de re-init global
+  initFavorites();
+  initCollections();
+  initSliders();
+  initAjaxManager();
 });

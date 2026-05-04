@@ -23,10 +23,6 @@
 					</a>
 				</li>
 
-				{% if app.request.attributes.get('_route') starts with 'vehicles' %}
-					{% include 'vehicles/_vehicles_filters.html.twig' %}
-				{% endif %}
-
 				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 					<li>
 						<a href="{{ path('vehicles_models') }}">
@@ -44,6 +40,14 @@
 				{% endif %}
 
 			</ul>
+
+			{# 🔥 FILTRES SORTIS DU UL (IMPORTANT DOM VALID) #}
+			{% if app.request.attributes.get('_route') starts with 'vehicles' %}
+				<div id="vehicles-filters">
+					{% include 'vehicles/_vehicles_filters.html.twig' %}
+				</div>
+			{% endif %}
+
 		</details>
 
 		{# ========================= CLIENTS ========================= #}
@@ -101,12 +105,14 @@
 				</ul>
 
 				{% if app.user %}
-					<li>
-						<a href="{{ path('dossier_my_list') }}">
-							<i class="fa-solid fa-folder-open"></i>
-							Mes dossiers
-						</a>
-					</li>
+					<ul class="items-list">
+						<li>
+							<a href="{{ path('dossier_my_list') }}">
+								<i class="fa-solid fa-folder-open"></i>
+								Mes dossiers
+							</a>
+						</li>
+					</ul>
 				{% endif %}
 
 			</details>

@@ -90,6 +90,8 @@ export default class Autocomplete {
   }
 
   render(items) {
+    console.log("[Autocomplete render]", items);
+
     if (!this.dropdown) return;
 
     this.clear();
@@ -115,24 +117,20 @@ export default class Autocomplete {
       if (this.linkMode) {
         const a = document.createElement("a");
 
+        a.textContent = item.label;
         const url = `${this.baseUrl}${item.id}/edit`;
 
-        a.textContent = item.label;
         a.href = url;
         a.setAttribute("data-ajax-modal", url);
 
-        el.appendChild(a);
-
         a.addEventListener("click", e => {
           e.preventDefault();
-          window.location.href = url;
+          window.location.href = a.href;
         });
+
+        el.appendChild(a);
       } else {
         el.textContent = item.label;
-
-        el.addEventListener("click", () => {
-          this.select(item.label);
-        });
       }
 
       fragment.appendChild(el);
@@ -140,19 +138,6 @@ export default class Autocomplete {
 
     this.dropdown.appendChild(fragment);
     this.open();
-  }
-
-  select(value) {
-    this.input.value = value;
-
-    const form = this.input.closest("form");
-
-    if (form) {
-      form.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-
-    this.clear();
-    this.close();
   }
 
   clear() {

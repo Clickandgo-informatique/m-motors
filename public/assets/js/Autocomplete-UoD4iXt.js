@@ -3,6 +3,7 @@ function debounce(fn, delay = 250) {
 
   return (...args) => {
     clearTimeout(timer);
+
     timer = setTimeout(() => fn(...args), delay);
   };
 }
@@ -44,7 +45,6 @@ export default class Autocomplete {
       }
     });
   }
-
   onInput() {
     const value = (this.input.value || "").trim();
 
@@ -55,6 +55,20 @@ export default class Autocomplete {
     }
 
     this.fetch(value);
+
+    // AJOUT : déclenche le refresh principal
+    const form = this.input.closest("form");
+    if (form) {
+      // On sauvegarde la valeur
+      const currentValue = this.input.value;
+
+      form.dispatchEvent(new Event("submit", { bubbles: true }));
+
+      // On restaure après le refresh (léger délai)
+      setTimeout(() => {
+        this.input.value = currentValue;
+      }, 0);
+    }
   }
 
   async fetch(query) {
@@ -68,6 +82,7 @@ export default class Autocomplete {
     this.abortController = new AbortController();
 
     const url = `${this.url}?q=${encodeURIComponent(query)}`;
+    console.log("[Autocomplete] URL appelée :", url);
 
     try {
       const res = await fetch(url, {
@@ -77,7 +92,11 @@ export default class Autocomplete {
         }
       });
 
+      console.log("[Autocomplete] status :", res.status);
+
       const data = await res.json();
+
+      console.log("[Autocomplete] data :", data);
 
       if (current !== this.requestId) return;
 
@@ -90,14 +109,7 @@ export default class Autocomplete {
   }
 
   render(items) {
-    if (!this.dropdown) return;
-
     this.clear();
-
-    if (!Array.isArray(items)) {
-      console.error("[Autocomplete] items invalid", items);
-      return;
-    }
 
     if (!items.length) {
       this.dropdown.innerHTML =
@@ -109,29 +121,26 @@ export default class Autocomplete {
     const fragment = document.createDocumentFragment();
 
     items.forEach(item => {
-      const el = document.createElement("div");
+      const el = document.createElement(this.linkMode ? "a" : "div");
+
       el.className = "dropdown-item";
+      el.textContent = item.label;
 
-      if (this.linkMode) {
-        const a = document.createElement("a");
-
+      if (this.linkMode && this.baseUrl) {
         const url = `${this.baseUrl}${item.id}/edit`;
 
-        a.textContent = item.label;
-        a.href = url;
-        a.setAttribute("data-ajax-modal", url);
+        el.href = url;
+        el.setAttribute("data-ajax-modal", url);
 
-        el.appendChild(a);
-
-        a.addEventListener("click", e => {
+        el.addEventListener("click", e => {
           e.preventDefault();
           window.location.href = url;
         });
       } else {
-        el.textContent = item.label;
-
         el.addEventListener("click", () => {
-          this.select(item.label);
+          this.input.value = item.label;
+          this.clear();
+          this.close();
         });
       }
 
@@ -140,19 +149,6 @@ export default class Autocomplete {
 
     this.dropdown.appendChild(fragment);
     this.open();
-  }
-
-  select(value) {
-    this.input.value = value;
-
-    const form = this.input.closest("form");
-
-    if (form) {
-      form.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-
-    this.clear();
-    this.close();
   }
 
   clear() {
