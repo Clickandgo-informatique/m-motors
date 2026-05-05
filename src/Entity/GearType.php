@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\GearRepository;
+use App\Repository\GearTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: GearRepository::class)]
-class Gear
+#[ORM\Entity(repositoryClass: GearTypeRepository::class)]
+class GearType
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -35,13 +35,21 @@ class Gear
     VEHICLES
     ==========================
     */
-
-    #[ORM\OneToMany(mappedBy: 'gear', targetEntity: Vehicle::class)]
+    #[ORM\OneToMany(mappedBy: 'gearType', targetEntity: Vehicle::class)]
     private Collection $vehicles;
+
+    /*
+    ==========================
+    VEHICLE MODELS
+    ==========================
+    */
+    #[ORM\OneToMany(mappedBy: 'GearType', targetEntity: VehicleModel::class)]
+    private Collection $vehicleModels;
 
     public function __construct()
     {
         $this->vehicles = new ArrayCollection();
+        $this->vehicleModels = new ArrayCollection();
     }
 
     /*
@@ -66,9 +74,12 @@ class Gear
         return $this;
     }
 
-    /**
-     * @return Collection<int, Vehicle>
-     */
+    /*
+    ==========================
+    VEHICLES
+    ==========================
+    */
+
     public function getVehicles(): Collection
     {
         return $this->vehicles;
@@ -78,7 +89,7 @@ class Gear
     {
         if (!$this->vehicles->contains($vehicle)) {
             $this->vehicles->add($vehicle);
-            $vehicle->setGear($this);
+            $vehicle->setGearType($this);
         }
 
         return $this;
@@ -87,8 +98,40 @@ class Gear
     public function removeVehicle(Vehicle $vehicle): static
     {
         if ($this->vehicles->removeElement($vehicle)) {
-            if ($vehicle->getGear() === $this) {
-                $vehicle->setGear(null);
+            if ($vehicle->getGearType() === $this) {
+                $vehicle->setGearType(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /*
+    ==========================
+    VEHICLE MODELS
+    ==========================
+    */
+
+    public function getVehicleModels(): Collection
+    {
+        return $this->vehicleModels;
+    }
+
+    public function addVehicleModel(VehicleModel $vehicleModel): static
+    {
+        if (!$this->vehicleModels->contains($vehicleModel)) {
+            $this->vehicleModels->add($vehicleModel);
+            $vehicleModel->setGearType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVehicleModel(VehicleModel $vehicleModel): static
+    {
+        if ($this->vehicleModels->removeElement($vehicleModel)) {
+            if ($vehicleModel->getGearType() === $this) {
+                $vehicleModel->setGearType(null);
             }
         }
 
