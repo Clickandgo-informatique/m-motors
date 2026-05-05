@@ -197,7 +197,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function removeFavorite(Favorite $favorite): static
     {
-        $this->favorites->removeElement($favorite);
+        if ($this->favorites->removeElement($favorite)) {
+            // On casse la relation côté propriétaire
+            if ($favorite->getUser() === $this) {
+                $favorite->setUser(null);
+            }
+        }
 
         return $this;
     }

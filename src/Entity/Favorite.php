@@ -25,7 +25,7 @@ class Favorite
 
     // Utilisateur propriétaire du favori
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'favorites')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?User $user = null;
 
     // Véhicule mis en favori
@@ -52,7 +52,7 @@ class Favorite
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(?User $user): self
     {
         $this->user = $user;
         return $this;

@@ -11,7 +11,6 @@ services:
     # =========================================================
     # AUTOWIRE GLOBAL APP
     # =========================================================
-
     App\:
         resource: "../src/"
         exclude:
@@ -22,33 +21,22 @@ services:
             - "../src/Kernel.php"
 
     # =========================================================
-    # UPLOAD SERVICE
+    # SERVICES METIER
     # =========================================================
-
     App\Service\DossierDocumentUploadService: ~
-
-    # =========================================================
-    # TYPE RESOLVER (METIER)
-    # =========================================================
-
     App\Service\DossierDocumentTypeResolver: ~
 
     # =========================================================
     # WORKFLOW GUARD
     # =========================================================
-
-    App\Workflow\Guard\DossierWorkflowGuard:
+    App\Workflow\DossierWorkflowGuard:
         tags:
             - {
-                  name: kernel.event_listener,
-                  event: workflow.dossier.guard.submit_documents,
-                  method: guardSubmitDocuments,
-              }
+                name: kernel.event_listener,
+                event: workflow.dossier.guard.submit_documents,
+                method: guardSubmitDocuments
+            }
 
-    App\Listener\DocumentUploadedListener:
-    tags:
-        - {
-              name: kernel.event_listener,
-              event: App\Event\DocumentUploadedEvent,
-              method: __invoke,
-          }
+    # IMPORTANT :
+    # Aucun service pour DocumentUploadedListener ici
+    # car on utilise un EventSubscriber autoconfiguré

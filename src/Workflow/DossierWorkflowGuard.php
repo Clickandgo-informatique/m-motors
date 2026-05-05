@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Workflow\Guard;
+namespace App\Workflow;
 
 use App\Entity\Dossier;
 use App\Service\DossierDocumentValidator;
