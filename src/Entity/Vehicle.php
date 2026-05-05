@@ -169,16 +169,16 @@ class Vehicle
     }
 
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
-    private ?Gear $gear = null;
+    private ?GearType $gearType = null;
 
-    public function getGear(): ?Gear
+    public function getGearType(): ?GearType
     {
-        return $this->gear;
+        return $this->gearType;
     }
 
-    public function setGear(?Gear $gear): self
+    public function setGearType(?GearType $gearType): self
     {
-        $this->gear = $gear;
+        $this->gearType = $gearType;
         return $this;
     }
 
