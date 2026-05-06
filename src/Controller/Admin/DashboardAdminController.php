@@ -24,29 +24,22 @@ class DashboardAdminController extends AbstractController
         PaginatorInterface $paginator
     ): Response {
 
-        /*
-         * =========================================================
-         * KPI
-         * =========================================================
-         */
         $stats = $vehicleRepository->createQueryBuilder('v')
             ->select('COUNT(v.id) as total')
-            ->addSelect("SUM(CASE WHEN v.status = :available THEN 1 ELSE 0 END) as available")
+            ->addSelect("SUM(CASE WHEN v.status IN (:available) THEN 1 ELSE 0 END) as available")
             ->addSelect("SUM(CASE WHEN v.status = :rented THEN 1 ELSE 0 END) as rented")
             ->addSelect("SUM(CASE WHEN v.status = :reserved THEN 1 ELSE 0 END) as reserved")
             ->addSelect("SUM(CASE WHEN v.status = :sold THEN 1 ELSE 0 END) as sold")
-            ->setParameter('available', VehicleStatus::AVAILABLE->value)
+            ->setParameter('available', [
+                VehicleStatus::AVAILABLE_FOR_SALE->value,
+                VehicleStatus::AVAILABLE_FOR_RENT->value,
+            ])
             ->setParameter('rented', VehicleStatus::RENTED->value)
             ->setParameter('reserved', VehicleStatus::RESERVED->value)
             ->setParameter('sold', VehicleStatus::SOLD->value)
             ->getQuery()
             ->getSingleResult();
 
-        /*
-         * =========================================================
-         * PAGINATION MARQUES
-         * =========================================================
-         */
         $brandQuery = $em->createQueryBuilder()
             ->select('b')
             ->from(Brand::class, 'b')
@@ -58,17 +51,11 @@ class DashboardAdminController extends AbstractController
             5
         );
 
-        /*
-         * =========================================================
-         * MARQUE ACTIVE
-         * =========================================================
-         */
         $brandId = $request->query->get('brandId');
 
         $models = null;
 
         if ($brandId) {
-
             $modelQuery = $em->createQueryBuilder()
                 ->select('vm')
                 ->from(VehicleModel::class, 'vm')
@@ -83,18 +70,16 @@ class DashboardAdminController extends AbstractController
             );
         }
 
-        /*
-         * =========================================================
-         * STOCK MAP
-         * =========================================================
-         */
         $rows = $vehicleRepository->createQueryBuilder('v')
             ->select('IDENTITY(v.vehicleModel) as modelId')
             ->addSelect('COUNT(v.id) as total')
-            ->addSelect("SUM(CASE WHEN v.status = :available THEN 1 ELSE 0 END) as available")
+            ->addSelect("SUM(CASE WHEN v.status IN (:available) THEN 1 ELSE 0 END) as available")
             ->addSelect("SUM(CASE WHEN v.status = :rented THEN 1 ELSE 0 END) as rented")
             ->groupBy('v.vehicleModel')
-            ->setParameter('available', VehicleStatus::AVAILABLE->value)
+            ->setParameter('available', [
+                VehicleStatus::AVAILABLE_FOR_SALE->value,
+                VehicleStatus::AVAILABLE_FOR_RENT->value,
+            ])
             ->setParameter('rented', VehicleStatus::RENTED->value)
             ->getQuery()
             ->getArrayResult();
