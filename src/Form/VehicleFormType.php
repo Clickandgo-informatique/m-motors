@@ -5,7 +5,7 @@ namespace App\Form;
 use App\Entity\Color;
 use App\Entity\Feature;
 use App\Entity\FuelType;
-use App\Entity\Gear;
+use App\Entity\GearType;
 use App\Entity\Supplier;
 use App\Entity\Vehicle;
 use App\Enum\VehicleStatus;
@@ -91,8 +91,8 @@ class VehicleFormType extends AbstractType
                 'label' => 'Carburant'
             ])
 
-            ->add('gear', EntityType::class, [
-                'class' => Gear::class,
+            ->add('gearType', EntityType::class, [
+                'class' => GearType::class,
                 'choice_label' => 'name',
                 'label' => 'Boîte'
             ])

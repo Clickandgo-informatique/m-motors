@@ -46,7 +46,7 @@ class VehicleModel
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
-    private ?Gear $gear = null;
+    private ?GearType $gearType = null;
 
     #[ORM\ManyToOne(targetEntity: BodyType::class, inversedBy: 'vehicleModels')]
     #[ORM\JoinColumn(nullable: false)]
@@ -237,14 +237,14 @@ class VehicleModel
         return $this;
     }
 
-    public function getGear(): ?Gear
+    public function getGearType(): ?GearType
     {
-        return $this->gear;
+        return $this->gearType;
     }
 
-    public function setGear(?Gear $gear): static
+    public function setGearType(?GearType $gearType): static
     {
-        $this->gear = $gear;
+        $this->gearType = $gearType;
         return $this;
     }
 
