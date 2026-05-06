@@ -8,32 +8,37 @@
 	<div class="container mt-4">
 
 		<h1 class="text-center">
-			<i class="fa-regular fa-folder-open title-icon"></i>Administration des dossiers</h1>
-
-		{% include "Components/Forms/_fetch_form.html.twig" 
-with {
+			<i class="fa-regular fa-folder-open title-icon"></i>
+			Administration des dossiers
+		</h1>
+		{% include "Components/Forms/_fetch_form.html.twig" with {
     action: path('dossiers_ajax_search'),
+    fetchUrl: path('dossiers_ajax_search'),
+    autocompleteUrl: path('dossiers_ajax_search'),
     name: 'q',
     placeholder: 'Rechercher un dossier par référence, nom client, modèle de véhicule ...',
-    resultDiv: 'autocomplete-results',          # dropdown spécifique
-    cardsContainer: 'dossiers-search-results',  # gallery principale
-    autocomplete: true,
-    pagination: true,
-    noResultsClass: 'dropdown-no-results',   
-    highlight: true
-}
-%}
+    baseUrl: path('admin_dossier_list'),
+    linkMode: '1',
+    resultDiv: 'autocomplete-results',
+    target: 'dossiers-search-results',
+    filtersTarget: 'dossiers-filters',
+    paginationTarget: 'pagination-wrapper'
+} %}
 
 		{# Pagination haut #}
 		<div class="pagination-wrapper" data-target="pagination-top">
-			{% include "dossier/_pagination_info.html.twig" with {dossiers: dossiers} %} 		</div>
-		<div class="dossier-search-results">
-			{% include "dossier/_dossiers_table.html.twig" with {dossiers:dossiers} %}
+			{% include "dossier/_pagination_info.html.twig" with { dossiers: dossiers } %}
+		</div>
+
+		<div id="dossiers-search-results" class="dossier-search-results">
+			{% include "dossier/_dossiers_table.html.twig" with { dossiers: dossiers } %}
 		</div>
 
 		{# Pagination bas #}
 		<div class="pagination-wrapper" data-target="pagination-bottom">
-			{% include "dossier/_pagination_info.html.twig" with {dossiers: dossiers} %} 		</div>
+			{% include "dossier/_pagination_info.html.twig" with { dossiers: dossiers } %}
+		</div>
+
 	</div>
 
 {% endblock %}

@@ -1,30 +1,24 @@
-<form
-    method="get"
-    action="{{ action }}"
-    data-module="fetch-form"
-    data-fetch-url="{{ fetchUrl }}"
-    data-target="{{ target }}"
-    data-filters-target="{{ filtersTarget|default('') }}"
-    data-pagination-target="{{ paginationTarget|default('') }}"
-    class="fetch-form"
->
+<form method="get" action="{{ action }}" 
+data-module="fetch-form" 
+data-fetch-url="{{ fetchUrl }}" 
+data-target="{{ target }}" 
+data-filters-target="{{ filtersTarget|default('') }}" 
+data-pagination-target="{{ paginationTarget|default('') }}" 
+class="fetch-form">
 
-    <div class="form-row dropdown-wrapper">
+	<div class="form-row dropdown-wrapper">
 
-        <input
-            type="text"
-            name="{{ name }}"
-            value="{{ app.request.get(name) }}"
-            placeholder="{{ placeholder }}"
-            autocomplete="off"
-            data-module="autocomplete"
-            data-url="{{ autocompleteUrl }}"
-            data-base-url="{{ baseUrl }}"
-            data-link-mode="{{ linkMode }}"
-        >
+		<input type="text" 
+        name="{{ name }}" 
+        value="{{ app.request.get(name) }}" 
+        placeholder="{{ placeholder }}" 
+        autocomplete="off" data-module="autocomplete" 
+        data-url="{{ autocompleteUrl }}" 
+        data-base-url="{{ baseUrl }}" 
+        data-link-mode="{{ linkMode|default(0) }}">
 
-        <div id="{{ resultDiv }}" class="dropdown-results"></div>
+		<div id="{{ resultDiv }}" class="dropdown-results"></div>
 
-    </div>
+	</div>
 
 </form>
