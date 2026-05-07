@@ -29,3 +29,6 @@
 ### Logs ###
 npm-debug.log
 yarn-error.log
+
+# Generated Symfony reference config
+/config/reference.php
