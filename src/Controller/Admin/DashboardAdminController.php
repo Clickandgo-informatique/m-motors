@@ -3,9 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Brand;
-use App\Entity\VehicleModel;
-use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
+use App\Service\Dashboard\VehicleDashboardService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,34 +18,27 @@ class DashboardAdminController extends AbstractController
     #[Route('', name: 'admin_dashboard')]
     public function index(
         Request $request,
-        VehicleRepository $vehicleRepository,
+        VehicleDashboardService $dashboardService,
         EntityManagerInterface $em,
         PaginatorInterface $paginator
     ): Response {
 
         /*
          * =========================================================
-         * KPI
+         * KPI + DATA DASHBOARD (SERVICE)
          * =========================================================
          */
-        $stats = $vehicleRepository->createQueryBuilder('v')
-            ->select('COUNT(v.id) as total')
-            ->addSelect("SUM(CASE WHEN v.status = :available THEN 1 ELSE 0 END) as available")
-            ->addSelect("SUM(CASE WHEN v.status = :rented THEN 1 ELSE 0 END) as rented")
-            ->addSelect("SUM(CASE WHEN v.status = :reserved THEN 1 ELSE 0 END) as reserved")
-            ->addSelect("SUM(CASE WHEN v.status = :sold THEN 1 ELSE 0 END) as sold")
-            ->setParameter('available', VehicleStatus::AVAILABLE->value)
-            ->setParameter('rented', VehicleStatus::RENTED->value)
-            ->setParameter('reserved', VehicleStatus::RESERVED->value)
-            ->setParameter('sold', VehicleStatus::SOLD->value)
-            ->getQuery()
-            ->getSingleResult();
+
+        $stats = $dashboardService->getStats();
+        $stock = $dashboardService->getStockByModel();
+        $usage = $dashboardService->getUsageDistribution();
 
         /*
          * =========================================================
-         * PAGINATION MARQUES
+         * MARQUES (UI ONLY)
          * =========================================================
          */
+
         $brandQuery = $em->createQueryBuilder()
             ->select('b')
             ->from(Brand::class, 'b')
@@ -54,62 +46,86 @@ class DashboardAdminController extends AbstractController
 
         $brands = $paginator->paginate(
             $brandQuery,
-            $request->query->getInt('brandPage', 1),
-            5
+            $request->query->getInt('brandsPage', 1),
+            5,
+            ['pageParameterName' => 'brandsPage']
         );
 
         /*
          * =========================================================
-         * MARQUE ACTIVE
+         * MARQUE ACTIVE (OPTIONNEL UI)
          * =========================================================
          */
-        $brandId = $request->query->get('brandId');
 
-        $models = null;
-
-        if ($brandId) {
-
-            $modelQuery = $em->createQueryBuilder()
-                ->select('vm')
-                ->from(VehicleModel::class, 'vm')
-                ->where('vm.brand = :brand')
-                ->setParameter('brand', $brandId)
-                ->orderBy('vm.id', 'DESC');
-
-            $models = $paginator->paginate(
-                $modelQuery,
-                $request->query->getInt('modelPage', 1),
-                10
-            );
-        }
+        $selectedBrandId = $request->query->get('brandId');
 
         /*
          * =========================================================
-         * STOCK MAP
+         * VIEW
          * =========================================================
          */
-        $rows = $vehicleRepository->createQueryBuilder('v')
-            ->select('IDENTITY(v.vehicleModel) as modelId')
-            ->addSelect('COUNT(v.id) as total')
-            ->addSelect("SUM(CASE WHEN v.status = :available THEN 1 ELSE 0 END) as available")
-            ->addSelect("SUM(CASE WHEN v.status = :rented THEN 1 ELSE 0 END) as rented")
-            ->groupBy('v.vehicleModel')
-            ->setParameter('available', VehicleStatus::AVAILABLE->value)
-            ->setParameter('rented', VehicleStatus::RENTED->value)
-            ->getQuery()
-            ->getArrayResult();
-
-        $stockMap = [];
-        foreach ($rows as $r) {
-            $stockMap[$r['modelId']] = $r;
-        }
 
         return $this->render('admin/dashboard/index.html.twig', [
             'stats' => $stats,
+            'stock' => $stock,
+            'usage' => $usage,
             'brands' => $brands,
-            'models' => $models,
-            'selectedBrandId' => $brandId,
-            'stockMap' => $stockMap,
+            'selectedBrandId' => $selectedBrandId,
+        ]);
+    }
+    #[Route('/admin/dashboard/search', name: 'dashboard_vehicle_search', methods: ['GET'])]
+    public function dashboardSearch(
+        Request $request,
+        VehicleRepository $repo
+    ): Response {
+        $q = $request->query->get('q');
+
+        $items = $repo->searchForAutocomplete([], $q, 10);
+
+        return $this->json($items);
+    }
+
+    #[Route('/admin/dashboard/results', name: 'admin_dashboard_results', methods: ['GET'])]
+    public function results(
+        Request $request,
+        VehicleRepository $vehicleRepository
+    ): Response {
+
+        $vehicleId = $request->query->get('vehicleId');
+        $search = $request->query->get('q');
+
+        $qb = $vehicleRepository->getFilteredQueryBuilder([]);
+
+        /*
+     * CAS 1 : sélection depuis autocomplete (prioritaire)
+     */
+        if (!empty($vehicleId)) {
+
+            $qb->andWhere('v.id = :id')
+                ->setParameter('id', (int) $vehicleId);
+        }
+
+        /*
+     * CAS 2 : recherche texte classique
+     */ elseif (!empty($search)) {
+
+            $search = '%' . mb_strtolower(trim($search)) . '%';
+
+            $qb->andWhere(
+                'LOWER(v.registrationNumber) LIKE :search
+            OR LOWER(v.vin) LIKE :search
+            OR LOWER(m.name) LIKE :search
+            OR LOWER(b.name) LIKE :search'
+            )->setParameter('search', $search);
+        }
+
+        $vehicles = $qb
+            ->setMaxResults(20)
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('admin/dashboard/_vehicles_search_results.html.twig', [
+            'vehicles' => $vehicles,
         ]);
     }
 }

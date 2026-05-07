@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
 use App\Enum\VehicleStatus;
+use App\Enum\VehicleUsageType;
 use App\Repository\VehicleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -45,6 +46,21 @@ class Vehicle
     public function setStatus(VehicleStatus $status): self
     {
         $this->status = $status;
+        return $this;
+    }
+
+    // Type d'usage véhicule pour workflow
+    #[ORM\Column(enumType: VehicleUsageType::class)]
+    private VehicleUsageType $usageType;
+
+    public function getUsageType(): VehicleUsageType
+    {
+        return $this->usageType;
+    }
+
+    public function setUsageType(VehicleUsageType $usageType): self
+    {
+        $this->usageType = $usageType;
         return $this;
     }
 

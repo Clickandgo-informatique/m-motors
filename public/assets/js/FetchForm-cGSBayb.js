@@ -5,55 +5,43 @@ export default class FetchForm {
     this.form = form;
     this.isLoading = false;
     this.timer = null;
+    this.ready = false;
 
     this.init();
   }
 
   init() {
     this.form.addEventListener("submit", e => {
-      console.log("[FetchForm] submit intercepted");
-
       e.preventDefault();
-      e.stopPropagation();
+
+      console.log("[FetchForm] submit intercepted");
 
       this.send();
     });
+
+    setTimeout(() => {
+      this.ready = true;
+    }, 300);
   }
 
   send() {
     if (this.isLoading) return;
 
     const url = this.form.dataset.fetchUrl;
-    const targetSelector = this.form.dataset.target;
-
-    console.log("[FetchForm] send triggered");
-    console.log("[FetchForm] url:", url);
-    console.log("[FetchForm] target selector:", targetSelector);
-
-    const target = targetSelector
-      ? document.querySelector(targetSelector)
-      : null;
-
-    console.log("[FetchForm] target found:", target);
+    const target = document.querySelector(this.form.dataset.target);
 
     if (!url || !target) {
-      console.error("[FetchForm] missing url or target");
+      console.log("[FetchForm] missing url or target");
       return;
     }
 
     this.isLoading = true;
 
-    const formData = new FormData(this.form);
-    const params = new URLSearchParams(formData);
+    const params = new URLSearchParams(new FormData(this.form));
 
-    console.log("[FetchForm] params:", [...formData.entries()]);
-    console.log("[FetchForm] query string:", params.toString());
+    console.log("[FetchForm] request:", params.toString());
 
-    const fullUrl = url + "?" + params.toString();
-
-    console.log("[FetchForm] request:", fullUrl);
-
-    fetch(fullUrl, {
+    fetch(url + "?" + params.toString(), {
       method: "GET",
       headers: {
         "X-Requested-With": "XMLHttpRequest"

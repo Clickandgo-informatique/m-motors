@@ -101,25 +101,16 @@ export default class Autocomplete {
   }
 
   select(item) {
-    console.log("[Autocomplete] select", item);
+    console.log("[Autocomplete] select fired", item);
 
     this.input.value = item.label;
 
     const form = this.input.closest("form");
 
-    // reset propre
-    const hidden = form.querySelector("[data-autocomplete-value]");
-    const textInput = this.input;
-
-    if (hidden) {
-      hidden.value = item.id; // UNIQUEMENT ID
-      hidden.name = "vehicleId"; // IMPORTANT: on force le backend
+    if (form) {
+      console.log("[Autocomplete] requestSubmit()");
+      form.requestSubmit(); // FIX CRITIQUE
     }
-
-    // IMPORTANT: éviter double query param
-    textInput.name = "q";
-
-    form.requestSubmit();
 
     this.clear();
     this.close();

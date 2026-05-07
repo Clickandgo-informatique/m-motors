@@ -120,9 +120,6 @@ export default class Autocomplete {
     textInput.name = "q";
 
     form.requestSubmit();
-
-    this.clear();
-    this.close();
   }
 
   clear() {

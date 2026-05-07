@@ -5,6 +5,10 @@ export default class Autocomplete {
     this.input = input;
     this.url = input.dataset.url;
 
+    this.hidden = input
+      .closest("form")
+      .querySelector("[data-autocomplete-value]");
+
     this.dropdown = null;
     this.abortController = null;
     this.requestId = 0;
@@ -35,6 +39,7 @@ export default class Autocomplete {
     if (value.length < 2) {
       this.clear();
       this.close();
+      this.syncHidden("");
       return;
     }
 
@@ -51,14 +56,9 @@ export default class Autocomplete {
 
     this.abortController = new AbortController();
 
-    const url = `${this.url}?q=${encodeURIComponent(query)}`;
-
-    console.log("[Autocomplete] fetch:", url);
-
     try {
-      const res = await fetch(url, {
-        signal: this.abortController.signal,
-        headers: { "X-Requested-With": "XMLHttpRequest" }
+      const res = await fetch(`${this.url}?q=${encodeURIComponent(query)}`, {
+        signal: this.abortController.signal
       });
 
       const data = await res.json();
@@ -68,7 +68,7 @@ export default class Autocomplete {
       this.render(data.items || []);
     } catch (e) {
       if (e.name !== "AbortError") {
-        console.error("[Autocomplete] error", e);
+        console.error(e);
       }
     }
   }
@@ -87,6 +87,7 @@ export default class Autocomplete {
     items.forEach(item => {
       const div = document.createElement("div");
       div.className = "dropdown-item";
+
       div.textContent = item.label;
 
       div.addEventListener("click", () => {
@@ -101,28 +102,28 @@ export default class Autocomplete {
   }
 
   select(item) {
-    console.log("[Autocomplete] select", item);
+    console.log("[Autocomplete] selected", item);
 
     this.input.value = item.label;
 
+    this.syncHidden(item.id);
+
     const form = this.input.closest("form");
 
-    // reset propre
-    const hidden = form.querySelector("[data-autocomplete-value]");
-    const textInput = this.input;
-
-    if (hidden) {
-      hidden.value = item.id; // UNIQUEMENT ID
-      hidden.name = "vehicleId"; // IMPORTANT: on force le backend
+    if (form) {
+      form.dispatchEvent(new Event("submit", { bubbles: true }));
     }
-
-    // IMPORTANT: éviter double query param
-    textInput.name = "q";
-
-    form.requestSubmit();
 
     this.clear();
     this.close();
+  }
+
+  syncHidden(id) {
+    console.log("[Autocomplete] sync hidden id:", id);
+
+    if (this.hidden) {
+      this.hidden.value = id || "";
+    }
   }
 
   clear() {

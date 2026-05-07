@@ -5,19 +5,43 @@ export default class FetchForm {
     this.form = form;
     this.isLoading = false;
     this.timer = null;
+    this.ready = false;
 
     this.init();
   }
 
   init() {
-    this.form.addEventListener("submit", e => {
-      console.log("[FetchForm] submit intercepted");
+    this.form.addEventListener("input", e => this.onChange(e));
+    this.form.addEventListener("change", e => this.onChange(e));
 
+    this.form.addEventListener("submit", e => {
       e.preventDefault();
       e.stopPropagation();
-
       this.send();
     });
+
+    setTimeout(() => {
+      this.ready = true;
+    }, 200);
+  }
+
+  onChange(e) {
+    if (!this.ready) return;
+
+    const el = e.target;
+    if (!(el instanceof HTMLElement)) return;
+
+    if (el.closest("[data-module='autocomplete']")) return;
+
+    this.debounce();
+  }
+
+  debounce() {
+    clearTimeout(this.timer);
+
+    this.timer = setTimeout(() => {
+      this.send();
+    }, 250);
   }
 
   send() {
@@ -34,7 +58,7 @@ export default class FetchForm {
       ? document.querySelector(targetSelector)
       : null;
 
-    console.log("[FetchForm] target found:", target);
+    console.log("[FetchForm] target resolved:", target);
 
     if (!url || !target) {
       console.error("[FetchForm] missing url or target");
@@ -42,6 +66,11 @@ export default class FetchForm {
     }
 
     this.isLoading = true;
+
+    const pageInput = this.form.querySelector('input[name="page"]');
+    if (pageInput) {
+      pageInput.value = 1;
+    }
 
     const formData = new FormData(this.form);
     const params = new URLSearchParams(formData);
@@ -51,7 +80,7 @@ export default class FetchForm {
 
     const fullUrl = url + "?" + params.toString();
 
-    console.log("[FetchForm] request:", fullUrl);
+    console.log("[FetchForm] full request URL:", fullUrl);
 
     fetch(fullUrl, {
       method: "GET",
@@ -62,6 +91,7 @@ export default class FetchForm {
       .then(res => res.text())
       .then(html => {
         console.log("[FetchForm] response received");
+        console.log("[FetchForm] injecting into target");
 
         target.innerHTML = html;
 

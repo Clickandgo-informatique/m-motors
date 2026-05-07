@@ -5,36 +5,55 @@ export default class FetchForm {
     this.form = form;
     this.isLoading = false;
     this.timer = null;
+    this.ready = false;
 
     this.init();
   }
 
   init() {
+    this.form.__fetchFormInstance = this;
+
+    this.form.addEventListener("input", e => this.onChange(e));
+    this.form.addEventListener("change", e => this.onChange(e));
+
     this.form.addEventListener("submit", e => {
-      console.log("[FetchForm] submit intercepted");
-
       e.preventDefault();
-      e.stopPropagation();
-
       this.send();
     });
+
+    setTimeout(() => {
+      this.ready = true;
+    }, 300);
+  }
+
+  onChange(e) {
+    if (!this.ready) return;
+
+    const el = e.target;
+    if (!(el instanceof HTMLElement)) return;
+
+    if (el.closest("[data-module='autocomplete']")) return;
+
+    this.debounce();
+  }
+
+  debounce() {
+    clearTimeout(this.timer);
+
+    this.timer = setTimeout(() => {
+      this.send();
+    }, 250);
   }
 
   send() {
     if (this.isLoading) return;
 
     const url = this.form.dataset.fetchUrl;
-    const targetSelector = this.form.dataset.target;
+    const target = document.querySelector(this.form.dataset.target);
 
     console.log("[FetchForm] send triggered");
     console.log("[FetchForm] url:", url);
-    console.log("[FetchForm] target selector:", targetSelector);
-
-    const target = targetSelector
-      ? document.querySelector(targetSelector)
-      : null;
-
-    console.log("[FetchForm] target found:", target);
+    console.log("[FetchForm] target:", target);
 
     if (!url || !target) {
       console.error("[FetchForm] missing url or target");
@@ -43,15 +62,18 @@ export default class FetchForm {
 
     this.isLoading = true;
 
+    const pageInput = this.form.querySelector('input[name="page"]');
+    if (pageInput) {
+      pageInput.value = 1;
+    }
+
     const formData = new FormData(this.form);
     const params = new URLSearchParams(formData);
 
     console.log("[FetchForm] params:", [...formData.entries()]);
-    console.log("[FetchForm] query string:", params.toString());
+    console.log("[FetchForm] query:", params.toString());
 
     const fullUrl = url + "?" + params.toString();
-
-    console.log("[FetchForm] request:", fullUrl);
 
     fetch(fullUrl, {
       method: "GET",

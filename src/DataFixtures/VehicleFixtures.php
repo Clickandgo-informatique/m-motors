@@ -7,19 +7,12 @@ use App\Entity\Supplier;
 use App\Entity\Vehicle;
 use App\Entity\VehicleModel;
 use App\Enum\VehicleStatus;
+use App\Enum\VehicleUsageType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
-/**
- * Génération des véhicules
- *
- * Objectif :
- * - dataset réaliste
- * - compatible filtres (mileage + année)
- * - stable pour pagination / sliders
- */
 class VehicleFixtures extends Fixture implements DependentFixtureInterface
 {
     private const MIN_PER_STATUS = 100;
@@ -29,15 +22,21 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
         $faker = Factory::create('fr_FR');
 
         $vehicleModels = $manager->getRepository(VehicleModel::class)->findAll();
-        $suppliers     = $manager->getRepository(Supplier::class)->findAll();
-        $colors        = $manager->getRepository(Color::class)->findAll();
+        $suppliers = $manager->getRepository(Supplier::class)->findAll();
+        $colors = $manager->getRepository(Color::class)->findAll();
 
         $statuses = [
             VehicleStatus::AVAILABLE_FOR_SALE,
             VehicleStatus::AVAILABLE_FOR_RENT,
-            VehicleStatus::RESERVED,
+            VehicleStatus::RENTED,
             VehicleStatus::MAINTENANCE,
-            VehicleStatus::SOLD,
+            VehicleStatus::ORDERED,
+        ];
+
+        $usageTypes = [
+            VehicleUsageType::SALE,
+            VehicleUsageType::RENT,
+            VehicleUsageType::BOTH,
         ];
 
         foreach ($statuses as $status) {
@@ -45,15 +44,16 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
                 $vehicle = new Vehicle();
 
-                // =========================
-                // STATUS + IDENTIFIANT
-                // =========================
+                // Status physique
                 $vehicle->setStatus($status);
+
+                // Type d’usage commercial
+                $vehicle->setUsageType($usageTypes[array_rand($usageTypes)]);
+
+                // Identifiants
                 $vehicle->setVin(strtoupper($faker->regexify('[A-HJ-NPR-Z0-9]{17}')));
 
-                // =========================
-                // RELATIONS
-                // =========================
+                // Relations
                 $vehicle->setVehicleModel($vehicleModels[array_rand($vehicleModels)]);
                 $vehicle->setSupplier($suppliers[array_rand($suppliers)]);
 
@@ -61,19 +61,13 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
                     $vehicle->setColor($colors[array_rand($colors)]);
                 }
 
-                // =========================
-                // PRIX
-                // =========================
+                // Prix
                 $vehicle->setPrice($faker->numberBetween(8000, 90000));
 
-                // =========================
-                // MILEAGE (IMPORTANT SLIDER)
-                // =========================
+                // Kilométrage
                 $vehicle->setMileage($faker->numberBetween(0, 300000));
 
-                // =========================
-                // DATE IMMATRICULATION (IMPORTANT SLIDER ANNÉES)
-                // =========================
+                // Date de première immatriculation
                 $year = $faker->numberBetween(2005, (int) date('Y'));
                 $vehicle->setFirstRegistrationDate(
                     \DateTimeImmutable::createFromFormat('Y-m-d', $year . '-01-01')
