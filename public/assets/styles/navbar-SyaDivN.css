@@ -11,6 +11,11 @@
 /* ========================================================= */
 /* ZONE CONNECTION */
 /* ========================================================= */
+.connected {
+  position: relative;
+  margin-right: 5px;
+  margin-left: auto;
+}
 .connection {
   background: var(--surface-1);
   padding: var(--space-s) var(--space-m);
@@ -18,7 +23,6 @@
   display: flex;
   align-items: center;
   gap: var(--space-m);
-  justify-content: right;
 }
 
 .connection p {
