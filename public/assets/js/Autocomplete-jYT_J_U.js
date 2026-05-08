@@ -5,9 +5,6 @@ export default class Autocomplete {
     this.input = input;
     this.url = input.dataset.url;
 
-    this.linkMode = input.dataset.linkMode || "0";
-    this.baseUrl = input.dataset.baseUrl || "";
-
     this.dropdown = null;
     this.abortController = null;
     this.requestId = 0;
@@ -18,6 +15,7 @@ export default class Autocomplete {
   }
 
   init() {
+    console.log("Autocomplet.js initialisé");
     const wrapper = this.input.closest(".dropdown-wrapper");
     this.dropdown = wrapper?.querySelector(".dropdown-results");
 
@@ -56,6 +54,8 @@ export default class Autocomplete {
 
     const url = `${this.url}?q=${encodeURIComponent(query)}`;
 
+    console.log("[Autocomplete] fetch:", url);
+
     try {
       const res = await fetch(url, {
         signal: this.abortController.signal,
@@ -66,7 +66,7 @@ export default class Autocomplete {
 
       if (current !== this.requestId) return;
 
-      this.render(data.items || [], query);
+      this.render(data.items || []);
     } catch (e) {
       if (e.name !== "AbortError") {
         console.error("[Autocomplete] error", e);
@@ -74,12 +74,11 @@ export default class Autocomplete {
     }
   }
 
-  render(items, query) {
+  render(items) {
     this.clear();
 
     if (!items.length) {
-      this.dropdown.innerHTML =
-        "<div class='dropdown-item'>Aucun résultat</div>";
+      this.dropdown.innerHTML = "<div>Aucun résultat</div>";
       this.open();
       return;
     }
@@ -89,12 +88,7 @@ export default class Autocomplete {
     items.forEach(item => {
       const div = document.createElement("div");
       div.className = "dropdown-item";
-
-      // =========================
-      // HIGHLIGHT
-      // =========================
-      const label = this.highlight(item.label, query);
-      div.innerHTML = label;
+      div.textContent = item.label;
 
       div.addEventListener("click", () => {
         this.select(item);
@@ -107,35 +101,24 @@ export default class Autocomplete {
     this.open();
   }
 
-  highlight(text, query) {
-    if (!query) return text;
-
-    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const regex = new RegExp(`(${escaped})`, "gi");
-
-    return text.replace(regex, "<strong>$1</strong>");
-  }
-
   select(item) {
+    console.log("[Autocomplete] select", item);
+
     this.input.value = item.label;
 
     const form = this.input.closest("form");
+
+    // reset propre
     const hidden = form.querySelector("[data-autocomplete-value]");
+    const textInput = this.input;
 
     if (hidden) {
-      hidden.value = item.id;
-      hidden.name = "vehicleId";
+      hidden.value = item.id; // UNIQUEMENT ID
+      hidden.name = "vehicleId"; // IMPORTANT: on force le backend
     }
 
-    this.input.name = "q";
-
-    // =========================
-    // LINK MODE HANDLING
-    // =========================
-    if (this.linkMode === "1" && item.url) {
-      window.location.href = this.baseUrl + item.url;
-      return;
-    }
+    // IMPORTANT: éviter double query param
+    textInput.name = "q";
 
     form.requestSubmit();
 

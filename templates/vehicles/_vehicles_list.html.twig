@@ -1,3 +1,5 @@
+{% set view = view|default('grid') %}
+
 {% if view == 'table' %}
 	{% include 'vehicles/_vehicles_table_body.html.twig' %}
 {% else %}
