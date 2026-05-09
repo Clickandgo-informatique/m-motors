@@ -52,7 +52,7 @@
 	{# AUTOCOMPLETE MODEL #}
 	<div class="form-row">
 
-		<div class="form-group autocomplete-container">
+		<div class="form-group autocomplete-container flex-3">
 
 			{{ form_label(form.vehicleModelSearch) }}
 
@@ -79,7 +79,7 @@
 
 		</div>
 
-		<div class="form-actions">
+		<div class="form-actions flex-1">
 			<a href="javascript:void(0)">
 				<i class="fa-regular fa-folder-open"></i>
 			</a>
@@ -127,7 +127,7 @@
 			{{ form_label(form.price) }}
 
 			<div class="input-group">
-				{{ form_widget(form.price) }}				
+				{{ form_widget(form.price) }}
 			</div>
 
 			{{ form_errors(form.price) }}
@@ -161,7 +161,7 @@
 	{# FEATURES #}
 	<div class="form-row">
 
-		<div class="vehicle-features-list">
+		<div class="vehicle-features-list flex-3">
 
 			{% if vehicle.features|length > 0 %}
 
@@ -179,7 +179,7 @@
 
 		</div>
 
-		<div class="form-actions">
+		<div class="add-button flex-1">
 			<a href="javascript:void(0)">
 				<i class="fa-solid fa-circle-plus"></i>
 			</a>
@@ -190,16 +190,10 @@
 	{# DROPZONE #}
 	{% set isNew = vehicle.id is null %}
 
-	{% include 'partials/_dropzone.html.twig' with {
-    uploadUrl: path('vehicle_image_upload'),
-    deleteUrl: path('vehicle_image_delete', { id: '__id__' }),
-    documentsUrl: isNew ? '' : path('vehicle_images', { id: vehicle.id }),
-    previewId: 'vehicle-gallery-preview',
-    destination: vehicle.id ?? '',
-    status: vehicle.status.value ?? 'draft',
-    locked: isNew
-} %}
+	<div class="dropzone" data-mode="media" data-upload-url="{{ path('vehicle_image_upload', {id: vehicle.id}) }}" data-delete-url="{{ path('vehicle_image_delete', {id: '__id__'}) }}" data-documents-url="{{ isNew ? '' : path('vehicle_images', {id: vehicle.id}) }}" data-preview-id="vehicle-gallery-preview" data-destination="{{ vehicle.id ?? '' }}" data-status="{{ vehicle.status.value ?? 'draft' }}" data-locked="{{ isNew ? 1 : 0 }}">
+		<p>Glissez vos fichiers ici ou cliquez pour ajouter</p>
+	</div>
 
-	{{ form_end(form) }}
+	{{ form_end(form, { render_rest: false }) }}
 
 {% endblock %}

@@ -59,9 +59,7 @@ class VehicleController extends AbstractController
         Request $request,
         Vehicle $vehicle,
         EntityManagerInterface $em
-    ): Response {
-
-        $title = "";
+    ): Response {       
 
         $form = $this->createForm(VehicleFormType::class, $vehicle);
         $form->handleRequest($request);
@@ -77,7 +75,7 @@ class VehicleController extends AbstractController
         return $this->render('vehicles/edit.html.twig', [
             'form' => $form,
             'vehicle' => $vehicle,
-            'title' => $title
+            'title' => "Modifier un véhicule"
         ]);
     }
     #[Route('/{id<\d+>}/show', name: 'vehicle_show', methods: ['GET', 'POST'])]

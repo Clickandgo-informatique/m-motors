@@ -10,8 +10,8 @@
 		class="container mt-4">
 
 		{# =========================================================
-		       HEADER
-		    ========================================================= #}
+				       HEADER
+				    ========================================================= #}
 
 		<h1 class="text-center">
 			<i class="fa-solid fa-folder-open title-icon"></i>
@@ -31,8 +31,8 @@
 		</p>
 
 		{# =========================================================
-		       BARRE DE PROGRESSION WORKFLOW
-		    ========================================================= #}
+				       BARRE DE PROGRESSION WORKFLOW
+				    ========================================================= #}
 
 		{% set steps = {
         'draft': 1,
@@ -78,8 +78,8 @@
 		</div>
 
 		{# =========================================================
-		       STEP 1 - INFOS DOSSIER
-		    ========================================================= #}
+				       STEP 1 - INFOS DOSSIER
+				    ========================================================= #}
 
 		<div class="card mb-3">
 			<div class="card-body">
@@ -100,8 +100,8 @@
 		</div>
 
 		{# =========================================================
-		       STEP 2 - DOCUMENTS + DROPZONE + PREVIEW
-		    ========================================================= #}
+				       STEP 2 - DOCUMENTS + DROPZONE + PREVIEW
+				    ========================================================= #}
 
 		<div class="card mb-3">
 			<div class="card-body">
@@ -110,12 +110,7 @@
 
 				{% if dossier.status in ['draft', 'in_progress'] %}
 
-					<div class="dropzone" 
-					data-upload-url="{{ path('dossier_document_upload', {id: dossier.id}) }}" 
-					data-delete-url="{{ path('dossier_document_delete', {id: '__id__'}) }}" 
-					data-documents-url="{{ path('dossier_documents_list', {id: dossier.id}) }}" 
-					data-preview-id="dossier-documents-preview" 
-					data-locked="{{ dossier.status == 'validated' ? 1 : 0 }}">
+					<div class="dropzone" data-upload-url="{{ path('dossier_document_upload', {id: dossier.id}) }}" data-delete-url="{{ path('dossier_document_delete', {id: '__id__'}) }}" data-documents-url="{{ path('dossier_documents_list', {id: dossier.id}) }}" data-preview-id="dossier-documents-preview" data-locked="{{ dossier.status == 'validated' ? 1 : 0 }}" data-mode="workflow">
 
 						<p class="text-muted">
 							Glissez vos fichiers ici ou cliquez pour ajouter
@@ -186,8 +181,8 @@
 		</div>
 
 		{# =========================================================
-		       STEP 3 - ACTIONS MANAGER
-		    ========================================================= #}
+				       STEP 3 - ACTIONS MANAGER
+				    ========================================================= #}
 
 		{% if is_granted('ROLE_MANAGER') or is_granted('ROLE_ADMIN') %}
 
@@ -214,8 +209,8 @@
 		{% endif %}
 
 		{# =========================================================
-		       STEP 4 - RESULTAT FINAL
-		    ========================================================= #}
+				       STEP 4 - RESULTAT FINAL
+				    ========================================================= #}
 
 		{% if dossier.status in ['validated', 'rejected'] %}
 
