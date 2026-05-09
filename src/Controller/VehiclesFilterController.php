@@ -31,7 +31,7 @@ class VehiclesFilterController extends AbstractController
         $vehicles = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            10
+            12
         );     
 
         return $this->render('vehicles/index.html.twig', array_merge([

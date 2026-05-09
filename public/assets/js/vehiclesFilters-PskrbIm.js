@@ -152,7 +152,6 @@ export default class VehiclesFilter {
     });
   }
 
-  // Cards vehicules
   initCardsClick() {
     const container = this.resultsEl || document;
 

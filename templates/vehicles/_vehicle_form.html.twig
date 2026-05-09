@@ -1,10 +1,15 @@
+{% extends "base.html.twig" %}
+
 {% block title %}
 	{{ title }}
 {% endblock %}
 
 {% block body %}
 
-	<h1 class="text-center">{{ title }}</h1>
+	<h1 class="text-center">
+		<i class="fa-solid fa-circle-plus"></i>
+		{{ title }}
+	</h1>
 
 	{{ form_start(form, {
     attr: {
@@ -15,11 +20,19 @@
         'data-link-class': 'dropdown-link',
         'data-no-results-class': 'dropdown-no-results',
         'data-item-url': '/vehicles/models/__ID__/edit',
-        'data-ajax-form':true, 
-		     
+        'data-ajax-form': 'true'
     }
 }) }}
 
+	{# Modèle véhicule #}
+	{% if vehicle.vehicleModel and vehicle.vehicleModel.brand and vehicle.vehicleModel.model %}
+		<h4 class="text-center">
+			<strong>{{ vehicle.vehicleModel.brand.name }}</strong>
+			{{ vehicle.vehicleModel.model.name }}
+		</h4>
+	{% endif %}
+
+	{# STATUS / SUPPLIER #}
 	<div class="form-row">
 
 		<div class="form-group">
@@ -36,6 +49,7 @@
 
 	</div>
 
+	{# AUTOCOMPLETE MODEL #}
 	<div class="form-row">
 
 		<div class="form-group autocomplete-container">
@@ -46,7 +60,7 @@
 
 				{{ form_widget(form.vehicleModelSearch, {
                 attr: {
-                    'autocomplete': 'off',
+                    autocomplete: 'off',
                     'data-autocomplete': 'true',
                     'data-result-div': '#vehicle-model-results',
                     'data-hidden-target': '#vehicle_vehicleModel'
@@ -64,16 +78,20 @@
 			{{ form_errors(form.vehicleModelSearch) }}
 
 		</div>
-		{# Bouton d'ouverture fiche d'un modèle de véhicule #}
-		<a href="#">
-			<i class="fa-regular fa-folder-open"></i>
-		</a>
-		{# Bouton d'ajout d'un modèle de véhicule #}
-		<a href="{{path('vehicle_model_new')}}">
-			<i class="fa-solid fa-circle-plus"></i>
-		</a>
+
+		<div class="form-actions">
+			<a href="javascript:void(0)">
+				<i class="fa-regular fa-folder-open"></i>
+			</a>
+
+			<a href="{{ path('vehicle_model_new') }}">
+				<i class="fa-solid fa-circle-plus"></i>
+			</a>
+		</div>
+
 	</div>
 
+	{# IDENTIFIERS #}
 	<div class="form-row">
 
 		<div class="form-group">
@@ -90,8 +108,8 @@
 
 	</div>
 
+	{# MAIN INFOS #}
 	<div class="form-row">
-
 
 		<div class="form-group">
 			{{ form_label(form.mileage) }}
@@ -99,18 +117,25 @@
 			{{ form_errors(form.mileage) }}
 		</div>
 
-	</div>
-
-	<div class="form-row">
-
 		<div class="form-group">
 			{{ form_label(form.firstRegistrationDate) }}
 			{{ form_widget(form.firstRegistrationDate) }}
 			{{ form_errors(form.firstRegistrationDate) }}
 		</div>
 
+		<div class="form-group">
+			{{ form_label(form.price) }}
+
+			<div class="input-group">
+				{{ form_widget(form.price) }}				
+			</div>
+
+			{{ form_errors(form.price) }}
+		</div>
+
 	</div>
 
+	{# TECH INFOS #}
 	<div class="form-row">
 
 		<div class="form-group">
@@ -133,35 +158,47 @@
 
 	</div>
 
+	{# FEATURES #}
 	<div class="form-row">
 
-		<div class="form-group">
-			{{ form_label(form.price) }}
-			{{ form_widget(form.price) }}
-			{{ form_errors(form.price) }}
-		</div>
-
-	</div>
-
-	{# Liste des options du véhicule #}
-	<div class="form-row">
 		<div class="vehicle-features-list">
-			{% for feature in vehicle.features|sort((a, b) => a.label <=> b.label) %}
-				{{ feature.label }}
-				{% if not loop.last %},
-				{% endif %}
+
+			{% if vehicle.features|length > 0 %}
+
+				{% for feature in vehicle.features|sort((a, b) => a.label <=> b.label) %}
+					{{ feature.label }}
+					{% if not loop.last %},
+					{% endif %}
+				{% endfor %}
+
 			{% else %}
-				<p class="alert alert-warning">Aucune option enregistrée</p>
-			{% endfor %}
+				<p class="alert alert-warning text-center">
+					Aucune option enregistrée
+				</p>
+			{% endif %}
+
 		</div>
-		<a href="#">
-			<i class="fa-solid fa-circle-plus"></i>
-		</a>
+
+		<div class="form-actions">
+			<a href="javascript:void(0)">
+				<i class="fa-solid fa-circle-plus"></i>
+			</a>
+		</div>
+
 	</div>
 
-	<button type="submit">
-		{{ button_label|default('Enregistrer') }}
-	</button>
+	{# DROPZONE #}
+	{% set isNew = vehicle.id is null %}
+
+	{% include 'partials/_dropzone.html.twig' with {
+    uploadUrl: path('vehicle_image_upload'),
+    deleteUrl: path('vehicle_image_delete', { id: '__id__' }),
+    documentsUrl: isNew ? '' : path('vehicle_images', { id: vehicle.id }),
+    previewId: 'vehicle-gallery-preview',
+    destination: vehicle.id ?? '',
+    status: vehicle.status.value ?? 'draft',
+    locked: isNew
+} %}
 
 	{{ form_end(form) }}
 

@@ -152,16 +152,15 @@ export default class VehiclesFilter {
     });
   }
 
-  // Cards vehicules
   initCardsClick() {
     const container = this.resultsEl || document;
 
     container.addEventListener("click", e => {
-      console.log("Card véhicule cliquée");
+      console.log('Card véhicule cliquée')
       const card = e.target.closest(".vehicle-card[data-url]");
       if (!card) return;
 
-      const url = card.dataset.url?.trim();
+      const url = card.dataset.url;
       if (!url) return;
 
       window.location.href = url;

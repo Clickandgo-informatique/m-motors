@@ -25,11 +25,6 @@ export default class Dropzone {
   }
 
   init() {
-    console.log({
-      locked: this.locked,
-      status: this.status,
-      canUpload: this.canUpload()
-    });
     this.createInput();
 
     if (this.locked || !this.canUpload()) {

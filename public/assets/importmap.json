@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-i-I7vbr.js",
+        "path": "\/assets\/app-wackRZ0.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-q4N0luA.css",
+        "path": "\/assets\/styles\/app-9-nnVpu.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -40,11 +40,11 @@
         "type": "js"
     },
     "\/assets\/js\/Dropzone.js": {
-        "path": "\/assets\/js\/Dropzone-76mZAJT.js",
+        "path": "\/assets\/js\/Dropzone-Jcs3uTO.js",
         "type": "js"
     },
     "\/assets\/js\/vehiclesFilters.js": {
-        "path": "\/assets\/js\/vehiclesFilters-H70ARao.js",
+        "path": "\/assets\/js\/vehiclesFilters-7zto5jf.js",
         "type": "js"
     },
     "\/assets\/js\/FilterBadges.js": {
@@ -76,7 +76,7 @@
         "type": "js"
     },
     "vehiclesFilters": {
-        "path": "\/assets\/js\/vehiclesFilters-H70ARao.js",
+        "path": "\/assets\/js\/vehiclesFilters-7zto5jf.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {

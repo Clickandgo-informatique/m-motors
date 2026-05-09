@@ -2,19 +2,31 @@ export default class Dropzone {
   constructor(element) {
     this.el = element;
 
+    // =========================================================
+    // CONFIGURATION BACKEND
+    // =========================================================
     this.uploadUrl = element.dataset.uploadUrl;
     this.deleteUrlTemplate = element.dataset.deleteUrl;
     this.documentsUrl = element.dataset.documentsUrl;
 
+    // dossier cible métier (ex: dossier id ou type)
     this.destination = element.dataset.destination;
+
+    // statut workflow du dossier (important pour lock UI)
     this.status = element.dataset.status;
 
-    this.previewContainer = this.el.querySelector(
+    // =========================================================
+    // UI
+    // =========================================================
+    this.previewContainer = document.querySelector(
       `#${element.dataset.previewId}`
     );
 
-    this.uploadBtn = this.el.querySelector(".dz-upload-btn");
+    this.uploadBtn = document.querySelector(".dz-upload-btn");
 
+    // =========================================================
+    // STATE LOCAL
+    // =========================================================
     this.filesQueue = [];
     this.fileKeys = new Set();
 
@@ -24,12 +36,11 @@ export default class Dropzone {
     this.refreshState();
   }
 
+  // =========================================================
+  // INITIALISATION
+  // =========================================================
   init() {
-    console.log({
-      locked: this.locked,
-      status: this.status,
-      canUpload: this.canUpload()
-    });
+    console.log("Dropzone.js initialisé");
     this.createInput();
 
     if (this.locked || !this.canUpload()) {
@@ -40,6 +51,9 @@ export default class Dropzone {
     this.bindEvents();
   }
 
+  // =========================================================
+  // INPUT FILE HIDDEN
+  // =========================================================
   createInput() {
     this.input = document.createElement("input");
     this.input.type = "file";
@@ -49,13 +63,18 @@ export default class Dropzone {
     this.el.appendChild(this.input);
   }
 
+  // =========================================================
+  // EVENTS
+  // =========================================================
   bindEvents() {
+    // click zone
     this.el.addEventListener("click", e => {
       if (!e.target.classList.contains("dz-delete")) {
         this.input.click();
       }
     });
 
+    // drag & drop
     this.el.addEventListener("dragover", e => e.preventDefault());
 
     this.el.addEventListener("drop", e => {
@@ -63,27 +82,35 @@ export default class Dropzone {
       this.addToQueue(e.dataTransfer.files);
     });
 
+    // file selection
     this.input.addEventListener("change", e => {
       this.addToQueue(e.target.files);
       this.input.value = "";
     });
 
+    // upload button
     if (this.uploadBtn) {
       this.uploadBtn.addEventListener("click", () => this.uploadQueue());
     }
   }
 
+  // =========================================================
+  // RULES METIER (WORKFLOW AWARE)
+  // =========================================================
   canUpload() {
-    const allowed = [
+    const allowedStatuses = [
       "draft",
       "vehicle_selected",
       "documents_pending",
       "documents_review"
     ];
 
-    return allowed.includes(this.status);
+    return allowedStatuses.includes(this.status);
   }
 
+  // =========================================================
+  // LOCK UI
+  // =========================================================
   disable() {
     this.input.disabled = true;
 
@@ -95,8 +122,11 @@ export default class Dropzone {
     this.el.classList.add("disabled");
   }
 
+  // =========================================================
+  // CHARGEMENT INITIAL SERVEUR
+  // =========================================================
   async refreshState() {
-    if (!this.documentsUrl || !this.previewContainer) return;
+    if (!this.documentsUrl) return;
 
     const res = await fetch(this.documentsUrl);
     const data = await res.json();
@@ -104,38 +134,51 @@ export default class Dropzone {
     this.renderDocuments(data.documents || []);
   }
 
+  // =========================================================
+  // RENDER DOCUMENTS SERVEUR
+  // =========================================================
   renderDocuments(files) {
-    if (!Array.isArray(files) || !this.previewContainer) return;
+    if (!Array.isArray(files)) {
+      console.error("Dropzone: invalid data format", files);
+      return;
+    }
 
     this.previewContainer.innerHTML = "";
 
     files.forEach(file => {
-      this.previewContainer.appendChild(this.createServerThumb(file));
+      const div = this.createServerThumb(file);
+      this.previewContainer.appendChild(div);
     });
   }
 
+  // =========================================================
+  // THUMB SERVER
+  // =========================================================
   createServerThumb(file) {
     const div = document.createElement("div");
     div.classList.add("dz-thumb");
     div.dataset.id = file.id;
 
     const ext = file.fileName
-      ?.split(".")
+      .split(".")
       .pop()
-      ?.toLowerCase();
+      .toLowerCase();
+
+    let preview = this.getPreviewHtml(ext, file);
 
     div.innerHTML = `
-      <div class="dz-preview">
-        ${this.getPreviewHtml(ext, file)}
-      </div>
+      <div class="dz-preview">${preview}</div>
+
       <div class="dz-filename">
         ${file.originalName ?? file.fileName}
       </div>
+
       <div class="dz-meta">
-        ${file.createdAt ?? ""}
+        Envoyé le ${file.createdAt ?? ""}
       </div>
     `;
 
+    // delete button
     const btn = document.createElement("button");
     btn.classList.add("dz-delete");
     btn.textContent = "×";
@@ -157,6 +200,9 @@ export default class Dropzone {
     return div;
   }
 
+  // =========================================================
+  // QUEUE LOCAL (PREVIEW AVANT UPLOAD)
+  // =========================================================
   addToQueue(files) {
     Array.from(files).forEach(file => {
       const key = `${file.name}_${file.size}`;
@@ -166,12 +212,16 @@ export default class Dropzone {
       this.fileKeys.add(key);
       this.filesQueue.push(file);
 
-      this.previewContainer?.appendChild(this.createLocalThumb(file));
+      const div = this.createLocalThumb(file);
+      this.previewContainer.appendChild(div);
     });
 
     this.updateButtonState();
   }
 
+  // =========================================================
+  // THUMB LOCAL (STAGING)
+  // =========================================================
   createLocalThumb(file) {
     const div = document.createElement("div");
     div.classList.add("dz-thumb", "dz-staging");
@@ -182,13 +232,21 @@ export default class Dropzone {
       .toUpperCase();
 
     div.innerHTML = `
-      <div class="dz-file-preview">${ext}</div>
-      <div class="dz-filename">${file.name}</div>
+      <div class="dz-file-preview dz-generic">
+        ${ext}
+      </div>
+
+      <div class="dz-filename">
+        ${file.name}
+      </div>
     `;
 
     return div;
   }
 
+  // =========================================================
+  // UPLOAD
+  // =========================================================
   async uploadQueue() {
     if (!this.filesQueue.length) return;
 
@@ -212,30 +270,44 @@ export default class Dropzone {
     this.updateButtonState();
   }
 
+  // =========================================================
+  // UI BUTTON STATE
+  // =========================================================
   updateButtonState() {
     if (!this.uploadBtn) return;
 
     const hasFiles = this.filesQueue.length > 0;
 
     this.uploadBtn.disabled = !hasFiles;
+
     this.uploadBtn.textContent = hasFiles
       ? `Envoyer (${this.filesQueue.length})`
       : "Envoyer les fichiers";
   }
 
+  // =========================================================
+  // PREVIEW HELPER
+  // =========================================================
   getPreviewHtml(ext, file) {
     if (["jpg", "jpeg", "png", "webp"].includes(ext)) {
       return `<img src="/uploads/${file.path}">`;
     }
 
-    if (ext === "pdf") return "PDF";
-    if (["doc", "docx"].includes(ext)) return "WORD";
-    if (["xls", "xlsx"].includes(ext)) return "EXCEL";
+    if (ext === "pdf") {
+      return `<div class="dz-file-preview dz-pdf">PDF</div>`;
+    }
 
-    return "Fichier";
+    if (["doc", "docx"].includes(ext)) {
+      return `<div class="dz-file-preview dz-word">WORD</div>`;
+    }
+
+    if (["xls", "xlsx"].includes(ext)) {
+      return `<div class="dz-file-preview dz-excel">EXCEL</div>`;
+    }
+
+    return `<div class="dz-file-preview dz-generic">Fichier</div>`;
   }
-
-  canUploadFile() {
+  getAllowedDocumentTypes() {
     const map = {
       draft: ["UPLOAD"],
       vehicle_selected: ["IDENTITY"],
@@ -244,5 +316,8 @@ export default class Dropzone {
     };
 
     return map[this.status] || ["UPLOAD"];
+  }
+  canUploadFile(file) {
+    return this.getAllowedDocumentTypes().length > 0;
   }
 }

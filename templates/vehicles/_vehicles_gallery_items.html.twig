@@ -1,7 +1,18 @@
 <div class="cards-grid">
 	{% for vehicle in vehicles %}
 		<div
-			class="vehicle-card card" data-ajax-modal="{{ path('vehicle_edit', {id: vehicle.id}) }}" {% if vehicle.status.isUnavailable and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')) %} is-unavailable {% endif %} ">
+			class="vehicle-card card
+				        {% if vehicle.status.isUnavailable
+				            and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))
+				        %}
+				            is-unavailable
+				        {% endif %}
+				    " data-url="
+				        {{ is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')
+				            ? path('vehicle_edit', {id: vehicle.id})
+				            : path('vehicle_show', {id: vehicle.id}) }}
+				    ">
+
 			{# IMAGE + BADGES #}
 			<div class="vehicle-image-wrapper">
 

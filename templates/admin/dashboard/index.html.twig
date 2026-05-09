@@ -1,58 +1,56 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard Admin
+{% block title %}M-motors : Dashboard Admin
 {% endblock %}
 
 {% block body %}
 
-	<div
-		class="container mt-4">
 
-		{# =========================================================
-		       KPI GLOBAL
-		    ========================================================= #}
+	{# KPI GLOBAL #}
 
-		<h3 class="mb-3">Indicateurs globaux</h3>
+	<h3 class="mb-3">Indicateurs globaux</h3>
 
-		<div class="row mb-4">
+	<div class="kpi-cards-grid mt-4">
 
-			<div class="col-md-3">
-				<div class="card p-3">
-					<h6>Total véhicules</h6>
-					<strong>{{ stats.total }}</strong>
-				</div>
-			</div>
+		<div class="card kpi-card p-3">
+			<h6>Total véhicules</h6>
 
-			<div class="col-md-3">
-				<div class="card p-3">
-					<h6>Disponibles</h6>
-					<strong>{{ stats.available }}</strong>
-				</div>
-			</div>
-
-			<div class="col-md-3">
-				<div class="card p-3">
-					<h6>Loués</h6>
-					<strong>{{ stats.rented }}</strong>
-				</div>
-			</div>
-
-			<div class="col-md-3">
-				<div class="card p-3">
-					<h6>Maintenance</h6>
-					<strong>{{ stats.maintenance }}</strong>
-				</div>
-			</div>
-
+			<span class="text-right">
+				<strong>{{ stats.total }}</strong>
+			</span>
 		</div>
 
-		{# =========================================================
-		       RECHERCHE VEHICULE
-		    ========================================================= #}
+		<div class="card kpi-card p-3">
+			<h6>Disponibles</h6>
 
-		<h5 class="mb-3">Recherche véhicule / modèle</h5>
+			<span class="text-right">
+				<strong>{{ stats.available }}</strong>
+			</span>
+		</div>
 
-		{% include 'Components/Forms/_fetch_form.html.twig' with {
+		<div class="card kpi-card p-3">
+			<h6>Loués</h6>
+			<span class="text-right">
+				<strong>{{ stats.rented }}</strong>
+			</span>
+		</div>
+
+
+		<div class="card kpi-card p-3">
+			<h6>Maintenance</h6>
+			<span class="text-right">
+				<strong>{{ stats.maintenance }}</strong>
+			</span>
+		</div>
+
+
+	</div>
+
+	{# RECHERCHE VEHICULE #}
+
+	<h5 class="mb-3">Recherche véhicule / modèle</h5>
+
+	{% include 'Components/Forms/_fetch_form.html.twig' with {
         action: path('admin_dashboard_results'),
         fetchUrl: path('admin_dashboard_results'),
         target: '#vehicles-search-results',
@@ -66,12 +64,8 @@
 		fetchMode:'html'
     } %}
 
-		{# =========================================================
-		       RESULTATS AJAX (TABLEAU FINAL)
-		    ========================================================= #}
+	{# RESULTATS AJAX (TABLEAU FINAL) #}
 
-		<div id="vehicles-search-results"></div>
+	<div id="vehicles-search-results"></div>
 
-	</div>
-
-{% endblock %}
+</div>{% endblock %}

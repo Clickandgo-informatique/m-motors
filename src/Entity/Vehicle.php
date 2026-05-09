@@ -64,6 +64,45 @@ class Vehicle
         return $this;
     }
 
+    // Gestion de la galerie d'images
+    #[ORM\OneToMany(
+        mappedBy: 'vehicle',
+        targetEntity: Image::class,
+        orphanRemoval: true,
+        cascade: ['persist', 'remove']
+    )]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $images;
+
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setVehicle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            if ($image->getVehicle() === $this) {
+                $image->setVehicle(null);
+            }
+        }
+
+        return $this;
+    }
+
     // =========================================================
     // IDENTIFIANTS
     // =========================================================
@@ -256,6 +295,7 @@ class Vehicle
         $this->sales = new ArrayCollection();
         $this->favorites = new ArrayCollection();
         $this->features = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     // ========================= DOSSIERS =========================

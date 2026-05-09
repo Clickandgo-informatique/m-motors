@@ -74,7 +74,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 10px;
-  width: 140px;
+  /* width: fit-content; */
 }
 
 /* ============================
@@ -141,6 +141,8 @@
   background: var(--focus-bg);
   transition: background 0.2s ease;
 }
+
+
 
 /* ============================
    TABLEAU RESPONSIVE MOBILE CORRIGÉ
