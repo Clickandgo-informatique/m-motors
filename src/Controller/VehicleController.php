@@ -59,7 +59,7 @@ class VehicleController extends AbstractController
         Request $request,
         Vehicle $vehicle,
         EntityManagerInterface $em
-    ): Response {       
+    ): Response {
 
         $form = $this->createForm(VehicleFormType::class, $vehicle);
         $form->handleRequest($request);
@@ -162,7 +162,7 @@ class VehicleController extends AbstractController
             ], 404);
         }
 
-        $files = $request->files->all('file');
+        $files = $request->files->get('files', []);
 
         if (empty($files)) {
             return $this->json([

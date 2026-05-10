@@ -1,6 +1,7 @@
 {% extends "base.html.twig" %}
 
 {% block title %}
+	M-motors :
 	{{ title }}
 {% endblock %}
 
@@ -12,19 +13,19 @@
 	</h1>
 
 	{{ form_start(form, {
-    attr: {
-        'data-search-form': path('vehicle_model_search'),
-        'data-query-param': 'q',
-        'data-dropdown-class': 'dropdown-results',
-        'data-item-class': 'dropdown-item',
-        'data-link-class': 'dropdown-link',
-        'data-no-results-class': 'dropdown-no-results',
-        'data-item-url': '/vehicles/models/__ID__/edit',
-        'data-ajax-form': 'true'
-    }
-}) }}
+		attr: {
+			'data-search-form': path('vehicle_model_search'),
+			'data-query-param': 'q',
+			'data-dropdown-class': 'dropdown-results',
+			'data-item-class': 'dropdown-item',
+			'data-link-class': 'dropdown-link',
+			'data-no-results-class': 'dropdown-no-results',
+			'data-item-url': '/vehicles/models/__ID__/edit',
+			'data-ajax-form': 'true'
+		}
+	}) }}
 
-	{# Modèle véhicule #}
+	{# vehicle model display #}
 	{% if vehicle.vehicleModel and vehicle.vehicleModel.brand and vehicle.vehicleModel.model %}
 		<h4 class="text-center">
 			<strong>{{ vehicle.vehicleModel.brand.name }}</strong>
@@ -32,7 +33,7 @@
 		</h4>
 	{% endif %}
 
-	{# STATUS / SUPPLIER #}
+	{# status / supplier #}
 	<div class="form-row">
 
 		<div class="form-group">
@@ -49,7 +50,7 @@
 
 	</div>
 
-	{# AUTOCOMPLETE MODEL #}
+	{# vehicle model autocomplete #}
 	<div class="form-row">
 
 		<div class="form-group autocomplete-container flex-3">
@@ -59,17 +60,17 @@
 			<div class="dropdown-wrapper">
 
 				{{ form_widget(form.vehicleModelSearch, {
-                attr: {
-                    autocomplete: 'off',
-                    'data-autocomplete': 'true',
-                    'data-result-div': '#vehicle-model-results',
-                    'data-hidden-target': '#vehicle_vehicleModel'
-                }
-            }) }}
+					attr: {
+						autocomplete: 'off',
+						'data-autocomplete': 'true',
+						'data-result-div': '#vehicle-model-results',
+						'data-hidden-target': '#vehicle_vehicleModel'
+					}
+				}) }}
 
 				{{ form_widget(form.vehicleModel, {
-                attr: { style: 'display:none;' }
-            }) }}
+					attr: { style: 'display:none;' }
+				}) }}
 
 				<div id="vehicle-model-results" class="dropdown-results"></div>
 
@@ -91,7 +92,7 @@
 
 	</div>
 
-	{# IDENTIFIERS #}
+	{# identifiers #}
 	<div class="form-row">
 
 		<div class="form-group">
@@ -108,7 +109,7 @@
 
 	</div>
 
-	{# MAIN INFOS #}
+	{# main infos #}
 	<div class="form-row">
 
 		<div class="form-group">
@@ -125,17 +126,13 @@
 
 		<div class="form-group">
 			{{ form_label(form.price) }}
-
-			<div class="input-group">
-				{{ form_widget(form.price) }}
-			</div>
-
+			{{ form_widget(form.price) }}
 			{{ form_errors(form.price) }}
 		</div>
 
 	</div>
 
-	{# TECH INFOS #}
+	{# tech infos #}
 	<div class="form-row">
 
 		<div class="form-group">
@@ -158,7 +155,7 @@
 
 	</div>
 
-	{# FEATURES #}
+	{# features #}
 	<div class="form-row">
 
 		<div class="vehicle-features-list flex-3">
@@ -187,13 +184,21 @@
 
 	</div>
 
-	{# DROPZONE #}
+	{# dropzone #}
 	{% set isNew = vehicle.id is null %}
 
 	<div class="dropzone" data-mode="media" data-upload-url="{{ path('vehicle_image_upload', {id: vehicle.id}) }}" data-delete-url="{{ path('vehicle_image_delete', {id: '__id__'}) }}" data-documents-url="{{ isNew ? '' : path('vehicle_images', {id: vehicle.id}) }}" data-preview-id="vehicle-gallery-preview" data-destination="{{ vehicle.id ?? '' }}" data-status="{{ vehicle.status.value ?? 'draft' }}" data-locked="{{ isNew ? 1 : 0 }}">
+
 		<p>Glissez vos fichiers ici ou cliquez pour ajouter</p>
+
+		<button type="button" class="dz-upload-btn" disabled>
+			Envoyer les fichiers
+		</button>
+
 	</div>
 
-	{{ form_end(form, { render_rest: false }) }}
+	<div id="vehicle-gallery-preview"></div>
+
+	{{ form_end(form) }}
 
 {% endblock %}

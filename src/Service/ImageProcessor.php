@@ -4,20 +4,43 @@ namespace App\Service;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+/**
+ * Service de traitement des images :
+ * - validation
+ * - resize
+ * - crop optionnel
+ * - conversion WebP
+ * - génération thumbnail
+ */
 class ImageProcessor
 {
+    /**
+     * Dossier temporaire (non utilisé pour move Symfony)
+     */
     private string $tempDir;
 
-    private array $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+    /**
+     * Extensions autorisées
+     */
+    private array $allowedExtensions = [
+        'jpg',
+        'jpeg',
+        'png',
+        'webp'
+    ];
 
+    /**
+     * MIME types autorisés
+     */
     private array $allowedMimeTypes = [
         'image/jpeg',
         'image/png',
         'image/webp',
     ];
 
-    public function __construct()
-    {
+    public function __construct(
+        private readonly string $uploadDir
+    ) {
         $this->tempDir = realpath(__DIR__ . '/../../var/tmp_uploads')
             ?: __DIR__ . '/../../var/tmp_uploads';
 
@@ -55,9 +78,7 @@ class ImageProcessor
     }
 
     /**
-     * Retourne uniquement :
-     * - filename principal (webp)
-     * - thumbnail
+     * Traitement image
      */
     public function process(
         UploadedFile $file,
@@ -70,30 +91,28 @@ class ImageProcessor
 
         $destination = trim($destination, '/');
 
-        $uploadDir = realpath(__DIR__ . '/../../public/uploads/' . $destination)
-            ?: __DIR__ . '/../../public/uploads/' . $destination;
+        $uploadDir = sprintf(
+            '%s/%s',
+            rtrim($this->uploadDir, '/'),
+            $destination
+        );
 
         $this->ensureDirectory($uploadDir);
 
-        $extension = strtolower($file->guessExtension() ?? 'jpg');
-
-        $tempName = uniqid('tmp_', true) . '.' . $extension;
-        $file->move($this->tempDir, $tempName);
-
-        $tempPath = $this->tempDir . '/' . $tempName;
+        $tempPath = $file->getPathname();
 
         $content = file_get_contents($tempPath);
+
         $image = @imagecreatefromstring($content);
 
         if (!$image) {
-            unlink($tempPath);
-            throw new \RuntimeException("Image invalide");
+            throw new \RuntimeException("Image invalide ou illisible");
         }
 
-        unlink($tempPath);
-
         $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+
         $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalName) ?: 'image';
+
         $hash = substr(md5(uniqid('', true)), 0, 8);
 
         $baseName = $safeName . '_' . $hash;
@@ -114,6 +133,7 @@ class ImageProcessor
         return [
             'filename' => $filename,
             'thumbnail' => $thumbnail,
+            'path' => $destination . '/' . $filename
         ];
     }
 
@@ -128,23 +148,29 @@ class ImageProcessor
             $newWidth = (int) ($height * $ratio);
             $x = (int) (($width - $newWidth) / 2);
 
-            return imagecrop($image, [
+            $cropped = imagecrop($image, [
                 'x' => $x,
                 'y' => 0,
                 'width' => $newWidth,
                 'height' => $height
             ]);
+        } else {
+            $newHeight = (int) ($width / $ratio);
+            $y = (int) (($height - $newHeight) / 2);
+
+            $cropped = imagecrop($image, [
+                'x' => 0,
+                'y' => $y,
+                'width' => $width,
+                'height' => $newHeight
+            ]);
         }
 
-        $newHeight = (int) ($width / $ratio);
-        $y = (int) (($height - $newHeight) / 2);
+        if ($cropped === false) {
+            throw new \RuntimeException("Crop impossible");
+        }
 
-        return imagecrop($image, [
-            'x' => 0,
-            'y' => $y,
-            'width' => $width,
-            'height' => $newHeight
-        ]);
+        return $cropped;
     }
 
     private function resize($image, int $maxWidth)
@@ -188,8 +214,11 @@ class ImageProcessor
     {
         $destination = trim($destination, '/');
 
-        $uploadDir = realpath(__DIR__ . '/../../public/uploads/' . $destination)
-            ?: __DIR__ . '/../../public/uploads/' . $destination;
+        $uploadDir = sprintf(
+            '%s/%s',
+            rtrim($this->uploadDir, '/'),
+            $destination
+        );
 
         $this->ensureDirectory($uploadDir);
 

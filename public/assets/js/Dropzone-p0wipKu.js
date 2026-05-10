@@ -2,24 +2,24 @@ export default class Dropzone {
   constructor(element) {
     this.el = element;
 
-    // URLs backend
     this.uploadUrl = element.dataset.uploadUrl;
     this.deleteUrlTemplate = element.dataset.deleteUrl;
     this.documentsUrl = element.dataset.documentsUrl;
-
-    // contexte métier
     this.destination = element.dataset.destination || null;
-    this.mode = element.dataset.mode || "media";
 
-    // DOM
-    this.previewContainer = document.getElementById(element.dataset.previewId);
+    this.previewContainer = this.el.querySelector(
+      `#${element.dataset.previewId}`
+    );
 
     this.uploadBtn = this.el.querySelector(".dz-upload-btn");
 
-    // state
-    this.input = null;
     this.filesQueue = [];
     this.fileKeys = new Set();
+
+    // MODE EXPLICITE
+    this.mode = this.el.dataset.mode || "media";
+
+    this.input = null;
 
     this.init();
   }
@@ -27,29 +27,31 @@ export default class Dropzone {
   init() {
     this.createInput();
     this.bindEvents();
-    this.updateButtonState();
+    this.refreshState?.();
 
+    // uniquement si workflow
     if (this.mode === "workflow") {
       this.applyWorkflowRules();
+    } else {
+      this.enable(); // mode media toujours actif
     }
   }
 
-  /* INPUT */
-
   createInput() {
     this.input = document.createElement("input");
+
     this.input.type = "file";
     this.input.multiple = true;
-    this.input.accept = "image/*";
     this.input.style.display = "none";
 
     this.el.appendChild(this.input);
   }
 
-  /* EVENTS */
-
   bindEvents() {
+    console.log(this.uploadBtn);
+    // ouverture file picker
     this.el.addEventListener("click", e => {
+      console.log("dropzone cliquée");
       if (
         e.target.closest(".dz-upload-btn") ||
         e.target.closest(".dz-delete")
@@ -57,11 +59,12 @@ export default class Dropzone {
         return;
       }
 
-      if (!this.input) return;
-
-      this.input.click();
+      if (this.input) {
+        this.input.click();
+      }
     });
 
+    // drag & drop
     this.el.addEventListener("dragover", e => e.preventDefault());
 
     this.el.addEventListener("drop", e => {
@@ -69,24 +72,67 @@ export default class Dropzone {
       this.addToQueue(e.dataTransfer.files);
     });
 
-    this.input.addEventListener("change", e => {
-      this.addToQueue(e.target.files);
-      this.input.value = "";
-    });
-
-    if (this.uploadBtn) {
-      this.uploadBtn.addEventListener("click", e => {
-        e.preventDefault();
-        this.uploadQueue();
+    // file input change
+    if (this.input) {
+      this.input.addEventListener("change", e => {
+        this.addToQueue(e.target.files);
+        this.input.value = "";
       });
+    }
+
+    // upload button
+    if (this.uploadBtn) {
+      this.uploadBtn.addEventListener("click", () => this.uploadQueue());
     }
   }
 
-  /* QUEUE */
+  /* =========================
+     MODE LOGIC
+  ========================= */
+
+  applyWorkflowRules() {
+    // ici seulement si besoin futur (dossiers)
+    // ex: disable upload selon règles métier
+  }
+
+  enable() {
+    if (this.uploadBtn) {
+      this.uploadBtn.disabled = false;
+    }
+
+    this.el.classList.remove("disabled");
+  }
+
+  disable() {
+    if (this.uploadBtn) {
+      this.uploadBtn.disabled = true;
+    }
+
+    this.el.classList.add("disabled");
+  }
+
+  canUpload() {
+    // MODE MEDIA = toujours OK
+    if (this.mode === "media") {
+      return true;
+    }
+
+    // MODE WORKFLOW (dossiers)
+    const allowed = [
+      "draft",
+      "vehicle_selected",
+      "documents_pending",
+      "documents_review"
+    ];
+
+    return allowed.includes(this.status);
+  }
+
+  /* =========================
+     FILE HANDLING
+  ========================= */
 
   addToQueue(files) {
-    if (!files || !files.length) return;
-
     Array.from(files).forEach(file => {
       const key = `${file.name}_${file.size}`;
 
@@ -103,68 +149,22 @@ export default class Dropzone {
     this.updateButtonState();
   }
 
-  removeFromQueue(file) {
-    const key = `${file.name}_${file.size}`;
-
-    this.fileKeys.delete(key);
-
-    this.filesQueue = this.filesQueue.filter(f => {
-      return !(f.name === file.name && f.size === file.size);
-    });
-
-    this.updateButtonState();
-  }
-
   createLocalThumb(file) {
     const div = document.createElement("div");
     div.classList.add("dz-thumb", "dz-staging");
 
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("dz-preview");
-
-    const meta = document.createElement("div");
-    meta.classList.add("dz-meta");
-    meta.textContent = file.name;
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.classList.add("dz-delete");
-    btn.textContent = "×";
-
-    btn.addEventListener("click", e => {
-      e.stopPropagation();
-      this.removeFromQueue(file);
-      div.remove();
-    });
-
     const ext = file.name
       .split(".")
       .pop()
-      .toLowerCase();
+      .toUpperCase();
 
-    if (["jpg", "jpeg", "png", "webp"].includes(ext)) {
-      const img = document.createElement("img");
-      img.classList.add("dz-img");
-
-      const reader = new FileReader();
-      reader.onload = e => {
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-
-      wrapper.appendChild(img);
-    } else {
-      wrapper.textContent = ext.toUpperCase();
-    }
-
-    div.appendChild(wrapper);
-    div.appendChild(meta);
-    div.appendChild(btn);
+    div.innerHTML = `
+      <div class="dz-file-preview">${ext}</div>
+      <div class="dz-filename">${file.name}</div>
+    `;
 
     return div;
   }
-
-  /* UPLOAD */
 
   async uploadQueue() {
     if (!this.filesQueue.length) return;
@@ -172,37 +172,24 @@ export default class Dropzone {
     const formData = new FormData();
 
     this.filesQueue.forEach(file => {
-      formData.append("files[]", file);
+      formData.append("file[]", file);
     });
 
     if (this.destination) {
       formData.append("destination", this.destination);
     }
 
-    try {
-      const response = await fetch(this.uploadUrl, {
-        method: "POST",
-        body: formData
-      });
+    await fetch(this.uploadUrl, {
+      method: "POST",
+      body: formData
+    });
 
-      const text = await response.text();
+    this.filesQueue = [];
+    this.fileKeys.clear();
 
-      if (!response.ok) {
-        throw new Error(text);
-      }
-
-      this.filesQueue = [];
-      this.fileKeys.clear();
-
-      this.updateButtonState();
-
-      await this.refreshState?.();
-    } catch (e) {
-      console.error("[Dropzone] upload error", e);
-    }
+    await this.refreshState?.();
+    this.updateButtonState();
   }
-
-  /* UI */
 
   updateButtonState() {
     if (!this.uploadBtn) return;
@@ -210,28 +197,27 @@ export default class Dropzone {
     const hasFiles = this.filesQueue.length > 0;
 
     this.uploadBtn.disabled = !hasFiles;
-
     this.uploadBtn.textContent = hasFiles
       ? `Envoyer (${this.filesQueue.length})`
       : "Envoyer les fichiers";
   }
 
-  /* SERVER */
+  /* =========================
+     SERVER
+  ========================= */
 
   async refreshState() {
     if (!this.documentsUrl || !this.previewContainer) return;
 
-    try {
-      const res = await fetch(this.documentsUrl);
-      const data = await res.json();
+    const res = await fetch(this.documentsUrl);
+    const data = await res.json();
 
-      this.renderDocuments(data.documents || []);
-    } catch (e) {
-      console.error(e);
-    }
+    this.renderDocuments(data.documents || []);
   }
 
   renderDocuments(files) {
+    if (!Array.isArray(files)) return;
+
     this.previewContainer.innerHTML = "";
 
     files.forEach(file => {
@@ -243,16 +229,23 @@ export default class Dropzone {
     const div = document.createElement("div");
     div.classList.add("dz-thumb");
 
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("dz-preview");
-    wrapper.textContent = file.fileName;
+    div.dataset.id = file.id;
 
-    const meta = document.createElement("div");
-    meta.classList.add("dz-meta");
-    meta.textContent = file.originalName || "";
+    const ext = file.fileName
+      ?.split(".")
+      .pop()
+      ?.toLowerCase();
+
+    div.innerHTML = `
+      <div class="dz-preview">
+        ${this.getPreviewHtml(ext, file)}
+      </div>
+      <div class="dz-filename">
+        ${file.originalName ?? file.fileName}
+      </div>
+    `;
 
     const btn = document.createElement("button");
-    btn.type = "button";
     btn.classList.add("dz-delete");
     btn.textContent = "×";
 
@@ -265,19 +258,23 @@ export default class Dropzone {
 
       await fetch(url, { method: "DELETE" });
 
-      this.refreshState();
+      this.refreshState?.();
     });
 
-    div.appendChild(wrapper);
-    div.appendChild(meta);
     div.appendChild(btn);
 
     return div;
   }
 
-  /* WORKFLOW */
+  getPreviewHtml(ext, file) {
+    if (["jpg", "jpeg", "png", "webp"].includes(ext)) {
+      return `<img src="/uploads/${file.path}">`;
+    }
 
-  applyWorkflowRules() {
-    console.log("[Dropzone] workflow mode");
+    if (ext === "pdf") return "PDF";
+    if (["doc", "docx"].includes(ext)) return "WORD";
+    if (["xls", "xlsx"].includes(ext)) return "EXCEL";
+
+    return "Fichier";
   }
 }

@@ -12,7 +12,9 @@ export default class Dropzone {
     this.mode = element.dataset.mode || "media";
 
     // DOM
-    this.previewContainer = document.getElementById(element.dataset.previewId);
+    this.previewContainer = this.el.querySelector(
+      `#${element.dataset.previewId}`
+    );
 
     this.uploadBtn = this.el.querySelector(".dz-upload-btn");
 
@@ -27,28 +29,44 @@ export default class Dropzone {
   init() {
     this.createInput();
     this.bindEvents();
+
     this.updateButtonState();
 
     if (this.mode === "workflow") {
       this.applyWorkflowRules();
     }
+
+    console.log("[Dropzone] init", {
+      mode: this.mode,
+      uploadUrl: this.uploadUrl
+    });
   }
 
-  /* INPUT */
+  /* =========================================================
+   * INPUT
+   * ========================================================= */
 
   createInput() {
     this.input = document.createElement("input");
+
     this.input.type = "file";
     this.input.multiple = true;
     this.input.accept = "image/*";
+
+    // important : invisible fiable
     this.input.style.display = "none";
 
     this.el.appendChild(this.input);
+
+    console.log("[Dropzone] input created", this.input);
   }
 
-  /* EVENTS */
+  /* =========================================================
+   * EVENTS
+   * ========================================================= */
 
   bindEvents() {
+    // ouverture file picker
     this.el.addEventListener("click", e => {
       if (
         e.target.closest(".dz-upload-btn") ||
@@ -57,35 +75,59 @@ export default class Dropzone {
         return;
       }
 
-      if (!this.input) return;
+      if (!this.input) {
+        console.error("[Dropzone] input missing");
+        return;
+      }
+
+      console.log("[Dropzone] open file picker");
 
       this.input.click();
     });
 
+    // drag & drop
     this.el.addEventListener("dragover", e => e.preventDefault());
 
     this.el.addEventListener("drop", e => {
       e.preventDefault();
+
+      console.log("[Dropzone] drop event");
+
       this.addToQueue(e.dataTransfer.files);
     });
 
+    // file selection
     this.input.addEventListener("change", e => {
+      console.log("[Dropzone] change event", e.target.files);
+
       this.addToQueue(e.target.files);
+
       this.input.value = "";
     });
 
+    // upload button
     if (this.uploadBtn) {
       this.uploadBtn.addEventListener("click", e => {
         e.preventDefault();
+
+        console.log("[Dropzone] upload button clicked");
+
         this.uploadQueue();
       });
+    } else {
+      console.warn("[Dropzone] upload button not found");
     }
   }
 
-  /* QUEUE */
+  /* =========================================================
+   * QUEUE
+   * ========================================================= */
 
   addToQueue(files) {
-    if (!files || !files.length) return;
+    if (!files || !files.length) {
+      console.warn("[Dropzone] no files received");
+      return;
+    }
 
     Array.from(files).forEach(file => {
       const key = `${file.name}_${file.size}`;
@@ -96,21 +138,13 @@ export default class Dropzone {
       this.filesQueue.push(file);
 
       if (this.previewContainer) {
-        this.previewContainer.appendChild(this.createLocalThumb(file));
+        this.previewContainer.appendChild(
+          this.createLocalThumb(file)
+        );
       }
     });
 
-    this.updateButtonState();
-  }
-
-  removeFromQueue(file) {
-    const key = `${file.name}_${file.size}`;
-
-    this.fileKeys.delete(key);
-
-    this.filesQueue = this.filesQueue.filter(f => {
-      return !(f.name === file.name && f.size === file.size);
-    });
+    console.log("[Dropzone] queue updated", this.filesQueue);
 
     this.updateButtonState();
   }
@@ -119,55 +153,27 @@ export default class Dropzone {
     const div = document.createElement("div");
     div.classList.add("dz-thumb", "dz-staging");
 
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("dz-preview");
+    const ext = file.name.split(".").pop().toUpperCase();
 
-    const meta = document.createElement("div");
-    meta.classList.add("dz-meta");
-    meta.textContent = file.name;
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.classList.add("dz-delete");
-    btn.textContent = "×";
-
-    btn.addEventListener("click", e => {
-      e.stopPropagation();
-      this.removeFromQueue(file);
-      div.remove();
-    });
-
-    const ext = file.name
-      .split(".")
-      .pop()
-      .toLowerCase();
-
-    if (["jpg", "jpeg", "png", "webp"].includes(ext)) {
-      const img = document.createElement("img");
-      img.classList.add("dz-img");
-
-      const reader = new FileReader();
-      reader.onload = e => {
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-
-      wrapper.appendChild(img);
-    } else {
-      wrapper.textContent = ext.toUpperCase();
-    }
-
-    div.appendChild(wrapper);
-    div.appendChild(meta);
-    div.appendChild(btn);
+    div.innerHTML = `
+      <div class="dz-file-preview">${ext}</div>
+      <div class="dz-filename">${file.name}</div>
+    `;
 
     return div;
   }
 
-  /* UPLOAD */
+  /* =========================================================
+   * UPLOAD
+   * ========================================================= */
 
   async uploadQueue() {
-    if (!this.filesQueue.length) return;
+    if (!this.filesQueue.length) {
+      console.warn("[Dropzone] empty queue");
+      return;
+    }
+
+    console.log("[Dropzone] uploading", this.filesQueue);
 
     const formData = new FormData();
 
@@ -185,10 +191,13 @@ export default class Dropzone {
         body: formData
       });
 
+      console.log("[Dropzone] response status", response.status);
+
       const text = await response.text();
+      console.log("[Dropzone] response body", text);
 
       if (!response.ok) {
-        throw new Error(text);
+        throw new Error("Upload failed");
       }
 
       this.filesQueue = [];
@@ -197,12 +206,15 @@ export default class Dropzone {
       this.updateButtonState();
 
       await this.refreshState?.();
+
     } catch (e) {
       console.error("[Dropzone] upload error", e);
     }
   }
 
-  /* UI */
+  /* =========================================================
+   * UI
+   * ========================================================= */
 
   updateButtonState() {
     if (!this.uploadBtn) return;
@@ -216,7 +228,17 @@ export default class Dropzone {
       : "Envoyer les fichiers";
   }
 
-  /* SERVER */
+  /* =========================================================
+   * WORKFLOW (optionnel)
+   * ========================================================= */
+
+  applyWorkflowRules() {
+    console.log("[Dropzone] workflow mode active");
+  }
+
+  /* =========================================================
+   * SERVER
+   * ========================================================= */
 
   async refreshState() {
     if (!this.documentsUrl || !this.previewContainer) return;
@@ -227,15 +249,19 @@ export default class Dropzone {
 
       this.renderDocuments(data.documents || []);
     } catch (e) {
-      console.error(e);
+      console.error("[Dropzone] refresh error", e);
     }
   }
 
   renderDocuments(files) {
+    if (!Array.isArray(files)) return;
+
     this.previewContainer.innerHTML = "";
 
     files.forEach(file => {
-      this.previewContainer.appendChild(this.createServerThumb(file));
+      this.previewContainer.appendChild(
+        this.createServerThumb(file)
+      );
     });
   }
 
@@ -243,16 +269,18 @@ export default class Dropzone {
     const div = document.createElement("div");
     div.classList.add("dz-thumb");
 
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("dz-preview");
-    wrapper.textContent = file.fileName;
+    div.dataset.id = file.id;
 
-    const meta = document.createElement("div");
-    meta.classList.add("dz-meta");
-    meta.textContent = file.originalName || "";
+    div.innerHTML = `
+      <div class="dz-preview">
+        ${file.fileName}
+      </div>
+      <div class="dz-filename">
+        ${file.originalName ?? ""}
+      </div>
+    `;
 
     const btn = document.createElement("button");
-    btn.type = "button";
     btn.classList.add("dz-delete");
     btn.textContent = "×";
 
@@ -268,16 +296,8 @@ export default class Dropzone {
       this.refreshState();
     });
 
-    div.appendChild(wrapper);
-    div.appendChild(meta);
     div.appendChild(btn);
 
     return div;
-  }
-
-  /* WORKFLOW */
-
-  applyWorkflowRules() {
-    console.log("[Dropzone] workflow mode");
   }
 }
