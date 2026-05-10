@@ -28,7 +28,7 @@ class VehicleModelRepository extends ServiceEntityRepository
             ->leftJoin('vm.model', 'm')
             ->leftJoin('vm.variant', 'v')
             ->leftJoin('vm.fuelType', 'f')
-            ->leftJoin('vm.gear', 'g')
+            ->leftJoin('vm.gearType', 'g')
             ->orderBy('b.name', 'ASC')
             ->addOrderBy('m.name', 'ASC')
             ->addOrderBy('v.name', 'ASC');
@@ -45,7 +45,7 @@ class VehicleModelRepository extends ServiceEntityRepository
             ->leftJoin('vm.model', 'm')->addSelect('m')
             ->leftJoin('vm.variant', 'v')->addSelect('v')
             ->leftJoin('vm.fuelType', 'f')->addSelect('f')
-            ->leftJoin('vm.gear', 'g')->addSelect('g');
+            ->leftJoin('vm.gearType', 'g')->addSelect('g');
 
         if (trim($term) !== '') {
             $qb->andWhere('

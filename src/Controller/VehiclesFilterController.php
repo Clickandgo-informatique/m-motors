@@ -32,7 +32,7 @@ class VehiclesFilterController extends AbstractController
             $query,
             $request->query->getInt('page', 1),
             12
-        );     
+        );
 
         return $this->render('vehicles/index.html.twig', array_merge([
             'vehicles' => $vehicles,
@@ -116,14 +116,6 @@ class VehiclesFilterController extends AbstractController
     {
         $years = $vehicleRepo->getRegistrationYears();
 
-        $statuses = array_map(
-            fn($status) => [
-                'value' => $status->value,
-                'label' => $status->label(),
-            ],
-            VehicleStatus::cases()
-        );
-
         return [
             'brands' => $vehicleRepo->getUsedBrands(),
             'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
@@ -131,7 +123,18 @@ class VehiclesFilterController extends AbstractController
             'registrationYears' => $years['years'] ?? [],
             'registrationYearsMin' => $years['min'] ?? null,
             'registrationYearsMax' => $years['max'] ?? null,
-            'statuses' => $statuses,
+            'statuses' => $vehicleRepo->getStatuses()
         ];
+    }
+
+    #[Route('/_sidebar/filters', name: 'vehicles_sidebar_filters')]
+    public function sidebarFilters(
+        VehicleRepository $vehicleRepo
+    ): Response {
+
+        return $this->render(
+            'vehicles/_vehicles_filters.html.twig',
+            $this->buildFiltersContext($vehicleRepo)
+        );
     }
 }

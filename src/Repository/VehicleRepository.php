@@ -6,6 +6,7 @@ use App\Entity\BodyType;
 use App\Entity\Brand;
 use App\Entity\FuelType;
 use App\Entity\Vehicle;
+use App\Enum\VehicleStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -286,5 +287,18 @@ class VehicleRepository extends ServiceEntityRepository
                 (int) $maxDate->format('Y')
             ),
         ];
+    }
+    /*
+ * Statuts disponibles des véhicules
+ */
+    public function getStatuses(): array
+    {
+        return array_map(
+            fn(VehicleStatus $status) => [
+                'value' => $status->value,
+                'label' => $status->label(),
+            ],
+            VehicleStatus::cases()
+        );
     }
 }

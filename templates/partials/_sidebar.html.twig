@@ -37,6 +37,7 @@
 							Créer un véhicule
 						</a>
 					</li>
+
 					<li>
 						<a href="{{ path('vehicle_model_new') }}">
 							<i class="fa-solid fa-file-circle-plus"></i>
@@ -47,10 +48,12 @@
 
 			</ul>
 
-			{# 🔥 FILTRES SORTIS DU UL (IMPORTANT DOM VALID) #}
+			{# ========================= FILTRES VEHICULES ========================= #}
 			{% if app.request.attributes.get('_route') starts with 'vehicles' %}
 				<div id="vehicles-filters">
-					{% include 'vehicles/_vehicles_filters.html.twig' %}
+					{{ render(controller(
+						'App\\Controller\\VehiclesFilterController::sidebarFilters'
+					)) }}
 				</div>
 			{% endif %}
 
