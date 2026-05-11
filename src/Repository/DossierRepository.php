@@ -60,7 +60,8 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * 🔍 Recherche globale (pagination + search)
+     * Build the base query used for search and pagination.
+     * Allows reuse of the same filters for different contexts.
      */
     private function getSearchQueryBuilder(?string $searchTerm = null): QueryBuilder
     {
@@ -72,12 +73,11 @@ class DossierRepository extends ServiceEntityRepository
 
         if (!empty($searchTerm)) {
             $qb->andWhere('
-                d.dossierCode LIKE :term
-                OR c.lastName LIKE :term
-                OR m.name LIKE :term
-                OR v.vin LIKE :term
-                OR v.registrationNumber LIKE :term
-
+                LOWER(d.dossierCode) LIKE :term
+                OR LOWER(c.lastName) LIKE :term
+                OR LOWER(m.name) LIKE :term
+                OR LOWER(v.vin) LIKE :term
+                OR LOWER(v.registrationNumber) LIKE :term
             ')
                 ->setParameter('term', '%' . mb_strtolower($searchTerm) . '%');
         }
@@ -86,7 +86,8 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * Pagination KnpPaginator
+     * Returns a QueryBuilder for pagination (KnpPaginator usage).
+     * Do not execute the query here.
      */
     public function searchForPaginator(?string $searchTerm = null): QueryBuilder
     {
@@ -94,7 +95,8 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * Autocomplete léger (API)
+     * Lightweight search used for autocomplete.
+     * Returns an array result (not entities) for performance reasons.
      */
     public function findForAutocomplete(?string $searchTerm = null): array
     {
@@ -107,12 +109,12 @@ class DossierRepository extends ServiceEntityRepository
 
         if (!empty($searchTerm)) {
             $qb->andWhere('
-        d.dossierCode LIKE :term
-        OR c.lastName LIKE :term
-        OR m.name LIKE :term
-        OR v.vin LIKE :term
-        OR v.registrationNumber LIKE :term
-    ')
+                LOWER(d.dossierCode) LIKE :term
+                OR LOWER(c.lastName) LIKE :term
+                OR LOWER(m.name) LIKE :term
+                OR LOWER(v.vin) LIKE :term
+                OR LOWER(v.registrationNumber) LIKE :term
+            ')
                 ->setParameter('term', '%' . mb_strtolower($searchTerm) . '%');
         }
 
