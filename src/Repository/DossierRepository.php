@@ -67,15 +67,19 @@ class DossierRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('d')
             ->leftJoin('d.customer', 'c')
             ->leftJoin('d.vehicle', 'v')
-            ->leftJoin('v.model', 'm');
+            ->leftJoin('v.vehicleModel', 'vm')
+            ->leftJoin('vm.model', 'm');
 
         if (!empty($searchTerm)) {
             $qb->andWhere('
                 d.dossierCode LIKE :term
                 OR c.lastName LIKE :term
                 OR m.name LIKE :term
+                OR v.vin LIKE :term
+                OR v.registrationNumber LIKE :term
+
             ')
-                ->setParameter('term', '%' . $searchTerm . '%');
+                ->setParameter('term', '%' . mb_strtolower($searchTerm) . '%');
         }
 
         return $qb->orderBy('d.createdAt', 'DESC');
@@ -106,8 +110,10 @@ class DossierRepository extends ServiceEntityRepository
         d.dossierCode LIKE :term
         OR c.lastName LIKE :term
         OR m.name LIKE :term
+        OR v.vin LIKE :term
+        OR v.registrationNumber LIKE :term
     ')
-                ->setParameter('term', '%' . $searchTerm . '%');
+                ->setParameter('term', '%' . mb_strtolower($searchTerm) . '%');
         }
 
         return $qb
