@@ -6,18 +6,17 @@
 	<div class="layout">
 		<main>
 
-			<form id="view-switcher-form" class="fetch-form" data-module="fetch-form" data-fetch-url="{{ path('vehicles_ajax_list') }}" data-target="#vehicles-results" data-filters-target="#vehicles-filters" data-pagination-target="#vehicles-pagination">
-
+			<form id="view-switcher-form" class="fetch-form" data-module="fetch-form" data-fetch-url="{{ path('vehicles_ajax_list') }}" data-fetch-mode="json" data-target="#vehicles-results" data-filters-target="#vehicles-filters" data-pagination-top="#vehicles-pagination-top" data-pagination-bottom="#vehicles-pagination-bottom">
 				<div id="view-toggle">
 
-					<input type="radio" id="view-grid" name="filters[view]" value="grid" checked>
-					<input type="radio" id="view-table" name="filters[view]" value="table">
+					<input type="radio" name="filters[view]" value="grid" checked>
+					<input type="radio" name="filters[view]" value="table">
 
-					<label for="view-grid">
+					<label>
 						<span class="icon-grid"></span>
 					</label>
 
-					<label for="view-table">
+					<label>
 						<span class="icon-table"></span>
 					</label>
 
@@ -28,25 +27,27 @@
 			</form>
 
 			{% include "Components/Forms/_fetch_form.html.twig" with {
-            action: path('vehicles_index'),
-            fetchUrl: path('vehicles_ajax_list'),
-            autocompleteUrl: path('vehicles_ajax_search'),
-            name: 'q',
-            placeholder: 'Rechercher un véhicule par marque, modèle',
-            baseUrl: '/vehicles/',
-            linkMode: '1',
-            resultDiv: 'autocomplete-results',
-            target: '#vehicles-results',
-            filtersTarget: '#vehicles-filters',
-            paginationTarget: '#vehicles-pagination'
-        } %}
+			action: path('vehicles_index'),
+			fetchUrl: path('vehicles_ajax_list'),
+			target: '#vehicles-results',
+			filtersTarget: '#vehicles-filters',
+			paginationTop: '#vehicles-pagination-top',
+			paginationBottom: '#vehicles-pagination-bottom',
+			autocompleteUrl: path('vehicles_ajax_search'),
+			resultDiv: 'autocomplete-results',
+			name: 'q',
+			placeholder: 'Rechercher un véhicule',
+			baseUrl: '/vehicles/',
+			linkMode: '1',
+			fetchMode: 'json'
+		} %}
 
 			<div id="vehicles-filters"></div>
 
-			<div id="vehicles-pagination">
-				<div class="pagination-top">
-					{% include 'vehicles/_pagination_info.html.twig' with { vehicles: vehicles } %}
-				</div>
+			<div id="vehicles-pagination-top">
+				{% include 'vehicles/_pagination_info.html.twig' with {
+				vehicles: vehicles
+			} %}
 			</div>
 
 			<div id="vehicles-results">
@@ -54,9 +55,9 @@
 			</div>
 
 			<div id="vehicles-pagination-bottom">
-				<div class="pagination-bottom">
-					{% include 'vehicles/_pagination_info.html.twig' with { vehicles: vehicles } %}
-				</div>
+				{% include 'vehicles/_pagination_info.html.twig' with {
+				vehicles: vehicles
+			} %}
 			</div>
 
 		</main>

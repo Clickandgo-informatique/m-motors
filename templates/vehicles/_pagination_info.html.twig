@@ -5,59 +5,50 @@
    - Utilisé en haut et en bas de page
    ========================================================= #}
 
-{% if vehicles is defined and vehicles.getTotalItemCount() > 0 %}
+{% if vehicles is defined and vehicles.totalItemCount > 0 %}
 
-	{# INFOS PAGINATION #}
 	<div class="pagination-info-text text-center">
-		{{ vehicles.getTotalItemCount() }}
-		véhicule{{ vehicles.getTotalItemCount() > 1 ? 's' : '' }}
+		{{ vehicles.totalItemCount }}
+		véhicule{{ vehicles.totalItemCount > 1 ? 's' : '' }}
 		- Page
-		{{ vehicles.getCurrentPageNumber() }}/{{ vehicles.getPageCount() }}
+		{{ vehicles.currentPageNumber }}/{{ vehicles.pageCount }}
 	</div>
 
-	{# PAGINATION LINKS #}
-	<div
-		class="pagination" data-pagination>
+	<div class="pagination" data-pagination>
 
-		{# PREMIERE / PRECEDENTE #}
-		{% if vehicles.getCurrentPageNumber() > 1 %}
-			<a href="#" class="first-page" data-page="1">« Première</a>
-			<a href="#" class="prev-page" data-page="{{ vehicles.getCurrentPageNumber() - 1 }}">← Précédent</a>
+		{% if vehicles.currentPageNumber > 1 %}
+			<a href="#" data-page="1">« Première</a>
+			<a href="#" data-page="{{ vehicles.currentPageNumber - 1 }}">← Précédent</a>
 		{% endif %}
 
-		{# CALCUL DE LA PLAGE #}
-		{% set start = vehicles.getCurrentPageNumber() - 2 %}
-		{% set end = vehicles.getCurrentPageNumber() + 2 %}
+		{% set start = vehicles.currentPageNumber - 2 %}
+		{% set end = vehicles.currentPageNumber + 2 %}
 
 		{% if start < 1 %}
 			{% set start = 1 %}
 		{% endif %}
 
-		{% if end > vehicles.getPageCount() %}
-			{% set end = vehicles.getPageCount() %}
+		{% if end > vehicles.pageCount %}
+			{% set end = vehicles.pageCount %}
 		{% endif %}
 
-		{# ELLIPSIS DE DEBUT #}
 		{% if start > 1 %}
 			<span class="dots">...</span>
 		{% endif %}
 
-		{# PAGES #}
 		{% for i in start..end %}
-			<a href="#" class="{{ i == vehicles.getCurrentPageNumber() ? 'active' : '' }}" data-page="{{ i }}">
+			<a href="#" class="{{ i == vehicles.currentPageNumber ? 'active' : '' }}" data-page="{{ i }}">
 				{{ i }}
 			</a>
 		{% endfor %}
 
-		{# ELLIPSIS DE FIN #}
-		{% if end < vehicles.getPageCount() %}
+		{% if end < vehicles.pageCount %}
 			<span class="dots">...</span>
 		{% endif %}
 
-		{# SUIVANT / DERNIERE #}
-		{% if vehicles.getCurrentPageNumber() < vehicles.getPageCount() %}
-			<a href="#" class="next-page" data-page="{{ vehicles.getCurrentPageNumber() + 1 }}">Suivant →</a>
-			<a href="#" class="last-page" data-page="{{ vehicles.getPageCount() }}">Dernière »</a>
+		{% if vehicles.currentPageNumber < vehicles.pageCount %}
+			<a href="#" data-page="{{ vehicles.currentPageNumber + 1 }}">Suivant →</a>
+			<a href="#" data-page="{{ vehicles.pageCount }}">Dernière »</a>
 		{% endif %}
 
 	</div>

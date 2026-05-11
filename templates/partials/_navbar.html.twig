@@ -27,26 +27,35 @@
 <div class="navbar-links">
 	<ul>
 		<li>
-			<a href="{{ path('app_home') }}" class="{{ app.request.attributes.get('_route') == 'app_home' ? 'active' : '' }}">
-				Accueil
-			</a>
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+
+				<a href="{{ path('admin_dashboard') }}" class="{{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'active' : '' }}">
+					<i class="fa-solid fa-tachograph-digital"></i>Dashboard Administration
+				</a>
+			{% else %}
+
+				<a href="{{ path('app_home') }}" class="{{ app.request.attributes.get('_route') == 'app_home' ? 'active' : '' }}">
+					<i class="fa-regular fa-house"></i>Accueil
+				</a>
+			{% endif %}
+
 		</li>
 
 		<li>
 			<a href="#" class="{{ app.request.attributes.get('_route') == 'app_about' ? 'active' : '' }}">
-				À propos
+				<i class="fa-solid fa-circle-info"></i>À propos
 			</a>
 		</li>
 
 		<li>
 			<a href="#" class="{{ app.request.attributes.get('_route') == 'app_contact' ? 'active' : '' }}">
-				Contact
+				<i class="fa-regular fa-envelope"></i>Contact
 			</a>
 		</li>
 		{% if app.user %}
 			<li>
 				<a href="{{path('app_profile')}}" class="{{ app.request.attributes.get('_route') == 'app_profile' ? 'active' : '' }}">
-					Mon profil
+					<i class="fa-regular fa-address-card"></i>Mon profil
 				</a>
 			</li>
 

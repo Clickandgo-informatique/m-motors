@@ -1,12 +1,3 @@
-<<<<<<< Updated upstream
-<form method="get" action="{{ action }}" data-module="fetch-form" data-fetch-url="{{ fetchUrl }}" data-target="{{ target }}" class="fetch-form">
-
-	<div class="form-row dropdown-wrapper">
-
-		<input type="text" name="{{ name }}" value="{{ app.request.get(name) }}" placeholder="{{ placeholder }}" autocomplete="off" data-module="autocomplete" data-url="{{ autocompleteUrl }}" data-base-url="{{ baseUrl }}" data-link-mode="{{ linkMode|default(0) }}" class="search-input">
-
-		<input type="hidden" name="{{ hiddenName|default(name ~ 'Id') }}" data-autocomplete-value class="js-autocomplete-hidden">
-=======
 {% set fetchUrl = fetchUrl|default(action) %}
 {% set target = target|default('') %}
 {% set fetchMode = fetchMode|default('html') %}
@@ -16,40 +7,43 @@
 {% set linkMode = linkMode|default(0) %}
 {% set hiddenName = hiddenName|default(name ~ 'Id') %}
 
-<form 
-method="get" 
-action="{{ action }}" 
-data-module="fetch-form" 
-data-fetch-url="{{ fetchUrl }}" 
-data-target="{{ target }}" 
-data-fetch-mode="{{ fetchMode }}" 
-data-filters-target="{{ filtersTarget }}" 
-data-pagination-top="{{ paginationTop }}" 
-data-pagination-bottom="{{ paginationBottom }}" 
-class="fetch-form">
+<form
+    method="get"
+    action="{{ action }}"
+    data-module="fetch-form"
+    data-fetch-url="{{ fetchUrl }}"
+    data-target="{{ target }}"
+    data-fetch-mode="{{ fetchMode }}"
+    data-filters-target="{{ filtersTarget }}"
+    data-pagination-top="{{ paginationTop }}"
+    data-pagination-bottom="{{ paginationBottom }}"
+    class="fetch-form"
+>
 
-	<div class="form-row dropdown-wrapper">
+    <div class="form-row dropdown-wrapper">
 
-		<input 
-		type="text" 
-		name="{{ name }}" 
-		value="{{ app.request.get(name) }}" 
-		placeholder="{{ placeholder }}" 
-		autocomplete="off" 
-		data-module="autocomplete" 
-		data-url="{{ autocompleteUrl }}" 
-		data-base-url="{{ baseUrl }}" 
-		data-link-mode="{{ linkMode }}" 
-		class="search-input">
+        <input
+            type="text"
+            name="{{ name }}"
+            value="{{ app.request.get(name) }}"
+            placeholder="{{ placeholder }}"
+            autocomplete="off"
+            data-module="autocomplete"
+            data-url="{{ autocompleteUrl }}"
+            data-base-url="{{ baseUrl }}"
+            data-link-mode="{{ linkMode }}"
+            class="search-input"
+        >
 
-		<input 
-		type="hidden" name="{{ hiddenName }}" 
-		data-autocomplete-value 
-		class="js-autocomplete-hidden">
->>>>>>> Stashed changes
+        <input
+            type="hidden"
+            name="{{ hiddenName }}"
+            data-autocomplete-value
+            class="js-autocomplete-hidden"
+        >
 
-		<div id="{{ resultDiv }}" class="dropdown-results"></div>
+        <div id="{{ resultDiv }}" class="dropdown-results"></div>
 
-	</div>
+    </div>
 
 </form>

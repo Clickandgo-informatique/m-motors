@@ -19,28 +19,25 @@ class VehiclesFilterController extends AbstractController
         Request $request,
         PaginatorInterface $paginator
     ): Response {
-        // Récupération filtres URL
         $data = $request->query->all();
 
         $filters = $data['filters'] ?? [];
         $searchTerm = $data['q'] ?? null;
+
         $view = $filters['view'] ?? 'grid';
 
-        // Query principale
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
 
         $vehicles = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
             10
-        );
-
-        $context = $this->buildFiltersContext($vehicleRepo);
+        );     
 
         return $this->render('vehicles/index.html.twig', array_merge([
             'vehicles' => $vehicles,
             'view' => $view
-        ], $context));
+        ], $this->buildFiltersContext($vehicleRepo)));
     }
 
     #[Route('/ajax/list', name: 'vehicles_ajax_list', methods: ['GET', 'POST'])]
@@ -49,16 +46,21 @@ class VehiclesFilterController extends AbstractController
         VehicleRepository $vehicleRepo,
         PaginatorInterface $paginator
     ): Response {
-        // Support GET + POST
-        $data = $request->request->all();
 
-        if (empty($data)) {
-            $data = $request->query->all();
-        }
+        // =========================
+        // SAFE INPUT PARSING
+        // =========================
+        $data = array_merge(
+            $request->query->all(),
+            $request->request->all()
+        );
 
         $filters = $data['filters'] ?? [];
         $searchTerm = $data['q'] ?? null;
         $page = max(1, (int) ($data['page'] ?? 1));
+
+        // SAFE VIEW fallback
+        $view = $filters['view'] ?? 'grid';
 
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
 
@@ -66,20 +68,32 @@ class VehiclesFilterController extends AbstractController
 
         $context = $this->buildFiltersContext($vehicleRepo);
 
+        // =========================
+        // LIST RENDER
+        // =========================
         $listHtml = $this->renderView('vehicles/_vehicles_list.html.twig', [
             'vehicles' => $vehicles,
-            'view' => $filters['view'] ?? 'grid'
+            'view' => $view
         ]);
 
-        $pagination = $this->renderView('vehicles/_pagination_info.html.twig', [
+        // =========================
+        // FILTERS RENDER
+        // =========================
+        $filtersHtml = $this->renderView('vehicles/_vehicles_filters.html.twig', $context);
+
+        // =========================
+        // PAGINATION (safe split)
+        // =========================
+        $paginationHtml = $this->renderView('vehicles/_pagination_info.html.twig', [
             'vehicles' => $vehicles
         ]);
 
         return $this->json([
             'list' => $listHtml,
-            'pagination_top' => $pagination,
-            'pagination_bottom' => $pagination,
-            'filters' => $this->renderView('vehicles/_vehicles_filters.html.twig', $context)
+            'filters' => $filtersHtml,
+            'pagination_top' => $paginationHtml,
+            'pagination_bottom' => $paginationHtml,
+            'view' => $view
         ]);
     }
 
@@ -88,7 +102,8 @@ class VehiclesFilterController extends AbstractController
         Request $request,
         VehicleRepository $vehicleRepo
     ): Response {
-        $q = $request->query->get('q');
+
+        $q = $request->query->get('q', '');
 
         $items = $vehicleRepo->searchForAutocomplete([], $q, 10);
 
@@ -97,37 +112,26 @@ class VehiclesFilterController extends AbstractController
         ]);
     }
 
-    /**
-     * Contexte unique filtres + sliders
-     */
-  private function buildFiltersContext(
-    VehicleRepository $vehicleRepo
-): array {
-    $years = $vehicleRepo->getRegistrationYears();
+    private function buildFiltersContext(VehicleRepository $vehicleRepo): array
+    {
+        $years = $vehicleRepo->getRegistrationYears();
 
-    $yearMin = isset($years['min']) ? (int) $years['min'] : null;
-    $yearMax = isset($years['max']) ? (int) $years['max'] : null;
+        $statuses = array_map(
+            fn($status) => [
+                'value' => $status->value,
+                'label' => $status->label(),
+            ],
+            VehicleStatus::cases()
+        );
 
-    // =========================
-    // STATUS ENUM
-    // =========================
-    $statuses = [];
-
-    foreach (VehicleStatus::cases() as $status) {
-        $statuses[] = [
-            'value' => $status->value,
-            'label' => $status->label(),
+        return [
+            'brands' => $vehicleRepo->getUsedBrands(),
+            'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
+            'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
+            'registrationYears' => $years['years'] ?? [],
+            'registrationYearsMin' => $years['min'] ?? null,
+            'registrationYearsMax' => $years['max'] ?? null,
+            'statuses' => $statuses,
         ];
     }
-
-    return [
-        'brands' => $vehicleRepo->getUsedBrands(),
-        'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
-        'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
-        'registrationYears' => $years['years'] ?? [],
-        'registrationYearsMin' => $yearMin,
-        'registrationYearsMax' => $yearMax,      
-        'statuses' => $statuses,
-    ];
-}
 }
