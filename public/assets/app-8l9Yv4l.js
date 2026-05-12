@@ -11,16 +11,8 @@ import AjaxManager from "./js/AjaxManager.js";
 import ToggleVehicleFavorite from "./js/ToggleVehicleFavorite.js";
 import Autocomplete from "./js/Autocomplete.js";
 import EventBus from "./js/EventBus.js";
-import VehiclesFilters from "./js/VehiclesFilters.js";
 
 console.log("app.js initialisé");
-
-/* ==========================================================
-   STORE GLOBAL (OBLIGATOIRE POUR VEHICLESFILTERS)
-========================================================== */
-import VehicleFilterStore from "./js/VehicleFilterStore.js";
-
-window.vehicleStore = new VehicleFilterStore();
 
 /* ==========================================================
    HELPERS
@@ -58,9 +50,7 @@ function initFilters(root = document) {
   if (form.dataset.initialized === "1") return;
 
   form.dataset.initialized = "1";
-
-  // IMPORTANT : injection du store
-  new VehiclesFilters(form, window.vehicleStore);
+  new VehiclesFilter(form);
 }
 
 /* ==========================================================
@@ -112,10 +102,11 @@ function initCollections(root = document) {
 }
 
 /* ==========================================================
-   SLIDERS
+   SLIDERS (CRITIQUE FIX)
 ========================================================== */
 function initSliders(root = document) {
   root.querySelectorAll(".double-slider").forEach(slider => {
+    // IMPORTANT: reset après AJAX
     if (slider.dataset.initialized === "1" && !slider.dataset.forceReinit)
       return;
 
@@ -162,6 +153,7 @@ document.addEventListener("DOMContentLoaded", initApp);
 EventBus.on("ui:updated", ({ target }) => {
   const root = target || document;
 
+  // RESET STATE BEFORE REINIT
   resetInitFlags(root);
 
   initAutocomplete(root);
@@ -169,4 +161,6 @@ EventBus.on("ui:updated", ({ target }) => {
   initFavorites(root);
   initCollections(root);
   initSliders(root);
+
+  // ⚠️ IMPORTANT: pas besoin de re-init global
 });

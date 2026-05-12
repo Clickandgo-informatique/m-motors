@@ -70,9 +70,6 @@ export default class FetchForm {
       pageInput.value = 1;
     }
 
-    console.log("RAW FORM DATA:");
-console.log([...new FormData(this.form).entries()]);
-
     const params = new URLSearchParams(new FormData(this.form));
 
     fetch(url, {

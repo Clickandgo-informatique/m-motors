@@ -1,0 +1,33 @@
+<div class="filters-summary">
+
+    {# Brand #}
+    {% if filterLabels.brand is defined and filterLabels.brand is not empty %}
+        {% for brand in filterLabels.brand %}
+            <span class="badge">
+                {{ brand }}
+                <button type="button"
+                        class="badge-remove"
+                        data-filter="brand"
+                        data-value="{{ brand }}">
+                    ×
+                </button>
+            </span>
+        {% endfor %}
+    {% endif %}
+
+    {# Status #}
+    {% if filterLabels.status is defined and filterLabels.status is not empty %}
+        {% for status in filterLabels.status %}
+            <span class="badge">
+                {{ status }}
+                <button type="button"
+                        class="badge-remove"
+                        data-filter="status"
+                        data-value="{{ status }}">
+                    ×
+                </button>
+            </span>
+        {% endfor %}
+    {% endif %}
+
+</div>

@@ -70,9 +70,6 @@ export default class FetchForm {
       pageInput.value = 1;
     }
 
-    console.log("RAW FORM DATA:");
-console.log([...new FormData(this.form).entries()]);
-
     const params = new URLSearchParams(new FormData(this.form));
 
     fetch(url, {
@@ -81,9 +78,6 @@ console.log([...new FormData(this.form).entries()]);
     })
       .then(res => res.json())
       .then(data => {
-        console.log("AJAX RESPONSE FULL:", data);
-        console.log("filtersSummary:", data.filtersSummary);
-
         // Liste véhicules
         if (data.list) {
           target.innerHTML = data.list;

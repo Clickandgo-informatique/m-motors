@@ -70,9 +70,6 @@ export default class FetchForm {
       pageInput.value = 1;
     }
 
-    console.log("RAW FORM DATA:");
-console.log([...new FormData(this.form).entries()]);
-
     const params = new URLSearchParams(new FormData(this.form));
 
     fetch(url, {
@@ -81,9 +78,6 @@ console.log([...new FormData(this.form).entries()]);
     })
       .then(res => res.json())
       .then(data => {
-        console.log("AJAX RESPONSE FULL:", data);
-        console.log("filtersSummary:", data.filtersSummary);
-
         // Liste véhicules
         if (data.list) {
           target.innerHTML = data.list;
@@ -99,16 +93,18 @@ console.log([...new FormData(this.form).entries()]);
           paginationBottom.innerHTML = data.pagination_bottom;
         }
 
-        // Afficher les badges de filtres dynamiques
+        //Afficher les badges de filtres dynamiques
         if (data.filtersSummary) {
-          const summary = document.querySelector("#filters-summary");
-
+          const summary = document.querySelector(
+            this.form.dataset.filtersTarget || "#filters-summary"
+          );
           if (summary) {
             summary.innerHTML = data.filtersSummary;
           }
         }
+
         // Re-init UI après remplacement DOM
-        window.dispatchEvent(new Event("ui:updated"));
+        // window.dispatchEvent(new Event("ui:updated"));
       })
       .catch(err => {
         console.error("[FetchForm] erreur AJAX", err);

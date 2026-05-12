@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-wGU87Zr.js",
+        "path": "\/assets\/app-yIXRU9c.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -36,23 +36,11 @@
         "type": "js"
     },
     "\/assets\/js\/rangeSelector.js": {
-        "path": "\/assets\/js\/rangeSelector-_-7tYTw.js",
+        "path": "\/assets\/js\/rangeSelector-SNY9MIU.js",
         "type": "js"
     },
     "\/assets\/js\/Dropzone.js": {
         "path": "\/assets\/js\/Dropzone-76mZAJT.js",
-        "type": "js"
-    },
-    "\/assets\/js\/vehiclesFilters.js": {
-        "path": "\/assets\/js\/vehiclesFilters-H70ARao.js",
-        "type": "js"
-    },
-    "\/assets\/js\/FilterBadges.js": {
-        "path": "\/assets\/js\/FilterBadges-K6ljlUh.js",
-        "type": "js"
-    },
-    "\/assets\/js\/Autocomplete.js": {
-        "path": "\/assets\/js\/Autocomplete-grgegoA.js",
         "type": "js"
     },
     "\/assets\/js\/DynamicFormCollection.js": {
@@ -60,7 +48,7 @@
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-bAwsU2g.js",
+        "path": "\/assets\/js\/FetchForm-SJP3D5T.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
@@ -71,12 +59,24 @@
         "path": "\/assets\/js\/ToggleVehicleFavorite-_AEJVjI.js",
         "type": "js"
     },
+    "\/assets\/js\/Autocomplete.js": {
+        "path": "\/assets\/js\/Autocomplete-grgegoA.js",
+        "type": "js"
+    },
     "\/assets\/js\/EventBus.js": {
         "path": "\/assets\/js\/EventBus-w5Yn_zE.js",
         "type": "js"
     },
-    "vehiclesFilters": {
-        "path": "\/assets\/js\/vehiclesFilters-H70ARao.js",
+    "\/assets\/js\/VehiclesFilters.js": {
+        "path": "\/assets\/js\/VehiclesFilters-bujUXCt.js",
+        "type": "js"
+    },
+    "\/assets\/js\/VehicleFilterStore.js": {
+        "path": "\/assets\/js\/VehicleFilterStore-FSjsWJC.js",
+        "type": "js"
+    },
+    "VehiclesFilters": {
+        "path": "\/assets\/js\/VehiclesFilters-bujUXCt.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {
@@ -92,7 +92,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-bAwsU2g.js",
+        "path": "\/assets\/js\/FetchForm-SJP3D5T.js",
         "type": "js"
     }
 }

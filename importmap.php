@@ -5,8 +5,8 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
-    'vehiclesFilters' => [
-        'path' => './assets/js/vehiclesFilters.js',
+    'VehiclesFilters' => [
+        'path' => './assets/js/VehiclesFilters.js',
         'entrypoint' => true,
     ],
     '@hotwired/stimulus' => [

@@ -1,13 +1,10 @@
 /**
  * VehiclesFilter.js
- * ------------------------------------------------------------------
- * VERSION STABILISÉE
  *
- * Rôle :
- * - UI uniquement (sliders, badges, interactions)
- * - délègue le fetch à FetchForm
- * - évite les doublons de listeners (cause des requêtes multiples)
- * ------------------------------------------------------------------
+ * Composant UI des filtres véhicules
+ * - Gère les interactions utilisateur
+ * - Déclenche les requêtes via submit du formulaire
+ * - Ne contient aucune logique de fetch direct
  */
 
 import FilterBadges from "./FilterBadges.js";
@@ -18,12 +15,13 @@ export default class VehiclesFilter {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) return;
 
-    // Anti double initialisation (CRITIQUE)
+    // Empêche les doubles initialisations du composant
     if (form.dataset.vehiclesFilterBound === "1") return;
     form.dataset.vehiclesFilterBound = "1";
 
     this.form = form;
 
+    // Conteneurs principaux de la page
     this.container = document.querySelector("#vehicles-results");
     this.resultsEl = document.querySelector("#vehicles-results");
 
@@ -38,8 +36,9 @@ export default class VehiclesFilter {
       '[data-target="filters-summary"]'
     );
 
+    // Si structure DOM incomplète, on stoppe l'initialisation
     if (!this.container) {
-      console.warn("VehiclesFilter: DOM incomplet");
+      console.warn("VehiclesFilter : DOM incomplet");
       return;
     }
 
@@ -49,10 +48,16 @@ export default class VehiclesFilter {
     this.initCardsClick();
   }
 
+  /**
+   * Déclenche un refresh des résultats
+   */
   triggerFetch() {
     this.form.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
+  /**
+   * Initialisation des sliders double range
+   */
   initSliders() {
     const sliders = this.form.querySelectorAll(".double-slider");
     if (!sliders.length) return;
@@ -68,7 +73,6 @@ export default class VehiclesFilter {
         const inputMin = this.form.querySelector(
           `input[name="filters[${filter}Min]"]`
         );
-
         const inputMax = this.form.querySelector(
           `input[name="filters[${filter}Max]"]`
         );
@@ -82,12 +86,15 @@ export default class VehiclesFilter {
     });
   }
 
+  /**
+   * Gestion des événements globaux du formulaire
+   */
   initEvents() {
     if (this.eventsBound) return;
     this.eventsBound = true;
 
     /**
-     * FILTRES + SWITCH VIEW + INPUTS
+     * Déclenchement du filtrage sur changement input/select
      */
     this.form.addEventListener("change", e => {
       const el = e.target;
@@ -99,7 +106,7 @@ export default class VehiclesFilter {
     });
 
     /**
-     * PAGINATION (IMPORTANT : anti spam requests)
+     * Gestion pagination AJAX
      */
     this.form.addEventListener("click", e => {
       const btn = e.target.closest("[data-page]");
@@ -120,7 +127,7 @@ export default class VehiclesFilter {
     });
 
     /**
-     * BADGES
+     * Gestion des badges de filtres actifs
      */
     if (this.summaryContainer) {
       this.summaryContainer.addEventListener("click", e => {
@@ -135,7 +142,9 @@ export default class VehiclesFilter {
         );
 
         checkboxes.forEach(cb => {
-          if (cb.value === value) cb.checked = false;
+          if (cb.value === value) {
+            cb.checked = false;
+          }
         });
 
         this.triggerFetch();
@@ -143,6 +152,9 @@ export default class VehiclesFilter {
     }
   }
 
+  /**
+   * Initialisation autocomplete véhicules
+   */
   initAutocomplete() {
     this.form.querySelectorAll("[data-autocomplete]").forEach(input => {
       if (input.dataset.autocompleteInitialized === "1") return;
@@ -152,6 +164,9 @@ export default class VehiclesFilter {
     });
   }
 
+  /**
+   * Clic sur une carte véhicule pour redirection
+   */
   initCardsClick() {
     const container = this.resultsEl || document;
 
