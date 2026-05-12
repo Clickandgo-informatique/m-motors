@@ -1,0 +1,46 @@
+details {
+  background: var(--surface-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: var(--space-s);
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+  margin: 5px;
+}
+/* Hover et focus */
+details:hover {
+  background: var(--surface-2);
+  border-color: var(--focus-border);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Summary */
+summary {
+  list-style: none;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  /* justify-content: space-between; */
+  user-select: none;
+  transition: color 0.2s ease;
+  color: var(--color-primary);
+}
+
+/* Flèche personnalisée */
+summary::marker {
+  display: none; /* supprime flèche native */
+}
+
+summary::after {
+  content: "▸"; /* flèche droite */
+  transition: transform 0.3s ease;
+  font-size: 1.5rem;
+}
+
+/* Rotation flèche quand ouvert */
+details[open] summary::after {
+  transform: rotate(90deg);
+}

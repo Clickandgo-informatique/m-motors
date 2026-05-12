@@ -32,7 +32,8 @@
 			{{ vehicle.vehicleModel.model.name }}
 		</h4>
 	{% endif %}
-
+<details><summary><span><i class="fa-solid fa-gauge-high"></i>
+Données techniques</span></summary>
 	{# status / supplier #}
 	<div class="form-row">
 
@@ -154,7 +155,9 @@
 		</div>
 
 	</div>
-
+</details>
+<details><summary><span><i class="fa-solid fa-list-check"></i>
+Options</span></summary>
 	{# features #}
 	<div class="form-row">
 
@@ -181,9 +184,9 @@
 				<i class="fa-solid fa-circle-plus"></i>
 			</a>
 		</div>
-
 	</div>
-
+	</details>
+<details><summary><span><i class="fa-solid fa-photo-film"></i>Galerie</span></summary>
 	{# dropzone #}
 	{% set isNew = vehicle.id is null %}
 
@@ -192,6 +195,7 @@
 		<p>Glissez vos fichiers ici ou cliquez pour ajouter</p>
 
 		<button type="button" class="dz-upload-btn" disabled>
+			<i class="fa-solid fa-upload"></i>
 			Envoyer les fichiers
 		</button>
 
@@ -200,5 +204,10 @@
 	<div id="vehicle-gallery-preview"></div>
 
 	{{ form_end(form) }}
+
+	{# Galerie d'images du véhicule #}
+	{% include "vehicles/_vehicle_images_gallery.html.twig" %}
+
+	</details>
 
 {% endblock %}

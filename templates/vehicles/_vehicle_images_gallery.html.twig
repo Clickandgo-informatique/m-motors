@@ -1,0 +1,15 @@
+{% block body %}
+<div id="vehicle-image-gallery"class="container">
+
+{# Affichage des miniatures #}
+{% for img in vehicle.images %}
+    {% set thumbPath = img.imagePath|replace({'.webp': '_thumb.webp'}) %}
+    <div class="card">
+    <img src="{{ asset('uploads/' ~ thumbPath) }}" alt="{{ img.filename }}">
+    </div>
+{% else %}
+    <p class="text-center">Aucune image à afficher pour ce véhicule</p>
+{% endfor %}
+</div>
+
+{% endblock %}

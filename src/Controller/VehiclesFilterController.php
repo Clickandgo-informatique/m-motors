@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -105,7 +104,7 @@ class VehiclesFilterController extends AbstractController
 
         $q = $request->query->get('q', '');
 
-        $items = $vehicleRepo->searchForAutocomplete([], $q, 10);
+        $items = $vehicleRepo->searchForAutocomplete([], $q, 10); 
 
         return $this->json([
             'items' => $items

@@ -41,6 +41,7 @@ class VehicleGalleryManager
             $image->setMimeType($file->getMimeType() ?? 'image/webp');
             $image->setSize($file->getSize() ?? 0);
             $image->setPosition($position++);
+            $image->setImagePath($result['path']);
 
             if ($this->isFirstImage($vehicle)) {
                 $image->setIsFeatured(true);
