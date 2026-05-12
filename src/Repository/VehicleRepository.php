@@ -230,6 +230,12 @@ class VehicleRepository extends ServiceEntityRepository
             ->createQueryBuilder()
             ->select('b')
             ->from(Brand::class, 'b')
+            ->where('EXISTS (
+            SELECT 1
+            FROM App\Entity\Vehicle v
+            JOIN v.vehicleModel vm
+            WHERE vm.brand = b
+        )')
             ->orderBy('b.name', 'ASC')
             ->getQuery()
             ->getResult();

@@ -32,7 +32,9 @@ class VehiclesFilterController extends AbstractController
             $query,
             $request->query->getInt('page', 1),
             10
-        );     
+        );
+
+        $context = $this->buildFiltersContext($vehicleRepo);
 
         return $this->render('vehicles/index.html.twig', array_merge($context, [
             'vehicles' => $vehicles,
