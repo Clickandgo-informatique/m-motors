@@ -23,21 +23,9 @@ class DashboardAdminController extends AbstractController
         PaginatorInterface $paginator
     ): Response {
 
-        /*
-         * =========================================================
-         * KPI + DATA DASHBOARD (SERVICE)
-         * =========================================================
-         */
-
         $stats = $dashboardService->getStats();
         $stock = $dashboardService->getStockByModel();
         $usage = $dashboardService->getUsageDistribution();
-
-        /*
-         * =========================================================
-         * MARQUES (UI ONLY)
-         * =========================================================
-         */
 
         $brandQuery = $em->createQueryBuilder()
             ->select('b')
@@ -51,19 +39,7 @@ class DashboardAdminController extends AbstractController
             ['pageParameterName' => 'brandsPage']
         );
 
-        /*
-         * =========================================================
-         * MARQUE ACTIVE (OPTIONNEL UI)
-         * =========================================================
-         */
-
         $selectedBrandId = $request->query->get('brandId');
-
-        /*
-         * =========================================================
-         * VIEW
-         * =========================================================
-         */
 
         return $this->render('admin/dashboard/index.html.twig', [
             'stats' => $stats,
@@ -73,11 +49,13 @@ class DashboardAdminController extends AbstractController
             'selectedBrandId' => $selectedBrandId,
         ]);
     }
-    #[Route('/admin/dashboard/search', name: 'dashboard_vehicle_search', methods: ['GET'])]
+
+    #[Route('/search', name: 'dashboard_vehicle_search', methods: ['GET'])]
     public function dashboardSearch(
         Request $request,
         VehicleRepository $repo
     ): Response {
+
         $q = $request->query->get('q');
 
         $items = $repo->searchForAutocomplete([], $q, 10);
@@ -85,7 +63,7 @@ class DashboardAdminController extends AbstractController
         return $this->json($items);
     }
 
-    #[Route('/admin/dashboard/results', name: 'admin_dashboard_results', methods: ['GET'])]
+    #[Route('/results', name: 'admin_dashboard_results', methods: ['GET'])]
     public function results(
         Request $request,
         VehicleRepository $vehicleRepository
@@ -96,26 +74,17 @@ class DashboardAdminController extends AbstractController
 
         $qb = $vehicleRepository->getFilteredQueryBuilder([]);
 
-        /*
-     * CAS 1 : sélection depuis autocomplete (prioritaire)
-     */
         if (!empty($vehicleId)) {
-
             $qb->andWhere('v.id = :id')
                 ->setParameter('id', (int) $vehicleId);
-        }
-
-        /*
-     * CAS 2 : recherche texte classique
-     */ elseif (!empty($search)) {
-
+        } elseif (!empty($search)) {
             $search = '%' . mb_strtolower(trim($search)) . '%';
 
             $qb->andWhere(
                 'LOWER(v.registrationNumber) LIKE :search
-            OR LOWER(v.vin) LIKE :search
-            OR LOWER(m.name) LIKE :search
-            OR LOWER(b.name) LIKE :search'
+                OR LOWER(v.vin) LIKE :search
+                OR LOWER(m.name) LIKE :search
+                OR LOWER(b.name) LIKE :search'
             )->setParameter('search', $search);
         }
 

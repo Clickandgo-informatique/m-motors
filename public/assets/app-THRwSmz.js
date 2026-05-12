@@ -16,18 +16,16 @@ import VehiclesFilters from "./js/VehiclesFilters.js";
 console.log("app.js initialisé");
 
 /* ==========================================================
-   STORE GLOBAL (OBLIGATOIRE POUR VEHICLESFILTERS)
-========================================================== */
-import VehicleFilterStore from "./js/VehicleFilterStore.js";
-
-window.vehicleStore = new VehicleFilterStore();
-
-/* ==========================================================
    HELPERS
 ========================================================== */
 function resetInitFlags(root) {
-  root.querySelectorAll("[data-module]").forEach(el => {
+  root.querySelectorAll("[data-initialized='1']").forEach(el => {
     el.dataset.initialized = "0";
+  });
+
+  root.querySelectorAll("*").forEach(el => {
+    if (el.__fetchFormBound) el.__fetchFormBound = false;
+    if (el.__autocompleteBound) el.__autocompleteBound = false;
   });
 }
 
@@ -53,9 +51,7 @@ function initFilters(root = document) {
   if (form.dataset.initialized === "1") return;
 
   form.dataset.initialized = "1";
-
-  // IMPORTANT : injection du store
-  new VehiclesFilters(form, window.vehicleStore);
+  new VehiclesFilters(form);
 }
 
 /* ==========================================================
@@ -75,9 +71,9 @@ function initFavorites(root = document) {
 ========================================================== */
 function initAutocomplete(root = document) {
   root.querySelectorAll("[data-module='autocomplete']").forEach(input => {
-    if (input.dataset.initialized === "1") return;
+    if (input.__autocompleteBound) return;
 
-    input.dataset.initialized = "1";
+    input.__autocompleteBound = true;
     new Autocomplete(input);
   });
 }
@@ -87,9 +83,9 @@ function initAutocomplete(root = document) {
 ========================================================== */
 function initFetchForms(root = document) {
   root.querySelectorAll("[data-module='fetch-form']").forEach(form => {
-    if (form.dataset.initialized === "1") return;
+    if (form.__fetchFormBound) return;
 
-    form.dataset.initialized = "1";
+    form.__fetchFormBound = true;
     new FetchForm(form);
   });
 }
@@ -107,10 +103,11 @@ function initCollections(root = document) {
 }
 
 /* ==========================================================
-   SLIDERS
+   SLIDERS (CRITIQUE FIX)
 ========================================================== */
 function initSliders(root = document) {
   root.querySelectorAll(".double-slider").forEach(slider => {
+    // IMPORTANT: reset après AJAX
     if (slider.dataset.initialized === "1" && !slider.dataset.forceReinit)
       return;
 
@@ -157,6 +154,7 @@ document.addEventListener("DOMContentLoaded", initApp);
 EventBus.on("ui:updated", ({ target }) => {
   const root = target || document;
 
+  // RESET STATE BEFORE REINIT
   resetInitFlags(root);
 
   initAutocomplete(root);
@@ -164,4 +162,6 @@ EventBus.on("ui:updated", ({ target }) => {
   initFavorites(root);
   initCollections(root);
   initSliders(root);
+
+  // IMPORTANT: pas besoin de re-init global
 });

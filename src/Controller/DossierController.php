@@ -36,10 +36,6 @@ class DossierController extends AbstractController
         return $user;
     }
 
-    // =========================================================
-    // FRONT
-    // =========================================================
-
     #[Route('/create/{id}/{type}', name: 'dossier_create', methods: ['POST'])]
     public function createFromVehicle(Vehicle $vehicle, string $type): Response
     {
@@ -50,9 +46,6 @@ class DossierController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        // =========================================================
-        // 🔒 CHECK DISPONIBILITÉ VÉHICULE
-        // =========================================================
         if ($vehicle->isLocked()) {
             $this->addFlash('danger', 'Ce véhicule n’est plus disponible.');
             return $this->redirectToRoute('vehicles');
@@ -76,6 +69,7 @@ class DossierController extends AbstractController
             'id' => $dossier->getId()
         ]);
     }
+
     #[Route('/my/list', name: 'dossier_my_list', methods: ['GET'])]
     public function myDossiers(DossierRepository $repository): Response
     {
@@ -103,10 +97,6 @@ class DossierController extends AbstractController
             'dossier' => $dossier,
         ]);
     }
-
-    // =========================================================
-    // ADMIN LIST (FIX IMPORTANT : KNP PAGINATOR)
-    // =========================================================
 
     #[Route('/admin/list', name: 'admin_dossier_list', methods: ['GET'])]
     public function adminList(
@@ -164,10 +154,6 @@ class DossierController extends AbstractController
         ]);
     }
 
-    // =========================================================
-    // AJAX SEARCH (ARRAY + JSON UNIQUEMENT)
-    // =========================================================
-
     #[Route('/ajax-search', name: 'dossiers_ajax_search', methods: ['GET', 'POST'])]
     public function search(
         Request $request,
@@ -178,10 +164,12 @@ class DossierController extends AbstractController
 
         $searchTerm = $data['q'] ?? '';
         $page = (int) ($data['page'] ?? 1);
-        $isAutocomplete = ($data['autocomplete'] ?? false) === 'true';
+
+        // IMPORTANT : frontend envoie autocomplete_param=1
+        $isAutocomplete = $request->query->getBoolean('autocomplete_param');
 
         // =========================================================
-        // AUTOCOMPLETE (ARRAY SIMPLE)
+        // AUTOCOMPLETE
         // =========================================================
         if ($isAutocomplete) {
             $results = $dossierRepo->findForAutocomplete($searchTerm);
@@ -190,8 +178,10 @@ class DossierController extends AbstractController
             foreach ($results as $d) {
                 $items[] = [
                     'id' => $d['id'],
-                    'label' => $d['dossierCode'],
-                    'url' => $this->generateUrl('dossier_show', ['id' => $d['id']])
+                    'label' => $d['dossier_code'] ?? $d['dossierCode'] ?? '',
+                    'url' => $this->generateUrl('dossier_show', [
+                        'id' => $d['id']
+                    ]),
                 ];
             }
 
@@ -201,7 +191,7 @@ class DossierController extends AbstractController
         }
 
         // =========================================================
-        // PAGINATION AJAX (KNP OK)
+        // SEARCH + PAGINATION
         // =========================================================
         $query = $dossierRepo->searchForPaginator($searchTerm);
 
@@ -218,7 +208,6 @@ class DossierController extends AbstractController
             'pagination' => $this->renderView('dossier/_pagination_info.html.twig', [
                 'dossiers' => $dossiers
             ]),
-
             'totalItems' => $dossiers->getTotalItemCount(),
             'currentPage' => $dossiers->getCurrentPageNumber(),
         ]);

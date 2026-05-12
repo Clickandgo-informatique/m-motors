@@ -60,30 +60,33 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * 🔍 Recherche globale (pagination + search)
+     * Recherche globale (pagination + search)
      */
     private function getSearchQueryBuilder(?string $searchTerm = null): QueryBuilder
     {
         $qb = $this->createQueryBuilder('d')
             ->leftJoin('d.customer', 'c')
             ->leftJoin('d.vehicle', 'v')
-            ->leftJoin('v.model', 'm');
+            ->leftJoin('v.vehicleModel', 'vm')
+            ->leftJoin('vm.model', 'm')
+            ->addSelect('c', 'v', 'vm');
 
         if (!empty($searchTerm)) {
-            $qb->andWhere('
-                d.dossierCode LIKE :term
-                OR c.lastName LIKE :term
-                OR m.name LIKE :term
-            ')
-                ->setParameter('term', '%' . $searchTerm . '%');
+            $term = '%' . mb_strtolower($searchTerm) . '%';
+
+            $qb->andWhere('(
+                LOWER(d.dossierCode) LIKE :term
+                OR LOWER(c.lastName) LIKE :term
+                OR LOWER(c.firstName) LIKE :term
+                OR LOWER(v.vin) LIKE :term
+                OR LOWER(m.name) LIKE :term
+            )')
+                ->setParameter('term', $term);
         }
 
         return $qb->orderBy('d.createdAt', 'DESC');
     }
 
-    /**
-     * Pagination KnpPaginator
-     */
     public function searchForPaginator(?string $searchTerm = null): QueryBuilder
     {
         return $this->getSearchQueryBuilder($searchTerm);
@@ -99,21 +102,26 @@ class DossierRepository extends ServiceEntityRepository
             ->leftJoin('d.vehicle', 'v')
             ->leftJoin('v.vehicleModel', 'vm')
             ->leftJoin('vm.model', 'm')
-            ->addSelect('c', 'v', 'vm', 'm');
+            ->addSelect('c', 'v', 'vm');
 
         if (!empty($searchTerm)) {
-            $qb->andWhere('
-        d.dossierCode LIKE :term
-        OR c.lastName LIKE :term
-        OR m.name LIKE :term
-    ')
-                ->setParameter('term', '%' . $searchTerm . '%');
+            $term = '%' . mb_strtolower($searchTerm) . '%';
+
+            $qb->andWhere('(
+                LOWER(d.dossierCode) LIKE :term
+                OR LOWER(c.lastName) LIKE :term
+                OR LOWER(c.firstName) LIKE :term
+                OR LOWER(v.vin) LIKE :term
+                OR LOWER(m.name) LIKE :term
+            )')
+                ->setParameter('term', $term);
         }
 
-        return $qb
+        $query = $qb
             ->orderBy('d.createdAt', 'DESC')
             ->setMaxResults(10)
-            ->getQuery()
-            ->getArrayResult();
+            ->getQuery();
+
+        return $query->getArrayResult();
     }
 }

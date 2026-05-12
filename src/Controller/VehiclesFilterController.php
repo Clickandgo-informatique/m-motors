@@ -34,10 +34,13 @@ class VehiclesFilterController extends AbstractController
             10
         );     
 
-        return $this->render('vehicles/index.html.twig', array_merge([
+        return $this->render('vehicles/index.html.twig', array_merge($context, [
             'vehicles' => $vehicles,
-            'view' => $view
-        ], $this->buildFiltersContext($vehicleRepo)));
+            'view' => $view,
+            'filters' => $filters,
+            'filterLabels' => $this->hydrateFilterLabels($vehicleRepo, $filters),
+            'searchTerm' => $searchTerm,
+        ]));
     }
 
     #[Route('/ajax/list', name: 'vehicles_ajax_list', methods: ['GET', 'POST'])]
@@ -47,9 +50,6 @@ class VehiclesFilterController extends AbstractController
         PaginatorInterface $paginator
     ): Response {
 
-        // =========================
-        // SAFE INPUT PARSING
-        // =========================
         $data = array_merge(
             $request->query->all(),
             $request->request->all()
@@ -68,32 +68,30 @@ class VehiclesFilterController extends AbstractController
 
         $context = $this->buildFiltersContext($vehicleRepo);
 
-        // =========================
-        // LIST RENDER
-        // =========================
+        $filterLabels = $this->hydrateFilterLabels($vehicleRepo, $filters);
+
         $listHtml = $this->renderView('vehicles/_vehicles_list.html.twig', [
             'vehicles' => $vehicles,
             'view' => $view
         ]);
 
-        // =========================
-        // FILTERS RENDER
-        // =========================
-        $filtersHtml = $this->renderView('vehicles/_vehicles_filters.html.twig', $context);
-
-        // =========================
-        // PAGINATION (safe split)
-        // =========================
         $paginationHtml = $this->renderView('vehicles/_pagination_info.html.twig', [
             'vehicles' => $vehicles
         ]);
 
+        $filtersHtml = $this->renderView('vehicles/_vehicles_filters.html.twig', $context);
+
+        $summaryHtml = $this->renderView('vehicles/_filters_summary.html.twig', [
+            'filters' => $filters,
+            'filterLabels' => $filterLabels
+        ]);
+
         return $this->json([
             'list' => $listHtml,
-            'filters' => $filtersHtml,
             'pagination_top' => $paginationHtml,
             'pagination_bottom' => $paginationHtml,
-            'view' => $view
+            'filters' => $filtersHtml,
+            'filtersSummary' => $summaryHtml,
         ]);
     }
 
@@ -103,35 +101,52 @@ class VehiclesFilterController extends AbstractController
         VehicleRepository $vehicleRepo
     ): Response {
 
-        $q = $request->query->get('q', '');
-
-        $items = $vehicleRepo->searchForAutocomplete([], $q, 10);
-
         return $this->json([
-            'items' => $items
+            'items' => $vehicleRepo->searchForAutocomplete(
+                [],
+                (string) $request->query->get('q', ''),
+                10
+            )
         ]);
     }
 
     private function buildFiltersContext(VehicleRepository $vehicleRepo): array
     {
-        $years = $vehicleRepo->getRegistrationYears();
-
-        $statuses = array_map(
-            fn($status) => [
-                'value' => $status->value,
-                'label' => $status->label(),
-            ],
-            VehicleStatus::cases()
-        );
+        $yearsData = $vehicleRepo->getRegistrationYears();
 
         return [
             'brands' => $vehicleRepo->getUsedBrands(),
             'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
             'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
-            'registrationYears' => $years['years'] ?? [],
-            'registrationYearsMin' => $years['min'] ?? null,
-            'registrationYearsMax' => $years['max'] ?? null,
-            'statuses' => $statuses,
+
+            'registrationYears' => $yearsData['years'] ?? [],
+            'registrationYearsMin' => $yearsData['min'] ?? null,
+            'registrationYearsMax' => $yearsData['max'] ?? null,
+
+            'statuses' => array_map(fn($s) => [
+                'value' => $s->value,
+                'label' => $s->label(),
+            ], VehicleStatus::cases()),
         ];
+    }
+
+    private function hydrateFilterLabels(VehicleRepository $repo, array $filters): array
+    {
+        $labels = [];
+
+        if (!empty($filters['brand'])) {
+            $labels['brand'] = $repo->getBrandNamesByIds($filters['brand']);
+        }
+
+        if (!empty($filters['status'])) {
+            $map = [];
+            foreach (VehicleStatus::cases() as $status) {
+                $map[$status->value] = $status->label();
+            }
+
+            $labels['status'] = array_map(fn($v) => $map[$v] ?? $v, $filters['status']);
+        }
+
+        return $labels;
     }
 }

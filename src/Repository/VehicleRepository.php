@@ -172,13 +172,16 @@ class VehicleRepository extends ServiceEntityRepository
          */
         return $qb->orderBy('b.name', 'ASC');
     }
-
     /*
-     * Autocomplete léger pour recherche UI
-     * Doit rester rapide et indépendant du dashboard
-     */
-    public function searchForAutocomplete(array $filters = [], ?string $searchTerm = null, int $limit = 10): array
-    {
+  * Autocomplete léger pour recherche UI
+  * Doit rester rapide et indépendant du dashboard
+  */
+    public function searchForAutocomplete(
+        array $filters = [],
+        ?string $searchTerm = null,
+        int $limit = 10
+    ): array {
+
         $qb = $this->createQueryBuilder('v')
             ->leftJoin('v.vehicleModel', 'vm')
             ->leftJoin('vm.brand', 'b')
@@ -186,11 +189,14 @@ class VehicleRepository extends ServiceEntityRepository
             ->addSelect('vm', 'b', 'm');
 
         if (!empty($searchTerm)) {
+
             $search = '%' . mb_strtolower(trim($searchTerm)) . '%';
 
             $qb->andWhere(
-                'LOWER(m.name) LIKE :search OR LOWER(b.name) LIKE :search'
-            )->setParameter('search', $search);
+                'LOWER(m.name) LIKE :search
+             OR LOWER(b.name) LIKE :search'
+            )
+                ->setParameter('search', $search);
         }
 
         $qb->setMaxResults($limit);
@@ -198,14 +204,19 @@ class VehicleRepository extends ServiceEntityRepository
         $vehicles = $qb->getQuery()->getResult();
 
         return array_map(function (Vehicle $v) {
+
             $vm = $v->getVehicleModel();
+
+            $brand = $vm?->getBrand()?->getName() ?? '';
+            $model = $vm?->getModel()?->getName() ?? '';
 
             return [
                 'id' => $v->getId(),
-                'label' => trim(
-                    ($vm?->getBrand()?->getName() ?? '') . ' ' .
-                        ($vm?->getModel()?->getName() ?? '')
-                )
+
+                'label' => trim($brand . ' ' . $model),
+
+                // IMPORTANT POUR LE LINK MODE
+                'url' => '/vehicles/' . $v->getId()
             ];
         }, $vehicles);
     }
@@ -286,5 +297,20 @@ class VehicleRepository extends ServiceEntityRepository
                 (int) $maxDate->format('Y')
             ),
         ];
+    }
+    public function getBrandNamesByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('v')
+            ->select('DISTINCT b.name')
+            ->join('v.vehicleModel', 'vm')
+            ->join('vm.brand', 'b')
+            ->where('b.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getSingleColumnResult();
     }
 }
