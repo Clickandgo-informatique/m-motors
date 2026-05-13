@@ -166,7 +166,7 @@ class VehicleRepository extends ServiceEntityRepository
             return [
                 'id' => $v->getId(),
                 'label' => trim($brand . ' ' . $model),
-                'url' => '/vehicles/' . $v->getId(),
+                // URL supprimée volontairement
             ];
         }, $qb->getQuery()->getResult());
     }

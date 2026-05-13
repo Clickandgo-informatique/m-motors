@@ -93,12 +93,24 @@ class VehiclesFilterController extends AbstractController
         Request $request,
         VehicleRepository $vehicleRepo
     ): Response {
+        $items = $vehicleRepo->searchForAutocomplete(
+            [],
+            (string) $request->query->get('q', ''),
+            10
+        );
+
+        $items = array_map(function ($item) {
+            return [
+                'id' => $item['id'],
+                'label' => $item['label'],
+                'url' => $this->generateUrl('vehicle_edit', [
+                    'id' => $item['id']
+                ])
+            ];
+        }, $items);
+
         return $this->json([
-            'items' => $vehicleRepo->searchForAutocomplete(
-                [],
-                (string) $request->query->get('q', ''),
-                10
-            )
+            'items' => $items
         ]);
     }
 

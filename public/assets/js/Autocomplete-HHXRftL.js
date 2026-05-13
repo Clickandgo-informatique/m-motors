@@ -4,6 +4,7 @@ export default class Autocomplete {
 
     this.input = input;
     this.url = input.dataset.url;
+
     this.linkMode = input.dataset.linkMode || "0";
 
     this.dropdown = null;
@@ -60,6 +61,9 @@ export default class Autocomplete {
         headers: { "X-Requested-With": "XMLHttpRequest" }
       });
 
+      console.log(res);
+      console.log(await res.clone().text());
+
       const data = await res.json();
 
       if (current !== this.requestId) return;
@@ -84,33 +88,14 @@ export default class Autocomplete {
     const frag = document.createDocumentFragment();
 
     items.forEach(item => {
-      const content = this.highlight(item.label, query);
-
-      // =========================
-      // LINK MODE
-      // =========================
-      if (this.linkMode === "1" && item.url) {
-        const a = document.createElement("a");
-        a.className = "dropdown-item";
-        a.href = item.url;
-        a.innerHTML = content;
-
-        // on garde UX custom (pas de navigation native immédiate)
-        a.addEventListener("click", e => {
-          e.preventDefault();
-          this.select(item);
-        });
-
-        frag.appendChild(a);
-        return;
-      }
-
-      // =========================
-      // DEFAULT MODE (DIV)
-      // =========================
       const div = document.createElement("div");
       div.className = "dropdown-item";
-      div.innerHTML = content;
+
+      // =========================
+      // HIGHLIGHT
+      // =========================
+      const label = this.highlight(item.label, query);
+      div.innerHTML = label;
 
       div.addEventListener("click", () => {
         this.select(item);
@@ -146,7 +131,7 @@ export default class Autocomplete {
     this.input.name = "q";
 
     // =========================
-    // LINK MODE NAVIGATION
+    // LINK MODE HANDLING
     // =========================
     if (this.linkMode === "1" && item.url) {
       window.location.href = item.url;
