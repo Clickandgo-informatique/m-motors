@@ -12,6 +12,7 @@ import ToggleVehicleFavorite from "./js/ToggleVehicleFavorite.js";
 import Autocomplete from "./js/Autocomplete.js";
 import EventBus from "./js/EventBus.js";
 
+
 console.log("app.js initialisé");
 
 function resetInitFlags(root) {
@@ -42,6 +43,20 @@ function initDropzones(root = document) {
     el.dataset.dropzoneInitialized = "1";
     new Dropzone(el);
   });
+}
+
+/*
+ * Filtres véhicules
+ */
+function initFilters(root = document) {
+  const form = root.querySelector("#filters-form");
+  if (!form) return;
+
+  if (form.dataset.filtersInitialized === "1") return;
+
+  form.dataset.filtersInitialized = "1";
+
+  new VehiclesFilters(form, window.vehicleStore);
 }
 
 /*
@@ -93,17 +108,21 @@ function initCollections(root = document) {
 }
 
 /*
- * DoubleSliders
+ * Sliders
  */
 function initSliders(root = document) {
   root.querySelectorAll(".double-slider").forEach(slider => {
-    if (slider._instance) {
-      slider._instance.destroy?.();
+    if (slider.dataset.sliderInitialized === "1" && !slider.dataset.forceReinit) {
+      return;
     }
 
-    slider._instance = initDoubleSlider(slider);
+    slider.dataset.sliderInitialized = "1";
+    delete slider.dataset.forceReinit;
+
+    initDoubleSlider(slider);
   });
 }
+
 /*
  * AJAX manager global
  */
@@ -120,6 +139,7 @@ function initApp() {
   initSidebar?.();
 
   initDropzones();
+  initFilters();
   initFavorites();
   initAutocomplete();
   initFetchForms();
@@ -146,12 +166,4 @@ EventBus.on("ui:updated", ({ target }) => {
   initFavorites(root);
   initCollections(root);
   initSliders(root);
-});
-
-// debug temporaire
-document.addEventListener("change", e => {
-  if (e.target.closest("#filters-form")) {
-    console.log("[DEBUG] CHANGE EVENT:", e.target);
-    console.trace();
-  }
 });

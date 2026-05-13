@@ -20,20 +20,6 @@ export default function initDoubleSlider(slider) {
 
   const thumbs = {};
 
-  // Debounce global du fetch (évite rafales AJAX + tremblement UI)
-  let fetchTimeout = null;
-
-  const scheduleFetch = () => {
-    clearTimeout(fetchTimeout);
-
-    fetchTimeout = setTimeout(() => {
-      const form = slider.closest("form");
-      if (form) {
-        form.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-    }, 300);
-  };
-
   const valueToPos = value => ((value - MIN) / (MAX - MIN)) * slider.clientWidth;
 
   const posToValue = pos => {
@@ -173,8 +159,10 @@ export default function initDoubleSlider(slider) {
       })
     );
 
-    // IMPORTANT : déclenchement AJAX throttlé
-    scheduleFetch();
+    const form = slider.closest("form");
+    if (form) {
+      form.dispatchEvent(new Event("change", { bubbles: true }));
+    }
   };
 
   buildSlider();

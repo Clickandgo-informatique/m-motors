@@ -145,21 +145,36 @@ class VehiclesFilterController extends AbstractController
         );
     }
 
-    private function hydrateFilterLabels(VehicleRepository $repo, array $filters): array
+    private function hydrateFilterLabels(VehicleRepository $vehicleRepo, array $filters): array
     {
         $labels = [];
 
         if (!empty($filters['brand'])) {
-            $labels['brand'] = $repo->getBrandNamesByIds($filters['brand']);
+            $labels['brand'] = $vehicleRepo
+                ->createQueryBuilder('v')
+                ->select('DISTINCT b.name')
+                ->join('v.vehicleModel', 'vm')
+                ->join('vm.brand', 'b')
+                ->where('b.id IN (:ids)')
+                ->setParameter('ids', $filters['brand'])
+                ->getQuery()
+                ->getSingleColumnResult();
         }
 
+        /*
+     * Status : mapping propre via Enum
+     */
         if (!empty($filters['status'])) {
             $map = [];
+
             foreach (VehicleStatus::cases() as $status) {
                 $map[$status->value] = $status->label();
             }
 
-            $labels['status'] = array_map(fn($v) => $map[$v] ?? $v, $filters['status']);
+            $labels['status'] = array_map(
+                fn($v) => $map[$v] ?? $v,
+                $filters['status']
+            );
         }
 
         return $labels;

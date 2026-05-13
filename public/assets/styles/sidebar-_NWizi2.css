@@ -1,0 +1,136 @@
+.sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: visible;
+  border-right: 1px solid #ddd;
+  transition: width 0.25s ease;
+}
+body.sidebar-collapsed .sidebar {
+  width: 70px;
+}
+.sidebar-handle {
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  transform: translateY(-50%);
+
+  width: 24px;
+  height: 40px;
+
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+
+  cursor: pointer;
+}
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #333;
+}
+
+.sidebar-nav i {
+  width: 20px;
+}
+
+/* cacher le texte quand réduit */
+
+body.sidebar-collapsed .sidebar-nav span {
+  display: none;
+}
+body.sidebar-collapsed .sidebar summary span {
+  display: none;
+}
+body.sidebar-collapsed .sidebar details > *:not(summary) {
+  display: none;
+}
+.sidebar-handle i {
+  transition: transform 0.2s;
+  color: var(--color-primary);
+}
+
+body.sidebar-collapsed .sidebar-handle i {
+  transform: rotate(180deg);
+}
+.sidebar details {
+  background: var(--surface-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: var(--space-s);
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+  margin: 5px;
+}
+/* Hover et focus */
+.sidebar details:hover {
+  background: var(--surface-2);
+  border-color: var(--focus-border);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Summary */
+.sidebar summary {
+  list-style: none;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+/* Flèche personnalisée */
+.sidebar summary::marker {
+  display: none; /* supprime flèche native */
+}
+
+.sidebar summary::after {
+  content: "▸"; /* flèche droite */
+  transition: transform 0.3s ease;
+  font-size: 1.5rem;
+}
+
+/* Rotation flèche quand ouvert */
+.sidebar details[open] summary::after {
+  transform: rotate(90deg);
+}
+
+/* Contenu des filtres (liste des options) */
+.sidebar details ul {
+  list-style: none;
+  padding-left: var(--space-m);
+  margin-top: var(--space-s);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  overflow-y: auto;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+/* Affiche le contenu quand ouvert */
+.sidebar details[open] ul {
+  max-height: 500px; /* suffisant pour la plupart des listes */
+  opacity: 1;
+}
+.filters-form details,
+.filters-form summary {
+  border: none;
+  background: none;
+}

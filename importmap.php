@@ -5,10 +5,7 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
-    'VehiclesFilters' => [
-        'path' => './assets/js/VehiclesFilters.js',
-        'entrypoint' => true,
-    ],
+   
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],

@@ -1,20 +1,14 @@
 export default class FetchForm {
   constructor(form) {
-    // Sécurisation : uniquement formulaire HTML
     if (!(form instanceof HTMLFormElement)) return;
 
     this.form = form;
-
-    // Évite les doubles requêtes simultanées
     this.isLoading = false;
 
     this.init();
   }
 
   init() {
-    console.log("INIT FetchForm", this.form);
-
-    // Submit manuel (bouton ou enter)
     this.form.addEventListener("submit", async e => {
       e.preventDefault();
       e.stopPropagation();
@@ -22,9 +16,6 @@ export default class FetchForm {
       await this.send();
     });
 
-    // IMPORTANT :
-    // déclenchement sur change = comportement très sensible avec AJAX
-    // (peut provoquer double appels si re-render DOM)
     this.form.addEventListener("change", async () => {
       await this.send();
     });
@@ -35,6 +26,7 @@ export default class FetchForm {
       console.warn(`[FetchForm] Missing dataset: "${key}"`, this.form);
       return false;
     }
+
     return true;
   }
 
@@ -54,7 +46,6 @@ export default class FetchForm {
   }
 
   async send() {
-    // Anti double submit
     if (this.isLoading) return;
 
     const url = this.form.dataset.fetchUrl;
@@ -64,7 +55,9 @@ export default class FetchForm {
 
     const target = this.resolveTarget(this.form.dataset.target, "target");
     const filtersTarget = this.resolveTarget(this.form.dataset.filtersTarget, "filtersTarget");
+
     const paginationTop = this.resolveTarget(this.form.dataset.paginationTop, "paginationTop");
+
     const paginationBottom = this.resolveTarget(
       this.form.dataset.paginationBottom,
       "paginationBottom"
@@ -87,37 +80,34 @@ export default class FetchForm {
         method: "GET"
       });
 
-      if (!res.ok) {
-        console.error("[FetchForm] HTTP error", res.status);
-        return;
-      }
-
-      // MODE HTML
       if (mode === "html") {
         const html = await res.text();
+
         target.innerHTML = html;
 
         window.dispatchEvent(new Event("ui:updated"));
+
         return;
       }
 
       const data = await res.json();
 
-      // LISTE PRINCIPALE
       if (data.list) {
         target.innerHTML = data.list;
       }
 
-      // PAGINATION TOP
       if (data.pagination_top && paginationTop) {
         paginationTop.innerHTML = data.pagination_top;
       }
 
-      // PAGINATION BOTTOM
       if (data.pagination_bottom && paginationBottom) {
         paginationBottom.innerHTML = data.pagination_bottom;
       }
-      // BADGES
+
+      if (data.filters && filtersTarget) {
+        filtersTarget.innerHTML = data.filters;
+      }
+
       if (data.filtersSummary) {
         const summary = document.querySelector("#filters-summary");
 

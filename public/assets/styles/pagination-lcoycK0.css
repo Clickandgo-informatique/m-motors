@@ -1,0 +1,72 @@
+.pagination {
+  display: flex;
+  gap: var(--space-s);
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-m) 0;
+}
+
+/* Neutralisation des conteneurs */
+.pagination span {
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+}
+
+/* Liens */
+.pagination a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 36px;
+  height: 36px;
+
+  padding: 0 var(--space-s);
+  border-radius: var(--radius-small);
+
+  background: var(--surface-1);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+
+  text-decoration: none;
+  font-size: var(--font-size-small);
+  font-weight: 500;
+
+  box-shadow: var(--shadow-light);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.pagination a:hover {
+  background: var(--focus-bg);
+  border-color: var(--focus-border);
+}
+
+/* Élément actif KNP */
+.pagination .current {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 36px;
+  height: 36px;
+
+  padding: 0 var(--space-s);
+  border-radius: var(--radius-small);
+
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary-hover);
+  color: var(--text-inverse);
+  font-weight: 600;
+}
+
+/* Désactivés */
+.pagination .disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.pagination-info {
+    margin-bottom: 10px;
+    font-size: 14px;
+}

@@ -5,7 +5,7 @@ export default class FetchForm {
 
     this.form = form;
 
-    // Évite les doubles requêtes simultanées
+    // Anti double requête
     this.isLoading = false;
 
     this.init();
@@ -14,22 +14,21 @@ export default class FetchForm {
   init() {
     console.log("INIT FetchForm", this.form);
 
-    // Submit manuel (bouton ou enter)
     this.form.addEventListener("submit", async e => {
       e.preventDefault();
-      e.stopPropagation();
-
       await this.send();
     });
 
-    // IMPORTANT :
-    // déclenchement sur change = comportement très sensible avec AJAX
-    // (peut provoquer double appels si re-render DOM)
-    this.form.addEventListener("change", async () => {
-      await this.send();
+    // IMPORTANT : capture sur tous les inputs
+    this.form.addEventListener("input", () => {
+      this.send();
+    });
+
+    // fallback pour checkbox + custom events
+    this.form.addEventListener("change", () => {
+      this.send();
     });
   }
-
   warnMissingDataset(key, value) {
     if (!value) {
       console.warn(`[FetchForm] Missing dataset: "${key}"`, this.form);
@@ -54,7 +53,7 @@ export default class FetchForm {
   }
 
   async send() {
-    // Anti double submit
+    // Anti double appel
     if (this.isLoading) return;
 
     const url = this.form.dataset.fetchUrl;
@@ -84,7 +83,10 @@ export default class FetchForm {
       const requestUrl = `${url}?${params.toString()}`;
 
       const res = await fetch(requestUrl, {
-        method: "GET"
+        method: "GET",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        }
       });
 
       if (!res.ok) {
@@ -109,21 +111,24 @@ export default class FetchForm {
       }
 
       // PAGINATION TOP
-      if (data.pagination_top && paginationTop) {
+      if (paginationTop && data.pagination_top !== undefined) {
         paginationTop.innerHTML = data.pagination_top;
       }
 
       // PAGINATION BOTTOM
-      if (data.pagination_bottom && paginationBottom) {
+      if (paginationBottom && data.pagination_bottom !== undefined) {
         paginationBottom.innerHTML = data.pagination_bottom;
       }
-      // BADGES
+
+      // FILTRES DYNAMIQUES
+      if (filtersTarget && data.filters) {
+        filtersTarget.innerHTML = data.filters;
+      }
+
+      // BADGES FILTRES
       if (data.filtersSummary) {
         const summary = document.querySelector("#filters-summary");
-
-        if (summary) {
-          summary.innerHTML = data.filtersSummary;
-        }
+        if (summary) summary.innerHTML = data.filtersSummary;
       }
 
       window.dispatchEvent(new Event("ui:updated"));

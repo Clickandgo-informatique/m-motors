@@ -1,0 +1,118 @@
+/* ========================================================= */
+/* GRID RESPONSIVE DE CARTES */
+/* ========================================================= */
+
+/* Conteneur principal du grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(250px, 1fr)
+  ); /* colonnes adaptatives */
+  gap: 20px; /* espace entre les cartes */
+  padding: 20px; /* espace interne du conteneur */
+  box-sizing: border-box;
+}
+
+/* Style général des cartes */
+.card {
+  background-color: #fff; /* couleur de fond */
+  border-radius: 10px; /* coins arrondis */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* ombre douce */
+  overflow: hidden; /* pour que les images ne débordent pas */
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Effet hover pour les cartes */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Image en haut de la carte */
+.card img {
+  width: 100%;
+  height: 180px; /* hauteur fixe, ajustable */
+  object-fit: cover; /* image centrée et recadrée si nécessaire */
+}
+
+/* Contenu interne de la carte */
+.card-content {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Titre de la carte */
+.card-content h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Description ou texte */
+.card-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.4;
+  flex-grow: 1; /* occupe l’espace restant si nécessaire */
+}
+
+/* Boutons ou actions */
+.card-content .btn {
+  margin-top: auto; /* pousse le bouton en bas */
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  background-color: #1877f2; /* couleur primaire */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.card-content .btn:hover {
+  background-color: #166fe5;
+}
+
+/* ========================================================= */
+/* RESPONSIVE ADAPTATIF */
+/* ========================================================= */
+
+/* Tablette */
+@media (max-width: 1024px) {
+  .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+  }
+
+  .card img {
+    height: 160px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    padding: 10px;
+  }
+
+  .card img {
+    height: 140px;
+  }
+
+  .card-content h3 {
+    font-size: 1rem;
+  }
+
+  .card-content p {
+    font-size: 0.85rem;
+  }
+}

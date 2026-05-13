@@ -1,6 +1,5 @@
 export default function initDoubleSlider(slider) {
   console.log("DoubleSlider initialisé");
-
   if (!slider) return;
 
   const FILTER = slider.dataset.filter;
@@ -20,28 +19,23 @@ export default function initDoubleSlider(slider) {
 
   const thumbs = {};
 
-  // Debounce global du fetch (évite rafales AJAX + tremblement UI)
-  let fetchTimeout = null;
-
-  const scheduleFetch = () => {
-    clearTimeout(fetchTimeout);
-
-    fetchTimeout = setTimeout(() => {
-      const form = slider.closest("form");
-      if (form) {
-        form.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-    }, 300);
-  };
-
+  /**
+   * Conversion valeur → position pixel
+   */
   const valueToPos = value => ((value - MIN) / (MAX - MIN)) * slider.clientWidth;
 
+  /**
+   * Conversion position pixel → valeur
+   */
   const posToValue = pos => {
     let val = MIN + (pos / slider.clientWidth) * (MAX - MIN);
     val = Math.round(val / STEP) * STEP;
     return Math.min(Math.max(val, MIN), MAX);
   };
 
+  /**
+   * Début drag souris
+   */
   function startDrag(e, thumb) {
     e.preventDefault();
     activeThumb = thumb;
@@ -50,6 +44,9 @@ export default function initDoubleSlider(slider) {
     document.addEventListener("mouseup", stopDrag);
   }
 
+  /**
+   * Drag souris
+   */
   function onDrag(e) {
     if (!activeThumb) return;
 
@@ -65,6 +62,9 @@ export default function initDoubleSlider(slider) {
     updateUI();
   }
 
+  /**
+   * Fin drag souris
+   */
   function stopDrag() {
     activeThumb = null;
 
@@ -72,6 +72,9 @@ export default function initDoubleSlider(slider) {
     document.removeEventListener("mouseup", stopDrag);
   }
 
+  /**
+   * Début touch
+   */
   function startTouch(e, thumb) {
     activeThumb = thumb;
 
@@ -79,6 +82,9 @@ export default function initDoubleSlider(slider) {
     document.addEventListener("touchend", stopTouch);
   }
 
+  /**
+   * Touch move
+   */
   function onTouch(e) {
     e.preventDefault();
     if (!activeThumb) return;
@@ -95,6 +101,9 @@ export default function initDoubleSlider(slider) {
     updateUI();
   }
 
+  /**
+   * Fin touch
+   */
   function stopTouch() {
     activeThumb = null;
 
@@ -102,6 +111,9 @@ export default function initDoubleSlider(slider) {
     document.removeEventListener("touchend", stopTouch);
   }
 
+  /**
+   * Construction du slider DOM
+   */
   const buildSlider = () => {
     slider.innerHTML = `
       <div class="slider-track"></div>
@@ -125,6 +137,9 @@ export default function initDoubleSlider(slider) {
     thumbs.thumbMax.addEventListener("touchstart", e => startTouch(e, thumbs.thumbMax));
   };
 
+  /**
+   * Mise à jour UI slider + inputs + labels
+   */
   const updateUI = () => {
     const left = valueToPos(currentMin);
     const right = valueToPos(currentMax);
@@ -172,9 +187,6 @@ export default function initDoubleSlider(slider) {
         }
       })
     );
-
-    // IMPORTANT : déclenchement AJAX throttlé
-    scheduleFetch();
   };
 
   buildSlider();

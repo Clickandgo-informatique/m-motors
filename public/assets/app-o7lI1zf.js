@@ -93,17 +93,21 @@ function initCollections(root = document) {
 }
 
 /*
- * DoubleSliders
+ * Sliders
  */
 function initSliders(root = document) {
   root.querySelectorAll(".double-slider").forEach(slider => {
-    if (slider._instance) {
-      slider._instance.destroy?.();
+    if (slider.dataset.sliderInitialized === "1" && !slider.dataset.forceReinit) {
+      return;
     }
 
-    slider._instance = initDoubleSlider(slider);
+    slider.dataset.sliderInitialized = "1";
+    delete slider.dataset.forceReinit;
+
+    initDoubleSlider(slider);
   });
 }
+
 /*
  * AJAX manager global
  */

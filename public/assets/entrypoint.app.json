@@ -1,0 +1,20 @@
+[
+    "\/assets\/stimulus_bootstrap.js",
+    "\/assets\/js\/theme.js",
+    "\/assets\/styles\/app.css",
+    "\/assets\/js\/sidebar.js",
+    "\/assets\/js\/rangeSelector.js",
+    "\/assets\/js\/Dropzone.js",
+    "\/assets\/js\/DynamicFormCollection.js",
+    "\/assets\/js\/FetchForm.js",
+    "\/assets\/js\/AjaxManager.js",
+    "\/assets\/js\/ToggleVehicleFavorite.js",
+    "\/assets\/js\/Autocomplete.js",
+    "\/assets\/js\/EventBus.js",
+    "@symfony\/stimulus-bundle",
+    "@hotwired\/stimulus",
+    "\/assets\/@symfony\/stimulus-bundle\/controllers.js",
+    "\/assets\/@symfony\/ux-turbo\/turbo_controller.js",
+    "\/assets\/controllers\/hello_controller.js",
+    "@hotwired\/turbo"
+]

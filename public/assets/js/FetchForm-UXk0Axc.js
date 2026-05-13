@@ -1,31 +1,18 @@
 export default class FetchForm {
   constructor(form) {
-    // Sécurisation : uniquement formulaire HTML
     if (!(form instanceof HTMLFormElement)) return;
 
     this.form = form;
-
-    // Évite les doubles requêtes simultanées
     this.isLoading = false;
 
     this.init();
   }
 
   init() {
-    console.log("INIT FetchForm", this.form);
-
-    // Submit manuel (bouton ou enter)
     this.form.addEventListener("submit", async e => {
       e.preventDefault();
       e.stopPropagation();
 
-      await this.send();
-    });
-
-    // IMPORTANT :
-    // déclenchement sur change = comportement très sensible avec AJAX
-    // (peut provoquer double appels si re-render DOM)
-    this.form.addEventListener("change", async () => {
       await this.send();
     });
   }
@@ -54,7 +41,6 @@ export default class FetchForm {
   }
 
   async send() {
-    // Anti double submit
     if (this.isLoading) return;
 
     const url = this.form.dataset.fetchUrl;
@@ -81,49 +67,39 @@ export default class FetchForm {
       const formData = new FormData(this.form);
       const params = new URLSearchParams(formData);
 
-      const requestUrl = `${url}?${params.toString()}`;
-
-      const res = await fetch(requestUrl, {
-        method: "GET"
+      const res = await fetch(url, {
+        method: "POST",
+        body: params
       });
 
-      if (!res.ok) {
-        console.error("[FetchForm] HTTP error", res.status);
-        return;
-      }
-
-      // MODE HTML
       if (mode === "html") {
         const html = await res.text();
         target.innerHTML = html;
-
         window.dispatchEvent(new Event("ui:updated"));
         return;
       }
 
       const data = await res.json();
 
-      // LISTE PRINCIPALE
       if (data.list) {
         target.innerHTML = data.list;
       }
 
-      // PAGINATION TOP
       if (data.pagination_top && paginationTop) {
         paginationTop.innerHTML = data.pagination_top;
       }
 
-      // PAGINATION BOTTOM
       if (data.pagination_bottom && paginationBottom) {
         paginationBottom.innerHTML = data.pagination_bottom;
       }
-      // BADGES
+
+      if (data.filters && filtersTarget) {
+        filtersTarget.innerHTML = data.filters;
+      }
+
       if (data.filtersSummary) {
         const summary = document.querySelector("#filters-summary");
-
-        if (summary) {
-          summary.innerHTML = data.filtersSummary;
-        }
+        if (summary) summary.innerHTML = data.filtersSummary;
       }
 
       window.dispatchEvent(new Event("ui:updated"));

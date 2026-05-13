@@ -117,6 +117,12 @@ export default class FetchForm {
       if (data.pagination_bottom && paginationBottom) {
         paginationBottom.innerHTML = data.pagination_bottom;
       }
+     
+      //innerHTML détruit les inputs => rebind obligatoire ailleurs
+      if (data.filters && filtersTarget) {
+        filtersTarget.innerHTML = data.filters;
+      }
+
       // BADGES
       if (data.filtersSummary) {
         const summary = document.querySelector("#filters-summary");
