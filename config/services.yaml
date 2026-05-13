@@ -1,12 +1,17 @@
 parameters:
-    dossier_upload_dir: "%kernel.project_dir%/public/uploads"
+    # Dossier racine des uploads publics
+    upload_dir: "%kernel.project_dir%/public/uploads"
+
+    # Uploads dossiers
+    dossier_upload_dir: "%upload_dir%/dossiers"
+
+    # Uploads véhicules
+    vehicle_upload_dir: "%upload_dir%/vehicles"
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
-        bind:
-            string $uploadDir: "%dossier_upload_dir%"
 
     # =========================================================
     # AUTOWIRE GLOBAL APP
@@ -21,10 +26,25 @@ services:
             - "../src/Kernel.php"
 
     # =========================================================
-    # SERVICES METIER
+    # IMAGE PROCESSOR
     # =========================================================
-    App\Service\DossierDocumentUploadService: ~
+    App\Service\ImageProcessor:
+        bind:
+            string $uploadDir: "%upload_dir%"
+
+    # =========================================================
+    # DOSSIERS
+    # =========================================================
+    App\Service\DossierDocumentUploadService:
+        bind:
+            string $uploadDir: "%dossier_upload_dir%"
+
     App\Service\DossierDocumentTypeResolver: ~
+
+    # =========================================================
+    # VEHICLES
+    # =========================================================
+    App\Service\VehicleGalleryManager: ~
 
     # =========================================================
     # WORKFLOW GUARD
@@ -32,10 +52,10 @@ services:
     App\Workflow\DossierWorkflowGuard:
         tags:
             - {
-                name: kernel.event_listener,
-                event: workflow.dossier.guard.submit_documents,
-                method: guardSubmitDocuments
-            }
+                  name: kernel.event_listener,
+                  event: workflow.dossier.guard.submit_documents,
+                  method: guardSubmitDocuments,
+              }
 
     # IMPORTANT :
     # Aucun service pour DocumentUploadedListener ici

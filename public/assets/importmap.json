@@ -1,6 +1,10 @@
 {
     "app": {
+<<<<<<< HEAD
         "path": "\/assets\/app-yIXRU9c.js",
+=======
+        "path": "\/assets\/app-wackRZ0.js",
+>>>>>>> feature/images_gallery
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,7 +32,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-q4N0luA.css",
+        "path": "\/assets\/styles\/app-pcUkPFT.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -40,9 +44,24 @@
         "type": "js"
     },
     "\/assets\/js\/Dropzone.js": {
-        "path": "\/assets\/js\/Dropzone-76mZAJT.js",
+        "path": "\/assets\/js\/Dropzone-20r9bHR.js",
         "type": "js"
     },
+<<<<<<< HEAD
+=======
+    "\/assets\/js\/vehiclesFilters.js": {
+        "path": "\/assets\/js\/vehiclesFilters-7zto5jf.js",
+        "type": "js"
+    },
+    "\/assets\/js\/FilterBadges.js": {
+        "path": "\/assets\/js\/FilterBadges-K6ljlUh.js",
+        "type": "js"
+    },
+    "\/assets\/js\/Autocomplete.js": {
+        "path": "\/assets\/js\/Autocomplete-AWA88u3.js",
+        "type": "js"
+    },
+>>>>>>> feature/images_gallery
     "\/assets\/js\/DynamicFormCollection.js": {
         "path": "\/assets\/js\/DynamicFormCollection-5D650Tv.js",
         "type": "js"
@@ -67,6 +86,7 @@
         "path": "\/assets\/js\/EventBus-w5Yn_zE.js",
         "type": "js"
     },
+<<<<<<< HEAD
     "\/assets\/js\/VehiclesFilters.js": {
         "path": "\/assets\/js\/VehiclesFilters-bujUXCt.js",
         "type": "js"
@@ -77,6 +97,10 @@
     },
     "VehiclesFilters": {
         "path": "\/assets\/js\/VehiclesFilters-bujUXCt.js",
+=======
+    "vehiclesFilters": {
+        "path": "\/assets\/js\/vehiclesFilters-7zto5jf.js",
+>>>>>>> feature/images_gallery
         "type": "js"
     },
     "@hotwired\/stimulus": {

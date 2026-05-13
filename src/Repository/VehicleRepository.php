@@ -6,6 +6,7 @@ use App\Entity\BodyType;
 use App\Entity\Brand;
 use App\Entity\FuelType;
 use App\Entity\Vehicle;
+use App\Enum\VehicleStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,7 +20,6 @@ class VehicleRepository extends ServiceEntityRepository
 
     /*
      * QueryBuilder principal utilisé pour le dashboard
-     * Permet de filtrer les véhicules selon les critères UI
      */
     public function getFilteredQueryBuilder(array $filters = [], ?string $searchTerm = null): QueryBuilder
     {
@@ -43,103 +43,68 @@ class VehicleRepository extends ServiceEntityRepository
             return [$value];
         };
 
-        /*
-         * Filtre statut véhicule
-         */
         $status = $normalize($filters['status'] ?? null);
         if (!empty($status)) {
             $qb->andWhere('v.status IN (:status)')
                 ->setParameter('status', $status);
         }
 
-        /*
-         * Filtre type dossier lié (EXISTS)
-         */
         $type = $normalize($filters['type'] ?? null);
         if (!empty($type)) {
             $qb->andWhere('EXISTS (
                 SELECT 1 FROM App\Entity\Dossier d
                 WHERE d.vehicle = v
                 AND d.type IN (:type)
-            )')
-                ->setParameter('type', $type);
+            )')->setParameter('type', $type);
         }
 
-        /*
-         * Filtre financement dossier lié (EXISTS)
-         */
         $financing = $normalize($filters['financing'] ?? null);
         if (!empty($financing)) {
             $qb->andWhere('EXISTS (
                 SELECT 1 FROM App\Entity\Dossier d2
                 WHERE d2.vehicle = v
                 AND d2.financingType IN (:financing)
-            )')
-                ->setParameter('financing', $financing);
+            )')->setParameter('financing', $financing);
         }
 
-        /*
-         * Filtre marque
-         */
         $brands = $normalize($filters['brand'] ?? null);
         if (!empty($brands)) {
             $qb->andWhere('b.id IN (:brands)')
                 ->setParameter('brands', $brands);
         }
 
-        /*
-         * Filtre type de carrosserie
-         */
         $bodyTypes = $normalize($filters['bodyType'] ?? null);
         if (!empty($bodyTypes)) {
             $qb->andWhere('bt.id IN (:bodyTypes)')
                 ->setParameter('bodyTypes', $bodyTypes);
         }
 
-        /*
-         * Filtre carburant
-         */
         $fuelTypes = $normalize($filters['fuelType'] ?? null);
         if (!empty($fuelTypes)) {
             $qb->andWhere('ft.id IN (:fuelTypes)')
                 ->setParameter('fuelTypes', $fuelTypes);
         }
 
-        /*
-         * Filtre kilométrage minimum
-         */
         if (!empty($filters['mileageMin'])) {
             $qb->andWhere('v.mileage >= :mileageMin')
                 ->setParameter('mileageMin', (int) $filters['mileageMin']);
         }
 
-        /*
-         * Filtre kilométrage maximum
-         */
         if (!empty($filters['mileageMax'])) {
             $qb->andWhere('v.mileage <= :mileageMax')
                 ->setParameter('mileageMax', (int) $filters['mileageMax']);
         }
 
-        /*
-         * Filtre prix minimum
-         */
         if (!empty($filters['priceMin'])) {
             $qb->andWhere('v.price >= :priceMin')
                 ->setParameter('priceMin', (float) $filters['priceMin']);
         }
 
-        /*
-         * Filtre prix maximum
-         */
         if (!empty($filters['priceMax'])) {
             $qb->andWhere('v.price <= :priceMax')
                 ->setParameter('priceMax', (float) $filters['priceMax']);
         }
 
-        /*
-         * Filtre année d'immatriculation
-         */
         $yearMin = $filters['registrationYearMin'] ?? null;
         $yearMax = $filters['registrationYearMax'] ?? null;
 
@@ -153,9 +118,6 @@ class VehicleRepository extends ServiceEntityRepository
                 ->setParameter('yearMax', new \DateTime($yearMax . '-12-31'));
         }
 
-        /*
-         * Recherche globale
-         */
         if (!empty($searchTerm)) {
             $search = '%' . mb_strtolower(trim($searchTerm)) . '%';
 
@@ -167,21 +129,17 @@ class VehicleRepository extends ServiceEntityRepository
             )->setParameter('search', $search);
         }
 
-        /*
-         * Tri par défaut
-         */
         return $qb->orderBy('b.name', 'ASC');
     }
+
     /*
-  * Autocomplete léger pour recherche UI
-  * Doit rester rapide et indépendant du dashboard
-  */
+     * Autocomplete léger UI
+     */
     public function searchForAutocomplete(
         array $filters = [],
         ?string $searchTerm = null,
         int $limit = 10
     ): array {
-
         $qb = $this->createQueryBuilder('v')
             ->leftJoin('v.vehicleModel', 'vm')
             ->leftJoin('vm.brand', 'b')
@@ -189,22 +147,17 @@ class VehicleRepository extends ServiceEntityRepository
             ->addSelect('vm', 'b', 'm');
 
         if (!empty($searchTerm)) {
-
             $search = '%' . mb_strtolower(trim($searchTerm)) . '%';
 
             $qb->andWhere(
                 'LOWER(m.name) LIKE :search
-             OR LOWER(b.name) LIKE :search'
-            )
-                ->setParameter('search', $search);
+                 OR LOWER(b.name) LIKE :search'
+            )->setParameter('search', $search);
         }
 
         $qb->setMaxResults($limit);
 
-        $vehicles = $qb->getQuery()->getResult();
-
         return array_map(function (Vehicle $v) {
-
             $vm = $v->getVehicleModel();
 
             $brand = $vm?->getBrand()?->getName() ?? '';
@@ -212,17 +165,14 @@ class VehicleRepository extends ServiceEntityRepository
 
             return [
                 'id' => $v->getId(),
-
                 'label' => trim($brand . ' ' . $model),
-
-                // IMPORTANT POUR LE LINK MODE
-                'url' => '/vehicles/' . $v->getId()
+                'url' => '/vehicles/' . $v->getId(),
             ];
-        }, $vehicles);
+        }, $qb->getQuery()->getResult());
     }
 
     /*
-     * Marques utilisées dans les véhicules existants
+     * Marques utilisées
      */
     public function getUsedBrands(): array
     {
@@ -231,19 +181,16 @@ class VehicleRepository extends ServiceEntityRepository
             ->select('b')
             ->from(Brand::class, 'b')
             ->where('EXISTS (
-            SELECT 1
-            FROM App\Entity\Vehicle v
-            JOIN v.vehicleModel vm
-            WHERE vm.brand = b
-        )')
+                SELECT 1
+                FROM App\Entity\Vehicle v
+                JOIN v.vehicleModel vm
+                WHERE vm.brand = b
+            )')
             ->orderBy('b.name', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
-    /*
-     * Types de carrosserie utilisés
-     */
     public function getUsedBodyTypes(): array
     {
         return $this->getEntityManager()
@@ -255,9 +202,6 @@ class VehicleRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /*
-     * Types de carburant utilisés
-     */
     public function getUsedFuelTypes(): array
     {
         return $this->getEntityManager()
@@ -269,9 +213,6 @@ class VehicleRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /*
-     * Calcul des années disponibles dans les véhicules
-     */
     public function getRegistrationYears(): array
     {
         $result = $this->createQueryBuilder('v')
@@ -280,20 +221,11 @@ class VehicleRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
 
         if (!$result || !$result['minDate'] || !$result['maxDate']) {
-            return [
-                'min' => null,
-                'max' => null,
-                'years' => []
-            ];
+            return ['min' => null, 'max' => null, 'years' => []];
         }
 
-        $minDate = $result['minDate'] instanceof \DateTimeInterface
-            ? $result['minDate']
-            : new \DateTime($result['minDate']);
-
-        $maxDate = $result['maxDate'] instanceof \DateTimeInterface
-            ? $result['maxDate']
-            : new \DateTime($result['maxDate']);
+        $minDate = new \DateTime($result['minDate']);
+        $maxDate = new \DateTime($result['maxDate']);
 
         return [
             'min' => (int) $minDate->format('Y'),
@@ -304,19 +236,18 @@ class VehicleRepository extends ServiceEntityRepository
             ),
         ];
     }
-    public function getBrandNamesByIds(array $ids): array
-    {
-        if (empty($ids)) {
-            return [];
-        }
 
-        return $this->createQueryBuilder('v')
-            ->select('DISTINCT b.name')
-            ->join('v.vehicleModel', 'vm')
-            ->join('vm.brand', 'b')
-            ->where('b.id IN (:ids)')
-            ->setParameter('ids', $ids)
-            ->getQuery()
-            ->getSingleColumnResult();
+    /*
+     * Statuts véhicules (UI filters)
+     */
+    public function getStatuses(): array
+    {
+        return array_map(
+            fn(VehicleStatus $status) => [
+                'value' => $status->value,
+                'label' => $status->label(),
+            ],
+            VehicleStatus::cases()
+        );
     }
 }

@@ -35,7 +35,10 @@ function resetInitFlags(root) {
    DROPZONES
 ========================================================== */
 function initDropzones(root = document) {
+
+  console.log("initDropzones");
   root.querySelectorAll(".dropzone").forEach(el => {
+    console.log("dropzone trouvée", el);
     if (el.dataset.initialized === "1") return;
 
     el.dataset.initialized = "1";

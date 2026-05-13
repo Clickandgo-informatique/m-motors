@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Enum\VehicleStatus;
 use App\Repository\VehicleRepository;
+use App\Enum\VehicleStatus;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +31,7 @@ class VehiclesFilterController extends AbstractController
         $vehicles = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            10
+            12
         );
 
         $context = $this->buildFiltersContext($vehicleRepo);
@@ -51,7 +51,6 @@ class VehiclesFilterController extends AbstractController
         VehicleRepository $vehicleRepo,
         PaginatorInterface $paginator
     ): Response {
-
         $data = array_merge(
             $request->query->all(),
             $request->request->all()
@@ -61,7 +60,6 @@ class VehiclesFilterController extends AbstractController
         $searchTerm = $data['q'] ?? null;
         $page = max(1, (int) ($data['page'] ?? 1));
 
-        // SAFE VIEW fallback
         $view = $filters['view'] ?? 'grid';
 
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
@@ -69,31 +67,24 @@ class VehiclesFilterController extends AbstractController
         $vehicles = $paginator->paginate($query, $page, 10);
 
         $context = $this->buildFiltersContext($vehicleRepo);
-
         $filterLabels = $this->hydrateFilterLabels($vehicleRepo, $filters);
 
-        $listHtml = $this->renderView('vehicles/_vehicles_list.html.twig', [
-            'vehicles' => $vehicles,
-            'view' => $view
-        ]);
-
-        $paginationHtml = $this->renderView('vehicles/_pagination_info.html.twig', [
-            'vehicles' => $vehicles
-        ]);
-
-        $filtersHtml = $this->renderView('vehicles/_vehicles_filters.html.twig', $context);
-
-        $summaryHtml = $this->renderView('vehicles/_filters_summary.html.twig', [
-            'filters' => $filters,
-            'filterLabels' => $filterLabels
-        ]);
-
         return $this->json([
-            'list' => $listHtml,
-            'pagination_top' => $paginationHtml,
-            'pagination_bottom' => $paginationHtml,
-            'filters' => $filtersHtml,
-            'filtersSummary' => $summaryHtml,
+            'list' => $this->renderView('vehicles/_vehicles_list.html.twig', [
+                'vehicles' => $vehicles,
+                'view' => $view
+            ]),
+            'pagination_top' => $this->renderView('vehicles/_pagination_info.html.twig', [
+                'vehicles' => $vehicles
+            ]),
+            'pagination_bottom' => $this->renderView('vehicles/_pagination_info.html.twig', [
+                'vehicles' => $vehicles
+            ]),
+            'filters' => $this->renderView('vehicles/_vehicles_filters.html.twig', $context),
+            'filtersSummary' => $this->renderView('vehicles/_filters_summary.html.twig', [
+                'filters' => $filters,
+                'filterLabels' => $filterLabels
+            ]),
         ]);
     }
 
@@ -102,7 +93,6 @@ class VehiclesFilterController extends AbstractController
         Request $request,
         VehicleRepository $vehicleRepo
     ): Response {
-
         return $this->json([
             'items' => $vehicleRepo->searchForAutocomplete(
                 [],
@@ -114,16 +104,16 @@ class VehiclesFilterController extends AbstractController
 
     private function buildFiltersContext(VehicleRepository $vehicleRepo): array
     {
-        $yearsData = $vehicleRepo->getRegistrationYears();
+        $years = $vehicleRepo->getRegistrationYears();
 
         return [
             'brands' => $vehicleRepo->getUsedBrands(),
             'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
             'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
 
-            'registrationYears' => $yearsData['years'] ?? [],
-            'registrationYearsMin' => $yearsData['min'] ?? null,
-            'registrationYearsMax' => $yearsData['max'] ?? null,
+            'registrationYears' => $years['years'] ?? [],
+            'registrationYearsMin' => $years['min'] ?? null,
+            'registrationYearsMax' => $years['max'] ?? null,
 
             'statuses' => array_map(fn($s) => [
                 'value' => $s->value,

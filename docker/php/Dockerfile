@@ -8,9 +8,28 @@ RUN mkdir -p /var/www/var && chown -R www-data:www-data /var/www
 
 # Install packages
 RUN apt-get update && apt-get install -y \
-    git unzip libicu-dev libpq-dev libzip-dev zip \
+    git unzip \
+    libicu-dev \
+    libpq-dev \
+    libzip-dev \
+    zip \
     postgresql-client \
-    && docker-php-ext-install intl pdo pdo_pgsql zip
+    libgd-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    && docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
+    && docker-php-ext-install \
+        intl \
+        pdo \
+        pdo_pgsql \
+        zip \
+        gd \
+    && rm -rf /var/lib/apt/lists/*
 
 # Redis extension
 RUN pecl install redis \
@@ -19,18 +38,9 @@ RUN pecl install redis \
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# ---------------------------------------------------------
-# 🔥 ENTRYPOINT : copie du script + droits d'exécution
-# ---------------------------------------------------------
+# ENTRYPOINT
 COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# ---------------------------------------------------------
-
-# ---------------------------------------------------------
-# 🔥 Définir l’entrypoint
-# ---------------------------------------------------------
 ENTRYPOINT ["entrypoint.sh"]
-
-# Commande par défaut
 CMD ["php-fpm"]

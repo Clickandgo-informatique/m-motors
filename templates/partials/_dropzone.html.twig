@@ -2,22 +2,14 @@
 	<div class="dz-counter">0 image</div>
 
 	{# Dropzone #}
-	<div class="dropzone" data-type="{{ type }}" data-upload-url="{{ uploadUrl }}" data-delete-url="{{ deleteUrl }}" data-preview-id="{{ previewId }}" data-destination="{{ destination }}">
-		<p>Déposez vos images ici ou cliquez pour sélectionner</p>
+	<div class="dropzone" data-upload-url="{{ uploadUrl }}" data-delete-url="{{ deleteUrl }}" data-preview-id="{{ previewId }}" data-destination="{{ destination }}">
+		<p>Déposez vos images ou fichiers ici ou cliquez pour sélectionner</p>
+		<button type="button" class="dz-upload-btn" disabled>
+			Envoyer les fichiers
+		</button>
 	</div>
 
 	{# Zone de preview #}
-	<div id="{{ previewId }}" class="preview-container mb-3">
-		{% for img in existingImages %}
-			<div class="dz-thumb" data-file="{{ img.jpg }}">
-				<img src="/uploads/{{ destination }}/{{ img.jpg_thumb }}" width="150" class="rounded border me-2 mb-2">
-				<button class="dz-delete" data-file="{{ img.jpg }}">×</button>
-			</div>
-		{% endfor %}
-	</div>
-
-
-	<input type="hidden" id="images-field" name="images" value="">
-
+	<div id="{{ previewId }}" class="preview-container mb-3"></div>
 
 </div>
