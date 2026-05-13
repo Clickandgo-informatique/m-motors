@@ -22,6 +22,7 @@
 ### Assets ###
 /public/build/
 /public/bundles/
+/public/assets/
 
 ### Composer ###
 .composer/
