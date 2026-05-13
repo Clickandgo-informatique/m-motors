@@ -1,24 +1,49 @@
-<form method="get" action="{{ action }}" 
-data-module="fetch-form" 
-data-fetch-url="{{ fetchUrl }}" 
-data-target="{{ target }}" 
-data-filters-target="{{ filtersTarget|default('') }}" 
-data-pagination-target="{{ paginationTarget|default('') }}" 
-class="fetch-form">
+{% set fetchUrl = fetchUrl|default(action) %}
+{% set target = target|default('') %}
+{% set fetchMode = fetchMode|default('html') %}
+{% set filtersTarget = filtersTarget|default('') %}
+{% set paginationTop = paginationTop|default('') %}
+{% set paginationBottom = paginationBottom|default('') %}
+{% set linkMode = linkMode|default(0) %}
+{% set hiddenName = hiddenName|default(name ~ 'Id') %}
 
-	<div class="form-row dropdown-wrapper">
+<form
+    method="get"
+    action="{{ action }}"
+    data-module="fetch-form"
+    data-fetch-url="{{ fetchUrl }}"
+    data-target="{{ target }}"
+    data-fetch-mode="{{ fetchMode }}"
+    data-filters-target="{{ filtersTarget }}"
+    data-pagination-top="{{ paginationTop }}"
+    data-pagination-bottom="{{ paginationBottom }}"
+    class="fetch-form"
+>
 
-		<input type="text" 
-        name="{{ name }}" 
-        value="{{ app.request.get(name) }}" 
-        placeholder="{{ placeholder }}" 
-        autocomplete="off" data-module="autocomplete" 
-        data-url="{{ autocompleteUrl }}" 
-        data-base-url="{{ baseUrl }}" 
-        data-link-mode="{{ linkMode|default(0) }}">
+    <div class="form-row dropdown-wrapper">
 
-		<div id="{{ resultDiv }}" class="dropdown-results"></div>
+        <input
+            type="text"
+            name="{{ name }}"
+            value="{{ app.request.get(name) }}"
+            placeholder="{{ placeholder }}"
+            autocomplete="off"
+            data-module="autocomplete"
+            data-url="{{ autocompleteUrl }}"
+            data-base-url="{{ baseUrl }}"
+            data-link-mode="{{ linkMode }}"
+            class="search-input"
+        >
 
-	</div>
+        <input
+            type="hidden"
+            name="{{ hiddenName }}"
+            data-autocomplete-value
+            class="js-autocomplete-hidden"
+        >
+
+        <div id="{{ resultDiv }}" class="dropdown-results"></div>
+
+    </div>
 
 </form>

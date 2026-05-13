@@ -6,6 +6,8 @@
 			<th>Véhicule</th>
 			<th>Client</th>
 			<th>Type</th>
+			<th>Immatriculation</th>
+			<th>VIN</th>
 			<th>Statut</th>
 			<th>Date</th>
 			<th></th>
@@ -19,6 +21,8 @@
 				<td>{{ dossier.vehicle.vehicleModel }}</td>
 				<td>{{ dossier.customer }}</td>
 				<td>{{ dossier.type.label }}</td>
+				<td>{{ dossier.vehicle.registrationNumber }}</td>
+				<td>{{ dossier.vehicle.vin }}</td>
 				<td>
 					<span class="badge bg-{{ dossier.statusBadge }}">
 						{{ dossier.statusLabel }}

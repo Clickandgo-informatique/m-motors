@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin - Dossiers
-{% endblock %}
+{% block title %}Admin - Dossiers{% endblock %}
 
 {% block body %}
 
@@ -11,19 +10,25 @@
 			<i class="fa-regular fa-folder-open title-icon"></i>
 			Administration des dossiers
 		</h1>
+
 		{% include "Components/Forms/_fetch_form.html.twig" with {
-    action: path('dossiers_ajax_search'),
-    fetchUrl: path('dossiers_ajax_search'),
-    autocompleteUrl: path('dossiers_ajax_search'),
-    name: 'q',
-    placeholder: 'Rechercher un dossier par référence, nom client, modèle de véhicule ...',
-    baseUrl: path('admin_dossier_list'),
-    linkMode: '1',
-    resultDiv: 'autocomplete-results',
-    target: 'dossiers-search-results',
-    filtersTarget: 'dossiers-filters',
-    paginationTarget: 'pagination-wrapper'
-} %}
+			action: path('dossiers_ajax_search'),
+			fetchUrl: path('dossiers_ajax_search'),
+			autocompleteUrl: path('dossiers_ajax_search'),
+			name: 'q',
+			placeholder: 'Rechercher un dossier par référence, nom client, modèle de véhicule ...',
+			baseUrl: path('admin_dossier_list'),
+			linkMode: '1',
+			resultDiv: 'autocomplete-results',
+			target: 'dossiers-search-results',
+			filtersTarget: 'dossiers-filters',
+			paginationTarget: 'pagination-wrapper',
+			cardsContainer: 'dossiers-search-results',
+			autocomplete: true,
+			pagination: true,
+			highlight: true,
+			noResultsClass: 'dropdown-no-results'
+		} %}
 
 		{# Pagination haut #}
 		<div class="pagination-wrapper" data-target="pagination-top">
