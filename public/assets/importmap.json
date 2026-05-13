@@ -1,10 +1,6 @@
 {
     "app": {
-<<<<<<< HEAD
-        "path": "\/assets\/app-yIXRU9c.js",
-=======
-        "path": "\/assets\/app-wackRZ0.js",
->>>>>>> feature/images_gallery
+        "path": "\/assets\/app-TOx4Rz5.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -47,27 +43,12 @@
         "path": "\/assets\/js\/Dropzone-20r9bHR.js",
         "type": "js"
     },
-<<<<<<< HEAD
-=======
-    "\/assets\/js\/vehiclesFilters.js": {
-        "path": "\/assets\/js\/vehiclesFilters-7zto5jf.js",
-        "type": "js"
-    },
-    "\/assets\/js\/FilterBadges.js": {
-        "path": "\/assets\/js\/FilterBadges-K6ljlUh.js",
-        "type": "js"
-    },
-    "\/assets\/js\/Autocomplete.js": {
-        "path": "\/assets\/js\/Autocomplete-AWA88u3.js",
-        "type": "js"
-    },
->>>>>>> feature/images_gallery
     "\/assets\/js\/DynamicFormCollection.js": {
         "path": "\/assets\/js\/DynamicFormCollection-5D650Tv.js",
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-SJP3D5T.js",
+        "path": "\/assets\/js\/FetchForm-UXk0Axc.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
@@ -79,14 +60,13 @@
         "type": "js"
     },
     "\/assets\/js\/Autocomplete.js": {
-        "path": "\/assets\/js\/Autocomplete-grgegoA.js",
+        "path": "\/assets\/js\/Autocomplete-AWA88u3.js",
         "type": "js"
     },
     "\/assets\/js\/EventBus.js": {
         "path": "\/assets\/js\/EventBus-w5Yn_zE.js",
         "type": "js"
     },
-<<<<<<< HEAD
     "\/assets\/js\/VehiclesFilters.js": {
         "path": "\/assets\/js\/VehiclesFilters-bujUXCt.js",
         "type": "js"
@@ -97,10 +77,6 @@
     },
     "VehiclesFilters": {
         "path": "\/assets\/js\/VehiclesFilters-bujUXCt.js",
-=======
-    "vehiclesFilters": {
-        "path": "\/assets\/js\/vehiclesFilters-7zto5jf.js",
->>>>>>> feature/images_gallery
         "type": "js"
     },
     "@hotwired\/stimulus": {
@@ -116,7 +92,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-SJP3D5T.js",
+        "path": "\/assets\/js\/FetchForm-UXk0Axc.js",
         "type": "js"
     }
 }

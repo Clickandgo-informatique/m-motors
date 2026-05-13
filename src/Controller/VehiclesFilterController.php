@@ -122,6 +122,17 @@ class VehiclesFilterController extends AbstractController
         ];
     }
 
+    #[Route('/_sidebar/filters', name: 'vehicles_sidebar_filters')]
+    public function sidebarFilters(
+        VehicleRepository $vehicleRepo
+    ): Response {
+
+        return $this->render(
+            'vehicles/_vehicles_filters.html.twig',
+            $this->buildFiltersContext($vehicleRepo)
+        );
+    }
+
     private function hydrateFilterLabels(VehicleRepository $repo, array $filters): array
     {
         $labels = [];
