@@ -19,6 +19,7 @@ class VehiclesFilterController extends AbstractController
         Request $request,
         PaginatorInterface $paginator
     ): Response {
+        // Récupération des filtres GET
         $data = $request->query->all();
 
         $filters = $data['filters'] ?? [];
@@ -26,14 +27,17 @@ class VehiclesFilterController extends AbstractController
 
         $view = $filters['view'] ?? 'grid';
 
+        // Query filtrée
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
 
+        // Pagination (page courante)
         $vehicles = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
             12
         );
 
+        // Contexte filtres sidebar
         $context = $this->buildFiltersContext($vehicleRepo);
 
         return $this->render('vehicles/index.html.twig', array_merge($context, [
@@ -51,6 +55,7 @@ class VehiclesFilterController extends AbstractController
         VehicleRepository $vehicleRepo,
         PaginatorInterface $paginator
     ): Response {
+        // Merge GET + POST (filters + pagination)
         $data = array_merge(
             $request->query->all(),
             $request->request->all()
@@ -62,25 +67,34 @@ class VehiclesFilterController extends AbstractController
 
         $view = $filters['view'] ?? 'grid';
 
+        // Query filtrée
         $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
 
+        // Pagination AJAX
         $vehicles = $paginator->paginate($query, $page, 10);
 
+        // Contexte filtres (sidebar)
         $context = $this->buildFiltersContext($vehicleRepo);
+
+        // Labels filtres actifs
         $filterLabels = $this->hydrateFilterLabels($vehicleRepo, $filters);
 
         return $this->json([
+            // Liste véhicules
             'list' => $this->renderView('vehicles/_vehicles_list.html.twig', [
                 'vehicles' => $vehicles,
                 'view' => $view
             ]),
-            'pagination_top' => $this->renderView('vehicles/_pagination_info.html.twig', [
+
+            // Pagination complète (compteur + navigation)
+            'pagination' => $this->renderView('vehicles/_pagination.html.twig', [
                 'vehicles' => $vehicles
             ]),
-            'pagination_bottom' => $this->renderView('vehicles/_pagination_info.html.twig', [
-                'vehicles' => $vehicles
-            ]),
+
+            // Sidebar filtres (si re-render complet nécessaire)
             'filters' => $this->renderView('vehicles/_vehicles_filters.html.twig', $context),
+
+            // Résumé filtres actifs
             'filtersSummary' => $this->renderView('vehicles/_filters_summary.html.twig', [
                 'filters' => $filters,
                 'filterLabels' => $filterLabels
@@ -93,6 +107,7 @@ class VehiclesFilterController extends AbstractController
         Request $request,
         VehicleRepository $vehicleRepo
     ): Response {
+        // Recherche autocomplete
         $items = $vehicleRepo->searchForAutocomplete(
             [],
             (string) $request->query->get('q', ''),
@@ -138,7 +153,7 @@ class VehiclesFilterController extends AbstractController
     public function sidebarFilters(
         VehicleRepository $vehicleRepo
     ): Response {
-
+        // Render sidebar filters standalone
         return $this->render(
             'vehicles/_vehicles_filters.html.twig',
             $this->buildFiltersContext($vehicleRepo)
@@ -149,6 +164,7 @@ class VehiclesFilterController extends AbstractController
     {
         $labels = [];
 
+        // Marques sélectionnées
         if (!empty($filters['brand'])) {
             $labels['brand'] = $vehicleRepo
                 ->createQueryBuilder('v')
@@ -161,9 +177,7 @@ class VehiclesFilterController extends AbstractController
                 ->getSingleColumnResult();
         }
 
-        /*
-     * Status : mapping propre via Enum
-     */
+        // Status via enum mapping
         if (!empty($filters['status'])) {
             $map = [];
 

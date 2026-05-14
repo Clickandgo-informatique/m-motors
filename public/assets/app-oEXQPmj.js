@@ -11,12 +11,10 @@ import AjaxManager from "./js/AjaxManager.js";
 import ToggleVehicleFavorite from "./js/ToggleVehicleFavorite.js";
 import Autocomplete from "./js/Autocomplete.js";
 import EventBus from "./js/EventBus.js";
+import initPagination from "./js/Pagination.js";
 
 console.log("app.js initialisé");
 
-/*
- * Reset flags après re-render AJAX
- */
 function resetInitFlags(root) {
   root.querySelectorAll("[data-fetch-form-initialized]").forEach(el => {
     el.removeAttribute("data-fetch-form-initialized");
@@ -100,18 +98,12 @@ function initCollections(root = document) {
  */
 function initSliders(root = document) {
   root.querySelectorAll(".double-slider").forEach(slider => {
-    if (slider.dataset.sliderInitialized === "1") return;
-
-    slider.dataset.sliderInitialized = "1";
-
-    const instance = initDoubleSlider(slider);
-
-    if (instance) {
-      slider._instance = instance;
+    if (slider._instance) {
+      slider._instance.destroy?.();
     }
+    initDoubleSlider(slider);
   });
 }
-
 /*
  * AJAX manager global
  */
@@ -121,31 +113,34 @@ function initAjaxManager() {
   }
 }
 
-/*
- * PAGINATION (EVENT DELEGATION - FIX CRITIQUE)
- */
-function initPagination() {
-  document.addEventListener("click", e => {
-    const link = e.target.closest("[data-page]");
-    if (!link) return;
+//Initialisation de la pagination
+function initPagination(root = document) {
+  root.querySelectorAll("[data-pagination]").forEach(pagination => {
+    pagination.querySelectorAll("[data-page]").forEach(link => {
+      if (link.dataset.bound) return;
 
-    e.preventDefault();
+      link.dataset.bound = "1";
 
-    const form = document.querySelector("#filters-form");
-    if (!form) return;
+      link.addEventListener("click", e => {
+        e.preventDefault();
 
-    let input = form.querySelector("[name='page']");
+        const form = document.querySelector("#filters-form");
+        if (!form) return;
 
-    if (!input) {
-      input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "page";
-      form.appendChild(input);
-    }
+        let input = form.querySelector("[name='page']");
 
-    input.value = link.dataset.page;
+        if (!input) {
+          input = document.createElement("input");
+          input.type = "hidden";
+          input.name = "page";
+          form.appendChild(input);
+        }
 
-    form.dispatchEvent(new Event("change", { bubbles: true }));
+        input.value = link.dataset.page;
+
+        form.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    });
   });
 }
 
@@ -183,13 +178,10 @@ EventBus.on("ui:updated", ({ target }) => {
   initFavorites(root);
   initCollections(root);
   initSliders(root);
-
-  // pagination NE DOIT PAS être réinitialisée (event delegation global)
+  initPagination(root);
 });
 
-/*
- * Debug change filters
- */
+// debug temporaire
 document.addEventListener("change", e => {
   if (e.target.closest("#filters-form")) {
     console.log("[DEBUG] CHANGE EVENT:", e.target);

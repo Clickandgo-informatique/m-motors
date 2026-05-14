@@ -30,7 +30,6 @@ export default class FetchForm {
   async send() {
     if (this.isLoading) return;
 
-    // Abort requête précédente si encore en cours
     if (this.abortController) {
       this.abortController.abort();
     }
@@ -43,29 +42,19 @@ export default class FetchForm {
     const url = this.form.dataset.fetchUrl;
 
     const target = document.querySelector(this.form.dataset.target);
+    const pagination = document.querySelector(this.form.dataset.paginationTarget);
 
-    // IMPORTANT : on cible les 2 zones pagination explicitement
-    const paginationTop = document.querySelector("#vehicles-pagination-top");
-    const paginationBottom = document.querySelector("#vehicles-pagination-bottom");
-
-    if (!target) {
-      console.error("[FetchForm] Target missing");
-      this.isLoading = false;
-      return;
-    }
+    if (!target) return;
 
     try {
       const params = new URLSearchParams(new FormData(this.form));
 
-      const res = await fetch(`${url}?${params.toString()}`, {
+      const res = await fetch(`${url}?${params}`, {
         method: "GET",
         signal: this.abortController.signal
       });
 
-      if (!res.ok) {
-        console.error("[FetchForm] HTTP error", res.status);
-        return;
-      }
+      if (!res.ok) return;
 
       const data = await res.json();
 
@@ -74,28 +63,21 @@ export default class FetchForm {
         target.innerHTML = data.list;
       }
 
-      // Pagination (sync TOP + BOTTOM)
-      if (data.pagination) {
-        if (paginationTop) {
-          paginationTop.innerHTML = data.pagination;
-        }
-
-        if (paginationBottom) {
-          paginationBottom.innerHTML = data.pagination;
-        }
+      // Pagination (haut + bas via même partial injecté 2 fois côté Twig)
+      if (data.pagination && pagination) {
+        pagination.innerHTML = data.pagination;
       }
 
-      // Résumé filtres
+      // UI filters summary
       if (data.filtersSummary) {
         const summary = document.querySelector("#filters-summary");
         if (summary) summary.innerHTML = data.filtersSummary;
       }
 
-      // Trigger global UI refresh
       window.dispatchEvent(new Event("ui:updated"));
     } catch (err) {
       if (err.name !== "AbortError") {
-        console.error("[FetchForm] erreur AJAX", err);
+        console.error("[FetchForm]", err);
       }
     } finally {
       this.isLoading = false;

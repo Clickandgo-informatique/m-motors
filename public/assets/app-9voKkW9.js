@@ -11,6 +11,7 @@ import AjaxManager from "./js/AjaxManager.js";
 import ToggleVehicleFavorite from "./js/ToggleVehicleFavorite.js";
 import Autocomplete from "./js/Autocomplete.js";
 import EventBus from "./js/EventBus.js";
+import initPagination from "./js/Pagination.js";
 
 console.log("app.js initialisé");
 
@@ -122,31 +123,10 @@ function initAjaxManager() {
 }
 
 /*
- * PAGINATION (EVENT DELEGATION - FIX CRITIQUE)
+ * Pagination
  */
-function initPagination() {
-  document.addEventListener("click", e => {
-    const link = e.target.closest("[data-page]");
-    if (!link) return;
-
-    e.preventDefault();
-
-    const form = document.querySelector("#filters-form");
-    if (!form) return;
-
-    let input = form.querySelector("[name='page']");
-
-    if (!input) {
-      input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "page";
-      form.appendChild(input);
-    }
-
-    input.value = link.dataset.page;
-
-    form.dispatchEvent(new Event("change", { bubbles: true }));
-  });
+function initPaginationSafe(root = document) {
+  initPagination(root);
 }
 
 /*
@@ -162,7 +142,7 @@ function initApp() {
   initCollections();
   initAjaxManager();
   initSliders();
-  initPagination();
+  initPaginationSafe();
 }
 
 /*
@@ -183,8 +163,7 @@ EventBus.on("ui:updated", ({ target }) => {
   initFavorites(root);
   initCollections(root);
   initSliders(root);
-
-  // pagination NE DOIT PAS être réinitialisée (event delegation global)
+  initPaginationSafe(root);
 });
 
 /*

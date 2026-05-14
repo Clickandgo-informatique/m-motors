@@ -1,0 +1,44 @@
+{# Pagination complète : compteur + navigation #}
+
+{% if vehicles is defined and vehicles.totalItemCount > 0 %}
+
+    <div class="pagination-info-text text-center">
+        {{ vehicles.totalItemCount }} véhicule{{ vehicles.totalItemCount > 1 ? 's' : '' }}
+        - Page {{ vehicles.currentPageNumber }}/{{ vehicles.pageCount }}
+    </div>
+
+    <div class="pagination" data-pagination>
+
+        {% if vehicles.currentPageNumber > 1 %}
+            <a href="#" data-page="1">« Première</a>
+            <a href="#" data-page="{{ vehicles.currentPageNumber - 1 }}">← Précédent</a>
+        {% endif %}
+
+        {% set start = vehicles.currentPageNumber - 2 %}
+        {% set end = vehicles.currentPageNumber + 2 %}
+
+        {% if start < 1 %}{% set start = 1 %}{% endif %}
+        {% if end > vehicles.pageCount %}{% set end = vehicles.pageCount %}{% endif %}
+
+        {% for i in start..end %}
+            <a href="#"
+               class="{{ i == vehicles.currentPageNumber ? 'active' : '' }}"
+               data-page="{{ i }}">
+                {{ i }}
+            </a>
+        {% endfor %}
+
+        {% if vehicles.currentPageNumber < vehicles.pageCount %}
+            <a href="#" data-page="{{ vehicles.currentPageNumber + 1 }}">Suivant →</a>
+            <a href="#" data-page="{{ vehicles.pageCount }}">Dernière »</a>
+        {% endif %}
+
+    </div>
+
+{% else %}
+
+    <div class="pagination-wrapper disabled text-center">
+        Aucun véhicule trouvé
+    </div>
+
+{% endif %}
