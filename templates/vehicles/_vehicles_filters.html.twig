@@ -158,11 +158,11 @@
    KILOMETRAGE SLIDER
 ========================= #}
 
-{# <div class="mileage-range wrapper">
+<div class="mileage-range wrapper">
 
     <div>
         <i class="fa-solid fa-tachometer-alt"></i>
-        <span class="summary-label">Kilométrage :</span>
+        <span>Kilométrage :</span>
 
         <span id="mileage-min-value">0</span>
         km -
@@ -171,7 +171,7 @@
         km
     </div>
 
-    <div class="range-selector"
+    <div class="double-slider"
          data-module="range-selector"
          data-filter="mileage"
          data-min="0"
@@ -185,49 +185,53 @@
 
     <input type="hidden" name="filters[mileageMin]" value="0">
     <input type="hidden" name="filters[mileageMax]" value="300000">
-</div> #}
+
+</div>
 
 
-{# PRICE SLIDER SAFE #}
+{# =========================
+   PRICE SLIDER
+========================= #}
 
-{# <div class="range-selector price-range"
+<div class="price-display">
+    <span>
+        Min :
+        <strong data-price-min-display>
+            {{ priceMin ?? priceMinGlobal ?? 0 }}
+        </strong> €
+    </span>
+
+    <span>
+        Max :
+        <strong data-price-max-display>
+            {{ priceMax ?? priceMaxGlobal ?? 100000 }}
+        </strong> €
+    </span>
+</div>
+
+<div class="double-slider price-range"
      data-module="range-selector"
      data-filter="price"
      data-min="{{ priceMinGlobal ?? 0 }}"
      data-max="{{ priceMaxGlobal ?? 100000 }}"
      data-step="100"
-     data-target-min=".price-range [data-price-min-display]"
-     data-target-max=".price-range [data-price-max-display]"
+     data-target-min="[data-price-min-display]"
+     data-target-max="[data-price-max-display]"
      data-input-min="filters[priceMin]"
      data-input-max="filters[priceMax]">
 
-    <div class="price-display">
-        <span>
-            Min :
-            <strong data-price-min-display>
-                {{ priceMin ?? priceMinGlobal ?? 0 }}
-            </strong> €
-        </span>
-
-        <span>
-            Max :
-            <strong data-price-max-display>
-                {{ priceMax ?? priceMaxGlobal ?? 100000 }}
-            </strong> €
-        </span>
-    </div>
-
-    <input type="hidden" name="filters[priceMin]" value="{{ priceMin ?? priceMinGlobal ?? 0 }}">
-    <input type="hidden" name="filters[priceMax]" value="{{ priceMax ?? priceMaxGlobal ?? 100000 }}">
-
     <div class="slider-track-container"></div>
-</div> #}
+</div>
+
+<input type="hidden" name="filters[priceMin]" value="{{ priceMin ?? priceMinGlobal ?? 0 }}">
+<input type="hidden" name="filters[priceMax]" value="{{ priceMax ?? priceMaxGlobal ?? 100000 }}">
+
 
 {# =========================
-   ANNEES SLIDER (SAFE)
+   ANNEES SLIDER
 ========================= #}
 
-{# {% set yearMin = registrationYearsMin is defined and registrationYearsMin is not null ? registrationYearsMin : null %}
+{% set yearMin = registrationYearsMin is defined and registrationYearsMin is not null ? registrationYearsMin : null %}
 {% set yearMax = registrationYearsMax is defined and registrationYearsMax is not null ? registrationYearsMax : null %}
 
 {% if yearMin is not null and yearMax is not null %}
@@ -243,7 +247,7 @@
         <span id="year-max-value">{{ yearMax }}</span>
     </div>
 
-    <div class="range-selector"
+    <div class="double-slider"
          data-module="range-selector"
          data-filter="year"
          data-min="{{ yearMin }}"
@@ -260,6 +264,6 @@
 
 </div>
 
-{% endif %} #}
+{% endif %}
 
 </form>

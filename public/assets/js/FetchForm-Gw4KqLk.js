@@ -41,12 +41,18 @@ export default class FetchForm {
     this.form.dataset.loading = "1";
 
     const url = this.form.dataset.fetchUrl;
-    const target = document.querySelector(this.form.dataset.target);
 
+    const target = document.querySelector(this.form.dataset.target);
     if (!target) return;
 
     try {
       const formData = new FormData(this.form);
+
+      this.form.querySelectorAll("input, select, textarea").forEach(el => {
+        if (!el.name) return;
+        formData.set(el.name, el.value);
+      });
+
       const params = new URLSearchParams();
 
       formData.forEach((value, key) => {
@@ -78,8 +84,6 @@ export default class FetchForm {
       }
 
       window.dispatchEvent(new Event("ui:updated"));
-
-      window.__filterBadges?.updateBadges();
     } catch (e) {
       if (e.name !== "AbortError") {
         console.error("[FetchForm]", e);

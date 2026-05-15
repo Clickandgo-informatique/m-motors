@@ -12,8 +12,8 @@ export default function initDoubleSlider(slider) {
 
   const form = slider.closest("form") || document;
 
-  const inputMinEl = form.querySelector(`input[name="${slider.dataset.inputMin}"]`);
-  const inputMaxEl = form.querySelector(`input[name="${slider.dataset.inputMax}"]`);
+  const inputMinEl = slider.querySelector(`input[name="${slider.dataset.inputMin}"]`);
+  const inputMaxEl = slider.querySelector(`input[name="${slider.dataset.inputMax}"]`);
 
   let currentMin = inputMinEl?.value ? Number(inputMinEl.value) : MIN;
   let currentMax = inputMaxEl?.value ? Number(inputMaxEl.value) : MAX;
@@ -47,16 +47,9 @@ export default function initDoubleSlider(slider) {
     clearTimeout(slider._t);
 
     slider._t = setTimeout(() => {
-      const form = slider.closest("form");
       if (!form || form.dataset.loading === "1") return;
-
-      if (inputMinEl) inputMinEl.value = currentMin;
-      if (inputMaxEl) inputMaxEl.value = currentMax;
-
-      requestAnimationFrame(() => {
-        form.dispatchEvent(new Event("change", { bubbles: true }));
-      });
-    }, 150);
+      form.dispatchEvent(new Event("change", { bubbles: true }));
+    }, 250);
   }
 
   function build() {
@@ -92,16 +85,13 @@ export default function initDoubleSlider(slider) {
     if (inputMinEl) inputMinEl.value = currentMin;
     if (inputMaxEl) inputMaxEl.value = currentMax;
 
-    const minLabel = form.querySelector(slider.dataset.targetMin);
-    const maxLabel = form.querySelector(slider.dataset.targetMax);
+    const minLabel = document.querySelector(slider.dataset.targetMin);
+    const maxLabel = document.querySelector(slider.dataset.targetMax);
 
-    if (minLabel) minLabel.textContent = String(currentMin);
-    if (maxLabel) maxLabel.textContent = String(currentMax);
+    if (minLabel) minLabel.textContent = currentMin;
+    if (maxLabel) maxLabel.textContent = currentMax;
 
-    requestAnimationFrame(() => {
-      scheduleFetch();
-      window.__filterBadges?.updateBadges();
-    });
+    scheduleFetch();
   }
 
   function drag(e, thumb) {

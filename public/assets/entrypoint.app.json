@@ -11,6 +11,7 @@
     "\/assets\/js\/ToggleVehicleFavorite.js",
     "\/assets\/js\/Autocomplete.js",
     "\/assets\/js\/EventBus.js",
+    "\/assets\/js\/FilterBadges.js",
     "@symfony\/stimulus-bundle",
     "@hotwired\/stimulus",
     "\/assets\/@symfony\/stimulus-bundle\/controllers.js",
