@@ -1,7 +1,7 @@
 /* ========================================================= */
 /* DOUBLE SLIDER — SLIDER KILOMÉTRAGE */
 /* ========================================================= */
-.wrapper {
+.wrapper{
   margin-top: 5px;
   margin-bottom: 5px;
 }
@@ -110,7 +110,7 @@
   gap: 6px;
   font-weight: 600;
   white-space: nowrap;
-  color: var(--color-primary);
+  color: var(--text-primary);
 }
 
 /* Ligne des valeurs */
@@ -123,6 +123,7 @@
   color: var(--text-secondary);
   white-space: nowrap;
   flex-wrap: wrap; /* évite les coupures */
+
 }
 
 /* Séparateur visuel */

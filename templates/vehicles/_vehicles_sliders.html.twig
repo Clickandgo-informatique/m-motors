@@ -1,0 +1,118 @@
+{# =========================
+   KILOMETRAGE SLIDER
+========================= #}
+
+<div class="mileage-range wrapper">
+
+    <div class="slider-header">
+        <div class="slider-title">
+            <i class="fa-solid fa-tachometer-alt"></i>
+            <span>Kilométrage</span>
+        </div>
+
+        <div class="slider-values">
+            <span id="mileage-min-value">0</span>
+            <span class="separator">→</span>
+            <span id="mileage-max-value">300000</span>
+            <span class="unit">km</span>
+        </div>
+    </div>
+
+    <div class="double-slider"
+         data-module="range-selector"
+         data-filter="mileage"
+         data-min="0"
+         data-max="300000"
+         data-step="10000"
+         data-target-min="#mileage-min-value"
+         data-target-max="#mileage-max-value"
+         data-input-min="filters[mileageMin]"
+         data-input-max="filters[mileageMax]">
+    </div>
+
+    <input type="hidden" name="filters[mileageMin]" value="0">
+    <input type="hidden" name="filters[mileageMax]" value="300000">
+
+</div>
+
+
+{# =========================
+   PRICE SLIDER
+========================= #}
+
+<div class="price-range wrapper">
+
+    <div class="slider-header">
+        <div class="slider-title">
+            <i class="fa-solid fa-coins"></i>
+            <span>Prix</span>
+        </div>
+
+        <div class="slider-values">
+            <span data-price-min-display>{{ priceMin ?? priceMinGlobal ?? 0 }}</span>
+            <span class="separator">→</span>
+            <span data-price-max-display>{{ priceMax ?? priceMaxGlobal ?? 100000 }}</span>
+            <span class="unit">€</span>
+        </div>
+    </div>
+
+    <div class="double-slider"
+         data-module="range-selector"
+         data-filter="price"
+         data-min="{{ priceMinGlobal ?? 0 }}"
+         data-max="{{ priceMaxGlobal ?? 100000 }}"
+         data-step="100"
+         data-target-min="[data-price-min-display]"
+         data-target-max="[data-price-max-display]"
+         data-input-min="filters[priceMin]"
+         data-input-max="filters[priceMax]">
+    </div>
+
+    <input type="hidden" name="filters[priceMin]" value="{{ priceMin ?? priceMinGlobal ?? 0 }}">
+    <input type="hidden" name="filters[priceMax]" value="{{ priceMax ?? priceMaxGlobal ?? 100000 }}">
+
+</div>
+
+
+{# =========================
+   ANNEES SLIDER
+========================= #}
+
+{% set yearMin = registrationYearsMin is defined and registrationYearsMin is not null ? registrationYearsMin : null %}
+{% set yearMax = registrationYearsMax is defined and registrationYearsMax is not null ? registrationYearsMax : null %}
+
+{% if yearMin is not null and yearMax is not null %}
+
+<div class="registration-years-range wrapper">
+
+    <div class="slider-header">
+        <div class="slider-title">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Années</span>
+        </div>
+
+        <div class="slider-values">
+            <span id="year-min-value">{{ yearMin }}</span>
+            <span class="separator">→</span>
+            <span id="year-max-value">{{ yearMax }}</span>
+        </div>
+    </div>
+
+    <div class="double-slider"
+         data-module="range-selector"
+         data-filter="year"
+         data-min="{{ yearMin }}"
+         data-max="{{ yearMax }}"
+         data-step="1"
+         data-target-min="#year-min-value"
+         data-target-max="#year-max-value"
+         data-input-min="filters[registrationYearMin]"
+         data-input-max="filters[registrationYearMax]">
+    </div>
+
+    <input type="hidden" name="filters[registrationYearMin]" value="{{ yearMin }}">
+    <input type="hidden" name="filters[registrationYearMax]" value="{{ yearMax }}">
+
+</div>
+
+{% endif %}

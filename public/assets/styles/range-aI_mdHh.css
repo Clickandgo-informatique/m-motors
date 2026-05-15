@@ -1,10 +1,7 @@
 /* ========================================================= */
 /* DOUBLE SLIDER — SLIDER KILOMÉTRAGE */
 /* ========================================================= */
-.wrapper {
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
+
 .double-slider {
   position: relative;
   /* height: 60px; laisse de la place pour les tooltips */
@@ -110,14 +107,13 @@
   gap: 6px;
   font-weight: 600;
   white-space: nowrap;
-  color: var(--color-primary);
+  color: var(--text-primary);
 }
 
 /* Ligne des valeurs */
 .slider-values {
   display: flex;
   align-items: center;
-  justify-content: right;
   gap: 6px;
   font-size: var(--font-size-small);
   color: var(--text-secondary);
