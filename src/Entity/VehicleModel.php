@@ -44,7 +44,7 @@ class VehicleModel
     #[ORM\JoinColumn(nullable: true)]
     private ?FuelType $fuelType = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: GearType::class, inversedBy: 'vehicleModels')]
     #[ORM\JoinColumn(nullable: true)]
     private ?GearType $gearType = null;
 

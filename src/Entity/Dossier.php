@@ -4,12 +4,15 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
 use App\Enum\DossierType;
+use App\EventListener\DossierFinancingListener;
 use App\Repository\DossierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+
+#[ORM\EntityListeners([DossierFinancingListener::class])]
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Dossier
@@ -226,5 +229,20 @@ class Dossier
             'cancelled' => 'danger',
             default => 'secondary',
         };
+    }
+
+    // FINANCEMENT
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: Financing::class, cascade: ['persist', 'remove'])]
+    private ?Financing $financing = null;
+
+    public function getFinancing(): ?Financing
+    {
+        return $this->financing;
+    }
+
+    public function setFinancing(?Financing $financing): self
+    {
+        $this->financing = $financing;
+        return $this;
     }
 }

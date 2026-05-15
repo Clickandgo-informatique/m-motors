@@ -16,13 +16,12 @@ framework:
         - available_sale
         - available_rent
         - reserved
-        - rented
         - sold
+        - rented
         - ordered
         - maintenance
 
       transitions:
-
         reserve:
           from:
             - available_sale
@@ -49,8 +48,8 @@ framework:
 
         vehicle_sell:
           from:
-            - available_sale
             - reserved
+            - available_sale
           to: sold
 
         vehicle_order:

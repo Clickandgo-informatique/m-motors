@@ -3,12 +3,12 @@ framework:
     dossier:
       type: state_machine
 
+      supports:
+        - App\Entity\Dossier
+
       marking_store:
         type: method
         property: status
-
-      supports:
-        - App\Entity\Dossier
 
       initial_marking: draft
 
@@ -18,11 +18,11 @@ framework:
         - documents_pending
         - documents_review
         - financing_review
+        - order_signed
         - completed
         - cancelled
 
       transitions:
-
         select_vehicle:
           from: draft
           to: vehicle_selected
@@ -45,11 +45,15 @@ framework:
 
         approve_financing:
           from: financing_review
-          to: completed
+          to: order_signed
 
         reject_financing:
           from: financing_review
           to: documents_review
+
+        sign_order:
+          from: order_signed
+          to: completed
 
         cancel:
           from:
@@ -58,4 +62,5 @@ framework:
             - documents_pending
             - documents_review
             - financing_review
+            - order_signed
           to: cancelled

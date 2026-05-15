@@ -43,7 +43,7 @@ class GearType
     VEHICLE MODELS
     ==========================
     */
-    #[ORM\OneToMany(mappedBy: 'GearType', targetEntity: VehicleModel::class)]
+    #[ORM\OneToMany(mappedBy: 'gearType', targetEntity: VehicleModel::class)]
     private Collection $vehicleModels;
 
     public function __construct()

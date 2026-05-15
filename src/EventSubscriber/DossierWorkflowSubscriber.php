@@ -4,16 +4,16 @@ namespace App\EventSubscriber;
 
 use App\Entity\Dossier;
 use App\Enum\DossierType;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\Financing\DossierFinancingService;
+use App\Service\VehicleWorkflowService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
-use Symfony\Component\Workflow\Registry;
 
 class DossierWorkflowSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private EntityManagerInterface $em,
-        private Registry $workflowRegistry
+        private VehicleWorkflowService $vehicleWorkflow,
+        private DossierFinancingService $financingService
     ) {}
 
     public static function getSubscribedEvents(): array
@@ -37,41 +37,21 @@ class DossierWorkflowSubscriber implements EventSubscriberInterface
             return;
         }
 
-        /**
-         * IMPORTANT :
-         * on force le bon workflow explicite
-         */
-        $workflow = $this->workflowRegistry->get($vehicle, 'vehicle_state_machine');
-
         $transition = $event->getTransition()->getName();
 
         // =========================================================
         // SELECT VEHICLE
         // =========================================================
         if ($transition === 'select_vehicle') {
-
-            // available -> reserved
-            if ($workflow->can($vehicle, 'reserve')) {
-                $workflow->apply($vehicle, 'reserve');
-            }
-
+            $this->vehicleWorkflow->reserve($vehicle);
             return;
         }
 
         // =========================================================
-        // APPROVE FINANCING
+        // FINANCING APPROVAL (delegué au service métier)
         // =========================================================
         if ($transition === 'approve_financing') {
-
-            $targetTransition = $dossier->getType() === DossierType::SALE
-                ? 'vehicle_sell'
-                : 'vehicle_rent';
-
-            // sécurité : workflow guard
-            if ($workflow->can($vehicle, $targetTransition)) {
-                $workflow->apply($vehicle, $targetTransition);
-            }
-
+            $this->financingService->approve($dossier);
             return;
         }
 
@@ -79,17 +59,8 @@ class DossierWorkflowSubscriber implements EventSubscriberInterface
         // CANCEL DOSSIER
         // =========================================================
         if ($transition === 'cancel') {
-
-            // réservé → available ou rented → available selon état réel
-            if ($workflow->can($vehicle, 'cancel_reservation')) {
-                $workflow->apply($vehicle, 'cancel_reservation');
-            } elseif ($workflow->can($vehicle, 'vehicle_return')) {
-                $workflow->apply($vehicle, 'vehicle_return');
-            }
-
+            $this->vehicleWorkflow->return($vehicle);
             return;
         }
-
-        $this->em->flush();
     }
 }

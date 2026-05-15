@@ -3,12 +3,14 @@
 namespace App\Service;
 
 use App\Entity\Dossier;
+use App\Service\DossierFinancingService;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class DossierWorkflowService
 {
     public function __construct(
-        private WorkflowInterface $dossierStateMachine
+        private WorkflowInterface $dossierStateMachine,
+         private DossierFinancingService $financingService
     ) {}
 
     // =========================================================
@@ -26,6 +28,7 @@ class DossierWorkflowService
         }
 
         $this->dossierStateMachine->apply($dossier, $transition);
+        $this->financingService->syncFromDossier($dossier);
     }
 
     // =========================================================

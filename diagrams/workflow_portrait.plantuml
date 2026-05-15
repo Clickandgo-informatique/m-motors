@@ -1,0 +1,56 @@
+@startuml
+
+top to bottom direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam dpi 150
+
+title M-Motors - Flux métier (portrait)
+
+actor User
+
+' =====================
+' ENTRY POINT
+' =====================
+
+User --> DossierController
+User --> VehicleController
+User --> DossierDocumentController
+
+' =====================
+' DOSSIER FLOW (LINÉAIRE)
+' =====================
+
+DossierController --> DossierWorkflowService
+DossierWorkflowService --> Dossier
+DossierWorkflowService --> "Dossier Workflow"
+
+"Dossier Workflow" --> DossierWorkflowSubscriber
+
+DossierWorkflowSubscriber --> Vehicle : reserve / update status
+
+' =====================
+' DOCUMENT FLOW
+' =====================
+
+DossierDocumentController --> DossierDocumentUploadService
+DossierDocumentUploadService --> DocumentUploadedEvent
+DocumentUploadedEvent --> DocumentUploadedSubscriber
+DocumentUploadedSubscriber --> DossierAuditService
+
+' =====================
+' VEHICLE FLOW
+' =====================
+
+VehicleController --> Vehicle
+VehicleController --> "Vehicle State Machine"
+"Vehicle State Machine" --> Vehicle
+
+' =====================
+' RELATION METIER
+' =====================
+
+Dossier --> Vehicle
+Vehicle --> VehicleModel
+
+@enduml

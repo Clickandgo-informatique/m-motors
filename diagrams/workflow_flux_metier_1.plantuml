@@ -1,0 +1,79 @@
+@startuml
+
+top to bottom direction
+skinparam packageStyle rectangle
+
+title M-Motors - Flux métier (vertical optimisé)
+
+actor User
+
+rectangle "Controllers" {
+  [DossierController]
+  [VehicleController]
+  [DossierDocumentController]
+}
+
+rectangle "Domain - Dossier" {
+  entity Dossier
+  [DossierWorkflowService]
+  [DossierAuditService]
+  [DossierDocumentUploadService]
+  [DossierDocumentValidator]
+}
+
+rectangle "Domain - Vehicle" {
+  entity Vehicle
+  entity VehicleModel
+  [VehicleGalleryManager]
+}
+
+rectangle "Symfony Workflow" {
+  [Dossier Workflow]
+  [Vehicle State Machine]
+}
+
+rectangle "Events" {
+  [DocumentUploadedEvent]
+}
+
+rectangle "Subscribers" {
+  [DossierWorkflowSubscriber]
+  [RentalWorkflowSubscriber]
+  [DocumentUploadedSubscriber]
+}
+
+rectangle "Supporting Domain" {
+  entity Rental
+  entity Sale
+  [PriceCalculator]
+}
+
+User --> DossierController
+User --> VehicleController
+User --> DossierDocumentController
+
+DossierController --> DossierWorkflowService
+DossierWorkflowService --> Dossier
+DossierWorkflowService --> "Dossier Workflow"
+"Dossier Workflow" --> DossierWorkflowSubscriber
+
+DossierWorkflowSubscriber --> Vehicle
+DossierWorkflowSubscriber --> Rental
+DossierWorkflowSubscriber --> Sale
+
+DossierDocumentController --> DossierDocumentUploadService
+DossierDocumentUploadService --> DocumentUploadedEvent
+DocumentUploadedEvent --> DocumentUploadedSubscriber
+
+VehicleController --> Vehicle
+VehicleController --> "Vehicle State Machine"
+"Vehicle State Machine" --> Vehicle
+
+Dossier --> Vehicle
+Vehicle --> VehicleModel
+Vehicle --> PriceCalculator
+
+RentalWorkflowSubscriber --> Rental
+RentalWorkflowSubscriber --> Vehicle
+
+@enduml
