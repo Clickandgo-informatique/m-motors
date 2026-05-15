@@ -23,7 +23,7 @@ summary {
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: left;
+  justify-content: space-between;
   user-select: none;
   transition: color 0.2s ease;
   color: var(--color-primary);

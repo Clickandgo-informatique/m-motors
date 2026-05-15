@@ -1,158 +1,265 @@
 {# templates/vehicles/_vehicles_filters.html.twig #}
 
-<form id="filters-form" class="fetch-form" data-module="fetch-form" data-fetch-url="{{ path('vehicles_ajax_list') }}" data-target="#vehicles-results" data-filters-target="#vehicles-filters" data-pagination-target="#vehicles-pagination">
+<form
+    id="filters-form"
+    class="fetch-form"
+    data-module="fetch-form"
+    data-fetch-url="{{ path('vehicles_ajax_list') }}"
+    data-target="#vehicles-results"
+    data-filters-target="#vehicles-filters"
+    data-pagination-target="#vehicles-pagination"
+>
 
-	{# ========================================================= #}
-	{# STATUT VÉHICULE (STOCK) #}
-	{# ========================================================= #}
+{# =========================
+   STATUT VEHICULE
+========================= #}
 
-		<details> <summary>Disponibilité</summary>
+<details>
+    <summary>
+        <i class="fa-solid fa-circle-check"></i>
+        <span class="summary-label">Disponibilité</span>
+    </summary>
 
-		<ul class="status-list">
+    <ul class="status-list">
+        {% for status in statuses %}
+            <li>
+                <input type="checkbox"
+                       name="filters[status][]"
+                       id="status-{{ status.value }}"
+                       value="{{ status.value }}">
+                <label for="status-{{ status.value }}">
+                    {{ status.label }}
+                </label>
+            </li>
+        {% endfor %}
+    </ul>
+</details>
 
-			{% for status in statuses %}
-				<li>
-					<input type="checkbox" name="filters[status][]" id="status-{{ status.value }}" value="{{ status.value }}">
-					<label for="status-{{ status.value }}">
-						{{ status.label }}
-					</label>
-				</li>
-			{% endfor %}
 
-		</ul>
-	</details>
+{# =========================
+   FINANCEMENT
+========================= #}
 
-	{# ========================================================= #}
-	{# TYPE COMMERCIAL #}
-	{# ========================================================= #}
+<details>
+    <summary>
+        <i class="fa-solid fa-coins"></i>
+        <span class="summary-label">Type de financement</span>
+    </summary>
 
-		<details>
-			<summary>
-		Type de financement
-		</summary>
+    <ul class="type-list">
+        <li>
+            <input type="checkbox" name="filters[type][]" id="type-sale" value="sale">
+            <label for="type-sale">Vente</label>
+        </li>
 
-			<ul class="type-list"> <li>
-				<input type="checkbox" name="filters[type][]" id="type-sale" value="sale">
-				<label for="type-sale">Vente</label>
-			</li>
+        <li>
+            <input type="checkbox" name="filters[type][]" id="type-rental" value="rental">
+            <label for="type-rental">Location</label>
+        </li>
 
-			<li>
-				<input type="checkbox" name="filters[type][]" id="type-rental" value="rental">
-				<label for="type-rental">Location</label>
-			</li>
+        <li>
+            <input type="checkbox" name="filters[financing][]" id="financing-loa" value="loa">
+            <label for="financing-loa">LOA</label>
+        </li>
 
-			<li>
-				<input type="checkbox" name="filters[financing][]" id="financing-loa" value="loa">
-				<label for="financing-loa">LOA</label>
-			</li>
+        <li>
+            <input type="checkbox" name="filters[financing][]" id="financing-lld" value="lld">
+            <label for="financing-lld">LLD</label>
+        </li>
+    </ul>
+</details>
 
-			<li>
-				<input type="checkbox" name="filters[financing][]" id="financing-lld" value="lld">
-				<label for="financing-lld">LLD</label>
-			</li>
 
-		</ul>
-	</details>
+{# =========================
+   MARQUES
+========================= #}
 
-	{# ========================================================= #}
-	{# MARQUES #}
-	{# ========================================================= #}
+{% if brands is defined and brands|length > 0 %}
+<details>
+    <summary>
+        <i class="fa-solid fa-building"></i>
+        <span class="summary-label">Marque</span>
+    </summary>
 
-		{% if brands is defined and brands|length > 0 %}
-			<details>
-				<summary>
-			Marque
-			</summary>
-				<ul class="brand-list"> {% for brand in brands %}
-					<li>
-						<input type="checkbox" name="filters[brand][]" id="brand-{{ brand.id }}" value="{{ brand.id }}">
-						<label for="brand-{{ brand.id }}">{{ brand.name }}</label>
-					</li>
-				{% endfor %}
-			</ul>
-		</details>
-	{% endif %}
+    <ul class="brand-list">
+        {% for brand in brands %}
+            <li>
+                <input type="checkbox"
+                       name="filters[brand][]"
+                       id="brand-{{ brand.id }}"
+                       value="{{ brand.id }}">
+                <label for="brand-{{ brand.id }}">
+                    {{ brand.name }}
+                </label>
+            </li>
+        {% endfor %}
+    </ul>
+</details>
+{% endif %}
 
-	{# ========================================================= #}
-	{# CARROSSERIE #}
-	{# ========================================================= #}
 
-		{% if bodyTypes is defined and bodyTypes|length > 0 %}
-			<details>
-				<summary>
-			Carrosserie
-			</summary>
-				<ul class="bodyType-list"> {% for bodyType in bodyTypes %}
-					<li>
-						<input type="checkbox" name="filters[bodyType][]" id="bodyType-{{ bodyType.id }}" value="{{ bodyType.id }}">
-						<label for="bodyType-{{ bodyType.id }}">{{ bodyType.name }}</label>
-					</li>
-				{% endfor %}
-			</ul>
-		</details>
-	{% endif %}
+{# =========================
+   CARROSSERIE
+========================= #}
 
-	{# ========================================================= #}
-	{# CARBURANT #}
-	{# ========================================================= #}
+{% if bodyTypes is defined and bodyTypes|length > 0 %}
+<details>
+    <summary>
+        <i class="fa-solid fa-car-side"></i>
+        <span class="summary-label">Carrosserie</span>
+    </summary>
 
-		{% if fuelTypes is defined and fuelTypes|length > 0 %}
-			<details>
-				<summary>
-			Carburant
-			</summary>
-				<ul class="fuelType-list"> {% for fuelType in fuelTypes %}
-					<li>
-						<input type="checkbox" name="filters[fuelType][]" id="fuel-{{ fuelType.id }}" value="{{ fuelType.id }}">
-						<label for="fuel-{{ fuelType.id }}">{{ fuelType.name }}</label>
-					</li>
-				{% endfor %}
-			</ul>
-		</details>
-	{% endif %}
+    <ul class="bodyType-list">
+        {% for bodyType in bodyTypes %}
+            <li>
+                <input type="checkbox"
+                       name="filters[bodyType][]"
+                       id="bodyType-{{ bodyType.id }}"
+                       value="{{ bodyType.id }}">
+                <label for="bodyType-{{ bodyType.id }}">
+                    {{ bodyType.name }}
+                </label>
+            </li>
+        {% endfor %}
+    </ul>
+</details>
+{% endif %}
 
-	{# ========================================================= #}
-	{# SLIDER KILOMETRAGE #}
-	{# ========================================================= #}
 
-		<div class="mileage-range wrapper"> <div>
-			Kilométrage :
-			<span id="mileage-min-value">0</span>
-			km -
-			<span id="mileage-max-value">300000</span>
-			km
-		</div>
+{# =========================
+   CARBURANT
+========================= #}
 
-		<div class="double-slider" data-filter="mileage" data-min="0" data-max="300000" data-step="10000" data-value-low="0" data-value-high="300000" data-target-min="#mileage-min-value" data-target-max="#mileage-max-value" data-input-min="filters[mileageMin]" data-input-max="filters[mileageMax]"></div>
+{% if fuelTypes is defined and fuelTypes|length > 0 %}
+<details>
+    <summary>
+        <i class="fa-solid fa-gas-pump"></i>
+        <span class="summary-label">Carburant</span>
+    </summary>
 
-		<input type="hidden" name="filters[mileageMin]" value="0">
-		<input type="hidden" name="filters[mileageMax]" value="300000">
-	</div>
+    <ul class="fuelType-list">
+        {% for fuelType in fuelTypes %}
+            <li>
+                <input type="checkbox"
+                       name="filters[fuelType][]"
+                       id="fuel-{{ fuelType.id }}"
+                       value="{{ fuelType.id }}">
+                <label for="fuel-{{ fuelType.id }}">
+                    {{ fuelType.name }}
+                </label>
+            </li>
+        {% endfor %}
+    </ul>
+</details>
+{% endif %}
 
-	{# ========================================================= #}
-	{# SLIDER ANNEES #}
-	{# ========================================================= #}
 
-	{# Slider Années #}
+{# =========================
+   KILOMETRAGE SLIDER
+========================= #}
 
-	{% set yearMin = registrationYearsMin is defined and registrationYearsMin is not null ? registrationYearsMin : null %}
-	{% set yearMax = registrationYearsMax is defined and registrationYearsMax is not null ? registrationYearsMax : null %}
+{# <div class="mileage-range wrapper">
 
-		{% if yearMin is not null and yearMax is not null and yearMin < yearMax %}
+    <div>
+        <i class="fa-solid fa-tachometer-alt"></i>
+        <span class="summary-label">Kilométrage :</span>
 
-			<div class="registration-years-range wrapper"> <div>
-				Années :
-				<span id="year-min-value">{{ yearMin }}</span>
-				-
-				<span id="year-max-value">{{ yearMax }}</span>
-			</div>
+        <span id="mileage-min-value">0</span>
+        km -
 
-			<div class="double-slider" data-filter="year" data-min="{{ yearMin }}" data-max="{{ yearMax }}" data-step="1" data-value-low="{{ yearMin }}" data-value-high="{{ yearMax }}" data-target-min="#year-min-value" data-target-max="#year-max-value" data-input-min="filters[yearMin]" data-input-max="filters[yearMax]"></div>
+        <span id="mileage-max-value">300000</span>
+        km
+    </div>
 
-			<input type="hidden" name="filters[yearMin]" value="{{ yearMin }}">
-			<input type="hidden" name="filters[yearMax]" value="{{ yearMax }}">
-		</div>
+    <div class="range-selector"
+         data-module="range-selector"
+         data-filter="mileage"
+         data-min="0"
+         data-max="300000"
+         data-step="10000"
+         data-target-min="#mileage-min-value"
+         data-target-max="#mileage-max-value"
+         data-input-min="filters[mileageMin]"
+         data-input-max="filters[mileageMax]">
+    </div>
 
-	{% endif %}
+    <input type="hidden" name="filters[mileageMin]" value="0">
+    <input type="hidden" name="filters[mileageMax]" value="300000">
+</div> #}
+
+
+{# PRICE SLIDER SAFE #}
+
+{# <div class="range-selector price-range"
+     data-module="range-selector"
+     data-filter="price"
+     data-min="{{ priceMinGlobal ?? 0 }}"
+     data-max="{{ priceMaxGlobal ?? 100000 }}"
+     data-step="100"
+     data-target-min=".price-range [data-price-min-display]"
+     data-target-max=".price-range [data-price-max-display]"
+     data-input-min="filters[priceMin]"
+     data-input-max="filters[priceMax]">
+
+    <div class="price-display">
+        <span>
+            Min :
+            <strong data-price-min-display>
+                {{ priceMin ?? priceMinGlobal ?? 0 }}
+            </strong> €
+        </span>
+
+        <span>
+            Max :
+            <strong data-price-max-display>
+                {{ priceMax ?? priceMaxGlobal ?? 100000 }}
+            </strong> €
+        </span>
+    </div>
+
+    <input type="hidden" name="filters[priceMin]" value="{{ priceMin ?? priceMinGlobal ?? 0 }}">
+    <input type="hidden" name="filters[priceMax]" value="{{ priceMax ?? priceMaxGlobal ?? 100000 }}">
+
+    <div class="slider-track-container"></div>
+</div> #}
+
+{# =========================
+   ANNEES SLIDER (SAFE)
+========================= #}
+
+{# {% set yearMin = registrationYearsMin is defined and registrationYearsMin is not null ? registrationYearsMin : null %}
+{% set yearMax = registrationYearsMax is defined and registrationYearsMax is not null ? registrationYearsMax : null %}
+
+{% if yearMin is not null and yearMax is not null %}
+
+<div class="registration-years-range wrapper">
+
+    <div>
+        <i class="fa-solid fa-calendar-days"></i>
+        <span class="summary-label">Années :</span>
+
+        <span id="year-min-value">{{ yearMin }}</span>
+        -
+        <span id="year-max-value">{{ yearMax }}</span>
+    </div>
+
+    <div class="range-selector"
+         data-module="range-selector"
+         data-filter="year"
+         data-min="{{ yearMin }}"
+         data-max="{{ yearMax }}"
+         data-step="1"
+         data-target-min="#year-min-value"
+         data-target-max="#year-max-value"
+         data-input-min="filters[registrationYearMin]"
+         data-input-max="filters[registrationYearMax]">
+    </div>
+
+    <input type="hidden" name="filters[registrationYearMin]" value="{{ yearMin }}">
+    <input type="hidden" name="filters[registrationYearMax]" value="{{ yearMax }}">
+
+</div>
+
+{% endif %} #}
 
 </form>

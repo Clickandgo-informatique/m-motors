@@ -19,7 +19,9 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     /*
-     * QueryBuilder principal utilisé pour le dashboard
+     * =========================
+     * QUERY PRINCIPALE
+     * =========================
      */
     public function getFilteredQueryBuilder(array $filters = [], ?string $searchTerm = null): QueryBuilder
     {
@@ -31,24 +33,35 @@ class VehicleRepository extends ServiceEntityRepository
             ->leftJoin('vm.fuelType', 'ft')
             ->addSelect('vm', 'b', 'm', 'bt', 'ft');
 
-        $normalize = function ($value) {
+        $normalize = function ($value): array {
             if ($value === null || $value === '') {
                 return [];
             }
 
             if (is_array($value)) {
-                return array_values(array_filter($value, fn($v) => $v !== '' && $v !== null));
+                $value = array_values(array_filter($value, fn($v) => $v !== '' && $v !== null));
+                return $value;
             }
 
             return [$value];
         };
 
+        /*
+         * =========================
+         * STATUS
+         * =========================
+         */
         $status = $normalize($filters['status'] ?? null);
         if (!empty($status)) {
             $qb->andWhere('v.status IN (:status)')
                 ->setParameter('status', $status);
         }
 
+        /*
+         * =========================
+         * TYPE (vente/location)
+         * =========================
+         */
         $type = $normalize($filters['type'] ?? null);
         if (!empty($type)) {
             $qb->andWhere('EXISTS (
@@ -58,6 +71,11 @@ class VehicleRepository extends ServiceEntityRepository
             )')->setParameter('type', $type);
         }
 
+        /*
+         * =========================
+         * FINANCING
+         * =========================
+         */
         $financing = $normalize($filters['financing'] ?? null);
         if (!empty($financing)) {
             $qb->andWhere('EXISTS (
@@ -67,65 +85,97 @@ class VehicleRepository extends ServiceEntityRepository
             )')->setParameter('financing', $financing);
         }
 
+        /*
+         * =========================
+         * BRAND
+         * =========================
+         */
         $brands = $normalize($filters['brand'] ?? null);
         if (!empty($brands)) {
             $qb->andWhere('b.id IN (:brands)')
                 ->setParameter('brands', $brands);
         }
 
+        /*
+         * =========================
+         * BODY TYPE
+         * =========================
+         */
         $bodyTypes = $normalize($filters['bodyType'] ?? null);
         if (!empty($bodyTypes)) {
             $qb->andWhere('bt.id IN (:bodyTypes)')
                 ->setParameter('bodyTypes', $bodyTypes);
         }
 
+        /*
+         * =========================
+         * FUEL TYPE
+         * =========================
+         */
         $fuelTypes = $normalize($filters['fuelType'] ?? null);
         if (!empty($fuelTypes)) {
             $qb->andWhere('ft.id IN (:fuelTypes)')
                 ->setParameter('fuelTypes', $fuelTypes);
         }
 
-        if (!empty($filters['mileageMin'])) {
+        /*
+         * =========================
+         * MILEAGE
+         * =========================
+         */
+        if (!empty($filters['mileageMin']) && is_numeric($filters['mileageMin'])) {
             $qb->andWhere('v.mileage >= :mileageMin')
                 ->setParameter('mileageMin', (int) $filters['mileageMin']);
         }
 
-        if (!empty($filters['mileageMax'])) {
+        if (!empty($filters['mileageMax']) && is_numeric($filters['mileageMax'])) {
             $qb->andWhere('v.mileage <= :mileageMax')
                 ->setParameter('mileageMax', (int) $filters['mileageMax']);
         }
 
-        if (!empty($filters['priceMin'])) {
+        /*
+         * =========================
+         * PRICE
+         * =========================
+         */
+        if (!empty($filters['priceMin']) && is_numeric($filters['priceMin'])) {
             $qb->andWhere('v.price >= :priceMin')
                 ->setParameter('priceMin', (float) $filters['priceMin']);
         }
 
-        if (!empty($filters['priceMax'])) {
+        if (!empty($filters['priceMax']) && is_numeric($filters['priceMax'])) {
             $qb->andWhere('v.price <= :priceMax')
                 ->setParameter('priceMax', (float) $filters['priceMax']);
         }
 
-        $yearMin = $filters['registrationYearMin'] ?? null;
-        $yearMax = $filters['registrationYearMax'] ?? null;
-
-        if ($yearMin && ctype_digit((string) $yearMin)) {
+        /*
+         * =========================
+         * REGISTRATION YEARS
+         * =========================
+         */
+        if (!empty($filters['registrationYearMin']) && ctype_digit((string) $filters['registrationYearMin'])) {
             $qb->andWhere('v.firstRegistrationDate >= :yearMin')
-                ->setParameter('yearMin', new \DateTime($yearMin . '-01-01'));
+                ->setParameter('yearMin', new \DateTime($filters['registrationYearMin'] . '-01-01'));
         }
 
-        if ($yearMax && ctype_digit((string) $yearMax)) {
+        if (!empty($filters['registrationYearMax']) && ctype_digit((string) $filters['registrationYearMax'])) {
             $qb->andWhere('v.firstRegistrationDate <= :yearMax')
-                ->setParameter('yearMax', new \DateTime($yearMax . '-12-31'));
+                ->setParameter('yearMax', new \DateTime($filters['registrationYearMax'] . '-12-31'));
         }
 
+        /*
+         * =========================
+         * SEARCH
+         * =========================
+         */
         if (!empty($searchTerm)) {
             $search = '%' . mb_strtolower(trim($searchTerm)) . '%';
 
             $qb->andWhere(
                 'LOWER(v.registrationNumber) LIKE :search
-                OR LOWER(v.vin) LIKE :search
-                OR LOWER(m.name) LIKE :search
-                OR LOWER(b.name) LIKE :search'
+                 OR LOWER(v.vin) LIKE :search
+                 OR LOWER(m.name) LIKE :search
+                 OR LOWER(b.name) LIKE :search'
             )->setParameter('search', $search);
         }
 
@@ -133,7 +183,9 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     /*
-     * Autocomplete léger UI
+     * =========================
+     * AUTOCOMPLETE
+     * =========================
      */
     public function searchForAutocomplete(
         array $filters = [],
@@ -160,19 +212,20 @@ class VehicleRepository extends ServiceEntityRepository
         return array_map(function (Vehicle $v) {
             $vm = $v->getVehicleModel();
 
-            $brand = $vm?->getBrand()?->getName() ?? '';
-            $model = $vm?->getModel()?->getName() ?? '';
-
             return [
                 'id' => $v->getId(),
-                'label' => trim($brand . ' ' . $model),
-                // URL supprimée volontairement
+                'label' => trim(
+                    ($vm?->getBrand()?->getName() ?? '') . ' ' .
+                        ($vm?->getModel()?->getName() ?? '')
+                ),
             ];
         }, $qb->getQuery()->getResult());
     }
 
     /*
-     * Marques utilisées
+     * =========================
+     * FILTER DATASETS
+     * =========================
      */
     public function getUsedBrands(): array
     {
@@ -181,8 +234,7 @@ class VehicleRepository extends ServiceEntityRepository
             ->select('b')
             ->from(Brand::class, 'b')
             ->where('EXISTS (
-                SELECT 1
-                FROM App\Entity\Vehicle v
+                SELECT 1 FROM App\Entity\Vehicle v
                 JOIN v.vehicleModel vm
                 WHERE vm.brand = b
             )')
@@ -213,6 +265,11 @@ class VehicleRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /*
+     * =========================
+     * YEARS RANGE
+     * =========================
+     */
     public function getRegistrationYears(): array
     {
         $result = $this->createQueryBuilder('v')
@@ -224,21 +281,20 @@ class VehicleRepository extends ServiceEntityRepository
             return ['min' => null, 'max' => null, 'years' => []];
         }
 
-        $minDate = new \DateTime($result['minDate']);
-        $maxDate = new \DateTime($result['maxDate']);
+        $min = new \DateTime($result['minDate']);
+        $max = new \DateTime($result['maxDate']);
 
         return [
-            'min' => (int) $minDate->format('Y'),
-            'max' => (int) $maxDate->format('Y'),
-            'years' => range(
-                (int) $minDate->format('Y'),
-                (int) $maxDate->format('Y')
-            ),
+            'min' => (int) $min->format('Y'),
+            'max' => (int) $max->format('Y'),
+            'years' => range((int) $min->format('Y'), (int) $max->format('Y')),
         ];
     }
 
     /*
-     * Statuts véhicules (UI filters)
+     * =========================
+     * STATUTS UI
+     * =========================
      */
     public function getStatuses(): array
     {
@@ -249,5 +305,26 @@ class VehicleRepository extends ServiceEntityRepository
             ],
             VehicleStatus::cases()
         );
+    }
+    // Prix minimum global
+    public function getMinPrice(): int
+    {
+        $value = $this->createQueryBuilder('v')
+            ->select('MIN(v.price)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int) ($value ?? 0);
+    }
+
+    // Prix maximum global
+    public function getMaxPrice(): int
+    {
+        $value = $this->createQueryBuilder('v')
+            ->select('MAX(v.price)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int) ($value ?? 0);
     }
 }

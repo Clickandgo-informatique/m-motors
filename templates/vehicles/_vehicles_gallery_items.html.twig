@@ -13,20 +13,6 @@
 				            : path('vehicle_show', {id: vehicle.id}) }}
 				    ">
 
-			{# IMAGE + BADGES #}
-			<div class="vehicle-image-wrapper">
-
-				<img src="#" alt="coverImg {{ vehicle.vehicleModel.model.name }}">
-
-				<button data-action="toggle-favorite" data-url="/vehicle/{{ vehicle.id }}/favorite" class="favorite-btn" aria-pressed="false" data-label="Favori">
-					<i class="fa-regular fa-heart" data-icon></i>
-				</button>
-
-				<span class="badge bg-{{ vehicle.status.badge }} vehicle-status-badge" data-label="Statut">
-					{{ vehicle.status.label }}
-				</span>
-			</div>
-
 			{# HEADER #}
 			<div class="vehicle-card-header">
 
@@ -37,6 +23,22 @@
 				<span class="vehicle-model" data-label="Modèle">
 					{{ vehicle.vehicleModel.model.name }}
 				</span>
+
+				
+			{# IMAGE + BADGES #}
+			<div class="vehicle-image-wrapper">
+
+				{# <img src="#" alt="coverImg {{ vehicle.vehicleModel.model.name }}"> #}
+				<img src="#" alt="">
+
+				<button data-action="toggle-favorite" data-url="/vehicle/{{ vehicle.id }}/favorite" class="favorite-btn" aria-pressed="false" data-label="Favori">
+					<i class="fa-regular fa-heart" data-icon></i>
+				</button>
+
+				<span class="badge bg-{{ vehicle.status.badge }} vehicle-status-badge" data-label="Statut">
+					{{ vehicle.status.label }}
+				</span>
+			</div>
 
 				<div class="vehicle-card-actions">
 

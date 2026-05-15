@@ -53,9 +53,16 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
                 // Identifiants
                 $vehicle->setVin(strtoupper($faker->regexify('[A-HJ-NPR-Z0-9]{17}')));
 
+
                 // Relations
                 $vehicle->setVehicleModel($vehicleModels[array_rand($vehicleModels)]);
                 $vehicle->setSupplier($suppliers[array_rand($suppliers)]);
+
+                //Boite de vitesse (dépend de vehicleModel)
+                $vehicle->setGearType($vehicle->getVehicleModel()->getGearType());
+
+                //Carburant (dépend de vehicleModel)
+                $vehicle->setFuelType($vehicle->getVehicleModel()->getFuelType());
 
                 if (!empty($colors)) {
                     $vehicle->setColor($colors[array_rand($colors)]);
