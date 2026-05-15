@@ -3,7 +3,6 @@
 namespace App\EventSubscriber;
 
 use App\Entity\Dossier;
-use App\Enum\DossierType;
 use App\Service\Financing\DossierFinancingService;
 use App\Service\VehicleWorkflowService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

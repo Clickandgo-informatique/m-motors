@@ -3,11 +3,13 @@
 namespace App\Service;
 
 use App\Entity\Vehicle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class VehicleWorkflowService
 {
     public function __construct(
+        #[Autowire(service: 'state_machine.vehicle_state_machine')]
         private WorkflowInterface $vehicleStateMachine
     ) {}
 
