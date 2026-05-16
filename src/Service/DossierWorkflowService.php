@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Dossier;
-use App\Service\DossierFinancingService;
+use App\Service\Financing\DossierFinancingService;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class DossierWorkflowService

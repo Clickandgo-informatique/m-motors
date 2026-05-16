@@ -12,8 +12,8 @@ export default function initDoubleSlider(slider) {
 
   const form = slider.closest("form") || document;
 
-  const inputMinEl = form.querySelector(`input[name="${slider.dataset.inputMin}"]`);
-  const inputMaxEl = form.querySelector(`input[name="${slider.dataset.inputMax}"]`);
+  const inputMinEl = slider.querySelector(`input[name="${slider.dataset.inputMin}"]`);
+  const inputMaxEl = slider.querySelector(`input[name="${slider.dataset.inputMax}"]`);
 
   let currentMin = inputMinEl?.value ? Number(inputMinEl.value) : MIN;
   let currentMax = inputMaxEl?.value ? Number(inputMaxEl.value) : MAX;
@@ -42,7 +42,6 @@ export default function initDoubleSlider(slider) {
     v = Math.round(v / STEP) * STEP;
     return Math.min(Math.max(v, MIN), MAX);
   }
-
   function scheduleFetch() {
     clearTimeout(slider._t);
 
@@ -50,9 +49,11 @@ export default function initDoubleSlider(slider) {
       const form = slider.closest("form");
       if (!form || form.dataset.loading === "1") return;
 
+      // FORCE SYNCHRONISATION DOM JUSTE AVANT FETCH
       if (inputMinEl) inputMinEl.value = currentMin;
       if (inputMaxEl) inputMaxEl.value = currentMax;
 
+      // petit délai pour garantir FormData cohérent
       requestAnimationFrame(() => {
         form.dispatchEvent(new Event("change", { bubbles: true }));
       });
@@ -92,16 +93,13 @@ export default function initDoubleSlider(slider) {
     if (inputMinEl) inputMinEl.value = currentMin;
     if (inputMaxEl) inputMaxEl.value = currentMax;
 
-    const minLabel = form.querySelector(slider.dataset.targetMin);
-    const maxLabel = form.querySelector(slider.dataset.targetMax);
+    const minLabel = document.querySelector(slider.dataset.targetMin);
+    const maxLabel = document.querySelector(slider.dataset.targetMax);
 
-    if (minLabel) minLabel.textContent = String(currentMin);
-    if (maxLabel) maxLabel.textContent = String(currentMax);
+    if (minLabel) minLabel.textContent = currentMin;
+    if (maxLabel) maxLabel.textContent = currentMax;
 
-    requestAnimationFrame(() => {
-      scheduleFetch();
-      window.__filterBadges?.updateBadges();
-    });
+    scheduleFetch();
   }
 
   function drag(e, thumb) {

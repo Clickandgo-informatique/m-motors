@@ -101,6 +101,7 @@
   flex-direction: column;
   gap: 4px;
   margin-bottom: var(--space-s);
+  color: var(--color-primary);
 }
 
 /* Titre (icône + label) */
@@ -110,7 +111,7 @@
   gap: 6px;
   font-weight: 600;
   white-space: nowrap;
-  color: var(--color-primary);
+  color: var(--text-primary);
 }
 
 /* Ligne des valeurs */

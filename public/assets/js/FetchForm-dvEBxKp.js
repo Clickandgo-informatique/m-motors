@@ -47,8 +47,8 @@ export default class FetchForm {
 
     try {
       const formData = new FormData(this.form);
-      const params = new URLSearchParams();
 
+      const params = new URLSearchParams();
       formData.forEach((value, key) => {
         params.append(key, value);
       });
@@ -78,8 +78,6 @@ export default class FetchForm {
       }
 
       window.dispatchEvent(new Event("ui:updated"));
-
-      window.__filterBadges?.updateBadges();
     } catch (e) {
       if (e.name !== "AbortError") {
         console.error("[FetchForm]", e);

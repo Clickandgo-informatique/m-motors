@@ -11,10 +11,12 @@ import AjaxManager from "./js/AjaxManager.js";
 import ToggleVehicleFavorite from "./js/ToggleVehicleFavorite.js";
 import Autocomplete from "./js/Autocomplete.js";
 import EventBus from "./js/EventBus.js";
-import FilterBadges from "./js/FilterBadges.js";
 
 console.log("app.js initialisé");
 
+/*
+ * Reset flags après re-render AJAX
+ */
 function resetInitFlags(root) {
   root.querySelectorAll("[data-fetch-form-initialized]").forEach(el => {
     el.removeAttribute("data-fetch-form-initialized");
@@ -33,6 +35,9 @@ function resetInitFlags(root) {
   });
 }
 
+/*
+ * Dropzones
+ */
 function initDropzones(root = document) {
   root.querySelectorAll(".dropzone").forEach(el => {
     if (el.dataset.dropzoneInitialized === "1") return;
@@ -42,6 +47,9 @@ function initDropzones(root = document) {
   });
 }
 
+/*
+ * Favoris
+ */
 function initFavorites(root = document) {
   root.querySelectorAll('[data-action="toggle-favorite"]').forEach(btn => {
     if (btn.dataset.favoriteInitialized === "1") return;
@@ -51,6 +59,9 @@ function initFavorites(root = document) {
   });
 }
 
+/*
+ * Autocomplete
+ */
 function initAutocomplete(root = document) {
   root.querySelectorAll("[data-module='autocomplete']").forEach(input => {
     if (input.dataset.autocompleteInitialized === "1") return;
@@ -60,6 +71,9 @@ function initAutocomplete(root = document) {
   });
 }
 
+/*
+ * Fetch forms AJAX
+ */
 function initFetchForms(root = document) {
   root.querySelectorAll("[data-module='fetch-form']").forEach(form => {
     if (form.dataset.fetchFormInitialized === "1") return;
@@ -69,6 +83,9 @@ function initFetchForms(root = document) {
   });
 }
 
+/*
+ * Dynamic collections Symfony forms
+ */
 function initCollections(root = document) {
   root.querySelectorAll("[data-collection]").forEach(el => {
     if (el.dataset.collectionInitialized === "1") return;
@@ -78,6 +95,9 @@ function initCollections(root = document) {
   });
 }
 
+/*
+ * DoubleSliders
+ */
 function initSliders(root = document) {
   root.querySelectorAll(".double-slider").forEach(slider => {
     if (slider.dataset.sliderInitialized === "1") return;
@@ -88,31 +108,18 @@ function initSliders(root = document) {
   });
 }
 
-function initBadges(root = document) {
-  const container = root.querySelector("#filters-summary");
-  const form = root.querySelector("#filters-form");
-
-  if (!container || !form) return;
-
-  if (!window.__filterBadges) {
-    window.__filterBadges = new FilterBadges(container, form, () => {
-      form.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-  }
-
-  window.__filterBadges.updateBadges();
-}
-
-function refreshUI(root = document) {
-  initBadges(root);
-}
-
+/*
+ * AJAX manager global
+ */
 function initAjaxManager() {
   if (!window.ajaxManager) {
     window.ajaxManager = new AjaxManager();
   }
 }
 
+/*
+ * PAGINATION (EVENT DELEGATION - FIX CRITIQUE)
+ */
 function initPagination() {
   document.addEventListener("click", e => {
     const link = e.target.closest("[data-page]");
@@ -138,6 +145,9 @@ function initPagination() {
   });
 }
 
+/*
+ * Initialisation globale
+ */
 function initApp() {
   initSidebar?.();
 
@@ -149,11 +159,16 @@ function initApp() {
   initAjaxManager();
   initSliders();
   initPagination();
-  initBadges();
 }
 
+/*
+ * DOM ready
+ */
 document.addEventListener("DOMContentLoaded", initApp);
 
+/*
+ * Re-init après mise à jour UI AJAX
+ */
 EventBus.on("ui:updated", ({ target }) => {
   const root = target || document;
 
@@ -165,9 +180,12 @@ EventBus.on("ui:updated", ({ target }) => {
   initCollections(root);
   initSliders(root);
 
-  refreshUI(root);
+  // pagination NE DOIT PAS être réinitialisée (event delegation global)
 });
 
+/*
+ * Debug change filters
+ */
 document.addEventListener("change", e => {
   if (e.target.closest("#filters-form")) {
     console.log("[DEBUG] CHANGE EVENT:", e.target);

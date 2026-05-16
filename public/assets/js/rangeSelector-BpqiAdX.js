@@ -95,13 +95,10 @@ export default function initDoubleSlider(slider) {
     const minLabel = form.querySelector(slider.dataset.targetMin);
     const maxLabel = form.querySelector(slider.dataset.targetMax);
 
-    if (minLabel) minLabel.textContent = String(currentMin);
-    if (maxLabel) maxLabel.textContent = String(currentMax);
+    if (minLabel) minLabel.textContent = currentMin;
+    if (maxLabel) maxLabel.textContent = currentMax;
 
-    requestAnimationFrame(() => {
-      scheduleFetch();
-      window.__filterBadges?.updateBadges();
-    });
+    scheduleFetch();
   }
 
   function drag(e, thumb) {

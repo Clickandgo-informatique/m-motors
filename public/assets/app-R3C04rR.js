@@ -94,17 +94,16 @@ function initBadges(root = document) {
 
   if (!container || !form) return;
 
-  if (!window.__filterBadges) {
-    window.__filterBadges = new FilterBadges(container, form, () => {
-      form.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-  }
+  if (container.dataset.badgesInitialized === "1") return;
+  container.dataset.badgesInitialized = "1";
 
-  window.__filterBadges.updateBadges();
-}
+  const badges = new FilterBadges(container, form, () => {
+    form.dispatchEvent(new Event("change", { bubbles: true }));
+  });
 
-function refreshUI(root = document) {
-  initBadges(root);
+  badges.updateBadges();
+
+  window.__filterBadges = badges;
 }
 
 function initAjaxManager() {
@@ -164,8 +163,7 @@ EventBus.on("ui:updated", ({ target }) => {
   initFavorites(root);
   initCollections(root);
   initSliders(root);
-
-  refreshUI(root);
+  initBadges(root);
 });
 
 document.addEventListener("change", e => {

@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-_bjp8hQ.js",
+        "path": "\/assets\/app-L-Zi8g5.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-NTVTSpf.css",
+        "path": "\/assets\/styles\/app-fxWrlwm.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -36,7 +36,7 @@
         "type": "js"
     },
     "\/assets\/js\/rangeSelector.js": {
-        "path": "\/assets\/js\/rangeSelector-nrCfYju.js",
+        "path": "\/assets\/js\/rangeSelector-oScFfmG.js",
         "type": "js"
     },
     "\/assets\/js\/Dropzone.js": {
@@ -48,7 +48,7 @@
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-XZnec2s.js",
+        "path": "\/assets\/js\/FetchForm-GQY_f-6.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
@@ -67,6 +67,10 @@
         "path": "\/assets\/js\/EventBus-w5Yn_zE.js",
         "type": "js"
     },
+    "\/assets\/js\/FilterBadges.js": {
+        "path": "\/assets\/js\/FilterBadges-LnO73Gt.js",
+        "type": "js"
+    },
     "@hotwired\/stimulus": {
         "path": "\/assets\/vendor\/@hotwired\/stimulus\/stimulus.index-S4zNcea.js",
         "type": "js"
@@ -80,7 +84,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-XZnec2s.js",
+        "path": "\/assets\/js\/FetchForm-GQY_f-6.js",
         "type": "js"
     }
 }
