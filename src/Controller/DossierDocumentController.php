@@ -6,8 +6,8 @@ use App\Entity\Dossier;
 use App\Entity\DossierDocument;
 use App\Enum\DossierDocumentStatus;
 use App\Enum\DossierDocumentType;
-use App\Service\DossierUploadService;
-use App\Service\DossierWorkflowService;
+use App\Service\Dossier\DossierUploadService;
+use App\Service\Dossier\DossierWorkflowService;
 use App\Service\Utils\SluggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,21 +15,28 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Controller dédié à la gestion des documents d’un dossier.
+ *
+ * Règle importante :
+ * - aucune transition workflow ici
+ * - uniquement upload / delete / replace
+ * - le workflow est géré ailleurs (service dédié ou contrôleur métier)
+ */
 class DossierDocumentController extends AbstractController
 {
     public function __construct(
         private DossierWorkflowService $dossierWorkflowService
     ) {}
-    // =========================================================
+
     // UPLOAD
-    // =========================================================
+
     #[Route('/dossier/{id}/upload', name: 'dossier_document_upload', methods: ['POST'])]
     public function upload(
         Dossier $dossier,
         Request $request,
         DossierUploadService $uploadService,
         SluggerService $slugger,
-        DossierWorkflowService $workflow,
         EntityManagerInterface $em
     ): JsonResponse {
 
@@ -83,17 +90,14 @@ class DossierDocumentController extends AbstractController
 
         $em->flush();
 
-        $workflow->refreshDossierStatus($dossier);
-
         return $this->json([
             'success' => true,
             'documents' => $this->serializeDocuments($dossier),
         ]);
     }
 
-    // =========================================================
     // DELETE
-    // =========================================================
+
     #[Route('/document/{id}', name: 'dossier_document_delete', methods: ['DELETE'])]
     public function delete(
         DossierDocument $document,
@@ -101,7 +105,6 @@ class DossierDocumentController extends AbstractController
         EntityManagerInterface $em
     ): JsonResponse {
 
-        // 🔒 Bloque suppression si statut final
         if ($document->getStatus()->isFinal()) {
             return new JsonResponse(['error' => 'Document verrouillé'], 403);
         }
@@ -117,9 +120,8 @@ class DossierDocumentController extends AbstractController
         ]);
     }
 
-    // =========================================================
     // REPLACE
-    // =========================================================
+
     #[Route('/document/{id}/replace', name: 'dossier_document_replace', methods: ['POST'])]
     public function replace(
         DossierDocument $document,
@@ -129,7 +131,6 @@ class DossierDocumentController extends AbstractController
         EntityManagerInterface $em
     ): JsonResponse {
 
-        // Bloque modification si document validé/refusé
         if ($document->getStatus()->isFinal()) {
             return new JsonResponse(['error' => 'Document verrouillé'], 403);
         }
@@ -142,27 +143,19 @@ class DossierDocumentController extends AbstractController
 
         $dossier = $document->getDossier();
 
-        $reference = $dossier->getDossierCode()
-            ?? 'dossier-' . $dossier->getId();
-
+        $reference = $dossier->getDossierCode() ?? 'dossier-' . $dossier->getId();
         $safeReference = $slugger->slugify($reference);
 
-        $folder = sprintf(
-            'dossiers/%s/documents',
-            $safeReference
-        );
+        $folder = sprintf('dossiers/%s/documents', $safeReference);
 
         $upload = $uploadService->upload($file, $folder);
 
-        // suppression ancien fichier physique
         $uploadService->safeDelete($document->getPath());
 
-        // mise à jour
         $document->setFileName($upload['filename']);
         $document->setPath($upload['path']);
         $document->setOriginalName($upload['originalName']);
 
-        // reset statut (important)
         $document->setStatus(DossierDocumentStatus::UPLOADED);
 
         $em->flush();
@@ -182,9 +175,8 @@ class DossierDocumentController extends AbstractController
         ]);
     }
 
-    // =========================================================
     // LIST
-    // =========================================================
+
     #[Route('/dossier/{id}/documents', name: 'dossier_documents_list', methods: ['GET'])]
     public function list(Dossier $dossier): JsonResponse
     {
@@ -193,14 +185,13 @@ class DossierDocumentController extends AbstractController
         ]);
     }
 
-    // =========================================================
     // SERIALIZER
-    // =========================================================
+
     private function serializeDocuments(Dossier $dossier): array
     {
         $completionRate = $this->dossierWorkflowService->getCompletionRate($dossier);
 
-        return array_map(static function (DossierDocument $doc) use ($completionRate) {
+        $documents = array_map(function (DossierDocument $doc) {
             return [
                 'id' => $doc->getId(),
                 'fileName' => $doc->getFileName(),
@@ -210,8 +201,12 @@ class DossierDocumentController extends AbstractController
                 'statusLabel' => $doc->getStatus()->label(),
                 'badge' => $doc->getStatus()->badge(),
                 'type' => $doc->getDocumentType()->value,
-                'completionRate' => $completionRate,
             ];
         }, $dossier->getDocuments()->toArray());
+
+        return [
+            'completionRate' => $completionRate,
+            'documents' => $documents,
+        ];
     }
 }

@@ -1,0 +1,99 @@
+.dossier-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.dossier-left {
+  position: sticky;
+  top: 20px;
+}
+
+.workflow-steps {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+/* STEP */
+.workflow-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0.35;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+}
+
+/* actif ou complété = visible */
+.workflow-step.is-active,
+.workflow-step.is-completed {
+  opacity: 1;
+}
+
+/* hover léger CRM */
+.workflow-step:hover {
+  transform: translateY(-2px);
+}
+
+/* CIRCLE */
+.workflow-step-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-border);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+/* actif */
+.workflow-step.is-active .workflow-step-circle {
+  background: var(--color-primary);
+}
+
+/* complété */
+.workflow-step.is-completed .workflow-step-circle {
+  background: var(--color-success);
+}
+
+/* titre */
+.workflow-step-title {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* sous-titre */
+.workflow-step-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* PROGRESS BAR GLOBAL */
+.workflow-progress {
+  height: 6px;
+  width: 100%;
+  background: var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+/* fill dynamique */
+.workflow-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
+}

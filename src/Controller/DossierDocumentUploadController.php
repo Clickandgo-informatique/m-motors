@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Dossier;
-use App\Service\DossierDocumentUploadService;
+use App\Service\Dossier\DossierDocumentUploadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

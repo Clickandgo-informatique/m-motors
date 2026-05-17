@@ -1,0 +1,62 @@
+{# templates/dossier/_workflow_logs.html.twig #}
+
+<div class="card mt-3">
+    <div class="card-body">
+        <h5>Historique du workflow</h5>
+
+        {% if workflowLogs is empty %}
+            <p class="text-muted">Aucun historique disponible</p>
+        {% else %}
+
+            <div class="workflow-timeline">
+
+                {% for log in workflowLogs %}
+
+                    {% set color =
+                        log.transition == 'cancel' ? 'danger' :
+                        log.transition == 'approve_financing' ? 'success' :
+                        log.transition in ['submit_documents', 'validate_documents'] ? 'primary' :
+                        'secondary'
+                    %}
+
+                    <div class="workflow-item mb-3">
+
+                        <div class="d-flex align-items-start">
+
+                            <div class="me-3">
+                                <span class="badge bg-{{ color }}">
+                                    {{ log.transition }}
+                                </span>
+                            </div>
+
+                            <div class="flex-grow-1">
+
+                                <div>
+                                    {{ log.fromStatus }}
+                                    <span class="text-muted">→</span>
+                                    {{ log.toStatus }}
+                                </div>
+
+                                <div class="text-muted small">
+                                    {{ log.createdAt|date('d/m/Y H:i') }}
+
+                                    {% if log.userId %}
+                                        | User #{{ log.userId }}
+                                    {% else %}
+                                        | Système
+                                    {% endif %}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+    </div>
+</div>

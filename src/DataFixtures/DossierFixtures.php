@@ -8,21 +8,19 @@ use App\Entity\Vehicle;
 use App\Enum\DossierType;
 use App\Enum\FinancingType;
 use App\Service\CustomerCodeGenerator;
-use App\Service\DossierWorkflowService;
+use App\Service\Dossier\DossierWorkflowService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-/*
- * Création de dossiers réalistes via le workflow Symfony.
+/**
+ * Fixtures de génération de dossiers réalistes via le workflow Symfony.
  *
- * Objectifs :
- * - utiliser les vraies transitions métier
- * - produire plusieurs états réalistes
- * - synchroniser automatiquement véhicule + financement
- * - éviter les statuts forcés manuellement
+ * Règles :
+ * - toujours utiliser les transitions Symfony (jamais de setStatus logique métier)
+ * - ne jamais dépendre de getStatus pour piloter le flux
+ * - utiliser can() pour sécuriser les transitions
  */
-
 class DossierFixtures extends Fixture implements DependentFixtureInterface
 {
     public function __construct(
@@ -39,9 +37,6 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
             throw new \RuntimeException('Customers ou Vehicles manquants.');
         }
 
-        /*
-         * États métier à représenter dans l’application.
-         */
         $scenarios = [
             'draft',
             'vehicle_selected',
@@ -54,111 +49,87 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
 
         for ($i = 0; $i < 30; $i++) {
 
-            /*
-             * Sélection aléatoire stable.
-             */
             $customer = $customers[array_rand($customers)];
             $vehicle  = $vehicles[array_rand($vehicles)];
 
-            /*
-             * Type de financement réaliste.
-             */
             $financingType = FinancingType::cases()[array_rand(FinancingType::cases())];
 
-            /*
-             * Détermination automatique du type de dossier.
-             */
             $type = in_array(
                 $financingType,
                 [FinancingType::LOA, FinancingType::LLD],
                 true
             ) ? DossierType::RENTAL : DossierType::SALE;
 
-            /*
-             * Création du dossier.
-             */
             $dossier = new Dossier();
 
             $dossier->setCustomer($customer);
             $dossier->setVehicle($vehicle);
             $dossier->setType($type);
 
-            /*
-             * Le workflow démarre toujours en draft.
-             */
             $dossier->setStatus('draft');
 
-            /*
-             * Code métier unique.
-             */
             $dossier->setDossierCode(
                 $this->codeGenerator->generateDossierCode($customer)
             );
 
-            /*
-             * Type de financement choisi.
-             */
             $dossier->setFinancingType($financingType->value);
 
             $manager->persist($dossier);
+            $manager->flush();
 
-            /*
-             * Application d’un scénario métier réaliste.
-             */
             $scenario = $scenarios[array_rand($scenarios)];
 
             $this->applyScenario($dossier, $scenario);
-        }
 
-        $manager->flush();
+            $manager->flush();
+        }
     }
 
-    /*
-     * Application des transitions workflow selon le scénario choisi.
+    /**
+     * Application SAFE du scénario via workflow Symfony.
+     * Aucune dépendance au status réel.
      */
     private function applyScenario(Dossier $dossier, string $scenario): void
     {
-        switch ($scenario) {
+        // 1. Select vehicle
+        $this->workflowService->applySafe($dossier, 'select_vehicle');
 
-            case 'vehicle_selected':
-                $this->workflowService->selectVehicle($dossier);
-                break;
-
-            case 'documents_pending':
-                $this->workflowService->selectVehicle($dossier);
-                $this->workflowService->requestDocuments($dossier);
-                break;
-
-            case 'documents_review':
-                $this->workflowService->selectVehicle($dossier);
-                $this->workflowService->requestDocuments($dossier);
-                $this->workflowService->submitDocuments($dossier);
-                break;
-
-            case 'financing_review':
-                $this->workflowService->selectVehicle($dossier);
-                $this->workflowService->requestDocuments($dossier);
-                $this->workflowService->submitDocuments($dossier);
-                $this->workflowService->validateDocuments($dossier);
-                break;
-
-            case 'completed':
-                $this->workflowService->selectVehicle($dossier);
-                $this->workflowService->requestDocuments($dossier);
-                $this->workflowService->submitDocuments($dossier);
-                $this->workflowService->validateDocuments($dossier);
-                $this->workflowService->approveFinancing($dossier);
-                break;
-
-            case 'cancelled':
-                $this->workflowService->cancel($dossier);
-                break;
+        if ($scenario === 'draft') {
+            return;
         }
-    }
 
-    public static function getGroups(): array
-    {
-        return ['DossierFixtures'];
+        // 2. Request documents
+        $this->workflowService->applySafe($dossier, 'request_documents');
+
+        if ($scenario === 'vehicle_selected') {
+            return;
+        }
+
+        // 3. Submit documents
+        $this->workflowService->applySafe($dossier, 'submit_documents');
+
+        if ($scenario === 'documents_pending') {
+            return;
+        }
+
+        // 4. Validate documents
+        $this->workflowService->applySafe($dossier, 'validate_documents');
+
+        if ($scenario === 'documents_review') {
+            return;
+        }
+
+        // 5. Approve financing
+        $this->workflowService->applySafe($dossier, 'approve_financing');
+
+        if ($scenario === 'financing_review') {
+            return;
+        }
+
+        // 6. Cancel override
+        if ($scenario === 'cancelled') {
+            $this->workflowService->applySafe($dossier, 'cancel');
+        }
     }
 
     public function getDependencies(): array

@@ -1,0 +1,53 @@
+/* =========================
+   TIMELINE DOSSIER CRM
+========================= */
+
+.timeline {
+  position: relative;
+  padding-left: 20px;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+  padding-left: 30px;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: -20px;
+  width: 2px;
+  background: #dee2e6;
+}
+
+.timeline-icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.timeline-item.active .timeline-icon {
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.timeline-item.completed .timeline-icon {
+  border-color: #198754;
+  color: #198754;
+}
+
+.timeline-content {
+  padding-left: 10px;
+}

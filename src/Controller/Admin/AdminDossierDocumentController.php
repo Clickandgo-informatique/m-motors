@@ -4,7 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\DossierDocument;
 use App\Enum\DossierDocumentStatus;
-use App\Service\DossierWorkflowService;
+use App\Service\Dossier\DossierWorkflowService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

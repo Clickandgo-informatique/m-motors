@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Dossier;
 
 use App\Entity\DossierDocument;
 use App\Service\Utils\SluggerService;

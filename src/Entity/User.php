@@ -28,9 +28,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    // =========================
     // EMAIL
-    // =========================
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
@@ -48,9 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $nickname = null;
 
-    // =========================
     // RELATIONS
-    // =========================
 
     /**
      * Favoris utilisateur
@@ -67,9 +63,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: true)]
     private ?Customer $customer = null;
 
-    // =========================
     // 2FA
-    // =========================
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google2FASecret = null;
 
@@ -78,22 +73,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     private bool $isTwoFactorVerified = false;
 
-    // =========================
-    // CONSTRUCTEUR
-    // =========================
+
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
         $this->roles = ['ROLE_USER'];
     }
 
-    // =========================
     // BASE USER
-    // =========================
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+    public function setId(?int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getEmail(): ?string
@@ -136,9 +133,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void {}
 
-    // =========================
     // VERIFICATION EMAIL
-    // =========================
 
     public function isVerified(): bool
     {
@@ -151,9 +146,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // =========================
-    // CUSTOMER
-    // =========================
+    // Customer / Client
 
     public function getCustomer(): ?Customer
     {
@@ -166,9 +159,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // =========================
-    // FAVORITES
-    // =========================
+    // Favoris vehicules
 
     /**
      * @return Collection<int, Favorite>
@@ -207,9 +198,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // =========================
-    // 2FA
-    // =========================
+    // Google 2FA
 
     public function getGoogle2FASecret(): ?string
     {
@@ -244,9 +233,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // =========================
-    // NICKNAME
-    // =========================
+    // Pseudo / Nickname
 
     public function getNickname(): ?string
     {

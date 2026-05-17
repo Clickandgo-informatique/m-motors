@@ -8,6 +8,7 @@ use App\Entity\Vehicle;
 use App\Enum\DossierType;
 use App\Form\DossierFormType;
 use App\Repository\DossierRepository;
+use App\Repository\DossierWorkflowLogRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -114,15 +115,16 @@ class DossierController extends AbstractController
     {
         $this->denyAccessUnlessGranted('DOSSIER_VIEW', $dossier);
 
+
         return $this->render('dossier/show.html.twig', [
-            'dossier' => $dossier,
+            'dossier' => $dossier
         ]);
     }
 
     /**
      * Liste admin des dossiers avec pagination.
      */
-    #[Route('/admin/dossier/list', name: 'admin_dossier_list', methods: ['GET'])]
+    #[Route(path: '/admin/dossier/list', name: 'admin_dossier_list', methods: ['GET'])]
     public function adminList(
         DossierRepository $repository,
         PaginatorInterface $paginator,
@@ -149,12 +151,14 @@ class DossierController extends AbstractController
      * Affichage admin d'un dossier.
      */
     #[Route('/admin/dossier/{id<\d+>}', name: 'admin_dossier_show', methods: ['GET'])]
-    public function adminShow(Dossier $dossier): Response
+    public function adminShow(Dossier $dossier, DossierWorkflowLogRepository $dossierWorkflowLogRepository): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $workflowLogs = $dossierWorkflowLogRepository->findByDossier($dossier->getId());
 
         return $this->render('admin/dossier/show.html.twig', [
             'dossier' => $dossier,
+            'workflowLogs' => $workflowLogs,
         ]);
     }
 
@@ -185,6 +189,22 @@ class DossierController extends AbstractController
             'title' => 'Créer un dossier'
         ]);
     }
+    #[Route(path: '/admin/dossier/{id}/edit', name: 'admin_dossier_edit',methods:['GET','POST'])]
+    public function edit(DossierRepository $dossierRepo, int $id, EntityManagerInterface $em): Response
+    {
+        $dossier = $dossierRepo->find($id);
+        $form = $this->createForm(DossierFormType::class, $dossier);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($dossier);
+            $em->flush();
+        }
+
+        return $this->render('admin/dossier/edit.html.twig', [
+            'dossier' => $dossier,
+            'form' => $form->createView()
+        ]);
+    }
 
     /**
      * Endpoint AJAX de recherche des dossiers.
@@ -201,14 +221,10 @@ class DossierController extends AbstractController
         $searchTerm = trim((string) ($data['q'] ?? ''));
         $page = (int) ($data['page'] ?? 1);
 
-        // Compatibilité frontend :
-        // - autocomplete=true
-        // - autocomplete_param=1
         $isAutocomplete =
             filter_var($data['autocomplete'] ?? false, FILTER_VALIDATE_BOOLEAN)
             || $request->query->getBoolean('autocomplete_param');
 
-        // Mode autocomplete (résultats légers)
         if ($isAutocomplete) {
             $results = $dossierRepo->findForAutocomplete($searchTerm);
 
@@ -231,7 +247,6 @@ class DossierController extends AbstractController
             ]);
         }
 
-        // Mode pagination (résultats complets)
         $query = $dossierRepo->searchForPaginator($searchTerm);
 
         $dossiers = $paginator->paginate(
@@ -244,9 +259,15 @@ class DossierController extends AbstractController
             'results' => $this->renderView('dossier/_dossiers_table.html.twig', [
                 'dossiers' => $dossiers
             ]),
-            'pagination' => $this->renderView('dossier/_pagination_info.html.twig', [
+
+            'paginationTop' => $this->renderView('dossier/_pagination_info.html.twig', [
                 'dossiers' => $dossiers
             ]),
+
+            'paginationBottom' => $this->renderView('dossier/_pagination_info.html.twig', [
+                'dossiers' => $dossiers
+            ]),
+
             'totalItems' => $dossiers->getTotalItemCount(),
             'currentPage' => $dossiers->getCurrentPageNumber(),
         ]);

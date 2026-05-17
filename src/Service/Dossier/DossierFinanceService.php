@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Dossier;
 
 use App\Entity\Dossier;
 use App\Enum\DossierType;
+use App\Service\VehicleWorkflowService;
 
 class DossierFinanceService
 {

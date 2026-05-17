@@ -35,7 +35,7 @@ services:
     # =========================================================
     # DOSSIERS
     # =========================================================
-    App\Service\DossierDocumentUploadService:
+    App\Service\DOssier\DossierDocumentUploadService:
         bind:
             string $uploadDir: "%dossier_upload_dir%"
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Dossier;
 
 use App\Entity\Dossier;
 use App\Entity\DossierAudit;

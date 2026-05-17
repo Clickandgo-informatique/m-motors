@@ -17,23 +17,48 @@
 	<tbody>
 		{% for dossier in dossiers %}
 			<tr>
-				<td>{{ dossier.dossierCode }}</td>
-				<td>{{ dossier.vehicle.vehicleModel }}</td>
-				<td>{{ dossier.customer }}</td>
-				<td>{{ dossier.type.label }}</td>
-				<td>{{ dossier.vehicle.registrationNumber }}</td>
-				<td>{{ dossier.vehicle.vin }}</td>
-				<td>
+
+				<td data-label="Référence">
+					{{ dossier.dossierCode }}
+				</td>
+
+				<td data-label="Véhicule">
+					{{ dossier.vehicle.vehicleModel }}
+				</td>
+
+				<td data-label="Client">
+					{{ dossier.customer }}
+				</td>
+
+				<td data-label="Type">
+					{{ dossier.type.label }}
+				</td>
+
+				<td data-label="Immatriculation">
+					{{ dossier.vehicle.registrationNumber }}
+				</td>
+
+				<td data-label="VIN">
+					{{ dossier.vehicle.vin }}
+				</td>
+
+				<td data-label="Statut">
 					<span class="badge bg-{{ dossier.statusBadge }}">
 						{{ dossier.statusLabel }}
 					</span>
 				</td>
-				<td>{{ dossier.createdAt|date('d/m/Y') }}</td>
-				<td>
-					<a href="{{ path('admin_dossier_show', {id: dossier.id}) }}" class="btn btn-sm btn-dark">
+
+				<td data-label="Date">
+					{{ dossier.createdAt|date('d/m/Y') }}
+				</td>
+
+				<td data-label="">
+					<a href="{{ path('admin_dossier_show', {id: dossier.id}) }}"
+					   class="btn btn-sm btn-dark">
 						Gérer
 					</a>
 				</td>
+
 			</tr>
 		{% endfor %}
 	</tbody>

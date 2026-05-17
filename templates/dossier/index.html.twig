@@ -24,14 +24,14 @@
 			<tbody>
 				{% for dossier in dossiers %}
 					<tr>
-						<td>{{ dossier.reference }}</td>
-						<td>{{ dossier.type }}</td>
-						<td>
+						<td data-label="Référence">{{ dossier.reference }}</td>
+						<td data-label="Type">{{ dossier.type }}</td>
+						<td data-label="Statut">
 							<span class="badge bg-{{ dossier.status.badge }}">
 								{{ dossier.status.label }}
 							</span>
 						</td>
-						<td>{{ dossier.createdAt|date('d/m/Y') }}</td>
+						<td data-label="Créé le">{{ dossier.createdAt|date('d/m/Y') }}</td>
 						<td>
 							<a href="{{ path('dossier_show', {id: dossier.id}) }}" class="btn btn-sm btn-primary">
 								Voir

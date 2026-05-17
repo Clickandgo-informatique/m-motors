@@ -1,0 +1,73 @@
+{# templates/dossier/_progress_timeline.html.twig #}
+
+{% set steps = [
+    {
+        key: 'draft',
+        label: 'Création',
+        icon: 'fa-solid fa-file-circle-plus'
+    },
+    {
+        key: 'in_progress',
+        label: 'En cours',
+        icon: 'fa-solid fa-spinner'
+    },
+    {
+        key: 'validated',
+        label: 'Validé',
+        icon: 'fa-solid fa-circle-check'
+    },
+    {
+        key: 'rejected',
+        label: 'Refusé',
+        icon: 'fa-solid fa-circle-xmark'
+    }
+] %}
+
+{% set currentStatus = dossier.status %}
+
+<div class="card mb-3">
+    <div class="card-body">
+
+        <h5 class="mb-3">Progression du dossier</h5>
+
+        <ul class="timeline list-unstyled m-0">
+
+            {% for step in steps %}
+
+                {% set isActive = (step.key == currentStatus) %}
+
+                {% set isCompleted = false %}
+
+                {# logique simple de progression linéaire #}
+                {% if currentStatus == 'in_progress' and step.key == 'draft' %}
+                    {% set isCompleted = true %}
+                {% elseif currentStatus == 'validated' and step.key in ['draft', 'in_progress'] %}
+                    {% set isCompleted = true %}
+                {% elseif currentStatus == 'rejected' and step.key in ['draft', 'in_progress'] %}
+                    {% set isCompleted = true %}
+                {% endif %}
+
+                <li class="timeline-item {{ isActive ? 'active' : '' }} {{ isCompleted ? 'completed' : '' }}">
+
+                    <div class="timeline-icon">
+                        <i class="{{ step.icon }}"></i>
+                    </div>
+
+                    <div class="timeline-content">
+                        <strong>{{ step.label }}</strong>
+
+                        {% if isActive %}
+                            <span class="badge bg-primary">Actuel</span>
+                        {% elseif isCompleted %}
+                            <span class="badge bg-success">Terminé</span>
+                        {% endif %}
+                    </div>
+
+                </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+</div>

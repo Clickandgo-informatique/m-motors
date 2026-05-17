@@ -3,7 +3,7 @@
 namespace App\Workflow;
 
 use App\Entity\Dossier;
-use App\Service\DossierDocumentValidator;
+use App\Service\Dossier\DossierDocumentValidator;
 use Symfony\Component\Workflow\Event\GuardEvent;
 
 class DossierWorkflowGuard

@@ -11,27 +11,30 @@
 			Administration des dossiers
 		</h1>
 
-		{% include "Components/Forms/_fetch_form.html.twig" with {
-			action: path('dossiers_ajax_search'),
-			fetchUrl: path('dossiers_ajax_search'),
-			autocompleteUrl: path('dossiers_ajax_search'),
-			name: 'q',
-			placeholder: 'Rechercher un dossier par référence, nom client, modèle de véhicule ...',
-			baseUrl: path('admin_dossier_list'),
-			linkMode: '1',
-			resultDiv: 'autocomplete-results',
-			target: 'dossiers-search-results',
-			filtersTarget: 'dossiers-filters',
-			paginationTarget: 'pagination-wrapper',
-			cardsContainer: 'dossiers-search-results',
-			autocomplete: true,
-			pagination: true,
-			highlight: true,
-			noResultsClass: 'dropdown-no-results'
-		} %}
+{# Formulaire de recherche #}
+{% include "Components/Forms/_fetch_form.html.twig" with {
+    action: path('dossiers_ajax_search'),
+    fetchUrl: path('dossiers_ajax_search'),
+    baseUrl: path('admin_dossier_list'),
+    name: 'q',
+	hiddenName:'',
+    resultDiv: 'autocomplete-results',
+    placeholder: 'Rechercher un dossier par référence, nom client, modèle de véhicule ...',
+    autocompleteUrl: path('dossiers_ajax_search'),
+	itemUrl:path('admin_dossier_edit', { id: '__ID__' }),
+    target: '#dossiers-search-results',
+    fetchMode: 'html',
+    filtersTarget: '#dossiers-filters',
+    paginationTop: '#dossiers-pagination-top',
+    paginationBottom: '#dossiers-pagination-bottom',
+    autocomplete: true,
+    highlight: true,
+    noResultsClass: 'dropdown-no-results',
+    linkMode: '1',
+} %}
 
 		{# Pagination haut #}
-		<div class="pagination-wrapper" data-target="pagination-top">
+		<div class="pagination-wrapper" id="dossiers-pagination-top">
 			{% include "dossier/_pagination_info.html.twig" with { dossiers: dossiers } %}
 		</div>
 
@@ -40,7 +43,7 @@
 		</div>
 
 		{# Pagination bas #}
-		<div class="pagination-wrapper" data-target="pagination-bottom">
+		<div class="pagination-wrapper" id="dossiers-pagination-bottom">
 			{% include "dossier/_pagination_info.html.twig" with { dossiers: dossiers } %}
 		</div>
 
