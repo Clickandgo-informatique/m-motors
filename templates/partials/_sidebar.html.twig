@@ -7,6 +7,19 @@
 	<nav
 		class="sidenav sidenav-filters" aria-label="Navigation latérale">
 
+		{# Si l'utilisateur est authentifié il voit ses dossiers en cours #}
+
+			{% if app.user and (is_granted('ROLE_USER') or is_granted('ROLE_CUSTOMER')) %}
+					<ul class="items-list">
+						<li>
+							<a href="{{ path('dossier_user_list') }}">
+								<i class="fa-solid fa-folder-open"></i>
+								Mes dossiers
+							</a>
+						</li>
+					</ul>
+				{% endif %}
+
 		{# ========================= VEHICULES ========================= #}
 		<details open>
 			<summary>
@@ -19,7 +32,7 @@
 				<li>
 					<a href="{{ path('vehicles_index') }}">
 						<i class="fa-solid fa-car-tunnel"></i>
-						Véhicules enregistrés
+						Catalogue véhicules
 					</a>
 				</li>
 
@@ -48,15 +61,6 @@
 
 			</ul>
 
-			{# ========================= FILTRES VEHICULES ========================= #}
-			{% if app.request.attributes.get('_route') starts with 'vehicles' %}
-				<div id="vehicles-filters">
-					{{ render(controller(
-						'App\\Controller\\VehiclesFilterController::sidebarFilters'
-					)) }}
-				</div>
-			{% endif %}
-
 		</details>
 
 		{# ========================= CLIENTS ========================= #}
@@ -77,7 +81,7 @@
 					</li>
 
 					<li>
-						<a href="{{ path('customer_new') }}">
+						<a href="{{ path('customer_new') }}" data-ajax-modal>
 							<i class="fa-solid fa-user-plus"></i>
 							Créer client
 						</a>
@@ -112,18 +116,6 @@
 					</li>
 
 				</ul>
-
-				{% if app.user %}
-					<ul class="items-list">
-						<li>
-							<a href="{{ path('dossier_user_list') }}">
-								<i class="fa-solid fa-folder-open"></i>
-								Mes dossiers
-							</a>
-						</li>
-					</ul>
-				{% endif %}
-
 			</details>
 		{% endif %}
 

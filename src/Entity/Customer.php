@@ -25,18 +25,10 @@ class Customer
 {
     use TimestampableTrait;
 
-    // =========================================================
-    // IDENTIFIANT TECHNIQUE
-    // =========================================================
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    // =========================================================
-    // CODE CLIENT (IDENTIFIANT MÉTIER UNIQUE)
-    // =========================================================
 
     #[ORM\Column(length: 10, unique: true)]
     #[Assert\NotBlank(message: 'Le code client est obligatoire')]
@@ -46,10 +38,6 @@ class Customer
         message: 'Format attendu : DUP001 ou DUP-001'
     )]
     private ?string $customerCode = null;
-
-    // =========================================================
-    // INFORMATIONS CLIENT
-    // =========================================================
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
@@ -67,9 +55,20 @@ class Customer
     #[Assert\Length(max: 180)]
     private ?string $email = null;
 
-    // =========================================================
-    // USER (OPTIONNEL)
-    // =========================================================
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Regex(
+        pattern: '/^(\+33|0)[1-9](\d{2}){4}$/',
+        message: 'Le numéro de téléphone 1 doit être valide (ex : +33612345678 ou 0612345678).'
+    )]
+    private ?string $phoneNumber1 = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Regex(
+        pattern: '/^(\+33|0)[1-9](\d{2}){4}$/',
+        message: 'Le numéro de téléphone 2 doit être valide (ex : +33612345678 ou 0612345678).'
+    )]
+    private ?string $phoneNumber2 = null;
+
     #[ORM\OneToOne(
         mappedBy: 'customer',
         targetEntity: User::class,
@@ -77,29 +76,19 @@ class Customer
     )]
     private ?User $user = null;
 
-    // =========================================================
-    // DOSSIERS (1 Customer → N Dossiers)
-    // =========================================================
     #[ORM\OneToMany(
         mappedBy: 'customer',
         targetEntity: Dossier::class,
         cascade: ['persist']
-        //PAS de orphanRemoval ici pour éviter suppressions automatiques non maîtrisées
     )]
     private Collection $dossiers;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "L'adresse ne peut pas dépasser {{ limit }} caractères."
-    )]
+    #[Assert\Length(max: 255)]
     private ?string $address = null;
 
     #[ORM\Column(length: 7, nullable: true)]
-    #[Assert\Length(
-        max: 7,
-        maxMessage: "Le code postal ne peut pas dépasser {{ limit }} caractères."
-    )]
+    #[Assert\Length(max: 7)]
     #[Assert\Regex(
         pattern: "/^[0-9]{5}$/",
         message: "Le code postal doit contenir exactement 5 chiffres."
@@ -107,10 +96,7 @@ class Customer
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La ville ne peut pas dépasser {{ limit }} caractères."
-    )]
+    #[Assert\Length(max: 255)]
     #[Assert\Regex(
         pattern: "/^[a-zA-ZÀ-ÿ\s\-']+$/",
         message: "La ville contient des caractères invalides."
@@ -118,31 +104,18 @@ class Customer
     private ?string $city = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "Le complément d'adresse ne peut pas dépasser {{ limit }} caractères."
-    )]
+    #[Assert\Length(max: 255)]
     private ?string $addressDetails = null;
-
-    // =========================================================
-    // CONSTRUCTOR
-    // =========================================================
 
     public function __construct()
     {
         $this->dossiers = new ArrayCollection();
     }
 
-    // =========================================================
-    // GETTERS / SETTERS
-    // =========================================================
-
     public function getId(): ?int
     {
         return $this->id;
     }
-
-    // -------- CODE CLIENT --------
 
     public function getCustomerCode(): ?string
     {
@@ -155,8 +128,6 @@ class Customer
         return $this;
     }
 
-    // -------- FIRSTNAME --------
-
     public function getFirstName(): ?string
     {
         return $this->firstName;
@@ -167,8 +138,6 @@ class Customer
         $this->firstName = trim($firstName);
         return $this;
     }
-
-    // -------- LASTNAME --------
 
     public function getLastName(): ?string
     {
@@ -181,8 +150,6 @@ class Customer
         return $this;
     }
 
-    // -------- EMAIL --------
-
     public function getEmail(): ?string
     {
         return $this->email;
@@ -194,9 +161,27 @@ class Customer
         return $this;
     }
 
-    // =========================================================
-    // USER RELATION (1 - 1)
-    // =========================================================
+    public function getPhoneNumber1(): ?string
+    {
+        return $this->phoneNumber1;
+    }
+
+    public function setPhoneNumber1(?string $phoneNumber1): static
+    {
+        $this->phoneNumber1 = $phoneNumber1 ? preg_replace('/\s+/', '', $phoneNumber1) : null;
+        return $this;
+    }
+
+    public function getPhoneNumber2(): ?string
+    {
+        return $this->phoneNumber2;
+    }
+
+    public function setPhoneNumber2(?string $phoneNumber2): static
+    {
+        $this->phoneNumber2 = $phoneNumber2 ? preg_replace('/\s+/', '', $phoneNumber2) : null;
+        return $this;
+    }
 
     public function getUser(): ?User
     {
@@ -214,22 +199,11 @@ class Customer
         return $this;
     }
 
-    // =========================================================
-    // DOSSIERS RELATION (1 - N)
-    // =========================================================
-
-    /**
-     * @return Collection<int, Dossier>
-     */
     public function getDossiers(): Collection
     {
         return $this->dossiers;
     }
 
-    /**
-     * Ajout d’un dossier au customer
-     * → garantit la cohérence bidirectionnelle
-     */
     public function addDossier(Dossier $dossier): static
     {
         if (!$this->dossiers->contains($dossier)) {
@@ -240,38 +214,10 @@ class Customer
         return $this;
     }
 
-    /**
-     * Retrait d’un dossier du customer
-     *
-     * ⚠ IMPORTANT :
-     * On NE met PAS customer à null car :
-     * - relation Dossier.customer est nullable=false
-     * - Doctrine déclencherait une erreur de persistance
-     *
-     * Si besoin de transfert → gérer via service métier.
-     */
     public function removeDossier(Dossier $dossier): static
     {
         $this->dossiers->removeElement($dossier);
-
-        // ❌ NE PAS FAIRE :
-        // $dossier->setCustomer(null);
-
         return $this;
-    }
-
-    // =========================================================
-    // DEBUG STRING
-    // =========================================================
-
-    public function __toString(): string
-    {
-        return sprintf(
-            '%s %s (%s)',
-            $this->firstName ?? '',
-            $this->lastName ?? '',
-            $this->customerCode ?? ''
-        );
     }
 
     public function getAddress(): ?string
@@ -282,7 +228,6 @@ class Customer
     public function setAddress(?string $address): static
     {
         $this->address = $address;
-
         return $this;
     }
 
@@ -294,7 +239,6 @@ class Customer
     public function setZipCode(?string $zipCode): static
     {
         $this->zipCode = $zipCode;
-
         return $this;
     }
 
@@ -306,7 +250,6 @@ class Customer
     public function setCity(?string $city): static
     {
         $this->city = $city;
-
         return $this;
     }
 
@@ -318,7 +261,16 @@ class Customer
     public function setAddressDetails(?string $addressDetails): static
     {
         $this->addressDetails = $addressDetails;
-
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s %s (%s)',
+            $this->firstName ?? '',
+            $this->lastName ?? '',
+            $this->customerCode ?? ''
+        );
     }
 }

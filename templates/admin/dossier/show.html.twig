@@ -51,8 +51,10 @@ M-Motors: Dossier {{ dossier.dossierCode }}
 
                 <p>
                     <strong>Client :</strong>
+                    <a href="{{path('customer_edit',{id:dossier.customer.id})}}" data-ajax-modal>
                     {{ dossier.customer.lastname }}
                     {{ dossier.customer.firstname }}
+                    </a>
                 </p>
 
                 <p>

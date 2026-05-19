@@ -10,7 +10,6 @@
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   color: var(--text-primary);
-  justify-content: center;
 }
 
 /* override compact pour filtres */
@@ -22,7 +21,6 @@
 #filters-form summary {
   padding: var(--space-xs);
   font-size: 0.9rem;
-  justify-content: space-between;
 }
 
 /* flèche plus discrète */

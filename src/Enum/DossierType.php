@@ -2,75 +2,101 @@
 
 namespace App\Enum;
 
-use App\Entity\Vehicle;
+use App\Enum\VehicleUsageType;
 
 enum DossierType: string
 {
-    case SALE = 'sale';
+    case PURCHASE = 'purchase';
     case RENTAL = 'rental';
 
-    // =========================================================
-    // UI
-    // =========================================================
-
+    /**
+     * Libellé affiché en UI
+     */
     public function label(): string
     {
         return match ($this) {
-            self::SALE => 'Achat',
+            self::PURCHASE => 'Achat',
             self::RENTAL => 'Location',
         };
     }
 
+    /**
+     * Choix pour formulaires Symfony
+     */
     public static function choices(): array
     {
         return [
-            'Achat' => self::SALE,
+            'Achat' => self::PURCHASE,
             'Location' => self::RENTAL,
         ];
     }
 
-    // =========================================================
-    // SOUMISSION (réservation véhicule)
-    // =========================================================
-
-    public function applyVehicleOnSubmit(Vehicle $vehicle): void
+    /**
+     * Action métier lors de la création du dossier
+     */
+    public function applyVehicleOnSubmit($vehicle): void
     {
-        // réservation simple pour tout type de dossier
         $vehicle->reserve();
     }
 
-    // =========================================================
-    // VALIDATION
-    // =========================================================
-
-    public function applyVehicleValidation(Vehicle $vehicle): void
+    /**
+     * Action métier lors de la validation du dossier
+     */
+    public function applyVehicleValidation($vehicle): void
     {
         match ($this) {
-            self::SALE => $vehicle->markAsSold(),
+            self::PURCHASE => $vehicle->markAsSold(),
             self::RENTAL => $vehicle->markAsRented(),
         };
     }
 
-    // =========================================================
-    // REFUS
-    // =========================================================
-
-    public function applyVehicleRejection(Vehicle $vehicle): void
+    /**
+     * Action métier lors du refus du dossier
+     */
+    public function applyVehicleRejection($vehicle): void
     {
         $vehicle->makeAvailable();
     }
 
-    // =========================================================
-    // HELPERS
-    // =========================================================
-
-    public function isSale(): bool
+    /**
+     * Vérifie si achat
+     */
+    public function isPurchase(): bool
     {
-        return $this === self::SALE;
+        return $this === self::PURCHASE;
     }
 
+    /**
+     * Vérifie si location
+     */
     public function isRental(): bool
     {
         return $this === self::RENTAL;
+    }
+
+    /**
+     * Retourne les types autorisés selon usage véhicule
+     */
+    public static function fromVehicleUsageType(VehicleUsageType $usageType): array
+    {
+        return match ($usageType) {
+            VehicleUsageType::SALE => [self::PURCHASE],
+            VehicleUsageType::RENT => [self::RENTAL],
+            VehicleUsageType::BOTH => [self::PURCHASE, self::RENTAL],
+        };
+    }
+
+    /**
+     * Vérifie si un type est autorisé pour un véhicule
+     */
+    public static function isAllowedForVehicleUsage(
+        self $dossierType,
+        VehicleUsageType $usageType
+    ): bool {
+        return in_array(
+            $dossierType,
+            self::fromVehicleUsageType($usageType),
+            true
+        );
     }
 }

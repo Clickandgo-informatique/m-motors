@@ -24,7 +24,7 @@ class CustomerFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        $batchSize = 20;
+        $batchSize = 50;
 
         for ($i = 1; $i <= 50; $i++) {
 
@@ -69,7 +69,8 @@ class CustomerFixtures extends Fixture
             $this->addReference('customer_' . $i, $customer);
 
             if ($i % $batchSize === 0) {
-                $manager->flush();                
+                $manager->flush();
+                $manager->clear();
             }
         }
 

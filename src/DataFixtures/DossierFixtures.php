@@ -91,50 +91,57 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
      */
     private function applyScenario(Dossier $dossier, string $scenario): void
     {
-        // 1. Select vehicle
-        $this->workflowService->applySafe($dossier, 'select_vehicle');
+        switch ($scenario) {
 
-        if ($scenario === 'draft') {
-            return;
+            case 'draft':
+                return;
+
+            case 'vehicle_selected':
+                $this->workflowService->applySafe($dossier, 'select_vehicle');
+                return;
+
+            case 'documents_pending':
+                $this->workflowService->applySafe($dossier, 'select_vehicle');
+                $this->workflowService->applySafe($dossier, 'request_documents');
+                return;
+
+            case 'documents_review':
+                $this->workflowService->applySafe($dossier, 'select_vehicle');
+                $this->workflowService->applySafe($dossier, 'request_documents');
+                $this->workflowService->applySafe($dossier, 'submit_documents');
+                return;
+
+            case 'financing_review':
+                $this->workflowService->applySafe($dossier, 'select_vehicle');
+                $this->workflowService->applySafe($dossier, 'request_documents');
+                $this->workflowService->applySafe($dossier, 'submit_documents');
+                $this->workflowService->applySafe($dossier, 'validate_documents');
+                return;
+
+            case 'completed':
+                $this->workflowService->applySafe($dossier, 'select_vehicle');
+                $this->workflowService->applySafe($dossier, 'request_documents');
+                $this->workflowService->applySafe($dossier, 'submit_documents');
+                $this->workflowService->applySafe($dossier, 'validate_documents');
+                $this->workflowService->applySafe($dossier, 'approve_financing');
+                $this->workflowService->applySafe($dossier, 'sign_order');
+                return;
+
+            case 'cancelled':
+                $this->workflowService->applySafe($dossier, 'cancel');
+                return;
         }
+    }
 
-        // 2. Request documents
-        $this->workflowService->applySafe($dossier, 'request_documents');
-
-        if ($scenario === 'vehicle_selected') {
-            return;
-        }
-
-        // 3. Submit documents
-        $this->workflowService->applySafe($dossier, 'submit_documents');
-
-        if ($scenario === 'documents_pending') {
-            return;
-        }
-
-        // 4. Validate documents
-        $this->workflowService->applySafe($dossier, 'validate_documents');
-
-        if ($scenario === 'documents_review') {
-            return;
-        }
-
-        // 5. Approve financing
-        $this->workflowService->applySafe($dossier, 'approve_financing');
-
-        if ($scenario === 'financing_review') {
-            return;
-        }
-
-        // 6. Cancel override
-        if ($scenario === 'cancelled') {
-            $this->workflowService->applySafe($dossier, 'cancel');
-        }
+    public static function getGroup(): array
+    {
+        return ['DossierFixtures'];
     }
 
     public function getDependencies(): array
     {
         return [
+            UserFixtures::class,
             CustomerFixtures::class,
             VehicleFixtures::class,
         ];

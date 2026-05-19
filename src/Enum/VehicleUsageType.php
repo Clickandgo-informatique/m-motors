@@ -16,4 +16,14 @@ enum VehicleUsageType: string
             self::BOTH => 'Vente & Location',
         };
     }
+
+    // Retourne les types de dossiers autorisés pour ce mode d'usage véhicule.        
+    public function allowedDossierTypes(): array
+    {
+        return match ($this) {
+            self::SALE => [DossierType::PURCHASE],
+            self::RENT => [DossierType::RENTAL],
+            self::BOTH => [DossierType::PURCHASE, DossierType::RENTAL],
+        };
+    }
 }

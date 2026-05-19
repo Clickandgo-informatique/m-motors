@@ -22,19 +22,22 @@
 		<tbody>
 			{% for customer in customers %}
 				<tr>
+				<td>
+					<a href="{{ path('customer_edit', {'id': customer.id}) }}" data-ajax-modal>
+					<i class="fa-regular fa-pen-to-square"></i>
+					</a>
+				</td>
 					<td>{{ customer.customerCode }}</td>
 					<td>{{ customer.dossiers|length }}</td>
 					<td>{{ customer.firstName }}</td>
 					<td>{{ customer.lastName }}</td>
 					<td>{{ customer.email }}</td>
-					<td>
-						<a href="{{ path('customer_show', {'id': customer.id}) }}">Voir</a>
-						|
-						<a href="{{ path('customer_edit', {'id': customer.id}) }}">Éditer</a>
-						|
-						<form method="post" class="form-delete" action="{{ path('customer_delete', {'id': customer.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce client ?');">
+					<td>						
+						<form method="post" class="form-delete-btn" action="{{ path('customer_delete', {'id': customer.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce client ?');">
 							<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ customer.id) }}">
-							<button type="submit">Supprimer</button>
+							<button type="submit" class="btn btn-danger btn-delete">
+								<i class="fa-regular fa-trash-can"></i>
+							</button>
 						</form>
 					</td>
 				</tr>

@@ -53,22 +53,16 @@ class CustomerController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // =========================
             // 1. GENERATE CUSTOMER CODE
-            // =========================
             $code = $codeGenerator->generateCustomerCode($customer->getLastName());
             $customer->setCustomerCode($code);
 
-            // =========================
             // 2. CREATE USER
-            // =========================
             $user = new User();
             $user->setEmail($customer->getEmail());
             $user->setRoles(['ROLE_CUSTOMER']);
 
-            // =========================
             // 3. PASSWORD INIT BASED ON CODE
-            // =========================
             $plainPassword = sprintf(
                 '%s-%s',
                 $code,
@@ -79,21 +73,15 @@ class CustomerController extends AbstractController
                 $passwordHasher->hashPassword($user, $plainPassword)
             );
 
-            // =========================
             // 4. LINK
-            // =========================
             $customer->setUser($user);
 
-            // =========================
             // 5. PERSIST
-            // =========================
             $em->persist($user);
             $em->persist($customer);
             $em->flush();
 
-            // =========================
             // FLASH (admin only)
-            // =========================
             $this->addFlash(
                 'success',
                 sprintf(
@@ -111,9 +99,9 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    /**
-     * Édition d'un client existant
-     */
+  
+    // Édition d'un client existant
+
     #[Route('/{id}/edit', name: 'customer_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Customer $customer): Response
     {
@@ -136,9 +124,9 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    /**
-     * Suppression d'un client
-     */
+  
+     // Suppression d'un client
+
     #[Route('/{id}/delete', name: 'customer_delete', methods: ['POST'])]
     public function delete(Request $request, Customer $customer): Response
     {
@@ -167,6 +155,31 @@ class CustomerController extends AbstractController
 
         return $this->render('admin/customer/show.html.twig', [
             'customer' => $customer,
+        ]);
+    }
+
+    //Recherche d'un client pour autocomplete (dossier...)
+    #[Route('/customer/search', name: 'customer_search', methods: ['GET'])]
+    public function search(
+        Request $request,
+        CustomerRepository $customerRepository
+    ): Response {
+
+        $query = $request->query->get('customer');
+
+        if (!$query || mb_strlen($query) < 2) {
+            return new Response('');
+        }
+
+        $customers = $customerRepository->createQueryBuilder('c')
+            ->where('c.name LIKE :q OR c.email LIKE :q')
+            ->setParameter('q', '%' . $query . '%')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('customer/_search_results.html.twig', [
+            'customers' => $customers
         ]);
     }
 }

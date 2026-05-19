@@ -1,0 +1,44 @@
+<h3>Créer un dossier</h3>
+
+<h1>
+    {{ vehicle.vehicleModel.brand.name }}
+    {{ vehicle.vehicleModel.model.name }}
+</h1>
+
+{% set type = vehicle.usageType.value == 'rent' ? 'rental' : 'purchase' %}
+
+<form method="POST" action="{{ path('dossier_create', { id: vehicle.id,type:type }) }}">
+
+
+        <label>Client</label>
+
+{% include 'Components/Forms/_fetch_form.html.twig' with {
+    action: path('customer_search'),
+    fetchUrl: path('customer_search'),
+    target: '#modal-body',
+    filtersTarget: '',
+    paginationTop: '',
+    paginationBottom: '',
+    autocompleteUrl: path('customer_search'),
+    resultDiv: 'customer_results',
+    name: 'customer',
+    placeholder: 'Rechercher un client...',
+    linkMode: '1',
+    fetchMode: 'json',
+    editRouteTemplate: path('customer_show', { id: 0 }),
+    baseUrl: '/customer/',
+    hiddenName: 'customerId',
+} %} 
+
+        <label for ="dossierType">Type de dossier</label>
+
+        <select name="dossierType" class="form-select form-row">
+            <option value="purchase">Achat</option>
+            <option value="rental">Location</option>
+        </select>  
+
+    <button type="submit" class="btn btn-success">
+        Créer le dossier
+    </button>
+
+</form>

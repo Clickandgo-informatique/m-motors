@@ -9,23 +9,23 @@
 
 	{# Formulaire de recherche #}
 	{% include "Components/Forms/_fetch_form.html.twig" with {
-    action: path('vehicle_model_search'),
-    fetchUrl: path('vehicle_model_search'),
-    baseUrl: path('vehicles_models'),    
-    name: "q",
-    hiddenName: "vehicle[vehicleModelSearch]",    
-    resultDiv: 'vehicle-model-results',
-    placeholder: "Rechercher par marque ou modèle",
-    autocompleteUrl: path('vehicle_model_search'),    
-    itemUrl: path('vehicle_model_edit', { id: '__ID__' }),
-    target: '#vehicle-model-results',
-    fetchMode: 'html',
-    filtersTarget: '',
-    paginationTop: '',
-    paginationBottom: '',
-    ajaxModal: true,
-    autocomplete: true,
-	linkMode:'1'
+		action: path('vehicle_model_search'),
+		fetchUrl: path('vehicle_model_search'),
+		baseUrl: path('vehicles_models'),    
+		name: "q",
+		hiddenName: "vehicle[vehicleModelSearch]",    
+		resultDiv: 'vehicle-model-results',
+		placeholder: "Rechercher par marque ou modèle",
+		autocompleteUrl: path('vehicle_model_search'),    
+		itemUrl: path('vehicle_model_edit', { id: '__ID__' }),
+		target: '#vehicle-model-results',
+		fetchMode: 'html',
+		filtersTarget: '',
+		paginationTop: '',
+		paginationBottom: '',
+		ajaxModal: true,
+		autocomplete: true,
+		linkMode:'1'
 } %}
 
 	<p class="text-center">Total modèles :

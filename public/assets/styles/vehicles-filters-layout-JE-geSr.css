@@ -1,0 +1,40 @@
+.vehicles-layout {
+  display: flex;
+  gap: var(--space-m);
+  align-items: flex-start;
+}
+
+/* colonne filtres */
+.vehicles-filters {
+  width: 260px;
+  flex-shrink: 0;
+  position: sticky;
+  top: var(--space-m);
+  height: fit-content;
+  overflow-y: auto;
+}
+
+/* colonne principale */
+.vehicles-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* header filtres */
+.filters-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  font-weight: 600;
+  margin-bottom: var(--space-s);
+}
+@media (max-width: 768px) {
+  .vehicles-layout {
+    flex-direction: column;
+  }
+
+  .vehicles-filters {
+    width: 100%;
+    position: relative;
+  }
+}

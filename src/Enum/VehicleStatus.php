@@ -7,10 +7,6 @@ namespace App\Enum;
  */
 enum VehicleStatus: string
 {
-    // =========================================================
-    // DISPONIBILITÉ STOCK
-    // =========================================================
-
     /**
      * Disponible à la vente
      */
@@ -26,24 +22,29 @@ enum VehicleStatus: string
      */
     case RESERVED = 'reserved';
 
-        // =========================================================
-        // EXPLOITATION
-        // =========================================================
-
+    /**
+     * Véhicule loué
+     */
     case RENTED = 'rented';
+
+    /**
+     * Véhicule vendu
+     */
     case SOLD = 'sold';
 
-        // =========================================================
-        // LOGISTIQUE
-        // =========================================================
-
+    /**
+     * Véhicule commandé
+     */
     case ORDERED = 'ordered';
+
+    /**
+     * Véhicule en maintenance
+     */
     case MAINTENANCE = 'maintenance';
 
-    // =========================================================
-    // LABELS
-    // =========================================================
-
+    /**
+     * Libellé UI du statut
+     */
     public function label(): string
     {
         return match ($this) {
@@ -57,61 +58,56 @@ enum VehicleStatus: string
         };
     }
 
-    // =========================================================
-    // HELPERS MÉTIER
-    // =========================================================
-
+    /**
+     * Retourne true si le véhicule est disponible (vente ou location)
+     */
     public function isAvailable(): bool
     {
         return in_array($this, [
             self::AVAILABLE_FOR_SALE,
-            self::AVAILABLE_FOR_RENT
+            self::AVAILABLE_FOR_RENT,
         ], true);
     }
 
-    public function isAvailableForSale(): bool
-    {
-        return $this === self::AVAILABLE_FOR_SALE;
-    }
-
-    public function isAvailableForRent(): bool
-    {
-        return $this === self::AVAILABLE_FOR_RENT;
-    }
-
+    /**
+     * Retourne true si le véhicule est réservé
+     */
     public function isReserved(): bool
     {
         return $this === self::RESERVED;
     }
 
-    public function isInUse(): bool
-    {
-        return $this === self::RENTED;
-    }
-
-    public function isFinal(): bool
+    /**
+     * Retourne true si le véhicule est vendu
+     */
+    public function isSold(): bool
     {
         return $this === self::SOLD;
     }
 
-    public function isUnavailable(): bool
+    /**
+     * Retourne true si le véhicule est loué
+     */
+    public function isRented(): bool
     {
-        return !$this->isAvailable();
+        return $this === self::RENTED;
     }
 
+    /**
+     * Retourne true si le véhicule est visible dans le catalogue
+     */
     public function isVisible(): bool
     {
         return in_array($this, [
             self::AVAILABLE_FOR_SALE,
             self::AVAILABLE_FOR_RENT,
-            self::RESERVED
+            self::RESERVED,
         ], true);
     }
 
-    // =========================================================
-    // TRANSITIONS
-    // =========================================================
-
+    /**
+     * Vérifie si une transition est autorisée
+     */
     public function canTransitionTo(self $target): bool
     {
         return match ($this) {
@@ -119,6 +115,7 @@ enum VehicleStatus: string
             self::AVAILABLE_FOR_SALE => in_array($target, [
                 self::RESERVED,
                 self::MAINTENANCE,
+                self::SOLD,
             ], true),
 
             self::AVAILABLE_FOR_RENT => in_array($target, [
@@ -131,28 +128,28 @@ enum VehicleStatus: string
                 self::AVAILABLE_FOR_SALE,
                 self::AVAILABLE_FOR_RENT,
                 self::SOLD,
-                self::RENTED
+                self::RENTED,
             ], true),
 
             self::ORDERED => in_array($target, [
                 self::AVAILABLE_FOR_SALE,
-                self::AVAILABLE_FOR_RENT
+                self::AVAILABLE_FOR_RENT,
             ], true),
 
             self::MAINTENANCE => in_array($target, [
                 self::AVAILABLE_FOR_SALE,
-                self::AVAILABLE_FOR_RENT
+                self::AVAILABLE_FOR_RENT,
             ], true),
 
             self::RENTED => $target === self::AVAILABLE_FOR_RENT,
+
             self::SOLD => false,
         };
     }
 
-    // =========================================================
-    // UI
-    // =========================================================
-
+    /**
+     * Retourne la classe CSS du badge UI
+     */
     public function badge(): string
     {
         return match ($this) {
@@ -163,6 +160,43 @@ enum VehicleStatus: string
             self::SOLD => 'dark',
             self::ORDERED => 'secondary',
             self::MAINTENANCE => 'danger',
+        };
+    }
+
+    /**
+     * Passe le véhicule en état réservé
+     */
+    public function reserve(): self
+    {
+        return self::RESERVED;
+    }
+
+    /**
+     * Passe le véhicule en état vendu
+     */
+    public function markAsSold(): self
+    {
+        return self::SOLD;
+    }
+
+    /**
+     * Passe le véhicule en état loué
+     */
+    public function markAsRented(): self
+    {
+        return self::RENTED;
+    }
+
+    /**
+     * Remet le véhicule en disponibilité selon son contexte métier
+     */
+    public function makeAvailable(): self
+    {
+        return match ($this) {
+            self::AVAILABLE_FOR_RENT,
+            self::RENTED => self::AVAILABLE_FOR_RENT,
+
+            default => self::AVAILABLE_FOR_SALE,
         };
     }
 }

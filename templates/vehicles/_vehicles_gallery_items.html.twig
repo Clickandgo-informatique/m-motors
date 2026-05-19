@@ -2,18 +2,19 @@
 	{% for vehicle in vehicles %}
 		<div
 			class="vehicle-card card
-				        {% if vehicle.status.isUnavailable
-				            and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))
-				        %}
-				            is-unavailable
-				        {% endif %}
-				    " data-url="
-				        {{ is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')
-				            ? path('vehicle_edit', {id: vehicle.id})
-				            : path('vehicle_show', {id: vehicle.id}) }}
-				    ">
+				{% if not vehicle.status.isAvailable
+					and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))
+				%}
+					is-unavailable
+				{% endif %}
+			"
+			data-url="
+				{{ is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')
+					? path('vehicle_edit', {id: vehicle.id})
+					: path('vehicle_show', {id: vehicle.id}) }}
+			"
+		>
 
-			{# HEADER #}
 			<div class="vehicle-card-header">
 
 				<span class="vehicle-brand" data-label="Marque">
@@ -24,41 +25,75 @@
 					{{ vehicle.vehicleModel.model.name }}
 				</span>
 
-				
-			{# IMAGE + BADGES #}
+			</div>
+
 			<div class="vehicle-image-wrapper">
 
-				{# <img src="#" alt="coverImg {{ vehicle.vehicleModel.model.name }}"> #}
 				<img src="#" alt="">
 
-				<button data-action="toggle-favorite" data-url="/vehicle/{{ vehicle.id }}/favorite" class="favorite-btn" aria-pressed="false" data-label="Favori">
+				<button
+					data-action="toggle-favorite"
+					data-url="/vehicle/{{ vehicle.id }}/favorite"
+					class="favorite-btn"
+					aria-pressed="false"
+					data-label="Favori"
+				>
 					<i class="fa-regular fa-heart" data-icon></i>
 				</button>
 
-				<span class="badge bg-{{ vehicle.status.badge }} vehicle-status-badge" data-label="Statut">
+				<span
+					class="badge bg-{{ vehicle.status.badge }} vehicle-status-badge"
+					data-label="Statut"
+				>
 					{{ vehicle.status.label }}
 				</span>
+
 			</div>
 
-				<div class="vehicle-card-actions">
+			<div class="vehicle-card-actions">
 
-					{% if vehicle.status.isAvailable %}
-						<form action="{{ path('dossier_create', {id: vehicle.id, type: 'sale'}) }}" method="post">
+				{% if vehicle.status.isAvailable %}
+
+					{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+
+						<a
+							href="{{ path('dossier_modal_create', { id: vehicle.id }) }}"
+							data-ajax-modal
+							class="btn btn-primary btn-sm"
+						>
+							<i class="fa-solid fa-folder-plus"></i>
+							Créer dossier
+						</a>
+
+					{% else %}
+
+						<form
+							action="{{ path('dossier_create', {
+								id: vehicle.id,
+								type: 'purchase'
+							}) }}"
+							method="post"
+						>
+
 							<button type="submit" class="btn btn-primary btn-sm">
 								<i class="fa-solid fa-folder-plus"></i>
-								Créer un dossier
+								Créer dossier
 							</button>
+
 						</form>
-					{% else %}
-						<span class="badge bg-secondary" data-label="Action">
-							Indisponible
-						</span>
+
 					{% endif %}
 
-				</div>
+				{% else %}
+
+					<span class="badge bg-secondary" data-label="Action">
+						Indisponible
+					</span>
+
+				{% endif %}
+
 			</div>
 
-			{# BODY (table + details/summary ready mobile) #}
 			<div class="vehicle-card-body">
 
 				<table class="vehicle-specs">
@@ -76,8 +111,7 @@
 						<tr>
 							<th>Kilométrage</th>
 							<td data-label="Kilométrage">
-								{{ vehicle.mileage|number_format(0, ',', ' ') }}
-								km
+								{{ vehicle.mileage|number_format(0, ',', ' ') }} km
 							</td>
 						</tr>
 
@@ -98,8 +132,7 @@
 						<tr>
 							<th>Prix</th>
 							<td data-label="Prix">
-								{{ vehicle.price|number_format(0, ',', ' ') }}
-								€
+								{{ vehicle.price|number_format(0, ',', ' ') }} €
 							</td>
 						</tr>
 
@@ -115,7 +148,6 @@
 
 			</div>
 
-			{# FEATURES #}
 			{% set allFeatures = vehicle.features|map(f => f.label) %}
 			{% set maxVisible = 5 %}
 			{% set visibleFeatures = allFeatures|slice(0, maxVisible) %}
@@ -124,14 +156,19 @@
 			<p class="vehicle-features" data-label="Options">
 				Options ({{ allFeatures|length }}):
 				{{ visibleFeatures|join(', ') }}
+
 				{% if hiddenCount > 0 %}
-					+{{ hiddenCount }}
-					autres…
+					+{{ hiddenCount }} autres…
 				{% endif %}
 			</p>
 
 		</div>
+
 	{% else %}
-		<div class="text-center text-muted">Aucun véhicule trouvé</div>
+
+		<div class="text-center text-muted">
+			Aucun véhicule trouvé
+		</div>
+
 	{% endfor %}
 </div>

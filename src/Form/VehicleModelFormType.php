@@ -6,6 +6,8 @@ use App\Entity\BodyType;
 use App\Entity\Brand;
 use App\Entity\FuelType;
 use App\Entity\GearType;
+use App\Entity\Model;
+use App\Entity\Variant;
 use App\Entity\VehicleModel;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -38,12 +40,16 @@ class VehicleModelFormType extends AbstractType
                 'placeholder' => 'Choisir une marque',
                 'required' => false
             ])
-            ->add('model', TextType::class, [
+            ->add('model', EntityType::class, [
                 'label' => 'Modèle',
+                'class' => Model::class,
+                'choice_label' => 'name',
                 'attr' => ['placeholder' => 'Description du modèle']
             ])
-            ->add('variant', TextType::class, [
+            ->add('variant', EntityType::class, [
                 'label' => 'Variante',
+                'class'=>Variant::class,
+                'choice_label'=>'name'
 
             ])
             ->add('fuelType', EntityType::class, [
@@ -54,7 +60,7 @@ class VehicleModelFormType extends AbstractType
             ->add('gearType', EntityType::class, [
                 'label' => 'Boîte vitesse',
                 'class' => GearType::class,
-                'choice_label' => 'type',
+                'choice_label' => 'name',
             ])
             ->add('bodyType', EntityType::class, [
                 'label' => 'Type carrosserie',

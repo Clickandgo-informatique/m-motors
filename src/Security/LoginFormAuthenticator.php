@@ -6,6 +6,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -20,16 +21,24 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
+
+
 class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 {
     private RouterInterface $router;
     private EntityManagerInterface $em;
+    private RequestStack $requestStack;
 
-    public function __construct(RouterInterface $router, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        RouterInterface $router,
+        EntityManagerInterface $em,
+        UrlGeneratorInterface $urlGenerator,     
+       
+    ) {
         $this->router = $router;
         $this->em = $em;
         $this->urlGenerator = $urlGenerator;
+       
     }
 
     use TargetPathTrait;
@@ -62,7 +71,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         /** @var User $user */
         $user = $token->getUser();
 
-        // ✅ RESET 2FA à chaque login
+        // RESET 2FA à chaque login
         $request->getSession()->set('2fa_passed', false);
 
         // Si pas encore de secret 2FA → on le génère
@@ -86,9 +95,14 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         return new RedirectResponse($this->router->generate('2fa_verify'));
     }
 
+    //Si mot de passe ou email invalides on affiche un flashbag d'erreur
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
-        $request->getSession()->set(SecurityRequestAttributes::AUTHENTICATION_ERROR, $exception);
+        $request->getSession()->set(
+            SecurityRequestAttributes::AUTHENTICATION_ERROR,
+            new AuthenticationException('Adresse email ou mot de passe incorrect.')
+        );
+
         return new RedirectResponse($this->getLoginUrl($request));
     }
 
