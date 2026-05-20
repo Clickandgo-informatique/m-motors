@@ -9,6 +9,7 @@ use App\Repository\CustomerRepository;
 use App\Service\CustomerCodeGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -99,7 +100,7 @@ class CustomerController extends AbstractController
         ]);
     }
 
-  
+
     // Édition d'un client existant
 
     #[Route('/{id}/edit', name: 'customer_edit', methods: ['GET', 'POST'])]
@@ -124,8 +125,8 @@ class CustomerController extends AbstractController
         ]);
     }
 
-  
-     // Suppression d'un client
+
+    // Suppression d'un client
 
     #[Route('/{id}/delete', name: 'customer_delete', methods: ['POST'])]
     public function delete(Request $request, Customer $customer): Response
@@ -159,27 +160,52 @@ class CustomerController extends AbstractController
     }
 
     //Recherche d'un client pour autocomplete (dossier...)
-    #[Route('/customer/search', name: 'customer_search', methods: ['GET'])]
+    #[Route('/search', name: 'customer_search', methods: ['GET'])]
     public function search(
         Request $request,
         CustomerRepository $customerRepository
-    ): Response {
+    ): JsonResponse {
 
-        $query = $request->query->get('customer');
+        $query = trim((string) $request->query->get('customer'));
 
-        if (!$query || mb_strlen($query) < 2) {
-            return new Response('');
+        if (mb_strlen($query) < 2) {
+            return new JsonResponse([]);
         }
 
+        $query = mb_strtolower($query);
+
         $customers = $customerRepository->createQueryBuilder('c')
-            ->where('c.name LIKE :q OR c.email LIKE :q')
+            ->where('LOWER(c.lastName) LIKE :q')
+            ->orWhere('LOWER(c.firstName) LIKE :q')
+            ->orWhere('LOWER(c.email) LIKE :q')
             ->setParameter('q', '%' . $query . '%')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
 
-        return $this->render('customer/_search_results.html.twig', [
-            'customers' => $customers
-        ]);
+        $results = [];
+
+        foreach ($customers as $customer) {
+            $results[] = [
+                'id' => $customer->getId(),
+                'label' => sprintf(
+                    '%s %s (%s)',
+                    $customer->getFirstName(),
+                    $customer->getLastName(),
+                    $customer->getEmail()
+                )
+            ];
+        }
+
+        if (empty($results)) {
+            return new JsonResponse([
+                [
+                    'id' => null,
+                    'label' => 'Aucun résultat'
+                ]
+            ]);
+        }
+
+        return new JsonResponse($results);
     }
 }

@@ -6,7 +6,7 @@ export default class AjaxManager {
     this.modalBody = document.querySelector("#modal-body");
 
     if (!this.modal || !this.modalBody) {
-      console.warn("[AjaxManager] modal absente");
+      console.warn("AjaxManager: modal absente");
       return;
     }
 
@@ -19,19 +19,22 @@ export default class AjaxManager {
     document.body.addEventListener(
       "click",
       e => {
-        const trigger = e.target.closest(
-          "[data-ajax-modal], form[data-ajax-modal], a[data-ajax-modal]"
-        );
+        const trigger = e.target.closest("[data-ajax-modal], form, a");
 
         if (!trigger) return;
+
+        // si c’est un enfant d’un form/a mais pas le form lui-même
+        const resolvedTrigger = this.resolveTrigger(trigger);
+
+        if (!resolvedTrigger) return;
 
         e.preventDefault();
         e.stopPropagation();
 
-        const url = this.resolveUrl(trigger);
+        const url = this.resolveUrl(resolvedTrigger);
 
         if (!url) {
-          console.error("[AjaxManager] URL manquante", trigger);
+          console.error("[AjaxManager] URL manquante", resolvedTrigger);
           return;
         }
 
@@ -53,30 +56,34 @@ export default class AjaxManager {
     });
   }
 
-  resolveUrl(trigger) {
-    if (!trigger) return null;
+  resolveTrigger(el) {
+    if (el instanceof HTMLFormElement) return el;
+    if (el instanceof HTMLAnchorElement) return el;
 
-    // Override explicite
+    const form = el.closest("form[data-ajax-modal]");
+    if (form) return form;
+
+    const link = el.closest("a[data-ajax-modal]");
+    if (link) return link;
+
+    return el;
+  }
+
+  resolveUrl(trigger) {
     if (trigger.dataset?.url && trigger.dataset.url.trim() !== "") {
       return trigger.dataset.url;
     }
 
-    // FORM (cas CRM principal)
     if (trigger instanceof HTMLFormElement) {
       return trigger.action;
     }
 
-    // LINK classique
     if (trigger instanceof HTMLAnchorElement) {
       return trigger.href;
     }
 
-    // fallback dataset action possible
-    if (trigger.dataset?.action && trigger.dataset.action.trim() !== "") {
-      return trigger.dataset.action;
-    }
-
     console.warn("[AjaxManager] aucun resolver pour", trigger);
+
     return null;
   }
 
@@ -90,7 +97,6 @@ export default class AjaxManager {
 
     try {
       const res = await fetch(url, {
-        method: "GET",
         headers: {
           "X-Requested-With": "XMLHttpRequest"
         }

@@ -1,0 +1,73 @@
+{# Modal de création de dossier depuis un véhicule #}
+
+<div class="modal-header">
+    <h2 class="modal-title">Créer un dossier</h2>
+
+    <button type="button" data-modal-close class="modal-close">        
+    </button>
+</div>
+
+<div class="modal-content">
+
+    <h3>
+        {{ vehicle.vehicleModel.brand.name }}
+        {{ vehicle.vehicleModel.model.name }}
+    </h3>
+
+    <p>
+        Type de dossier :
+        {{ type == 'rental' ? 'Location' : 'Achat' }}
+    </p>
+
+    {# AUTOCOMPLETE CLIENT (ADMIN) #}
+
+    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+
+        <label>Client</label>
+
+        {% include 'Components/Forms/_fetch_form.html.twig' with {
+            url: path('customer_search'),
+            action: path('customer_search'),
+            fetchUrl: path('customer_search'),
+            autocompleteUrl: path('customer_search'),
+            resultDiv: 'customer_results',
+            name: 'customer',
+            placeholder: 'Rechercher un client...',
+            linkMode: '0',
+            fetchMode: 'json',
+            hiddenName: 'customerId',
+            baseUrl:'customer'
+        } %}
+
+    {% else %}
+
+        <p>
+            Client lié : {{ app.user.customer ? app.user.customer.fullName : 'Aucun client' }}
+        </p>
+
+    {% endif %}
+
+    <form
+        method="POST"
+        action="{{ path('dossier_create', {
+            id: vehicle.id,
+            type: type
+        }) }}"
+    >
+
+        <input type="hidden" name="_token" value="{{ csrf_token('create_dossier') }}">
+
+        {# injecté par autocomplete #}
+        <input type="hidden" name="customerId" data-autocomplete-value>
+
+        <button type="submit" class="btn btn-success">
+            Confirmer la création
+        </button>
+
+        <button type="button" class="btn btn-secondary" data-modal-close>
+            Annuler
+        </button>
+
+    </form>
+
+</div>

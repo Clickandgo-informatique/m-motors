@@ -7,7 +7,11 @@
 
 {% set type = vehicle.usageType.value == 'rent' ? 'rental' : 'purchase' %}
 
-<form method="POST" action="{{ path('dossier_create', { id: vehicle.id,type:type }) }}">
+<form method="POST" 
+action="{{ path('dossier_create', { id: vehicle.id,type:type }) }}"
+data-ajax-modal="true" 
+data-url="{{ path('dossier_create', { id: vehicle.id, type: type }) }}"
+>
 
 
         <label>Client</label>

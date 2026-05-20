@@ -56,14 +56,18 @@
 
 					{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-						<a
-							href="{{ path('dossier_modal_create', { id: vehicle.id }) }}"
-							data-ajax-modal
-							class="btn btn-primary btn-sm"
-						>
-							<i class="fa-solid fa-folder-plus"></i>
-							Créer dossier
-						</a>
+						{# Type de dossier calculé directement dans le path #}
+
+<a
+    href="{{ path('dossier_create_form', {
+        id: vehicle.id,
+        type: vehicle.usageType.value == 'rent' ? 'rental' : 'purchase'
+    }) }}"
+    data-ajax-modal="true"
+    class="btn btn-primary"
+>
+    Créer un dossier
+</a>
 
 					{% else %}
 

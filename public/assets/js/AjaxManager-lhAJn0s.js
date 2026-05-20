@@ -6,7 +6,7 @@ export default class AjaxManager {
     this.modalBody = document.querySelector("#modal-body");
 
     if (!this.modal || !this.modalBody) {
-      console.warn("[AjaxManager] modal absente");
+      console.warn("AjaxManager: modal absente");
       return;
     }
 
@@ -19,10 +19,7 @@ export default class AjaxManager {
     document.body.addEventListener(
       "click",
       e => {
-        const trigger = e.target.closest(
-          "[data-ajax-modal], form[data-ajax-modal], a[data-ajax-modal]"
-        );
-
+        const trigger = e.target.closest("[data-ajax-modal]");
         if (!trigger) return;
 
         e.preventDefault();
@@ -54,28 +51,22 @@ export default class AjaxManager {
   }
 
   resolveUrl(trigger) {
-    if (!trigger) return null;
-
-    // Override explicite
-    if (trigger.dataset?.url && trigger.dataset.url.trim() !== "") {
+    // 1. dataset explicit URL (si tu veux override)
+    if (trigger.dataset.url && trigger.dataset.url.trim() !== "") {
       return trigger.dataset.url;
     }
 
-    // FORM (cas CRM principal)
-    if (trigger instanceof HTMLFormElement) {
+    // 2. form submit (cas M-Motors / modals CRUD)
+    if (trigger.tagName === "FORM") {
       return trigger.action;
     }
 
-    // LINK classique
-    if (trigger instanceof HTMLAnchorElement) {
-      return trigger.href;
+    // 3. links classiques
+    if (trigger.tagName === "A") {
+      return trigger.getAttribute("href");
     }
 
-    // fallback dataset action possible
-    if (trigger.dataset?.action && trigger.dataset.action.trim() !== "") {
-      return trigger.dataset.action;
-    }
-
+    // 4. fallback sécurité
     console.warn("[AjaxManager] aucun resolver pour", trigger);
     return null;
   }
@@ -90,7 +81,6 @@ export default class AjaxManager {
 
     try {
       const res = await fetch(url, {
-        method: "GET",
         headers: {
           "X-Requested-With": "XMLHttpRequest"
         }

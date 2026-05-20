@@ -27,7 +27,6 @@ class DossierController extends AbstractController
 
     /**
      * Retourne l'utilisateur connecté sous forme d'entité User.
-     * Lance une exception si l'utilisateur n'est pas authentifié.
      */
     private function getAppUser(): User
     {
@@ -41,7 +40,28 @@ class DossierController extends AbstractController
     }
 
     /**
-     * Création d'un dossier à partir d'un véhicule et d'un type.
+     * Affiche le formulaire de création de dossier dans une modal (GET).
+     */
+    #[Route('/admin/dossier/create/{id}/{type}', name: 'dossier_create_form', methods: ['GET'])]
+    public function showCreateForm(
+        Vehicle $vehicle,
+        string $type
+    ): Response {
+        $user = $this->getAppUser();
+
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $this->render('admin/dossier/_create_dossier_modal_form.html.twig', [
+            'vehicle' => $vehicle,
+            'type' => $type,
+            'form' => null
+        ]);
+    }
+
+    /**
+     * Création d'un dossier à partir d'un véhicule (POST).
      */
     #[Route('/admin/dossier/create/{id}/{type}', name: 'dossier_create', methods: ['POST'])]
     public function createFromVehicle(
@@ -49,13 +69,7 @@ class DossierController extends AbstractController
         string $type,
         DossierCreationService $service
     ): Response {
-
         $user = $this->getAppUser();
-
-        if (!$user) {
-            $this->addFlash('error', 'Utilisateur non connecté.');
-            return $this->redirectToRoute('app_login');
-        }
 
         $dossierType = DossierType::tryFrom($type);
 
@@ -67,17 +81,12 @@ class DossierController extends AbstractController
         $customer = $user->getCustomer();
 
         if ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MANAGER')) {
-
-            // futur modal: si pas de customer sélectionné
-            if ($customer === null) {
+            if (!$customer) {
                 $this->addFlash('error', 'Aucun client sélectionné.');
                 return $this->redirectToRoute('vehicle_gallery');
             }
-        }
-
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_MANAGER')) {
-
-            if ($customer === null) {
+        } else {
+            if (!$customer) {
                 $this->addFlash('error', 'Aucun client associé à votre compte utilisateur.');
                 return $this->redirectToRoute('profile_edit');
             }
@@ -106,26 +115,6 @@ class DossierController extends AbstractController
         ]);
     }
 
-    //Crée une modale de sélection d'options à l'ouverture d'un dossier
-    #[Route('/admin/dossier/modal/create/{id}', name: 'dossier_modal_create', methods: ['GET'])]
-    public function modalCreate(
-        Vehicle $vehicle
-    ): Response {
-
-        $user = $this->getAppUser();
-
-        if (!$user) {
-            throw new \LogicException('Utilisateur non connecté.');
-        }
-
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_MANAGER')) {
-            throw new AccessDeniedHttpException('Accès non autorisé.');
-        }
-
-        return $this->render('dossier/_modal_create_dossier.html.twig', [
-            'vehicle' => $vehicle,
-        ]);
-    }
     /**
      * Liste des dossiers du client connecté.
      */
@@ -151,13 +140,12 @@ class DossierController extends AbstractController
     }
 
     /**
-     * Affichage d'un dossier (sécurisé par voter).
+     * Affichage d'un dossier.
      */
     #[Route('/dossier/{id<\d+>}', name: 'dossier_show', methods: ['GET'])]
     public function show(Dossier $dossier): Response
     {
         $this->denyAccessUnlessGranted('DOSSIER_VIEW', $dossier);
-
 
         return $this->render('dossier/show.html.twig', [
             'dossier' => $dossier
@@ -167,7 +155,7 @@ class DossierController extends AbstractController
     /**
      * Liste admin des dossiers avec pagination.
      */
-    #[Route(path: '/admin/dossier/list', name: 'admin_dossier_list', methods: ['GET'])]
+    #[Route('/admin/dossier/list', name: 'admin_dossier_list', methods: ['GET'])]
     public function adminList(
         DossierRepository $repository,
         PaginatorInterface $paginator,
@@ -194,19 +182,22 @@ class DossierController extends AbstractController
      * Affichage admin d'un dossier.
      */
     #[Route('/admin/dossier/{id<\d+>}', name: 'admin_dossier_show', methods: ['GET'])]
-    public function adminShow(Dossier $dossier, DossierWorkflowLogRepository $dossierWorkflowLogRepository): Response
-    {
+    public function adminShow(
+        Dossier $dossier,
+        DossierWorkflowLogRepository $dossierWorkflowLogRepository
+    ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $workflowLogs = $dossierWorkflowLogRepository->findByDossier($dossier->getId());
 
         return $this->render('admin/dossier/show.html.twig', [
             'dossier' => $dossier,
-            'workflowLogs' => $workflowLogs,
+            'workflowLogs' => $workflowLogs
         ]);
     }
 
     /**
-     * Création d'un dossier côté admin via formulaire.
+     * Création d'un dossier côté admin via formulaire classique.
      */
     #[Route('/admin/dossier/new', name: 'admin_dossier_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
@@ -233,10 +224,15 @@ class DossierController extends AbstractController
         ]);
     }
 
-    //Edition d'un dossier
-    #[Route(path: '/admin/dossier/{id}/edit', name: 'admin_dossier_edit', methods: ['GET', 'POST'])]
-    public function edit(DossierRepository $dossierRepo, int $id, Request $request): Response
-    {
+    /**
+     * Edition d'un dossier.
+     */
+    #[Route('/admin/dossier/{id}/edit', name: 'admin_dossier_edit', methods: ['GET', 'POST'])]
+    public function edit(
+        DossierRepository $dossierRepo,
+        int $id,
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         $dossier = $dossierRepo->find($id);
@@ -249,7 +245,6 @@ class DossierController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $this->em->persist($dossier);
             $this->em->flush();
 
@@ -268,7 +263,6 @@ class DossierController extends AbstractController
 
     /**
      * Endpoint AJAX de recherche des dossiers.
-     * Supporte l'autocomplete et la pagination.
      */
     #[Route('/dossiers/ajax-search', name: 'dossiers_ajax_search', methods: ['GET', 'POST'])]
     public function search(
@@ -293,12 +287,10 @@ class DossierController extends AbstractController
             foreach ($results as $dossier) {
                 $items[] = [
                     'id' => $dossier['id'],
-                    'label' => $dossier['dossierCode']
-                        ?? $dossier['dossier_code']
-                        ?? '',
+                    'label' => $dossier['dossierCode'] ?? $dossier['dossier_code'] ?? '',
                     'url' => $this->generateUrl('dossier_show', [
                         'id' => $dossier['id']
-                    ]),
+                    ])
                 ];
             }
 
@@ -319,17 +311,14 @@ class DossierController extends AbstractController
             'results' => $this->renderView('dossier/_dossiers_table.html.twig', [
                 'dossiers' => $dossiers
             ]),
-
             'paginationTop' => $this->renderView('dossier/_pagination_info.html.twig', [
                 'dossiers' => $dossiers
             ]),
-
             'paginationBottom' => $this->renderView('dossier/_pagination_info.html.twig', [
                 'dossiers' => $dossiers
             ]),
-
             'totalItems' => $dossiers->getTotalItemCount(),
-            'currentPage' => $dossiers->getCurrentPageNumber(),
+            'currentPage' => $dossiers->getCurrentPageNumber()
         ]);
     }
 }
