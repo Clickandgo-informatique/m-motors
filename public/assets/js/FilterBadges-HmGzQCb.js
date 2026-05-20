@@ -26,7 +26,9 @@ export default class FilterBadges {
       const filter = badge.dataset.filter;
       const value = badge.dataset.value;
 
-      const checkboxes = this.form.querySelectorAll(`input[name="filters[${filter}][]"]`);
+      const checkboxes = this.form.querySelectorAll(
+        `input[name="filters[${filter}][]"]`
+      );
 
       if (checkboxes.length) {
         checkboxes.forEach(cb => {
@@ -36,7 +38,11 @@ export default class FilterBadges {
         });
       }
 
-      if (filter === "mileage" || filter === "year" || filter === "price") {
+      if (
+        filter === "mileage" ||
+        filter === "year" ||
+        filter === "price"
+      ) {
         this.resetSlider(filter);
       }
 
@@ -56,7 +62,9 @@ export default class FilterBadges {
   }
 
   resetSlider(filter) {
-    const sliderEl = this.form.querySelector(`.double-slider[data-filter="${filter}"]`);
+    const sliderEl = this.form.querySelector(
+      `.double-slider[data-filter="${filter}"]`
+    );
 
     if (!sliderEl) {
       return;
@@ -73,9 +81,13 @@ export default class FilterBadges {
 
     const base = map[filter] || filter;
 
-    const inputMin = this.form.querySelector(`input[name="filters[${base}Min]"]`);
+    const inputMin = this.form.querySelector(
+      `input[name="filters[${base}Min]"]`
+    );
 
-    const inputMax = this.form.querySelector(`input[name="filters[${base}Max]"]`);
+    const inputMax = this.form.querySelector(
+      `input[name="filters[${base}Max]"]`
+    );
 
     if (inputMin) {
       inputMin.value = defaultMin;
@@ -108,7 +120,10 @@ export default class FilterBadges {
 
     const rangeFilters = {
       mileage: ["filters[mileageMin]", "filters[mileageMax]"],
-      year: ["filters[registrationYearMin]", "filters[registrationYearMax]"],
+      year: [
+        "filters[registrationYearMin]",
+        "filters[registrationYearMax]"
+      ],
       price: ["filters[priceMin]", "filters[priceMax]"]
     };
 
@@ -116,7 +131,22 @@ export default class FilterBadges {
       const min = formData.get(minKey);
       const max = formData.get(maxKey);
 
-      if (min !== null && min !== "" && max !== null && max !== "") {
+      const sliderEl = this.form.querySelector(
+        `.double-slider[data-filter="${filter}"]`
+      );
+
+      if (!sliderEl) {
+        continue;
+      }
+
+      const defaultMin = sliderEl.dataset.min;
+      const defaultMax = sliderEl.dataset.max;
+
+      if (
+        min !== null &&
+        max !== null &&
+        (min !== defaultMin || max !== defaultMax)
+      ) {
         this.createBadge(filter, `${min}-${max}`);
       }
     }
@@ -135,7 +165,9 @@ export default class FilterBadges {
         continue;
       }
 
-      const input = this.form.querySelector(`input[name="filters[${name}][]"][value="${value}"]`);
+      const input = this.form.querySelector(
+        `input[name="filters[${name}][]"][value="${value}"]`
+      );
 
       const label = input
         ? this.form.querySelector(`label[for="${input.id}"]`)?.textContent
@@ -148,10 +180,7 @@ export default class FilterBadges {
   createBadge(filter, value, label = null) {
     const badge = document.createElement("span");
 
-    const isRangeBadge = filter === "year" || filter === "mileage" || filter === "price";
-
-    badge.className = isRangeBadge ? "badge badge-filter badge-filter-range" : "badge badge-filter";
-
+    badge.className = "badge badge-filter";
     badge.dataset.filter = filter;
     badge.dataset.value = value;
 
@@ -180,17 +209,14 @@ export default class FilterBadges {
     const text = document.createElement("span");
     text.textContent = label;
 
+    const removeBtn = document.createElement("button");
+
+    removeBtn.type = "button";
+    removeBtn.className = "badge-remove";
+    removeBtn.textContent = "×";
+
     badge.appendChild(text);
-
-    if (!isRangeBadge) {
-      const removeBtn = document.createElement("button");
-
-      removeBtn.type = "button";
-      removeBtn.className = "badge-remove";
-      removeBtn.textContent = "×";
-
-      badge.appendChild(removeBtn);
-    }
+    badge.appendChild(removeBtn);
 
     this.container.appendChild(badge);
   }

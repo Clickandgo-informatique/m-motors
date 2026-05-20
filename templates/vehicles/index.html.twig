@@ -4,9 +4,7 @@
 
     <div class="vehicles-layout">
 
-        {# ========================================================= #}
         {# FILTRES (COLONNE GAUCHE) #}
-        {# ========================================================= #}
         <aside class="vehicles-filters">
             {{ render(controller(
                 'App\\Controller\\VehiclesFilterController::sidebarFilters'
@@ -14,9 +12,7 @@
 
         </aside>
 
-        {# ========================================================= #}
         {# CONTENU PRINCIPAL (COLONNE DROITE) #}
-        {# ========================================================= #}
         <main class="vehicles-main">
 		    <h1 class="text-center">
         <i class="fa-solid fa-car-side title-icon"></i>
@@ -71,6 +67,11 @@
                 editRouteTemplate: path('vehicle_edit', { id: 0 }),
                 baseUrl: "/vehicles/"
             } %}
+
+            {# badges des filtres dynamiques #}
+            <div class="vehicles-active-filters">
+                <div id="filters-summary"></div>
+            </div>
 
             {# ========================= PAGINATION TOP ========================= #}
             <div id="vehicles-pagination-top">

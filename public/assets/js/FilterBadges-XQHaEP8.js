@@ -148,10 +148,7 @@ export default class FilterBadges {
   createBadge(filter, value, label = null) {
     const badge = document.createElement("span");
 
-    const isRangeBadge = filter === "year" || filter === "mileage" || filter === "price";
-
-    badge.className = isRangeBadge ? "badge badge-filter badge-filter-range" : "badge badge-filter";
-
+    badge.className = "badge badge-filter";
     badge.dataset.filter = filter;
     badge.dataset.value = value;
 
@@ -180,17 +177,14 @@ export default class FilterBadges {
     const text = document.createElement("span");
     text.textContent = label;
 
+    const removeBtn = document.createElement("button");
+
+    removeBtn.type = "button";
+    removeBtn.className = "badge-remove";
+    removeBtn.textContent = "×";
+
     badge.appendChild(text);
-
-    if (!isRangeBadge) {
-      const removeBtn = document.createElement("button");
-
-      removeBtn.type = "button";
-      removeBtn.className = "badge-remove";
-      removeBtn.textContent = "×";
-
-      badge.appendChild(removeBtn);
-    }
+    badge.appendChild(removeBtn);
 
     this.container.appendChild(badge);
   }
