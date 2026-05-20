@@ -1,17 +1,23 @@
 export default class Autocomplete {
   constructor(input) {
-    if (!(input instanceof HTMLInputElement)) return;
+    if (!(input instanceof HTMLInputElement)) {
+      console.warn("[Autocomplete] input invalide");
+      return;
+    }
 
     this.input = input;
 
     this.url = input.dataset.url;
-    this.linkMode = input.dataset.linkMode || "0";
+    this.context = input.dataset.context || "default";
 
     this.dropdown = null;
     this.abortController = null;
     this.requestId = 0;
 
-    if (!this.url) return;
+    if (!this.url) {
+      console.warn("[Autocomplete] data-url manquant");
+      return;
+    }
 
     this.init();
   }
@@ -19,11 +25,17 @@ export default class Autocomplete {
   init() {
     const wrapper = this.input.closest(".dropdown-wrapper");
 
-    if (!wrapper) return;
+    if (!wrapper) {
+      console.warn("[Autocomplete] wrapper introuvable");
+      return;
+    }
 
     this.dropdown = wrapper.querySelector(".dropdown-results");
 
-    if (!this.dropdown) return;
+    if (!this.dropdown) {
+      console.warn("[Autocomplete] dropdown introuvable");
+      return;
+    }
 
     this.input.addEventListener("input", () => this.onInput());
 
@@ -66,11 +78,16 @@ export default class Autocomplete {
         }
       });
 
-      if (!res.ok) return;
+      if (!res.ok) {
+        console.error("[Autocomplete] HTTP error", res.status);
+        return;
+      }
 
       const data = await res.json();
 
-      if (current !== this.requestId) return;
+      if (current !== this.requestId) {
+        return;
+      }
 
       this.render(data.items || [], query);
     } catch (e) {
@@ -83,8 +100,13 @@ export default class Autocomplete {
   render(items, query) {
     this.clear();
 
-    if (!Array.isArray(items) || !items.length) {
-      this.dropdown.innerHTML = "<div class='dropdown-item'>Aucun résultat</div>";
+    if (!Array.isArray(items)) {
+      console.error("[Autocomplete] items invalid");
+      return;
+    }
+
+    if (!items.length) {
+      this.dropdown.innerHTML = "<div class='dropdown-item disabled'>Aucun résultat</div>";
       this.open();
       return;
     }
@@ -94,12 +116,15 @@ export default class Autocomplete {
     items.forEach(item => {
       if (!item || !item.label) return;
 
+      const content = this.highlight(item.label, query);
+
       const div = document.createElement("div");
       div.className = "dropdown-item";
+      div.innerHTML = content;
 
-      div.innerHTML = this.highlight(item.label, query);
-
-      div.addEventListener("click", () => this.select(item));
+      div.addEventListener("click", () => {
+        this.select(item);
+      });
 
       frag.appendChild(div);
     });
@@ -118,28 +143,38 @@ export default class Autocomplete {
   }
 
   select(item) {
-    if (!item) return;
+    if (!item || typeof item.id === "undefined") {
+      console.warn("[Autocomplete] item invalide");
+      return;
+    }
+
+    // sécurité anti injection de string type "search"
+    if (isNaN(item.id)) {
+      console.warn("[Autocomplete] id invalide bloqué", item.id);
+      return;
+    }
 
     const form = this.input.closest("form");
-    if (!form) return;
 
-    const hidden = form.querySelector("[data-autocomplete-value]");
-    if (!hidden) return;
-
-    // =========================
-    // FIX CRITIQUE ICI
-    // =========================
-    if (!item.id || isNaN(item.id)) {
-      console.warn("[Autocomplete] id invalide bloqué", item);
+    if (!form) {
+      console.warn("[Autocomplete] form introuvable");
       return;
     }
 
     this.input.value = item.label || "";
+
+    const hidden = form.querySelector(`[data-autocomplete-value="${this.context}"]`);
+
+    if (!hidden) {
+      console.warn("[Autocomplete] hidden field introuvable");
+      return;
+    }
+
     hidden.value = item.id;
 
     this.input.name = "q";
 
-    if (this.linkMode === "1" && item.url) {
+    if (this.input.dataset.linkMode === "1" && item.url) {
       window.location.href = item.url;
       return;
     }
@@ -151,14 +186,20 @@ export default class Autocomplete {
   }
 
   clear() {
-    if (this.dropdown) this.dropdown.innerHTML = "";
+    if (this.dropdown) {
+      this.dropdown.innerHTML = "";
+    }
   }
 
   open() {
-    if (this.dropdown) this.dropdown.style.display = "block";
+    if (this.dropdown) {
+      this.dropdown.style.display = "block";
+    }
   }
 
   close() {
-    if (this.dropdown) this.dropdown.style.display = "none";
+    if (this.dropdown) {
+      this.dropdown.style.display = "none";
+    }
   }
 }

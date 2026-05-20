@@ -147,7 +147,7 @@ class CustomerController extends AbstractController
     /**
      * Affichage d’un client
      */
-    #[Route('/{id}', name: 'customer_show', methods: ['GET'])]
+    #[Route('/{id<\d+>}', name: 'customer_show', methods: ['GET'])]
     public function show(Customer $customer): Response
     {
         if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_MANAGER')) {
@@ -161,51 +161,47 @@ class CustomerController extends AbstractController
 
     //Recherche d'un client pour autocomplete (dossier...)
     #[Route('/search', name: 'customer_search', methods: ['GET'])]
-    public function search(
+    public function searchCustomer(
         Request $request,
         CustomerRepository $customerRepository
     ): JsonResponse {
 
-        $query = trim((string) $request->query->get('customer'));
+        $query = trim((string) (
+            $request->query->get('q')
+
+        ));
 
         if (mb_strlen($query) < 2) {
             return new JsonResponse([]);
         }
 
-        $query = mb_strtolower($query);
+        $queryLower = mb_strtolower($query);
 
         $customers = $customerRepository->createQueryBuilder('c')
             ->where('LOWER(c.lastName) LIKE :q')
             ->orWhere('LOWER(c.firstName) LIKE :q')
             ->orWhere('LOWER(c.email) LIKE :q')
-            ->setParameter('q', '%' . $query . '%')
+            ->orWhere('LOWER(c.customerCode) LIKE :q')
+            ->setParameter('q', '%' . $queryLower . '%')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
 
-        $results = [];
+        $items = [];
 
         foreach ($customers as $customer) {
-            $results[] = [
-                'id' => $customer->getId(),
+            $items[] = [
+                'id' => (int) $customer->getId(),
                 'label' => sprintf(
-                    '%s %s (%s)',
+                    '[%s] %s %s (%s) ',
+                    $customer->getCustomerCode(),
                     $customer->getFirstName(),
                     $customer->getLastName(),
-                    $customer->getEmail()
+                    $customer->getEmail(),
                 )
             ];
         }
 
-        if (empty($results)) {
-            return new JsonResponse([
-                [
-                    'id' => null,
-                    'label' => 'Aucun résultat'
-                ]
-            ]);
-        }
-
-        return new JsonResponse($results);
+        return new JsonResponse(['items' => $items]);
     }
 }

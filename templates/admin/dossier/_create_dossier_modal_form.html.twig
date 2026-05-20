@@ -25,18 +25,17 @@
 
         <label>Client</label>
 
-        {% include 'Components/Forms/_fetch_form.html.twig' with {
-            url: path('customer_search'),
+        {% include 'Components/Forms/_fetch_form.html.twig' with {         
             action: path('customer_search'),
             fetchUrl: path('customer_search'),
             autocompleteUrl: path('customer_search'),
             resultDiv: 'customer_results',
-            name: 'customer',
-            placeholder: 'Rechercher un client...',
+            name: 'q',
+            placeholder: 'Rechercher par nom, prénom, mail, dossier...',
             linkMode: '0',
             fetchMode: 'json',
-            hiddenName: 'customerId',
-            baseUrl:'customer'
+            hiddenName: '',
+            baseUrl:'/customer/'
         } %}
 
     {% else %}

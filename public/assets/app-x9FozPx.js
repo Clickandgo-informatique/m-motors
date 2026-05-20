@@ -176,14 +176,3 @@ document.addEventListener("change", e => {
     console.trace();
   }
 });
-
-// debug temp
-document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-id], a, button");
-
-  if (el) {
-    console.log("CLICK ELEMENT", el);
-    console.log("DATA-ID", el.dataset?.id);
-    console.log("HREF", el.getAttribute?.("href"));
-  }
-});

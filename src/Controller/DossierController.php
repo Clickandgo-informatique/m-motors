@@ -16,7 +16,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 class DossierController extends AbstractController
@@ -26,7 +25,7 @@ class DossierController extends AbstractController
     ) {}
 
     /**
-     * Retourne l'utilisateur connecté sous forme d'entité User.
+     * Retourne l'utilisateur connecté.
      */
     private function getAppUser(): User
     {
@@ -40,30 +39,25 @@ class DossierController extends AbstractController
     }
 
     /**
-     * Affiche le formulaire de création de dossier dans une modal (GET).
+     * Affiche la modale de création de dossier.
      */
-    #[Route('/admin/dossier/create/{id}/{type}', name: 'dossier_create_form', methods: ['GET'])]
+    #[Route('/admin/dossier/create/{id<\d+>}/{type}', name: 'dossier_create_form', methods: ['GET'])]
     public function showCreateForm(
         Vehicle $vehicle,
         string $type
     ): Response {
-        $user = $this->getAppUser();
-
-        if (!$user) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->getAppUser();
 
         return $this->render('admin/dossier/_create_dossier_modal_form.html.twig', [
             'vehicle' => $vehicle,
-            'type' => $type,
-            'form' => null
+            'type' => $type
         ]);
     }
 
     /**
-     * Création d'un dossier à partir d'un véhicule (POST).
+     * Création d'un dossier depuis un véhicule.
      */
-    #[Route('/admin/dossier/create/{id}/{type}', name: 'dossier_create', methods: ['POST'])]
+    #[Route('/admin/dossier/create/{id<\d+>}/{type}', name: 'dossier_create', methods: ['POST'])]
     public function createFromVehicle(
         Vehicle $vehicle,
         string $type,
@@ -80,16 +74,14 @@ class DossierController extends AbstractController
 
         $customer = $user->getCustomer();
 
-        if ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MANAGER')) {
-            if (!$customer) {
+        if (!$customer) {
+            if ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MANAGER')) {
                 $this->addFlash('error', 'Aucun client sélectionné.');
                 return $this->redirectToRoute('vehicle_gallery');
             }
-        } else {
-            if (!$customer) {
-                $this->addFlash('error', 'Aucun client associé à votre compte utilisateur.');
-                return $this->redirectToRoute('profile_edit');
-            }
+
+            $this->addFlash('error', 'Aucun client associé à votre compte.');
+            return $this->redirectToRoute('profile_edit');
         }
 
         if ($vehicle->isLocked()) {
@@ -104,7 +96,7 @@ class DossierController extends AbstractController
                 $dossierType
             );
         } catch (\Throwable $e) {
-            $this->addFlash('error', 'Une erreur est survenue lors de la création du dossier.');
+            $this->addFlash('error', 'Erreur lors de la création du dossier.');
             return $this->redirectToRoute('vehicle_gallery');
         }
 
@@ -119,9 +111,8 @@ class DossierController extends AbstractController
      * Liste des dossiers du client connecté.
      */
     #[Route('/dossier/my/list', name: 'dossier_user_list', methods: ['GET'])]
-    public function myDossiers(
-        DossierRepository $repository
-    ): Response {
+    public function myDossiers(DossierRepository $repository): Response
+    {
         $user = $this->getAppUser();
         $customer = $user->getCustomer();
 
@@ -140,7 +131,7 @@ class DossierController extends AbstractController
     }
 
     /**
-     * Affichage d'un dossier.
+     * Affichage d'un dossier utilisateur.
      */
     #[Route('/dossier/{id<\d+>}', name: 'dossier_show', methods: ['GET'])]
     public function show(Dossier $dossier): Response
@@ -153,7 +144,7 @@ class DossierController extends AbstractController
     }
 
     /**
-     * Liste admin des dossiers avec pagination.
+     * Liste admin des dossiers.
      */
     #[Route('/admin/dossier/list', name: 'admin_dossier_list', methods: ['GET'])]
     public function adminList(
@@ -197,7 +188,7 @@ class DossierController extends AbstractController
     }
 
     /**
-     * Création d'un dossier côté admin via formulaire classique.
+     * Création dossier admin classique.
      */
     #[Route('/admin/dossier/new', name: 'admin_dossier_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
@@ -225,9 +216,9 @@ class DossierController extends AbstractController
     }
 
     /**
-     * Edition d'un dossier.
+     * Edition dossier admin.
      */
-    #[Route('/admin/dossier/{id}/edit', name: 'admin_dossier_edit', methods: ['GET', 'POST'])]
+    #[Route('/admin/dossier/{id<\d+>}/edit', name: 'admin_dossier_edit', methods: ['GET', 'POST'])]
     public function edit(
         DossierRepository $dossierRepo,
         int $id,
@@ -248,7 +239,7 @@ class DossierController extends AbstractController
             $this->em->persist($dossier);
             $this->em->flush();
 
-            $this->addFlash('success', 'Dossier mis à jour avec succès.');
+            $this->addFlash('success', 'Dossier mis à jour.');
 
             return $this->redirectToRoute('admin_dossier_show', [
                 'id' => $dossier->getId()
@@ -262,7 +253,7 @@ class DossierController extends AbstractController
     }
 
     /**
-     * Endpoint AJAX de recherche des dossiers.
+     * AJAX search dossiers + autocomplete.
      */
     #[Route('/dossiers/ajax-search', name: 'dossiers_ajax_search', methods: ['GET', 'POST'])]
     public function search(
@@ -280,6 +271,11 @@ class DossierController extends AbstractController
             || $request->query->getBoolean('autocomplete_param');
 
         if ($isAutocomplete) {
+
+            if (mb_strlen($searchTerm) < 2) {
+                return $this->json(['items' => []]);
+            }
+
             $results = $dossierRepo->findForAutocomplete($searchTerm);
 
             $items = [];
@@ -294,9 +290,7 @@ class DossierController extends AbstractController
                 ];
             }
 
-            return $this->json([
-                'items' => $items
-            ]);
+            return $this->json(['items' => $items]);
         }
 
         $query = $dossierRepo->searchForPaginator($searchTerm);

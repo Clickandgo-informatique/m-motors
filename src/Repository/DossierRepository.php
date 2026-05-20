@@ -60,8 +60,25 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
+     * Normalisation stricte du terme de recherche
+     */
+    private function normalizeSearchTerm(mixed $searchTerm): ?string
+    {
+        if (!is_string($searchTerm)) {
+            return null;
+        }
+
+        $searchTerm = trim($searchTerm);
+
+        if ($searchTerm === '') {
+            return null;
+        }
+
+        return mb_strtolower($searchTerm);
+    }
+
+    /**
      * Build la requête de recherche de base.
-     * Réutilisée pour la pagination et l'autocomplete.
      */
     private function getSearchQueryBuilder(?string $searchTerm = null): QueryBuilder
     {
@@ -72,8 +89,10 @@ class DossierRepository extends ServiceEntityRepository
             ->leftJoin('vm.model', 'm')
             ->addSelect('c', 'v', 'vm', 'm');
 
-        if (!empty($searchTerm)) {
-            $term = '%' . mb_strtolower($searchTerm) . '%';
+        $searchTerm = $this->normalizeSearchTerm($searchTerm);
+
+        if ($searchTerm !== null) {
+            $term = '%' . $searchTerm . '%';
 
             $qb->andWhere('
                 LOWER(d.dossierCode) LIKE :term
@@ -89,31 +108,26 @@ class DossierRepository extends ServiceEntityRepository
         return $qb->orderBy('d.createdAt', 'DESC');
     }
 
-    /**
-     * Retourne un QueryBuilder pour la pagination KnpPaginator.
-     * La requête n'est pas exécutée ici.
-     */
     public function searchForPaginator(?string $searchTerm = null): QueryBuilder
     {
+        $searchTerm = $this->normalizeSearchTerm($searchTerm);
+
         return $this->getSearchQueryBuilder($searchTerm);
     }
 
-    /**
-     * Recherche légère utilisée pour l'autocomplete.
-     * Retourne un tableau plutôt que des entités pour de meilleures performances.
-     */
     public function findForAutocomplete(?string $searchTerm = null): array
     {
+        $searchTerm = $this->normalizeSearchTerm($searchTerm);
+
         $qb = $this->getSearchQueryBuilder($searchTerm);
 
-        $query = $qb
+        return $qb
             ->select([
                 'd.id AS id',
                 'd.dossierCode AS dossierCode',
             ])
             ->setMaxResults(10)
-            ->getQuery();
-
-        return $query->getArrayResult();
+            ->getQuery()
+            ->getArrayResult();
     }
 }
