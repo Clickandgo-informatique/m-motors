@@ -10,11 +10,10 @@
   font-weight: 500;
   transition: background 0.2s ease;
   margin-right: 3px;
-  box-shadow: var(--shadow-medium);
 }
 
 .badge-filter-range {
-  background: var(--color-secondary);
+  background: var(--color-primary);
   color: white;
   border: 1px solid var(--color-border);
   font-weight: 600;
@@ -36,7 +35,6 @@
   font-size: 0.95rem;
   line-height: 1;
   transition: background 0.2s ease, transform 0.15s ease;
-  margin-left: auto;
 }
 
 .badge-remove:hover {
@@ -47,10 +45,4 @@
 
 .badge-filter-range .badge-remove {
   display: none;
-}
-.vehicles-active-filters {
-  display: flex;
-  flex-direction: column;
-  margin: 5px;
-  justify-content: center;
 }

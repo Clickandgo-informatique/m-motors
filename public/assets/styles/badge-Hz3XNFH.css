@@ -10,7 +10,7 @@
   font-weight: 500;
   transition: background 0.2s ease;
   margin-right: 3px;
-  box-shadow: var(--shadow-medium);
+  justify-content: space-between;
 }
 
 .badge-filter-range {
@@ -36,7 +36,6 @@
   font-size: 0.95rem;
   line-height: 1;
   transition: background 0.2s ease, transform 0.15s ease;
-  margin-left: auto;
 }
 
 .badge-remove:hover {
