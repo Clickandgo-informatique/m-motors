@@ -1,0 +1,31 @@
+@startuml
+
+left to right direction
+skinparam packageStyle rectangle
+
+package "Utilisateur" {
+  [Navigateur Web]
+}
+
+package "Frontend" {
+  [Twig Templates]
+  [JavaScript / AJAX]
+}
+
+package "Backend Symfony" {
+  [Controller]
+  [Services]
+  [Doctrine ORM]
+}
+
+database "Base de données" as DB
+
+[Navigateur Web] --> [Twig Templates]
+[Twig Templates] --> [Controller]
+[JavaScript / AJAX] --> [Controller]
+
+[Controller] --> [Services]
+[Services] --> [Doctrine ORM]
+[Doctrine ORM] --> DB
+
+@enduml

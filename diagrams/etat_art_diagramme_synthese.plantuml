@@ -1,0 +1,27 @@
+@startuml
+
+left to right direction
+skinparam packageStyle rectangle
+
+rectangle "Constats de l'état de l'art" {
+
+  usecase "Solutions trop génériques" as C1
+  usecase "Manque de centralisation" as C2
+  usecase "Complexité des outils existants" as C3
+  usecase "Coûts élevés" as C4
+}
+
+rectangle "Apport de M-Motors" {
+
+  usecase "Application sur mesure" as A1
+  usecase "Système centralisé" as A2
+  usecase "Interface simplifiée" as A3
+  usecase "Solution évolutive" as A4
+}
+
+C1 ..> A1
+C2 ..> A2
+C3 ..> A3
+C4 ..> A4
+
+@enduml

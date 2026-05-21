@@ -1,0 +1,32 @@
+@startuml
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Client" as Client
+actor "Commercial" as Commercial
+actor "Administrateur" as Admin
+
+rectangle "Système M-Motors" {
+
+  usecase "Consulter le catalogue véhicules" as UC1
+  usecase "Rechercher un véhicule" as UC2
+  usecase "Créer un dossier client" as UC3
+  usecase "Suivre un dossier" as UC4
+  usecase "Gérer les véhicules" as UC5
+  usecase "Gérer les utilisateurs" as UC6
+}
+
+Client --> UC1
+Client --> UC2
+Client --> UC3
+
+Commercial --> UC3
+Commercial --> UC4
+Commercial --> UC2
+
+Admin --> UC5
+Admin --> UC6
+Admin --> UC4
+
+@enduml

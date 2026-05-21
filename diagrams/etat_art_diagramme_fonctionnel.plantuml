@@ -1,0 +1,16 @@
+@startuml
+
+left to right direction
+skinparam packageStyle rectangle
+
+rectangle "M-Motors" {
+
+  usecase "Gestion du catalogue véhicules" as F1
+  usecase "Gestion des clients" as F2
+  usecase "Workflow des dossiers" as F3
+  usecase "Recherche & filtres dynamiques" as F4
+  usecase "Gestion des utilisateurs & rôles" as F5
+  usecase "Traçabilité des actions" as F6
+}
+
+@enduml

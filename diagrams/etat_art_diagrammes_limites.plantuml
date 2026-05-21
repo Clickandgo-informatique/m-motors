@@ -1,0 +1,27 @@
+@startuml
+
+left to right direction
+skinparam packageStyle rectangle
+
+rectangle "Solutions existantes" {
+
+  usecase "Manque de personnalisation" as L1
+  usecase "Coût élevé des licences SaaS" as L2
+  usecase "Complexité d'utilisation" as L3
+  usecase "Modules peu intégrés" as L4
+}
+
+rectangle "Besoins du système M-Motors" {
+
+  usecase "Workflow sur mesure" as B1
+  usecase "Solution économique et interne" as B2
+  usecase "Interface simple et intuitive" as B3
+  usecase "Système intégré centralisé" as B4
+}
+
+L1 ..> B1 : solution
+L2 ..> B2 : alternative
+L3 ..> B3 : amélioration
+L4 ..> B4 : correction
+
+@enduml

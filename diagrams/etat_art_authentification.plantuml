@@ -1,0 +1,26 @@
+@startuml
+
+actor Utilisateur
+participant "Frontend (Twig)" as Front
+participant "Security Controller Symfony" as Sec
+participant "User Provider" as UserProv
+participant "Base de données" as DB
+
+Utilisateur -> Front : saisie login / mot de passe
+Front -> Sec : requête d'authentification
+
+Sec -> UserProv : vérifier utilisateur
+UserProv -> DB : récupérer utilisateur
+DB --> UserProv : données utilisateur
+
+UserProv --> Sec : utilisateur validé
+
+alt Authentification réussie
+    Sec --> Front : création session + accès
+    Front --> Utilisateur : redirection dashboard
+else Échec
+    Sec --> Front : message erreur
+    Front --> Utilisateur : affichage erreur
+end
+
+@enduml
