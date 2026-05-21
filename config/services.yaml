@@ -1,21 +1,22 @@
 parameters:
-    # Dossier racine des uploads publics
+    # dossier racine des uploads publics
     upload_dir: "%kernel.project_dir%/public/uploads"
 
-    # Uploads dossiers
+    # uploads dossiers
     dossier_upload_dir: "%upload_dir%/dossiers"
 
-    # Uploads véhicules
+    # uploads véhicules
     vehicle_upload_dir: "%upload_dir%/vehicles"
+
+    # image de véhicule par défaut pour la galerie
+    app.vehicle_default_image: "uploads/vehicles/default-vehicle.jpg"
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
 
-    # =========================================================
-    # AUTOWIRE GLOBAL APP
-    # =========================================================
+    # autowire global app
     App\:
         resource: "../src/"
         exclude:
@@ -25,30 +26,22 @@ services:
             - "../src/Tests/"
             - "../src/Kernel.php"
 
-    # =========================================================
-    # IMAGE PROCESSOR
-    # =========================================================
+    # image processor
     App\Service\ImageProcessor:
         bind:
             string $uploadDir: "%upload_dir%"
 
-    # =========================================================
-    # DOSSIERS
-    # =========================================================
-    App\Service\DOssier\DossierDocumentUploadService:
+    # dossiers
+    App\Service\Dossier\DossierDocumentUploadService:
         bind:
             string $uploadDir: "%dossier_upload_dir%"
 
     App\Service\DossierDocumentTypeResolver: ~
 
-    # =========================================================
-    # VEHICLES
-    # =========================================================
+    # véhicules
     App\Service\VehicleGalleryManager: ~
 
-    # =========================================================
-    # WORKFLOW GUARD
-    # =========================================================
+    # workflow guard
     App\Workflow\DossierWorkflowGuard:
         tags:
             - {
@@ -56,7 +49,3 @@ services:
                   event: workflow.dossier.guard.submit_documents,
                   method: guardSubmitDocuments,
               }
-
-    # IMPORTANT :
-    # Aucun service pour DocumentUploadedListener ici
-    # car on utilise un EventSubscriber autoconfiguré

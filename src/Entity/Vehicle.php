@@ -109,7 +109,7 @@ class Vehicle
         $this->price = $price;
         return $this;
     }
-     // IDENTIFIANTS
+    // IDENTIFIANTS
     #[ORM\Column(length: 17, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Length(exactly: 17)]
@@ -521,5 +521,24 @@ class Vehicle
         $this->status = VehicleStatus::AVAILABLE_FOR_SALE;
 
         return $this;
+    }
+
+    //Crée une image de véhicule par défaut pour la galerie
+    //fallback centralisé,
+    //image featured prioritaire,
+    //première image sinon image par défaut
+    public function getMainImagePath(): string
+    {
+        foreach ($this->images as $image) {
+            if ($image->isFeatured()) {
+                return $image->getImagePath();
+            }
+        }
+
+        if (!$this->images->isEmpty()) {
+            return $this->images->first()->getImagePath();
+        }
+
+        return 'uploads/vehicles/default-vehicle.png';
     }
 }
