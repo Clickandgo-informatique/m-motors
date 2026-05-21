@@ -32,3 +32,5 @@ yarn-error.log
 
 # Generated Symfony reference config
 /config/reference.php
+
+docker-compose.override.yml
