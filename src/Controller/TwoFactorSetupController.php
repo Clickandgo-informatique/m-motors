@@ -27,7 +27,7 @@ class TwoFactorSetupController extends AbstractController
 
         if (!$user->getGoogle2FASecret()) {
             $this->addFlash('error', 'Aucun secret trouvé pour cet utilisateur.');
-            return $this->redirectToRoute('app_main');
+            return $this->redirectToRoute('app_home');
         }
 
         $qrCodeSvg = $totpService->getQRCode($user);
@@ -49,7 +49,7 @@ class TwoFactorSetupController extends AbstractController
                 if ($this->isGranted('ROLE_ADMIN')) {
                     return $this->redirectToRoute('admin_dashboard');
                 }
-                return $this->redirectToRoute('app_main');
+                return $this->redirectToRoute('app_home');
             }
 
             $this->addFlash('danger', 'Code invalide ❌. Veuillez réessayer.');

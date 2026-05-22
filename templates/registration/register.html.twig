@@ -40,13 +40,29 @@
         {{ form_row(registrationForm.plainPassword) }}
     </div>
 
-    <div id="password-indicators" class="form-row" style="font-size:0.85em;">
-        <span id="length-indicator" style="color:red">&#10006;8+</span>
-        <span id="lower-indicator" style="color:red">&#10006;a-z</span>
-        <span id="upper-indicator" style="color:red">&#10006;A-Z</span>
-        <span id="digit-indicator" style="color:red">&#10006;0-9</span>
-        <span id="special-indicator" style="color:red">&#10006;!@#</span>
+    <div id="password-indicators" class="form-row password-rules" style="font-size:0.85em;">
+        
+    <div id="length-indicator" class="password-rule invalid">
+        ✖ Au moins 8 caractères
     </div>
+
+    <div id="lower-indicator" class="password-rule invalid">
+        ✖ Au moins une lettre minuscule
+    </div>
+
+    <div id="upper-indicator" class="password-rule invalid">
+        ✖ Au moins une lettre majuscule
+    </div>
+
+    <div id="digit-indicator" class="password-rule invalid">
+        ✖ Au moins un chiffre
+    </div>
+
+    <div id="special-indicator" class="password-rule invalid">
+        ✖ Au moins un caractère spécial (!@#$%^&*)
+    </div>
+</div>
+
 
     <p id="strength-text" class="mt-1 mb-0" style="font-size:0.9em;"></p>
 
@@ -74,95 +90,105 @@
     </p>
 
     {{ form_end(registrationForm) }}
-{% endblock %}
 
-{% block javascripts %}
+
+
     <script>
-        const passwordInput = document.getElementById('registrationForm_plainPassword');
-        const strengthFill = document.getElementById('strength-fill');
-        const strengthText = document.getElementById('strength-text');
-        const submitBtn = document.getElementById('submit-btn');
+    console.log("js form register initialisé")
+       const passwordInput = document.getElementById('registration_form_plainPassword');
+const strengthFill = document.getElementById('strength-fill');
+const strengthText = document.getElementById('strength-text');
+const submitBtn = document.getElementById('submit-btn');
 
-        const indicators = {
-            length: document.getElementById('length-indicator'),
-            lower: document.getElementById('lower-indicator'),
-            upper: document.getElementById('upper-indicator'),
-            digit: document.getElementById('digit-indicator'),
-            special: document.getElementById('special-indicator')
-        };
+const indicators = {
+    length: document.getElementById('length-indicator'),
+    lower: document.getElementById('lower-indicator'),
+    upper: document.getElementById('upper-indicator'),
+    digit: document.getElementById('digit-indicator'),
+    special: document.getElementById('special-indicator')
+};
 
-        passwordInput.addEventListener('input', updateStrength);
+passwordInput.addEventListener('input', updateStrength);
 
-        function updateStrength() {
-            const password = passwordInput.value;
-            let score = 0;
+function setValid(el, text) {
+    el.classList.remove('invalid');
+    el.classList.add('valid');
+    el.textContent = text;
+}
 
-            if (password.length >= 8) {
-                score += 25;
-                indicators.length.style.color = 'green';
-                indicators.length.innerHTML = '&#10004;8+';
-            } else {
-                indicators.length.style.color = 'red';
-                indicators.length.innerHTML = '&#10006;8+';
-            }
+function setInvalid(el, text) {
+    el.classList.remove('valid');
+    el.classList.add('invalid');
+    el.textContent = text;
+}
 
-            if (/[a-z]/.test(password)) {
-                score += 15;
-                indicators.lower.style.color = 'green';
-                indicators.lower.innerHTML = '&#10004;a-z';
-            } else {
-                indicators.lower.style.color = 'red';
-                indicators.lower.innerHTML = '&#10006;a-z';
-            }
+function updateStrength() {
+    const password = passwordInput.value;
+    let score = 0;
 
-            if (/[A-Z]/.test(password)) {
-                score += 20;
-                indicators.upper.style.color = 'green';
-                indicators.upper.innerHTML = '&#10004;A-Z';
-            } else {
-                indicators.upper.style.color = 'red';
-                indicators.upper.innerHTML = '&#10006;A-Z';
-            }
+    // Longueur
+    if (password.length >= 8) {
+        score += 25;
+        setValid(indicators.length, '✔ Au moins 8 caractères');
+    } else {
+        setInvalid(indicators.length, '✖ Au moins 8 caractères');
+    }
 
-            if (/\d/.test(password)) {
-                score += 20;
-                indicators.digit.style.color = 'green';
-                indicators.digit.innerHTML = '&#10004;0-9';
-            } else {
-                indicators.digit.style.color = 'red';
-                indicators.digit.innerHTML = '&#10006;0-9';
-            }
+    // Minuscule
+    if (/[a-z]/.test(password)) {
+        score += 15;
+        setValid(indicators.lower, '✔ Au moins une lettre minuscule');
+    } else {
+        setInvalid(indicators.lower, '✖ Au moins une lettre minuscule');
+    }
 
-            if (/[!@#$%^&*]/.test(password)) {
-                score += 20;
-                indicators.special.style.color = 'green';
-                indicators.special.innerHTML = '&#10004;!@#';
-            } else {
-                indicators.special.style.color = 'red';
-                indicators.special.innerHTML = '&#10006;!@#';
-            }
+    // Majuscule
+    if (/[A-Z]/.test(password)) {
+        score += 20;
+        setValid(indicators.upper, '✔ Au moins une lettre majuscule');
+    } else {
+        setInvalid(indicators.upper, '✖ Au moins une lettre majuscule');
+    }
 
-            if (score > 100) {
-                score = 100;
-            }
+    // Chiffre
+    if (/\d/.test(password)) {
+        score += 20;
+        setValid(indicators.digit, '✔ Au moins un chiffre');
+    } else {
+        setInvalid(indicators.digit, '✖ Au moins un chiffre');
+    }
 
-            strengthFill.style.width = score + '%';
+    // Caractère spécial
+    if (/[!@#$%^&*]/.test(password)) {
+        score += 20;
+        setValid(indicators.special, '✔ Au moins un caractère spécial (!@#$%^&*)');
+    } else {
+        setInvalid(indicators.special, '✖ Au moins un caractère spécial (!@#$%^&*)');
+    }
 
-            if (score < 60) {
-                strengthFill.style.backgroundColor = 'red';
-                strengthText.textContent = `Complexité faible (${score}%) – minimum 60% requis`;
-                submitBtn.disabled = true;
-            } else if (score < 80) {
-                strengthFill.style.backgroundColor = 'orange';
-                strengthText.textContent = `Complexité moyenne (${score}%)`;
-                submitBtn.disabled = false;
-            } else {
-                strengthFill.style.backgroundColor = 'green';
-                strengthText.textContent = `Complexité élevée (${score}%)`;
-                submitBtn.disabled = false;
-            }
-        }
+    if (score > 100) {
+        score = 100;
+    }
 
-        updateStrength();
+    // Barre de progression
+    strengthFill.style.width = score + '%';
+
+    if (score < 60) {
+        strengthFill.style.backgroundColor = 'red';
+        strengthText.textContent = `Complexité faible (${score}%) – minimum 60% requis`;
+        submitBtn.disabled = true;
+    } else if (score < 80) {
+        strengthFill.style.backgroundColor = 'orange';
+        strengthText.textContent = `Complexité moyenne (${score}%)`;
+        submitBtn.disabled = false;
+    } else {
+        strengthFill.style.backgroundColor = 'green';
+        strengthText.textContent = `Complexité élevée (${score}%)`;
+        submitBtn.disabled = false;
+    }
+}
+
+// Initial check
+updateStrength();
     </script>
 {% endblock %}

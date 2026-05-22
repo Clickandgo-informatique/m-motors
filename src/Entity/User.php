@@ -46,6 +46,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $nickname = null;
 
+    //Gestion du totp secret
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $totpSecret = null;
+    public function getTotpSecret(): ?string
+    {
+        return $this->totpSecret;
+    }
+    public function setTotpSecret(?string $totpSecret): self
+    {
+        $this->totpSecret = $totpSecret;
+
+        return $this;
+    }
+
     // RELATIONS
 
     /**
