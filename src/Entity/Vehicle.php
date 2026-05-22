@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
+use App\Entity\VehicleBadge;
 use App\Enum\VehicleStatus;
 use App\Enum\VehicleUsageType;
 use App\Repository\VehicleRepository;
@@ -199,6 +200,7 @@ class Vehicle
         $this->sales = new ArrayCollection();
         $this->favorites = new ArrayCollection();
         $this->features = new ArrayCollection();
+        $this->badges = new ArrayCollection();
     }
 
     // RELATIONS (ManyToOne)
@@ -540,5 +542,36 @@ class Vehicle
         }
 
         return 'uploads/vehicles/default-vehicle.png';
+    }
+
+    // gestion des badges commerciaux dans la galerie de véhicules
+    /**
+     * @var Collection<int, VehicleBadge>
+     */
+    #[ORM\ManyToMany(targetEntity: VehicleBadge::class, inversedBy: 'vehicles')]
+    #[ORM\JoinTable(name: 'vehicle_vehicle_badge')]
+    private Collection $badges;
+    /**
+     * @return Collection<int, VehicleBadge>
+     */
+    public function getBadges(): Collection
+    {
+        return $this->badges;
+    }
+
+    public function addBadge(VehicleBadge $badge): self
+    {
+        if (!$this->badges->contains($badge)) {
+            $this->badges->add($badge);
+        }
+
+        return $this;
+    }
+
+    public function removeBadge(VehicleBadge $badge): self
+    {
+        $this->badges->removeElement($badge);
+
+        return $this;
     }
 }

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier badge{% endblock %}
+
+{% block body %}
+
+<h1>Modifier badge</h1>
+
+{{ form_start(form) }}
+
+    {{ form_row(form.code) }}
+    {{ form_row(form.label) }}
+    {{ form_row(form.category) }}
+    {{ form_row(form.priority) }}
+    {{ form_row(form.color) }}
+    {{ form_row(form.icon) }}
+    {{ form_row(form.isActive) }}
+
+    <button type="submit">Enregistrer</button>
+
+{{ form_end(form) }}
+
+<a href="{{ path('admin_vehicle_badge_index') }}">Retour</a>
+
+{% endblock %}

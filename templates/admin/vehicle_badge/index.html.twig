@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Badges véhicules{% endblock %}
+
+{% block body %}
+
+<h1>Badges véhicules</h1>
+
+<a href="{{ path('admin_vehicle_badge_new') }}">Créer un badge</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Label</th>
+            <th>Catégorie</th>
+            <th>Priorité</th>
+            <th>Couleur</th>
+            <th>Actif</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for badge in badges %}
+        <tr>
+            <td>
+                <span style="font-weight: bold;">
+                    {{ badge.code }}
+                </span>
+            </td>
+
+            <td>{{ badge.label }}</td>
+
+            <td>
+                {{ badge.category.value }}
+            </td>
+
+            <td>{{ badge.priority }}</td>
+
+            <td>
+                {% if badge.color %}
+                    <span style="
+                        display:inline-block;
+                        width:16px;
+                        height:16px;
+                        background-color: {{ badge.color }};
+                        border-radius:4px;
+                        border:1px solid #ccc;
+                    "></span>
+                    {{ badge.color }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>
+                {{ badge.isActive ? 'Oui' : 'Non' }}
+            </td>
+
+            <td>
+                <a href="{{ path('admin_vehicle_badge_edit', {id: badge.id}) }}">
+                    Modifier
+                </a>
+
+                <form method="post"
+                      action="{{ path('admin_vehicle_badge_delete', {id: badge.id}) }}"
+                      style="display:inline-block"
+                      onsubmit="return confirm('Supprimer ce badge ?');">
+
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ badge.id) }}">
+
+                    <button type="submit">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
