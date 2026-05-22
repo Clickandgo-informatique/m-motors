@@ -19,8 +19,15 @@ jobs:
           script: |
             cd ~/m-motors
 
-            echo "Pull latest code..."
-            git pull origin master
+            echo "Sync repository..."
+            git fetch origin
+            git reset --hard origin/master
 
             echo "Rebuilding containers..."
             docker compose up -d --build
+
+            echo "Symfony cache clear..."
+            docker compose exec -T php bin/console cache:clear --env=prod
+
+            echo "AssetMapper compile..."
+            docker compose exec -T php bin/console asset-map:compile --env=prod
