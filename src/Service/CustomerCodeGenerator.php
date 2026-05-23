@@ -5,38 +5,48 @@ namespace App\Service;
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use App\Repository\DossierRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Service de génération des codes métiers
+ * génération des codes métiers customer et dossier
  */
 class CustomerCodeGenerator
 {
-    /**
-     * Cache mémoire pour éviter doublons en batch (fixtures, loops, API)
-     */
+    private array $customerCounters = [];
     private array $dossierCounters = [];
 
     public function __construct(
         private CustomerRepository $customerRepo,
-        private DossierRepository $dossierRepo,
-        private EntityManagerInterface $em
+        private DossierRepository $dossierRepo
     ) {}
 
+    /**
+     * génération du code client (version production)
+     */
     public function generateCustomerCode(string $lastName): string
     {
         $prefix = $this->buildPrefix($lastName);
 
-        $lastCustomer = $this->customerRepo->findLastByPrefix($prefix);
+        if (!isset($this->customerCounters[$prefix])) {
+            $lastCustomer = $this->customerRepo->findLastByPrefix($prefix);
 
-        $number = 1;
-
-        if ($lastCustomer) {
-            $lastNumber = (int) substr($lastCustomer->getCustomerCode(), 3);
-            $number = $lastNumber + 1;
+            $this->customerCounters[$prefix] = $lastCustomer
+                ? (int) substr($lastCustomer->getCustomerCode(), -3)
+                : 0;
         }
 
-        return sprintf('%s%03d', $prefix, $number);
+        $this->customerCounters[$prefix]++;
+
+        return sprintf('%s%03d', $prefix, $this->customerCounters[$prefix]);
+    }
+
+    /**
+     * génération du code client en mode fixture (sans dépendre de la base)
+     */
+    public function generateCustomerCodeFixture(string $lastName, int $index): string
+    {
+        $prefix = $this->buildPrefix($lastName);
+
+        return sprintf('%s%03d', $prefix, $index);
     }
 
     public function assignCustomerCode(Customer $customer): string
@@ -48,15 +58,13 @@ class CustomerCodeGenerator
     }
 
     /**
-     * 🔥 FIX PRINCIPAL ICI
+     * génération du code dossier
      */
     public function generateDossierCode(Customer $customer): string
     {
         $prefix = $customer->getCustomerCode();
 
-        // INIT compteur UNE SEULE FOIS
         if (!isset($this->dossierCounters[$prefix])) {
-
             $lastDossier = $this->dossierRepo->findLastByCustomer($customer);
 
             $this->dossierCounters[$prefix] = $lastDossier && $lastDossier->getDossierCode()
@@ -64,7 +72,6 @@ class CustomerCodeGenerator
                 : 0;
         }
 
-        // INCRÉMENT LOCAL (SAFE même sans flush)
         $this->dossierCounters[$prefix]++;
 
         return sprintf('%s-%04d', $prefix, $this->dossierCounters[$prefix]);
@@ -78,13 +85,16 @@ class CustomerCodeGenerator
         return $code;
     }
 
+    /**
+     * génération du prefix basé sur le nom
+     */
     private function buildPrefix(string $lastName): string
     {
         $normalized = iconv('UTF-8', 'ASCII//TRANSLIT', $lastName);
-        $normalized = preg_replace('/[^A-Za-z]/', '', $normalized);
+        $normalized = preg_replace('/[^a-z]/i', '', $normalized);
 
         $prefix = strtoupper(substr($normalized, 0, 3));
 
-        return str_pad($prefix, 3, 'X');
+        return str_pad($prefix, 3, 'x');
     }
 }

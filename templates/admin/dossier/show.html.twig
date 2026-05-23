@@ -6,7 +6,9 @@ M-Motors: Dossier {{ dossier.dossierCode }}
 
 {% block body %}
 
-<a href="{{path('admin_dossier_list')}}"class="btn"><i class="fa-solid fa-list"></i>Revenir à la liste de dossiers</a>
+<a href="{{ path('admin_dossier_list') }}" class="btn">
+    <i class="fa-solid fa-list"></i> Revenir à la liste de dossiers
+</a>
 
 <div class="dossier-grid">
 
@@ -23,43 +25,54 @@ M-Motors: Dossier {{ dossier.dossierCode }}
     <div class="dossier-right">
 
         <div class="card">
-
             <div class="card-body">
-        <h1>
-            <i class="fa-solid fa-folder-open"></i>
-            Dossier {{ dossier.dossierCode }}
-        </h1>
 
-        <p>
-            Statut :
-            <span class="badge bg-{{ dossier.statusBadge }}">
-                {{ dossier.statusLabel }}
-            </span>
+                <h1>
+                    <i class="fa-solid fa-folder-open"></i>
+                    Dossier {{ dossier.dossierCode }}
+                </h1>
 
-            <span class="text-muted">
-                Créé le {{ dossier.createdAt|format_datetime(locale='fr', pattern="d MMMM yyyy à HH:mm") }}
-            </span>
-        </p>
-		</div>
-	</div>
+                <p>
+                    Statut :
+                    <span class="badge bg-{{ dossier.statusBadge }}">
+                        {{ dossier.statusLabel }}
+                    </span>
+
+                    <span class="text-muted">
+                        Créé le {{ dossier.createdAt|format_datetime(locale='fr', pattern="d MMMM yyyy à HH:mm") }}
+                    </span>
+                </p>
+
+            </div>
+
+            <a href="{{ path('admin_dossier_edit', {id: dossier.id}) }}" class="btn">
+                <i class="fa-solid fa-pen-to-square"></i> Éditer ce dossier
+            </a>
+        </div>
 
         <div class="card">
-
             <div class="card-body">
 
                 <h5>Étape 1 : Informations dossier</h5>
 
                 <p>
                     <strong>Client :</strong>
-                    <a href="{{path('customer_edit',{id:dossier.customer.id})}}" data-ajax-modal>
-                    {{ dossier.customer.lastname }}
-                    {{ dossier.customer.firstname }}
-                    </a>
+                    {% if dossier.customer %}
+                        <a href="{{ path('customer_edit', {id: dossier.customer.id}) }}" data-ajax-modal>
+                            {{ dossier.customer.lastName }} {{ dossier.customer.firstName }}
+                        </a>
+                    {% else %}
+                        —
+                    {% endif %}
                 </p>
 
                 <p>
                     <strong>Véhicule :</strong>
-                    {{ dossier.vehicle?.vehicleModel ?? '—' }}
+                    {% if dossier.vehicle and dossier.vehicle.vehicleModel %}
+                        {{ dossier.vehicle.vehicleModel.brand.name }} {{ dossier.vehicle.vehicleModel.model.name }}
+                    {% else %}
+                        —
+                    {% endif %}
                 </p>
 
                 <p>
@@ -68,11 +81,9 @@ M-Motors: Dossier {{ dossier.dossierCode }}
                 </p>
 
             </div>
-
         </div>
 
         <div class="card">
-
             <div class="card-body">
 
                 <h5>Étape 2 : Documents</h5>
@@ -127,13 +138,8 @@ M-Motors: Dossier {{ dossier.dossierCode }}
 
                                 </div>
 
-                                <div>
-                                    {{ doc.originalName }}
-                                </div>
-
-                                <div>
-                                    {{ doc.createdAt|date('d/m/Y H:i') }}
-                                </div>
+                                <div>{{ doc.originalName }}</div>
+                                <div>{{ doc.createdAt|date('d/m/Y H:i') }}</div>
 
                                 {% if dossier.status in ['draft', 'in_progress'] %}
                                     <button class="dz-delete" data-id="{{ doc.id }}">×</button>
@@ -152,7 +158,6 @@ M-Motors: Dossier {{ dossier.dossierCode }}
                 {% endif %}
 
             </div>
-
         </div>
 
         {% if is_granted('ROLE_MANAGER') or is_granted('ROLE_ADMIN') %}
@@ -160,7 +165,6 @@ M-Motors: Dossier {{ dossier.dossierCode }}
             {% if dossier.status == 'in_progress' %}
 
                 <div class="card">
-
                     <div class="card-body">
 
                         <h5>Étape 3 : Actions manager</h5>
@@ -174,7 +178,6 @@ M-Motors: Dossier {{ dossier.dossierCode }}
                         </a>
 
                     </div>
-
                 </div>
 
             {% endif %}
@@ -190,20 +193,22 @@ M-Motors: Dossier {{ dossier.dossierCode }}
             {% if dossier.vehicle %}
 
                 <div class="card">
-
                     <div class="card-body">
 
                         <h5>Impact véhicule</h5>
 
                         <p>
                             Statut :
-                            <span class="badge bg-{{ dossier.vehicle.status.badge }}">
-                                {{ dossier.vehicle.status.label }}
-                            </span>
+                            {% if dossier.vehicle.status is defined and dossier.vehicle.status %}
+                                <span class="badge bg-{{ dossier.vehicle.status.badge }}">
+                                    {{ dossier.vehicle.status.label }}
+                                </span>
+                            {% else %}
+                                —
+                            {% endif %}
                         </p>
 
                     </div>
-
                 </div>
 
             {% endif %}

@@ -1,26 +1,45 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Profil de
-	{{ app.user.nickname }}
+{% block title %}
+    Profil de
+    {{ app.user
+        ? (app.user.nickname
+            ? app.user.nickname
+            : (app.user.lastName ~ ' ' ~ app.user.firstName)
+          )
+        : 'invité'
+    }}
 {% endblock %}
 
 {% block body %}
 
-	<h1 class="text-center">
-		<i class="fa-regular fa-address-card"></i>Mon profil</h1>
+    <h1 class="text-center">
+        <i class="fa-regular fa-address-card"></i> Mon profil
+    </h1>
 
-	<p class="text-center">Pseudo enregistré :
-		{{ (app.user.nickname)? app.user.nickname: 'Aucun' }}</p>
-	<p class="text-center">Email :
-		{{ app.user.email }}</p>
-	<p class="text-center">Rôles :
-		{{ app.user.roles|join(', ') }}</p>
+    <p class="text-center">
+        Pseudo enregistré :
+        {{ app.user
+            ? (app.user.nickname ?: 'Aucun')
+            : 'Aucun'
+        }}
+    </p>
 
-	{% if app.user.is2FAEnabled %}
-		<p class="text-center">
-			<i class="fa-solid fa-shield-halved"></i> L'authentification à double facteur est activée sur votre compte.</p>
-		{# <a href="{{ path('app_2fa_disable') }}" class="btn btn-danger">Désactiver le 2FA</a> #}
-	{% endif %}
+    <p class="text-center">
+        Email :
+        {{ app.user ? app.user.email : 'Non disponible' }}
+    </p>
 
+    <p class="text-center">
+        Rôles :
+        {{ app.user ? app.user.roles|join(', ') : 'Aucun rôle' }}
+    </p>
+
+    {% if app.user and app.user.is2FAEnabled %}
+        <p class="text-center">
+            <i class="fa-solid fa-shield-halved"></i>
+            L'authentification à double facteur est activée sur votre compte.
+        </p>
+    {% endif %}
 
 {% endblock %}

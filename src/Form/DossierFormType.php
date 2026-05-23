@@ -7,14 +7,11 @@ use App\Entity\Dossier;
 use App\Entity\Vehicle;
 use App\Enum\DossierType;
 use App\Enum\FinancingType;
+use App\Form\FinancingFormType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DossierFormType extends AbstractType
@@ -23,110 +20,43 @@ class DossierFormType extends AbstractType
     {
         $isAdmin = $options['is_admin'];
 
-        // =========================
-        // ADMIN FIELDS
-        // =========================
         if ($isAdmin) {
             $builder
                 ->add('customer', EntityType::class, [
                     'class' => Customer::class,
-                    'choice_label' => fn(Customer $c) =>
-                    $c->getFirstName() . ' ' . $c->getLastName(),
-                    'placeholder' => 'Choisir un client',
+                    'choice_label' => fn(Customer $c) => $c->getFirstName() . ' ' . $c->getLastName(),
+                    'placeholder' => 'choisir un client',
+                    'required' => true,
                 ])
                 ->add('vehicle', EntityType::class, [
                     'class' => Vehicle::class,
                     'choice_label' => fn(Vehicle $v) =>
-                    $v->getVehicleModel()?->getBrand() . ' ' . $v->getVehicleModel()->getModel(),
-                    'placeholder' => 'Choisir un véhicule',
+                    $v->getVehicleModel(),
+                    'placeholder' => 'choisir un véhicule',
+                    'required' => true,
                 ]);
         }
 
-        // =========================
-        // FINANCING TYPE (ENUM SAFE)
-        // =========================
-        $builder->add('financingType', ChoiceType::class, [
-            'label' => 'Mode d’acquisition',
-            'choices' => FinancingType::cases(),
-            'choice_label' => fn(FinancingType $type) => $type->name,
-            'choice_value' => fn(?FinancingType $type) => $type?->value,
-            'placeholder' => 'Choisir une option',
+        $builder
+            ->add('type', ChoiceType::class, [
+                'label' => 'type de dossier',
+                'choices' => DossierType::cases(),
+                'choice_label' => fn(DossierType $t) => $t->value,
+            ])
+
+            ->add('financingType', ChoiceType::class, [
+                'label' => 'mode de financement',
+                'choices' => FinancingType::cases(),
+                'choice_label' => fn(FinancingType $t) => $t->value,
+                'required' => false,
+                'placeholder' => 'choisir',
+            ]);
+
+        // embedding financing entity
+        $builder->add('financing', FinancingFormType::class, [
             'required' => false,
+            'label' => false,
         ]);
-
-        // =========================
-        // DYNAMIC FIELDS
-        // =========================
-        $formModifier = function ($form, ?FinancingType $type) {
-
-            foreach (['duration', 'annualMileage', 'monthlyPayment'] as $field) {
-                if ($form->has($field)) {
-                    $form->remove($field);
-                }
-            }
-
-            if (!$type) {
-                return;
-            }
-
-            if (in_array($type, [FinancingType::LOA, FinancingType::LLD], true)) {
-                $form
-                    ->add('duration', IntegerType::class, [
-                        'label' => 'Durée (mois)',
-                    ])
-                    ->add('annualMileage', IntegerType::class, [
-                        'label' => 'Kilométrage annuel',
-                    ])
-                    ->add('monthlyPayment', MoneyType::class, [
-                        'label' => 'Mensualité',
-                        'currency' => 'EUR',
-                    ]);
-            }
-        };
-
-        // =========================
-        // EVENTS
-        // =========================
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($formModifier) {
-            $formModifier(
-                $event->getForm(),
-                $event->getData()?->getFinancingType()
-            );
-        });
-
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($formModifier) {
-
-            $data = $event->getData();
-
-            $type = isset($data['financingType'])
-                ? FinancingType::tryFrom($data['financingType'])
-                : null;
-
-            $formModifier($event->getForm(), $type);
-        });
-
-        // =========================
-        // BUSINESS RULE
-        // =========================
-        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
-
-            /** @var Dossier $dossier */
-            $dossier = $event->getData();
-
-            if (!$dossier->getFinancingType()) {
-                return;
-            }
-
-            $dossier->setType(
-                in_array(
-                    $dossier->getFinancingType(),
-                    [FinancingType::LOA, FinancingType::LLD],
-                    true
-                )
-                    ? DossierType::FINANCING
-                    : DossierType::PURCHASE
-            );
-        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void

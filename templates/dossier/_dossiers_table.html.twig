@@ -2,21 +2,33 @@
 
 	<thead>
 		<tr>
+			<th></th>
+			<th>Statut</th>
 			<th>Référence</th>
 			<th>Véhicule</th>
 			<th>Client</th>
 			<th>Type</th>
 			<th>Immatriculation</th>
 			<th>VIN</th>
-			<th>Statut</th>
 			<th>Date</th>
-			<th></th>
 		</tr>
 	</thead>
 
 	<tbody>
 		{% for dossier in dossiers %}
 			<tr>
+				<td data-label="">
+					<a href="{{ path('admin_dossier_show', {id: dossier.id}) }}"
+					   class="btn btn-sm btn-dark">
+						<i class="fa-regular fa-pen-to-square"></i>
+					</a>
+				</td>
+
+				<td data-label="Statut">
+					<span class="badge bg-{{ dossier.statusBadge }}">
+						{{ dossier.statusLabel }}
+					</span>
+				</td>
 
 				<td data-label="Référence">
 					{{ dossier.dossierCode }}
@@ -40,25 +52,11 @@
 
 				<td data-label="VIN">
 					{{ dossier.vehicle.vin }}
-				</td>
+				</td>	
 
-				<td data-label="Statut">
-					<span class="badge bg-{{ dossier.statusBadge }}">
-						{{ dossier.statusLabel }}
-					</span>
-				</td>
-
-				<td data-label="Date">
+				<td data-label="Créé le">
 					{{ dossier.createdAt|date('d/m/Y') }}
 				</td>
-
-				<td data-label="">
-					<a href="{{ path('admin_dossier_show', {id: dossier.id}) }}"
-					   class="btn btn-sm btn-dark">
-						Gérer
-					</a>
-				</td>
-
 			</tr>
 		{% endfor %}
 	</tbody>

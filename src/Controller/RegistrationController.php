@@ -7,6 +7,7 @@ use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Security\LoginFormAuthenticator;
+use App\Service\CustomerCodeGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +36,8 @@ class RegistrationController extends AbstractController
     public function register(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        CustomerCodeGenerator $customerCodeGenerator
     ): Response {
         $user = new User();
 
@@ -67,6 +69,22 @@ class RegistrationController extends AbstractController
 
             // Persistance du nouvel utilisateur en base
             $entityManager->persist($user);
+
+            // Création automatique du Customer lié au User
+            $customer = new \App\Entity\Customer();
+            $customer->setUser($user);
+            $customer->setEmail($user->getEmail());
+            $customer->setFirstName('');
+            $customer->setLastName('');
+            
+            //Génération du code client par défaut
+            $customer->setCustomerCode($customerCodeGenerator->generateCustomerCode($customer->getLastName()));
+            
+            $entityManager->persist($customer);
+
+            // liaison bidirectionnelle
+            $user->setCustomer($customer);
+
             $entityManager->flush();
 
             // Envoi de l'email de confirmation

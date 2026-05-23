@@ -39,10 +39,7 @@ class DossierRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('d')
             ->andWhere('d.status IN (:statuses)')
-            ->setParameter('statuses', [
-                'submitted',
-                'under_review'
-            ])
+            ->setParameter('statuses', ['submitted', 'under_review'])
             ->orderBy('d.createdAt', 'ASC')
             ->getQuery()
             ->getResult();
@@ -59,8 +56,10 @@ class DossierRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    /**
-     * Normalisation stricte du terme de recherche
+    /*
+     * Normalise le terme de recherche
+     * - supprime les espaces inutiles
+     * - sécurise les valeurs non string
      */
     private function normalizeSearchTerm(mixed $searchTerm): ?string
     {
@@ -77,8 +76,9 @@ class DossierRepository extends ServiceEntityRepository
         return mb_strtolower($searchTerm);
     }
 
-    /**
-     * Build la requête de recherche de base.
+    /*
+     * Base query pour la recherche paginée (liste dossiers)
+     * Inclut les relations nécessaires pour affichage tableau
      */
     private function getSearchQueryBuilder(?string $searchTerm = null): QueryBuilder
     {
@@ -110,22 +110,35 @@ class DossierRepository extends ServiceEntityRepository
 
     public function searchForPaginator(?string $searchTerm = null): QueryBuilder
     {
-        $searchTerm = $this->normalizeSearchTerm($searchTerm);
-
         return $this->getSearchQueryBuilder($searchTerm);
     }
 
+    /*
+     * AUTOCOMPLETE
+     * Requête allégée (pas de JOIN véhicule lourd)
+     * Optimisée pour rapidité + JSON
+     */
     public function findForAutocomplete(?string $searchTerm = null): array
     {
         $searchTerm = $this->normalizeSearchTerm($searchTerm);
 
-        $qb = $this->getSearchQueryBuilder($searchTerm);
+        $qb = $this->createQueryBuilder('d')
+            ->select('d.id AS id', 'd.dossierCode AS dossierCode')
+            ->leftJoin('d.customer', 'c');
+
+        if ($searchTerm !== null) {
+            $term = '%' . $searchTerm . '%';
+
+            $qb->andWhere('
+                LOWER(d.dossierCode) LIKE :term
+                OR LOWER(c.lastName) LIKE :term
+                OR LOWER(c.firstName) LIKE :term
+            ')
+                ->setParameter('term', $term);
+        }
 
         return $qb
-            ->select([
-                'd.id AS id',
-                'd.dossierCode AS dossierCode',
-            ])
+            ->orderBy('d.createdAt', 'DESC')
             ->setMaxResults(10)
             ->getQuery()
             ->getArrayResult();

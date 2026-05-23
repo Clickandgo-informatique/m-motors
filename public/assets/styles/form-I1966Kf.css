@@ -151,8 +151,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .form-delete-btn,
 button[type="submit"].form-delete-btn,
-.form-delete-btn button[type="submit"],
-.btn-delete {
+.form-delete-btn button[type="submit"] {
   border: none;
   box-shadow: none;
   background: transparent;

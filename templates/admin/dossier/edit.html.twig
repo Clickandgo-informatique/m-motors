@@ -1,61 +1,121 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}M-Motors :
-	{{ title }}
+{% block title %}
+    M-Motors : {{ title }}
 {% endblock %}
 
 {% block body %}
 
-	<div class="container mt-4">
+<div class="container mt-4">
 
-		<h1>{{ title }}</h1>
+    <h1 class="text-center"><i class="fa-solid fa-pen-to-square title-icon"></i>{{ title }}</h1>
 
-		<div class="card">
-			<div class="card-body">
+    <div class="card">
+        <div class="card-body">
 
-				<div class="alert alert-info">
-					Étape 1 : Création du dossier
-				</div>
+            <div class="alert alert-info">
+                Étape 1 : Création du dossier
+            </div>
 
-				{{ form_start(form) }}
+            {{ form_start(form) }}
 
-				<div class="mb-3">
-					{{ form_label(form.customer) }}
-					{{ form_widget(form.customer, {'attr': {'class': 'form-control'}}) }}
-					{{ form_errors(form.customer) }}
-				</div>
+            {# client (admin/manager uniquement) #}
+            {% if form.customer is defined %}
+                <div class="form-row mb-3">
+                    {{ form_label(form.customer) }}
+                    {{ form_widget(form.customer, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.customer) }}
+                </div>
+            {% endif %}
 
-				<div class="mb-3">
-					{{ form_label(form.vehicle) }}
-					{{ form_widget(form.vehicle, {'attr': {'class': 'form-control'}}) }}
-					{{ form_errors(form.vehicle) }}
-				</div>
+            {# vehicle (admin/manager uniquement) #}
+            {% if form.vehicle is defined %}
+                <div class="form-row mb-3">
+                    {{ form_label(form.vehicle) }}
+                    {{ form_widget(form.vehicle, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.vehicle) }}
+                </div>
+            {% endif %}
 
-				<div class="mb-3">
-					{{ form_label(form.type) }}
-					{{ form_widget(form.type, {'attr': {'class': 'form-select'}}) }}
-					{{ form_errors(form.type) }}
-				</div>
+            {# type dossier #}
+            <div class="form-row mb-3">
+                {{ form_label(form.type) }}
+                {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.type) }}
+            </div>
 
-				<div class="mb-3">
-					{{ form_label(form.financingType) }}
-					{{ form_widget(form.financingType, {'attr': {'class': 'form-control'}}) }}
-					{{ form_errors(form.financingType) }}
-				</div>
+            {# financement embeded #}
+            {% if form.financing is defined %}
+                <div class="card mt-3">
+                    <div class="card-body">
 
-				<button class="btn btn-primary">
-					Créer le dossier
-				</button>
+                        <h3 class="mb-3"><i class="fa-solid fa-coins title-icon"></i>Financement</h3>
 
-				{{ form_end(form) }}
+                        <div class="form-row mb-3">
+                            {{ form_label(form.financing.type) }}
+                            {{ form_widget(form.financing.type, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.financing.type) }}
+                        </div>
+                        <div class="form-row mb-3">
+                            {{ form_label(form.financingType) }}
+                            {{ form_widget(form.financingType, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.financingType) }}
+                        </div>
 
-			</div>
-		</div>
+                        <div class="form-row mb-3">
+                            {{ form_label(form.financing.status) }}
+                            {{ form_widget(form.financing.status, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.financing.status) }}
+                        </div>
 
-		<a href="{{ path('dossier_list') }}" class="btn btn-secondary mt-3">
-			Retour
-		</a>
+                        <div class="form-row mb-3">
+                            {{ form_label(form.financing.amount) }}
+                            {{ form_widget(form.financing.amount, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.financing.amount) }}
+                        </div>
 
-	</div>
+                        <div class="form-row mb-3">
+                            {{ form_label(form.financing.durationMonths) }}
+                            {{ form_widget(form.financing.durationMonths, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.financing.durationMonths) }}
+                        </div>
+
+                        <div class="form-row mb-3">
+                            {{ form_label(form.financing.monthlyPayment) }}
+                            {{ form_widget(form.financing.monthlyPayment, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.financing.monthlyPayment) }}
+                        </div>
+
+                        {# date décision (logique métier, pas form) #}
+                        <div class="form-row mb-3 text-muted">
+                            <strong>Décision :</strong><br>
+
+                            {% if dossier.completedAt is defined and dossier.completedAt %}
+                                {{ dossier.completedAt|format_datetime(locale='fr', pattern="d MMMM yyyy à HH:mm") }}
+                            {% elseif dossier.cancelledAt is defined and dossier.cancelledAt %}
+                                {{ dossier.cancelledAt|format_datetime(locale='fr', pattern="d MMMM yyyy à HH:mm") }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            {% endif %}
+
+            <button class="btn btn-primary mt-3">
+                Modifier le dossier
+            </button>
+
+            {{ form_end(form) }}
+
+        </div>
+    </div>
+
+    <a href="{{ path('admin_dossier_list') }}" class="btn btn-secondary mt-3">
+        Retour
+    </a>
+
+</div>
 
 {% endblock %}

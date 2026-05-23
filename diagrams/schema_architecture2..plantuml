@@ -1,0 +1,32 @@
+@startuml
+title M-Motors - Base de données
+
+top to bottom direction
+
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment center
+
+rectangle "Application Symfony" {
+  [API / Business Logic]
+}
+
+database "PostgreSQL Cluster" {
+
+  node "Primary DB (WRITE)" as db_primary
+  node "Replica 1 (READ)" as db_r1
+  node "Replica 2 (READ)" as db_r2
+}
+
+[API / Business Logic] --> db_primary : WRITE
+[API / Business Logic] --> db_r1 : READ
+[API / Business Logic] --> db_r2 : READ
+
+db_primary --> db_r1 : replication
+db_primary --> db_r2 : replication
+
+note right of db_primary
+Source unique d'écriture
+end note
+
+@enduml

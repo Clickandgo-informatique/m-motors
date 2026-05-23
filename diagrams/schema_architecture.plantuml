@@ -1,0 +1,69 @@
+@startuml
+title M-Motors - Architecture OVH (Portrait)
+
+top to bottom direction
+
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment center
+
+actor User
+
+rectangle "Clients" {
+    [Web Application]
+    [Mobile Application]
+}
+
+cloud "OVH Cloud Infrastructure" {
+
+    node "Load Balancer\n(OVH / HAProxy)" as lb
+
+    node "VPS Principal\n(EU-West)" as primary {
+
+        [Symfony API]
+        [Admin Dashboard]
+        [Redis Cache]
+        [Messenger Workers]
+    }
+
+    node "VPS Secondaire\n(EU-North)" as secondary {
+
+        [Symfony Standby]
+    }
+
+    database "PostgreSQL Cluster" {
+
+        node "Primary DB\n(WRITE)" as dbw
+
+        node "Replica DB\n(READ)" as dbr
+    }
+
+    folder "Stockage dématérialisé\n(Object Storage S3 / NAS-HA)" as storage
+}
+
+User --> [Web Application]
+User --> [Mobile Application]
+
+[Web Application] --> lb
+[Mobile Application] --> lb
+
+lb --> primary : trafic principal
+lb --> secondary : failover
+
+primary --> dbw : WRITE
+primary --> dbr : READ
+
+dbw --> dbr : réplication
+
+primary --> storage : documents / images / PDF
+
+note right of storage
+Stockage :
+- contrats PDF
+- documents clients
+- photos véhicules
+- exports
+- archives
+end note
+
+@enduml

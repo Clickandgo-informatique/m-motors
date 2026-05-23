@@ -4,13 +4,13 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
 use App\Enum\DossierType;
+use App\Enum\FinancingType;
 use App\EventListener\DossierFinancingListener;
 use App\Repository\DossierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
 
 #[ORM\EntityListeners([DossierFinancingListener::class])]
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
@@ -19,18 +19,10 @@ class Dossier
 {
     use TimestampableTrait;
 
-    // =========================================================
-    // IDENTIFIANT
-    // =========================================================
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    // =========================================================
-    // RELATIONS
-    // =========================================================
 
     #[ORM\ManyToOne(inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false)]
@@ -48,34 +40,18 @@ class Dossier
     #[ORM\ManyToOne]
     private ?User $createdBy = null;
 
-    // =========================================================
-    // TYPE
-    // =========================================================
-
     #[ORM\Column(enumType: DossierType::class)]
     private ?DossierType $type = null;
-
-    // =========================================================
-    // BUSINESS CODE
-    // =========================================================
 
     #[ORM\Column(length: 50, unique: true)]
     #[Assert\NotBlank]
     private ?string $dossierCode = null;
 
-    // =========================================================
-    // WORKFLOW STATUS (SYMFONY OWNER)
-    // =========================================================
-
     #[ORM\Column(length: 50)]
     private string $status = 'draft';
 
-    // =========================================================
-    // METIER
-    // =========================================================
-
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $financingType = null;
+    #[ORM\Column(enumType: FinancingType::class, nullable: true)]
+    private ?FinancingType $financingType = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $completedAt = null;
@@ -83,24 +59,19 @@ class Dossier
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $cancelledAt = null;
 
-    // =========================================================
-    // DOCUMENTS
-    // =========================================================
-
     /**
      * @var Collection<int, DossierDocument>
      */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DossierDocument::class, cascade: ['persist'])]
     private Collection $documents;
 
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: Financing::class, cascade: ['persist', 'remove'])]
+    private ?Financing $financing = null;
+
     public function __construct()
     {
         $this->documents = new ArrayCollection();
     }
-
-    // =========================================================
-    // GETTERS
-    // =========================================================
 
     public function getId(): ?int
     {
@@ -151,11 +122,6 @@ class Dossier
         return $this;
     }
 
-    public function getDocuments(): Collection
-    {
-        return $this->documents;
-    }
-
     public function getDossierCode(): ?string
     {
         return $this->dossierCode;
@@ -167,12 +133,12 @@ class Dossier
         return $this;
     }
 
-    public function getFinancingType(): ?string
+    public function getFinancingType(): ?FinancingType
     {
         return $this->financingType;
     }
 
-    public function setFinancingType(?string $financingType): self
+    public function setFinancingType(?FinancingType $financingType): self
     {
         $this->financingType = $financingType;
         return $this;
@@ -199,9 +165,21 @@ class Dossier
         return $this;
     }
 
-    // =========================================================
-    // UI HELPERS
-    // =========================================================
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function getFinancing(): ?Financing
+    {
+        return $this->financing;
+    }
+
+    public function setFinancing(?Financing $financing): self
+    {
+        $this->financing = $financing;
+        return $this;
+    }
 
     public function getStatusLabel(): string
     {
@@ -229,20 +207,5 @@ class Dossier
             'cancelled' => 'danger',
             default => 'secondary',
         };
-    }
-
-    // FINANCEMENT
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: Financing::class, cascade: ['persist', 'remove'])]
-    private ?Financing $financing = null;
-
-    public function getFinancing(): ?Financing
-    {
-        return $this->financing;
-    }
-
-    public function setFinancing(?Financing $financing): self
-    {
-        $this->financing = $financing;
-        return $this;
     }
 }

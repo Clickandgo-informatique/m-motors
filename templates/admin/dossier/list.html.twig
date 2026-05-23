@@ -1,11 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin - Dossiers{% endblock %}
+{% block title %}
+M-motors: Admin - Dossiers
+{% endblock %}
 
 {% block body %}
 
 	<div class="container mt-4">
-
 		<h1 class="text-center">
 			<i class="fa-regular fa-folder-open title-icon"></i>
 			Administration des dossiers
@@ -20,17 +21,16 @@
 	hiddenName:'',
     resultDiv: 'autocomplete-results',
     placeholder: 'Rechercher un dossier par référence, nom client, modèle de véhicule ...',
-    autocompleteUrl: path('dossiers_ajax_search'),
-	itemUrl:path('admin_dossier_edit', { id: '__ID__' }),
+    autocompleteUrl: path('dossiers_ajax_search'),	
     target: '#dossiers-search-results',
-    fetchMode: 'html',
+    fetchMode: 'json',
     filtersTarget: '#dossiers-filters',
     paginationTop: '#dossiers-pagination-top',
     paginationBottom: '#dossiers-pagination-bottom',
     autocomplete: true,
     highlight: true,
     noResultsClass: 'dropdown-no-results',
-    linkMode: '1',
+    linkMode: '1',	
 } %}
 
 		{# Pagination haut #}

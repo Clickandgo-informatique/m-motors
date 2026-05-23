@@ -20,9 +20,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableTrait;
 
-    // =========================
     // IDENTIFIANT
-    // =========================
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -74,11 +72,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $favorites;
 
     #[ORM\OneToOne(inversedBy: 'user')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Customer $customer = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Customer $customer=null;
 
     // 2FA
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google2FASecret = null;
 
@@ -167,7 +164,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->customer;
     }
 
-    public function setCustomer(?Customer $customer): static
+    public function setCustomer(Customer $customer): static
     {
         $this->customer = $customer;
         return $this;

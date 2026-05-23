@@ -66,13 +66,11 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
             $dossier->setVehicle($vehicle);
             $dossier->setType($type);
 
-            $dossier->setStatus('draft');
-
             $dossier->setDossierCode(
                 $this->codeGenerator->generateDossierCode($customer)
             );
 
-            $dossier->setFinancingType($financingType->value);
+            $dossier->setFinancingType($financingType);
 
             $manager->persist($dossier);
             $manager->flush();

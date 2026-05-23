@@ -4,7 +4,6 @@ namespace App\Security\Voter;
 
 use App\Entity\Dossier;
 use App\Entity\User;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Workflow\Registry;
@@ -16,21 +15,17 @@ class DossierVoter extends Voter
     public const TRANSITION = 'DOSSIER_TRANSITION';
 
     public function __construct(
-        private Security $security,
         private Registry $workflowRegistry
     ) {}
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if (!$subject instanceof Dossier) {
-            return false;
-        }
-
-        return in_array($attribute, [
-            self::VIEW,
-            self::EDIT,
-            self::TRANSITION
-        ], true);
+        return $subject instanceof Dossier
+            && in_array($attribute, [
+                self::VIEW,
+                self::EDIT,
+                self::TRANSITION
+            ], true);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -58,11 +53,11 @@ class DossierVoter extends Voter
     // =========================================================
     private function canView(Dossier $dossier, User $user): bool
     {
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return true;
         }
 
-        if ($this->security->isGranted('ROLE_SALES_MANAGER')) {
+        if (in_array('ROLE_MANAGER', $user->getRoles(), true)) {
             return true;
         }
 
@@ -76,11 +71,11 @@ class DossierVoter extends Voter
     // =========================================================
     private function canEdit(Dossier $dossier, User $user): bool
     {
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return true;
         }
 
-        if (!$this->security->isGranted('ROLE_SALES_MANAGER')) {
+        if (!in_array('ROLE_MANAGER', $user->getRoles(), true)) {
             return false;
         }
 
@@ -95,11 +90,11 @@ class DossierVoter extends Voter
     // =========================================================
     private function canTransition(Dossier $dossier, User $user): bool
     {
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return true;
         }
 
-        if (!$this->security->isGranted('ROLE_SALES_MANAGER')) {
+        if (!in_array('ROLE_MANAGER', $user->getRoles(), true)) {
             return false;
         }
 

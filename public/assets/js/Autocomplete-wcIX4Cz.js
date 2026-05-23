@@ -84,7 +84,7 @@ export default class Autocomplete {
 
     this.abortController = new AbortController();
 
-    const url = `${this.url}?q=${encodeURIComponent(query)}&autocomplete=1`;
+    const url = `${this.url}?q=${encodeURIComponent(query)}`;
 
     this.log("FETCH", url);
 
