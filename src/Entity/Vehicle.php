@@ -543,6 +543,22 @@ class Vehicle
         return 'uploads/vehicles/default-vehicle.png';
     }
 
+    //Détermine si le véhicule est mis en avant dans la galerie de page d'accueil
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isFeatured = false;
+
+    public function isFeatured(): bool
+    {
+        return $this->isFeatured;
+    }
+
+    public function setIsFeatured(bool $isFeatured): self
+    {
+        $this->isFeatured = $isFeatured;
+
+        return $this;
+    }
+
     // gestion des badges commerciaux dans la galerie de véhicules
     /**
      * @var Collection<int, VehicleBadge>

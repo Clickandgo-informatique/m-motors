@@ -30,6 +30,8 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
+        $vehicles = [];
+
         $faker = Factory::create('fr_FR');
 
         // récupération des données de référence
@@ -99,6 +101,16 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
                 $this->assignImages($vehicle, $manager);
 
                 $manager->persist($vehicle);
+
+                $vehicles[] = $vehicle;
+            }
+
+            //Génère au moins 10 véhicules mis en avant pour galerie (homepage)
+            shuffle($vehicles);
+
+            $featuredVehicles = array_slice($vehicles, 0, 10);
+            foreach ($featuredVehicles as $vehicle) {
+                $vehicle->setIsFeatured(true);
             }
         }
 
@@ -136,11 +148,9 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
             $image->setOriginalName($file);
             $image->setMimeType('image/webp');
             $image->setSize(0);
-
             $image->setVehicle($vehicle);
 
             $vehicle->addImage($image);
-
             $manager->persist($image);
         }
     }
