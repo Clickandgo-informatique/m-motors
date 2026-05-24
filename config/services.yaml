@@ -1,14 +1,7 @@
 parameters:
-    # dossier racine des uploads publics
     upload_dir: "%kernel.project_dir%/public/uploads"
-
-    # uploads dossiers
     dossier_upload_dir: "%upload_dir%/dossiers"
-
-    # uploads véhicules
-    vehicle_upload_dir: "%upload_dir%/vehicles"
-
-    # image de véhicule par défaut pour la galerie
+    vehicle_upload_dir: "%upload_dir%/uploads/vehicles_images"
     app.vehicle_default_image: "uploads/vehicles/default-vehicle.jpg"
 
 services:
@@ -16,7 +9,6 @@ services:
         autowire: true
         autoconfigure: true
 
-    # autowire global app
     App\:
         resource: "../src/"
         exclude:
@@ -26,22 +18,18 @@ services:
             - "../src/Tests/"
             - "../src/Kernel.php"
 
-    # image processor
     App\Service\ImageProcessor:
         bind:
             string $uploadDir: "%upload_dir%"
 
-    # dossiers
     App\Service\Dossier\DossierDocumentUploadService:
         bind:
             string $uploadDir: "%dossier_upload_dir%"
 
     App\Service\DossierDocumentTypeResolver: ~
 
-    # véhicules
     App\Service\VehicleGalleryManager: ~
 
-    # workflow guard
     App\Workflow\DossierWorkflowGuard:
         tags:
             - {

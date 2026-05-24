@@ -237,4 +237,60 @@ class ImageProcessor
             }
         }
     }
+    public function processFromPath(
+        string $filePath,
+        string $destination,
+        int $maxWidth = 1600,
+        bool $forceAspectRatio = false,
+        float $aspectRatio = 16 / 9
+    ): array {
+        if (!file_exists($filePath)) {
+            throw new \RuntimeException("fichier introuvable : $filePath");
+        }
+
+        $content = file_get_contents($filePath);
+
+        $image = @imagecreatefromstring($content);
+
+        if (!$image) {
+            throw new \RuntimeException("image invalide ou illisible : $filePath");
+        }
+
+        $destination = trim($destination, '/');
+
+        $uploadDir = sprintf(
+            '%s/%s',
+            rtrim($this->uploadDir, '/'),
+            $destination
+        );
+
+        $this->ensureDirectory($uploadDir);
+
+        $originalName = pathinfo($filePath, PATHINFO_FILENAME);
+
+        $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalName) ?: 'image';
+
+        $hash = substr(md5(uniqid('', true)), 0, 8);
+
+        $baseName = $safeName . '_' . $hash;
+
+        if ($forceAspectRatio) {
+            $image = $this->cropToAspectRatio($image, $aspectRatio);
+        }
+
+        $resized = $this->resize($image, $maxWidth);
+        $thumb = $this->resize($image, 300);
+
+        $filename = $baseName . '.webp';
+        $thumbnail = $baseName . '_thumb.webp';
+
+        $this->saveWebp($resized, $uploadDir . '/' . $filename);
+        $this->saveWebp($thumb, $uploadDir . '/' . $thumbnail);
+
+        return [
+            'filename' => $filename,
+            'thumbnail' => $thumbnail,
+            'path' => $destination . '/' . $filename
+        ];
+    }
 }

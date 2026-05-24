@@ -28,13 +28,13 @@
             </div>
 
             <div class="vehicle-image-wrapper">
-
-                <img
-                    src="{{ asset(vehicle.mainImagePath) }}"
+                {% if vehicle.images|length > 0 %}
+             <img src="{{ asset('uploads/' ~ vehicle.images|first.imagePath) }}"
                     alt="{{ vehicle.vehicleModel.brand.name }} {{ vehicle.vehicleModel.model.name }}"
                     class="vehicle-image"
                     loading="lazy"
                 >
+                {% endif %}
 
                 <button
                     data-action="toggle-favorite"

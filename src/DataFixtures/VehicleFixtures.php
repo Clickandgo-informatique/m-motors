@@ -3,11 +3,13 @@
 namespace App\DataFixtures;
 
 use App\Entity\Color;
+use App\Entity\Image;
 use App\Entity\Supplier;
 use App\Entity\Vehicle;
 use App\Entity\VehicleModel;
 use App\Enum\VehicleStatus;
 use App\Enum\VehicleUsageType;
+use App\Service\ImageProcessor;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -17,13 +19,26 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 {
     private const MIN_PER_STATUS = 100;
 
+    private ImageProcessor $imageProcessor;
+
+    private array $imageFiles = [];
+
+    public function __construct(ImageProcessor $imageProcessor)
+    {
+        $this->imageProcessor = $imageProcessor;
+    }
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
 
+        // récupération des données de référence
         $vehicleModels = $manager->getRepository(VehicleModel::class)->findAll();
         $suppliers = $manager->getRepository(Supplier::class)->findAll();
         $colors = $manager->getRepository(Color::class)->findAll();
+
+        // chargement des images disponibles
+        $this->imageFiles = $this->loadImages();
 
         $statuses = [
             VehicleStatus::AVAILABLE_FOR_SALE,
@@ -44,47 +59,99 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
                 $vehicle = new Vehicle();
 
-                // Status physique
+                // statut du véhicule
                 $vehicle->setStatus($status);
 
-                // Type d’usage commercial
+                // type d’usage
                 $vehicle->setUsageType($usageTypes[array_rand($usageTypes)]);
 
-                // Identifiants
-                $vehicle->setVin(strtoupper($faker->regexify('[A-HJ-NPR-Z0-9]{17}')));
+                // vin généré aléatoirement
+                $vehicle->setVin(strtoupper($faker->regexify('[a-hj-npr-z0-9]{17}')));
 
+                // modèle et fournisseur
+                $vehicleModel = $vehicleModels[array_rand($vehicleModels)];
+                $vehicle->setVehicleModel($vehicleModel);
 
-                // Relations
-                $vehicle->setVehicleModel($vehicleModels[array_rand($vehicleModels)]);
                 $vehicle->setSupplier($suppliers[array_rand($suppliers)]);
 
-                //Boite de vitesse (dépend de vehicleModel)
-                $vehicle->setGearType($vehicle->getVehicleModel()->getGearType());
+                // données dépendantes du modèle
+                $vehicle->setGearType($vehicleModel->getGearType());
+                $vehicle->setFuelType($vehicleModel->getFuelType());
 
-                //Carburant (dépend de vehicleModel)
-                $vehicle->setFuelType($vehicle->getVehicleModel()->getFuelType());
-
+                // couleur optionnelle
                 if (!empty($colors)) {
                     $vehicle->setColor($colors[array_rand($colors)]);
                 }
 
-                // Prix
+                // prix
                 $vehicle->setPrice($faker->numberBetween(8000, 90000));
 
-                // Kilométrage
+                // kilométrage
                 $vehicle->setMileage($faker->numberBetween(0, 300000));
 
-                // Date de première immatriculation
+                // date de première immatriculation
                 $year = $faker->numberBetween(2005, (int) date('Y'));
                 $vehicle->setFirstRegistrationDate(
                     \DateTimeImmutable::createFromFormat('Y-m-d', $year . '-01-01')
                 );
+
+                // ajout des images
+                $this->assignImages($vehicle, $manager);
 
                 $manager->persist($vehicle);
             }
         }
 
         $manager->flush();
+    }
+
+    private function assignImages(Vehicle $vehicle, ObjectManager $manager): void
+    {
+        // dossier images véhicules
+        $directory = dirname(__DIR__, 2) . '/public/uploads/vehicles_images';
+
+        // sélection des images disponibles
+        $nbImages = random_int(1, 5);
+
+        $selected = (array) array_rand(
+            array_flip($this->imageFiles),
+            min($nbImages, count($this->imageFiles))
+        );
+
+        foreach ($selected as $file) {
+
+            $path = $directory . '/' . $file;
+
+            // traitement image depuis fichier local
+            $data = $this->imageProcessor->processFromPath(
+                $path,
+                'vehicles'
+            );
+
+            // création entité image
+            $image = new Image();
+            $image->setFilename($data['filename']);
+            $image->setThumbnail($data['thumbnail']);
+            $image->setImagePath($data['path']);
+            $image->setOriginalName($file);
+            $image->setMimeType('image/webp');
+            $image->setSize(0);
+
+            $image->setVehicle($vehicle);
+
+            $vehicle->addImage($image);
+
+            $manager->persist($image);
+        }
+    }
+
+    private function loadImages(): array
+    {
+        $directory = dirname(__DIR__, 2) . '/public/uploads/vehicles_images';
+
+        return array_values(array_filter(scandir($directory), function ($file) use ($directory) {
+            return $file !== '.' && $file !== '..' && is_file($directory . '/' . $file);
+        }));
     }
 
     public function getDependencies(): array
