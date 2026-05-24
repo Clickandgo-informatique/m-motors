@@ -24,33 +24,32 @@ class Image
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
     private ?string $filename = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
+    private ?string $thumbnail = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $originalName = null;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 100)]
     private ?string $mimeType = null;
 
     #[ORM\Column]
     #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
     private ?int $size = null;
 
     #[ORM\Column]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
     private int $position = 0;
 
     #[ORM\Column]
     private bool $isFeatured = false;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $imagePath = null;
 
     public function getId(): ?int
@@ -77,6 +76,17 @@ class Image
     public function setFilename(string $filename): self
     {
         $this->filename = $filename;
+        return $this;
+    }
+
+    public function getThumbnail(): ?string
+    {
+        return $this->thumbnail;
+    }
+
+    public function setThumbnail(string $thumbnail): self
+    {
+        $this->thumbnail = $thumbnail;
         return $this;
     }
 
@@ -140,7 +150,7 @@ class Image
         return $this->imagePath;
     }
 
-    public function setImagePath(?string $imagePath): self
+    public function setImagePath(string $imagePath): self
     {
         $this->imagePath = $imagePath;
         return $this;
