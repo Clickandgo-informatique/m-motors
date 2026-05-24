@@ -22,7 +22,8 @@
 ### Assets ###
 /public/build/
 /public/bundles/
-/public/uploads/
+/public/uploads/dossiers/
+/public/uploads/vehicles/
 
 ### Composer ###
 .composer/
