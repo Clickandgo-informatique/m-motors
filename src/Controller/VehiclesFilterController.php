@@ -116,7 +116,7 @@ class VehiclesFilterController extends AbstractController
         return [
             'brands' => $vehicleRepo->getUsedBrands(),
             'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
-            'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
+            'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),         
 
             'registrationYearsMin' => $years['min'] ?? null,
             'registrationYearsMax' => $years['max'] ?? null,

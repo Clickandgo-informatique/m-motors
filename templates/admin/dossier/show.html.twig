@@ -79,10 +79,118 @@ M-Motors: Dossier {{ dossier.dossierCode }}
                     <strong>Type :</strong>
                     {{ dossier.type.label }}
                 </p>
+      <div class="card mt-3">
+    <div class="card-body">
 
-            </div>
-        </div>
+        <div class="card mt-3">
+    <div class="card-body">
 
+        <h5>
+            <i class="fa-solid fa-coins"></i>
+            financement
+        </h5>
+
+        {% if dossier.financing %}
+
+            {% set type = dossier.financing.typeEnum ?? null %}
+
+            <table class="table table-sm align-middle">
+
+                <tr>
+                    <th>
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                        type
+                    </th>
+                    <td>
+                        {% if type %}
+                            <i class="{{ type.icon }}"></i>
+                            {{ type.label }}
+                        {% else %}
+                            {{ dossier.financing.type }}
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        <i class="fa-solid fa-signal"></i>
+                        statut
+                    </th>
+                    <td>
+                        <span class="badge bg-secondary">
+                            {{ dossier.financing.status|default('—') }}
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        <i class="fa-solid fa-euro-sign"></i>
+                        montant
+                    </th>
+                    <td>
+                        {% if dossier.financing.amount %}
+                            {{ dossier.financing.amount }} €
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        <i class="fa-solid fa-calendar"></i>
+                        durée
+                    </th>
+                    <td>
+                        {% if dossier.financing.durationMonths %}
+                            {{ dossier.financing.durationMonths }} mois
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        <i class="fa-solid fa-chart-line"></i>
+                        mensualité
+                    </th>
+                    <td>
+                        {% if dossier.financing.monthlyPayment %}
+                            {{ dossier.financing.monthlyPayment }} €
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        <i class="fa-solid fa-calendar-check"></i>
+                        décision
+                    </th>
+                    <td>
+                        {% if dossier.financing.decidedAt %}
+                            {{ dossier.financing.decidedAt|format_datetime(locale='fr', pattern="d MMMM yyyy à HH:mm") }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+
+            </table>
+
+        {% else %}
+
+            <p class="text-muted">
+                aucun financement associé
+            </p>
+
+        {% endif %}
+
+    </div>
+</div>
         <div class="card">
             <div class="card-body">
 

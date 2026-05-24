@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-CPScXta.js",
+        "path": "\/assets\/app-dfRlEav.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -69,6 +69,10 @@
     },
     "\/assets\/js\/FilterBadges.js": {
         "path": "\/assets\/js\/FilterBadges-zt5kLQO.js",
+        "type": "js"
+    },
+    "\/assets\/js\/financing.js": {
+        "path": "\/assets\/js\/financing-ggcohch.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {

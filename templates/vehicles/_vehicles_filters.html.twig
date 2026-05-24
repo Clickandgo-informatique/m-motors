@@ -10,14 +10,32 @@
     data-pagination-target="#vehicles-pagination"
 >
 
-{# =========================
-   STATUT VEHICULE
-========================= #}
+{# Statut véhicule #}
 
-            <div class="filters-header">
-                <i class="fa-solid fa-filter"></i>
-                <span>Filtres</span>
-            </div>
+<div class="filters-header">
+    <i class="fa-solid fa-filter"></i>
+        <span>Filtres</span>
+</div>
+<div class="favorites-wrapper">
+    <div class="form-check">
+    <i class="fa-solid fa-heart"></i>
+    <input
+        class="form-check-input"
+        type="checkbox"
+        name="filters[favoritesOnly]"
+        id="favoritesOnly"
+        value="1"
+   {% if filters.favoritesOnly is defined and filters.favoritesOnly %}
+        checked
+    {% endif %}
+    >
+
+    <label class="form-check-label" for="favoritesOnly">
+        Mes favoris
+    </label>
+</div>
+
+</div>
 <details>
     <summary>
         <i class="fa-solid fa-circle-check"></i>
@@ -40,9 +58,9 @@
 </details>
 
 
-{# =========================
+{# 
    FINANCEMENT
-========================= #}
+ #}
 
 <details>
     <summary>

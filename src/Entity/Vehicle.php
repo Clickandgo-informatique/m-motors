@@ -430,7 +430,6 @@ class Vehicle
     {
         if (!$this->favorites->contains($favorite)) {
             $this->favorites->add($favorite);
-            $favorite->setVehicle($this);
         }
 
         return $this;

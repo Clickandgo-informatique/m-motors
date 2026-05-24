@@ -1,0 +1,17 @@
+@startuml
+left to right direction
+
+rectangle "Backup N-2 (T-2h)" as B1
+rectangle "Backup N-1 (T-1h)" as B2
+rectangle "Incident système" as I
+rectangle "Perte de données possible\n(RPO)" as LOSS
+rectangle "Restauration" as R
+
+B1 --> B2 --> I --> LOSS --> R
+
+note bottom of LOSS
+RPO = intervalle entre
+dernier backup et incident
+end note
+
+@enduml

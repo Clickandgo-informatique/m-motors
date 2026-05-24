@@ -14,12 +14,12 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * Fixtures de génération de dossiers réalistes via le workflow Symfony.
+ * generation de dossiers via workflow symfony
  *
- * Règles :
- * - toujours utiliser les transitions Symfony (jamais de setStatus logique métier)
- * - ne jamais dépendre de getStatus pour piloter le flux
- * - utiliser can() pour sécuriser les transitions
+ * règle :
+ * - jamais de logique métier directe sur status
+ * - toujours passer par workflowService
+ * - financement géré uniquement via l'entité Financing
  */
 class DossierFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -34,7 +34,7 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
         $vehicles  = $manager->getRepository(Vehicle::class)->findAll();
 
         if (!$customers || !$vehicles) {
-            throw new \RuntimeException('Customers ou Vehicles manquants.');
+            throw new \RuntimeException('customers ou vehicles manquants');
         }
 
         $scenarios = [
@@ -52,31 +52,49 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
             $customer = $customers[array_rand($customers)];
             $vehicle  = $vehicles[array_rand($vehicles)];
 
-            $financingType = FinancingType::cases()[array_rand(FinancingType::cases())];
-
-            $type = in_array(
-                $financingType,
-                [FinancingType::LOA, FinancingType::LLD],
-                true
-            ) ? DossierType::RENTAL : DossierType::PURCHASE;
-
             $dossier = new Dossier();
-
             $dossier->setCustomer($customer);
             $dossier->setVehicle($vehicle);
-            $dossier->setType($type);
+
+            $dossier->setType(
+                DossierType::cases()[array_rand(DossierType::cases())]
+            );
 
             $dossier->setDossierCode(
                 $this->codeGenerator->generateDossierCode($customer)
             );
 
-            $dossier->setFinancingType($financingType);
-
+            /**
+             * création automatique du financing via listener
+             * (DossierFinancingListener)
+             */
             $manager->persist($dossier);
             $manager->flush();
 
-            $scenario = $scenarios[array_rand($scenarios)];
+            /**
+             * on configure le financing directement ici
+             * (source unique de vérité = Financing)
+             */
+            $financing = $dossier->getFinancing();
 
+            if ($financing) {
+                $financingTypes = FinancingType::cases();
+                $financingType = $financingTypes[array_rand($financingTypes)];
+
+                $financing->setType($financingType->value);
+
+                if ($financingType->value === 'leasing') {
+                    $financing->setLeasingType(
+                        random_int(0, 1) === 0 ? 'loa' : 'lld'
+                    );
+                }
+
+                $financing->setStatus('pending');
+            }
+
+            $manager->flush();
+
+            $scenario = $scenarios[array_rand($scenarios)];
             $this->applyScenario($dossier, $scenario);
 
             $manager->flush();
@@ -84,8 +102,7 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
     }
 
     /**
-     * Application SAFE du scénario via workflow Symfony.
-     * Aucune dépendance au status réel.
+     * application des scénarios via workflow symfony uniquement
      */
     private function applyScenario(Dossier $dossier, string $scenario): void
     {
@@ -129,11 +146,6 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
                 $this->workflowService->applySafe($dossier, 'cancel');
                 return;
         }
-    }
-
-    public static function getGroup(): array
-    {
-        return ['DossierFixtures'];
     }
 
     public function getDependencies(): array

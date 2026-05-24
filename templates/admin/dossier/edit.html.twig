@@ -1,25 +1,28 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    M-Motors : {{ title }}
+    m-motors : {{ title }}
 {% endblock %}
 
 {% block body %}
 
 <div class="container mt-4">
 
-    <h1 class="text-center"><i class="fa-solid fa-pen-to-square title-icon"></i>{{ title }}</h1>
+    <h1 class="text-center">
+        <i class="fa-solid fa-pen-to-square title-icon"></i>
+        {{ title }}
+    </h1>
 
     <div class="card">
         <div class="card-body">
 
             <div class="alert alert-info">
-                Étape 1 : Création du dossier
+                étape 1 : création du dossier
             </div>
 
             {{ form_start(form) }}
 
-            {# client (admin/manager uniquement) #}
+            {# client affiché uniquement pour admin/manager #}
             {% if form.customer is defined %}
                 <div class="form-row mb-3">
                     {{ form_label(form.customer) }}
@@ -28,7 +31,7 @@
                 </div>
             {% endif %}
 
-            {# vehicle (admin/manager uniquement) #}
+            {# véhicule affiché uniquement pour admin/manager #}
             {% if form.vehicle is defined %}
                 <div class="form-row mb-3">
                     {{ form_label(form.vehicle) }}
@@ -37,56 +40,85 @@
                 </div>
             {% endif %}
 
-            {# type dossier #}
+            {# type de dossier (achat / location) #}
             <div class="form-row mb-3">
                 {{ form_label(form.type) }}
                 {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
                 {{ form_errors(form.type) }}
             </div>
+            <p>
+            <strong>Créé par :</strong>
+            {{ dossier.createdBy ? dossier.createdBy.fullName : '—' }}
+        </p>
 
-            {# financement embeded #}
+        <p>
+            <strong>Assigné à :</strong>
+            {% if dossier.assignedTo %}
+                <i class="fa-solid fa-user"></i>
+                {{ dossier.assignedTo.fullName }}
+            {% else %}
+                —
+            {% endif %}
+        </p>
+
+        <p>
+            <strong>Validé par :</strong>
+            {{ dossier.validatedBy ? dossier.validatedBy.fullName : '—' }}
+        </p>
+
+            {# bloc financement (entité embedded financing) #}
             {% if form.financing is defined %}
                 <div class="card mt-3">
                     <div class="card-body">
 
-                        <h3 class="mb-3"><i class="fa-solid fa-coins title-icon"></i>Financement</h3>
+                        <h3 class="mb-3">
+                            <i class="fa-solid fa-coins title-icon"></i>
+                            Financement
+                        </h3>
 
+                        {# type financement : cash / credit / leasing #}
                         <div class="form-row mb-3">
                             {{ form_label(form.financing.type) }}
                             {{ form_widget(form.financing.type, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.financing.type) }}
                         </div>
-                        <div class="form-row mb-3">
-                            {{ form_label(form.financingType) }}
-                            {{ form_widget(form.financingType, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.financingType) }}
+
+                        {# Type de leasing #}
+                        <div id="leasing-type-wrapper" class="form-row mb-3"">
+                            {{ form_label(form.financing.leasingType) }}
+                            {{ form_widget(form.financing.leasingType) }}
+                            {{ form_errors(form.financing.leasingType) }}
                         </div>
 
+                        {# statut financement #}
                         <div class="form-row mb-3">
                             {{ form_label(form.financing.status) }}
                             {{ form_widget(form.financing.status, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.financing.status) }}
                         </div>
 
+                        {# montant financement #}
                         <div class="form-row mb-3">
                             {{ form_label(form.financing.amount) }}
                             {{ form_widget(form.financing.amount, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.financing.amount) }}
                         </div>
 
+                        {# durée financement en mois #}
                         <div class="form-row mb-3">
                             {{ form_label(form.financing.durationMonths) }}
                             {{ form_widget(form.financing.durationMonths, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.financing.durationMonths) }}
                         </div>
 
+                        {# mensualité calculée ou estimée #}
                         <div class="form-row mb-3">
                             {{ form_label(form.financing.monthlyPayment) }}
                             {{ form_widget(form.financing.monthlyPayment, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.financing.monthlyPayment) }}
                         </div>
 
-                        {# date décision (logique métier, pas form) #}
+                        {# information métier hors form : date de décision du financement #}
                         <div class="form-row mb-3 text-muted">
                             <strong>Décision :</strong><br>
 
@@ -104,7 +136,7 @@
             {% endif %}
 
             <button class="btn btn-primary mt-3">
-                Modifier le dossier
+                modifier le dossier
             </button>
 
             {{ form_end(form) }}
@@ -117,5 +149,7 @@
     </a>
 
 </div>
-
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
 {% endblock %}

@@ -2,47 +2,54 @@
 
 namespace App\Enum;
 
+use App\Entity\Vehicle;
 use App\Enum\VehicleUsageType;
 
+/**
+ * type de dossier (achat ou location)
+ * centralise certaines règles métier liées au véhicule
+ */
 enum DossierType: string
 {
     case PURCHASE = 'purchase';
     case RENTAL = 'rental';
 
     /**
-     * Libellé affiché en UI
+     * libellé affiché en interface
      */
     public function label(): string
     {
         return match ($this) {
-            self::PURCHASE => 'Achat',
-            self::RENTAL => 'Location',
+            self::PURCHASE => 'achat',
+            self::RENTAL => 'location',
         };
     }
 
     /**
-     * Choix pour formulaires Symfony
+     * choix pour les formulaires symfony
      */
     public static function choices(): array
     {
         return [
-            'Achat' => self::PURCHASE,
-            'Location' => self::RENTAL,
+            'achat' => self::PURCHASE,
+            'location' => self::RENTAL,
         ];
     }
 
     /**
-     * Action métier lors de la création du dossier
+     * action métier lors de la création du dossier
+     * applique un état initial au véhicule
      */
-    public function applyVehicleOnSubmit($vehicle): void
+    public function applyVehicleOnSubmit(Vehicle $vehicle): void
     {
         $vehicle->reserve();
     }
 
     /**
-     * Action métier lors de la validation du dossier
+     * action métier lors de la validation du dossier
+     * met à jour l’état du véhicule selon le type de dossier
      */
-    public function applyVehicleValidation($vehicle): void
+    public function applyVehicleValidation(Vehicle $vehicle): void
     {
         match ($this) {
             self::PURCHASE => $vehicle->markAsSold(),
@@ -51,15 +58,16 @@ enum DossierType: string
     }
 
     /**
-     * Action métier lors du refus du dossier
+     * action métier lors du refus du dossier
+     * remet le véhicule disponible
      */
-    public function applyVehicleRejection($vehicle): void
+    public function applyVehicleRejection(Vehicle $vehicle): void
     {
         $vehicle->makeAvailable();
     }
 
     /**
-     * Vérifie si achat
+     * vérifie si le dossier est de type achat
      */
     public function isPurchase(): bool
     {
@@ -67,7 +75,7 @@ enum DossierType: string
     }
 
     /**
-     * Vérifie si location
+     * vérifie si le dossier est de type location
      */
     public function isRental(): bool
     {
@@ -75,7 +83,7 @@ enum DossierType: string
     }
 
     /**
-     * Retourne les types autorisés selon usage véhicule
+     * retourne les types de dossier autorisés selon l’usage du véhicule
      */
     public static function fromVehicleUsageType(VehicleUsageType $usageType): array
     {
@@ -87,7 +95,7 @@ enum DossierType: string
     }
 
     /**
-     * Vérifie si un type est autorisé pour un véhicule
+     * vérifie si un type de dossier est autorisé pour un usage véhicule
      */
     public static function isAllowedForVehicleUsage(
         self $dossierType,

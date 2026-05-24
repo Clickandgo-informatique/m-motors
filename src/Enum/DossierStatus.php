@@ -3,124 +3,81 @@
 namespace App\Enum;
 
 /**
- * Statuts métier d’un dossier véhicule
+ * statuts métier d’un dossier véhicule
  *
- * Représente l’avancement complet :
- * - création
- * - validation
- * - paiement
- * - livraison
+ * représente l’ensemble du cycle de vie :
+ * création, validation, paiement, livraison, clôture
  */
 enum DossierStatus: string
 {
-    // =========================================================
-    // INITIALISATION
-    // =========================================================
-
+    // initialisation
     case CREATED = 'created';
-
     case IN_PROGRESS = 'in_progress';
 
-        // =========================================================
-        // VALIDATION ADMIN
-        // =========================================================
-
+        // validation admin
     case PENDING_VALIDATION = 'pending_validation';
-
     case VALIDATED = 'validated';
-
     case REJECTED = 'rejected';
 
-        // =========================================================
-        // PAIEMENT
-        // =========================================================
-
+        // paiement
     case PENDING_PAYMENT = 'pending_payment';
-
     case PARTIALLY_PAID = 'partially_paid';
-
     case PAID = 'paid';
 
-        // =========================================================
-        // FINALISATION
-        // =========================================================
-
+        // finalisation
     case READY_FOR_DELIVERY = 'ready_for_delivery';
-
     case DELIVERED = 'delivered';
-
     case CLOSED = 'closed';
 
-    // =========================================================
-    // LABEL UI
-    // =========================================================
-
+    /**
+     * libellé affiché en interface
+     */
     public function label(): string
     {
         return match ($this) {
-            self::CREATED => 'Créé',
-            self::IN_PROGRESS => 'En cours',
+            self::CREATED => 'créé',
+            self::IN_PROGRESS => 'en cours',
 
-            self::PENDING_VALIDATION => 'En attente validation',
-            self::VALIDATED => 'Validé',
-            self::REJECTED => 'Refusé',
+            self::PENDING_VALIDATION => 'en attente de validation',
+            self::VALIDATED => 'validé',
+            self::REJECTED => 'refusé',
 
-            self::PENDING_PAYMENT => 'En attente paiement',
-            self::PARTIALLY_PAID => 'Paiement partiel',
-            self::PAID => 'Payé',
+            self::PENDING_PAYMENT => 'en attente de paiement',
+            self::PARTIALLY_PAID => 'paiement partiel',
+            self::PAID => 'payé',
 
-            self::READY_FOR_DELIVERY => 'Prêt à livrer',
-            self::DELIVERED => 'Livré',
-            self::CLOSED => 'Clôturé',
+            self::READY_FOR_DELIVERY => 'prêt à livrer',
+            self::DELIVERED => 'livré',
+            self::CLOSED => 'clôturé',
         };
     }
 
-    // =========================================================
-    // LOGIQUE MÉTIER
-    // =========================================================
-
-    public function isActive(): bool
+    /**
+     * icône fontawesome associée au statut
+     */
+    public function icon(): string
     {
-        return in_array($this, [
-            self::CREATED,
-            self::IN_PROGRESS,
-            self::PENDING_VALIDATION,
-            self::VALIDATED,
-            self::PENDING_PAYMENT,
-            self::PARTIALLY_PAID,
-            self::PAID,
-            self::READY_FOR_DELIVERY,
-        ], true);
+        return match ($this) {
+            self::CREATED => 'fa-solid fa-file-circle-plus',
+            self::IN_PROGRESS => 'fa-solid fa-spinner',
+
+            self::PENDING_VALIDATION => 'fa-solid fa-hourglass-half',
+            self::VALIDATED => 'fa-solid fa-check',
+            self::REJECTED => 'fa-solid fa-xmark',
+
+            self::PENDING_PAYMENT => 'fa-solid fa-credit-card',
+            self::PARTIALLY_PAID => 'fa-solid fa-coins',
+            self::PAID => 'fa-solid fa-circle-check',
+
+            self::READY_FOR_DELIVERY => 'fa-solid fa-truck',
+            self::DELIVERED => 'fa-solid fa-flag-checkered',
+            self::CLOSED => 'fa-solid fa-lock',
+        };
     }
 
-    public function isFinal(): bool
-    {
-        return in_array($this, [
-            self::DELIVERED,
-            self::CLOSED,
-        ], true);
-    }
-
-    public function isBlocked(): bool
-    {
-        return in_array($this, [
-            self::REJECTED,
-            self::PENDING_PAYMENT,
-        ], true);
-    }
-
-    public function isPaid(): bool
-    {
-        return in_array($this, [
-            self::PARTIALLY_PAID,
-            self::PAID,
-        ], true);
-    }
-
-    // =========================================================
-    // UI (BADGES)
-    // =========================================================
-
+    /**
+     * badge ui bootstrap associé au statut
+     */
     public function badge(): string
     {
         return match ($this) {
@@ -141,10 +98,59 @@ enum DossierStatus: string
         };
     }
 
-    // =========================================================
-    // TRANSITIONS SIMPLES (OPTIONNEL MAIS UTILE PFE)
-    // =========================================================
+    /**
+     * indique si le dossier est actif
+     */
+    public function isActive(): bool
+    {
+        return in_array($this, [
+            self::CREATED,
+            self::IN_PROGRESS,
+            self::PENDING_VALIDATION,
+            self::VALIDATED,
+            self::PENDING_PAYMENT,
+            self::PARTIALLY_PAID,
+            self::PAID,
+            self::READY_FOR_DELIVERY,
+        ], true);
+    }
 
+    /**
+     * indique si le dossier est finalisé
+     */
+    public function isFinal(): bool
+    {
+        return in_array($this, [
+            self::DELIVERED,
+            self::CLOSED,
+        ], true);
+    }
+
+    /**
+     * indique si le dossier est bloqué
+     */
+    public function isBlocked(): bool
+    {
+        return in_array($this, [
+            self::REJECTED,
+            self::PENDING_PAYMENT,
+        ], true);
+    }
+
+    /**
+     * indique si le dossier est payé (totalement ou partiellement)
+     */
+    public function isPaid(): bool
+    {
+        return in_array($this, [
+            self::PARTIALLY_PAID,
+            self::PAID,
+        ], true);
+    }
+
+    /**
+     * vérifie si une transition est possible vers un autre statut
+     */
     public function canTransitionTo(self $target): bool
     {
         return match ($this) {
@@ -190,7 +196,6 @@ enum DossierStatus: string
             ], true),
 
             self::CLOSED => false,
-
             self::REJECTED => false,
         };
     }

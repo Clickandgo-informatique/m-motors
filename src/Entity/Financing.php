@@ -14,50 +14,65 @@ class Financing
     #[ORM\Column]
     private ?int $id = null;
 
-    /*
-     * Dossier lié au financement (relation 1–1 obligatoire)
+    /**
+     * relation obligatoire avec le dossier
      */
     #[ORM\OneToOne(inversedBy: 'financing', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Dossier $dossier = null;
 
-    /*
-     * Statut du financement
+    /**
+     * statut du financement
+     * pending = en attente
+     * approved = accepté
+     * rejected = refusé
      */
     #[ORM\Column(length: 20)]
-    #[Assert\Choice(choices: ['pending', 'approved', 'rejected'], message: 'Statut invalide')]
+    #[Assert\Choice(choices: ['pending', 'approved', 'rejected'])]
     private string $status = 'pending';
 
-    /*
-     * Type de financement (cash, credit, leasing...)
+    /**
+     * type principal de financement
+     * cash = comptant
+     * credit = crédit
+     * leasing = loa ou lld
      */
     #[ORM\Column(length: 20)]
-    #[Assert\Choice(choices: ['cash', 'credit', 'leasing'], message: 'Type invalide')]
+    #[Assert\Choice(choices: ['cash', 'credit', 'leasing'])]
     private string $type = 'cash';
 
-    /*
-     * Montant financé
+    /**
+     * sous-type leasing uniquement si type = leasing
+     * loa = location avec option d’achat
+     * lld = location longue durée
+     */
+    #[ORM\Column(length: 10, nullable: true)]
+    #[Assert\Choice(choices: ['loa', 'lld'], groups: ['leasing'])]
+    private ?string $leasingType = null;
+
+    /**
+     * montant financé
      */
     #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero]
     private ?int $amount = null;
 
-    /*
-     * Durée en mois
+    /**
+     * durée en mois
      */
     #[ORM\Column(nullable: true)]
     #[Assert\Positive]
     private ?int $durationMonths = null;
 
-    /*
-     * Mensualité calculée
+    /**
+     * mensualité estimée ou calculée
      */
     #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero]
     private ?float $monthlyPayment = null;
 
-    /*
-     * Date de décision du financement
+    /**
+     * date de décision du financement
      */
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $decidedAt = null;
@@ -97,6 +112,24 @@ class Financing
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        // sécurité métier : si on quitte leasing on nettoie le sous-type
+        if ($type !== 'leasing') {
+            $this->leasingType = null;
+        }
+
+        return $this;
+    }
+
+    public function getLeasingType(): ?string
+    {
+        return $this->leasingType;
+    }
+
+    public function setLeasingType(?string $leasingType): self
+    {
+        $this->leasingType = $leasingType;
+
         return $this;
     }
 
@@ -143,4 +176,34 @@ class Financing
         $this->decidedAt = $decidedAt;
         return $this;
     }
+
+    /**
+     * règle métier simple de cohérence
+     */
+    public function isLeasing(): bool
+    {
+        return $this->type === 'leasing';
+    }
+
+    public function isCash(): bool
+    {
+        return $this->type === 'cash';
+    }
+
+    public function isCredit(): bool
+    {
+        return $this->type === 'credit';
+    }
+
+    public function validateConsistency(): void
+{
+    if ($this->type !== 'leasing') {
+        $this->leasingType = null;
+        return;
+    }
+
+    if ($this->leasingType === null) {
+        throw new \InvalidArgumentException('leasingType obligatoire si type = leasing');
+    }
+}
 }

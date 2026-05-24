@@ -73,7 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(inversedBy: 'user')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Customer $customer=null;
+    private ?Customer $customer = null;
 
     // 2FA
     #[ORM\Column(length: 255, nullable: true)]
@@ -183,11 +183,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Ajoute un favori et synchronise la relation inverse
      */
-    public function addFavorite(Favorite $favorite): static
+    public function addFavorite(Favorite $favorite): self
     {
         if (!$this->favorites->contains($favorite)) {
             $this->favorites->add($favorite);
-            $favorite->setUser($this);
         }
 
         return $this;

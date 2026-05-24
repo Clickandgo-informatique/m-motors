@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\BodyType;
 use App\Entity\Brand;
 use App\Entity\FuelType;
+use App\Entity\User;
 use App\Entity\Vehicle;
 use App\Enum\VehicleStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -18,12 +19,8 @@ class VehicleRepository extends ServiceEntityRepository
         parent::__construct($registry, Vehicle::class);
     }
 
-    /*
-     * =========================
-     * QUERY PRINCIPALE
-     * =========================
-     */
-    public function getFilteredQueryBuilder(array $filters = [], ?string $searchTerm = null): QueryBuilder
+    /* QUERY PRINCIPALE */
+    public function getFilteredQueryBuilder(array $filters = [], ?string $searchTerm = null, ?User $user = null): QueryBuilder
     {
         $qb = $this->createQueryBuilder('v')
             ->leftJoin('v.vehicleModel', 'vm')
@@ -32,6 +29,7 @@ class VehicleRepository extends ServiceEntityRepository
             ->leftJoin('vm.bodyType', 'bt')
             ->leftJoin('vm.fuelType', 'ft')
             ->addSelect('vm', 'b', 'm', 'bt', 'ft');
+
 
         $normalize = function ($value): array {
             if ($value === null || $value === '') {
@@ -46,22 +44,14 @@ class VehicleRepository extends ServiceEntityRepository
             return [$value];
         };
 
-        /*
-         * =========================
-         * STATUS
-         * =========================
-         */
+        /* STATUS */
         $status = $normalize($filters['status'] ?? null);
         if (!empty($status)) {
             $qb->andWhere('v.status IN (:status)')
                 ->setParameter('status', $status);
         }
 
-        /*
-         * =========================
-         * TYPE (vente/location)
-         * =========================
-         */
+        /* TYPE (vente/location) */
         $type = $normalize($filters['type'] ?? null);
         if (!empty($type)) {
             $qb->andWhere('EXISTS (
@@ -71,11 +61,7 @@ class VehicleRepository extends ServiceEntityRepository
             )')->setParameter('type', $type);
         }
 
-        /*
-         * =========================
-         * FINANCING
-         * =========================
-         */
+        /* Financement */
         $financing = $normalize($filters['financing'] ?? null);
         if (!empty($financing)) {
             $qb->andWhere('EXISTS (
@@ -85,44 +71,28 @@ class VehicleRepository extends ServiceEntityRepository
             )')->setParameter('financing', $financing);
         }
 
-        /*
-         * =========================
-         * BRAND
-         * =========================
-         */
+        /* Marques de véhicules */
         $brands = $normalize($filters['brand'] ?? null);
         if (!empty($brands)) {
             $qb->andWhere('b.id IN (:brands)')
                 ->setParameter('brands', $brands);
         }
 
-        /*
-         * =========================
-         * BODY TYPE
-         * =========================
-         */
+        /* Type carrosserie */
         $bodyTypes = $normalize($filters['bodyType'] ?? null);
         if (!empty($bodyTypes)) {
             $qb->andWhere('bt.id IN (:bodyTypes)')
                 ->setParameter('bodyTypes', $bodyTypes);
         }
 
-        /*
-         * =========================
-         * FUEL TYPE
-         * =========================
-         */
+        /* Type carburant / énergie */
         $fuelTypes = $normalize($filters['fuelType'] ?? null);
         if (!empty($fuelTypes)) {
             $qb->andWhere('ft.id IN (:fuelTypes)')
                 ->setParameter('fuelTypes', $fuelTypes);
         }
 
-        /*
-         * =========================
-         * MILEAGE
-         * =========================
-         */
+        /* Kilomètrage */
         if (!empty($filters['mileageMin']) && is_numeric($filters['mileageMin'])) {
             $qb->andWhere('v.mileage >= :mileageMin')
                 ->setParameter('mileageMin', (int) $filters['mileageMin']);
@@ -133,11 +103,7 @@ class VehicleRepository extends ServiceEntityRepository
                 ->setParameter('mileageMax', (int) $filters['mileageMax']);
         }
 
-        /*
-         * =========================
-         * PRICE
-         * =========================
-         */
+        /* Prix */
         if (!empty($filters['priceMin']) && is_numeric($filters['priceMin'])) {
             $qb->andWhere('v.price >= :priceMin')
                 ->setParameter('priceMin', (float) $filters['priceMin']);
@@ -148,11 +114,7 @@ class VehicleRepository extends ServiceEntityRepository
                 ->setParameter('priceMax', (float) $filters['priceMax']);
         }
 
-        /*
-         * =========================
-         * REGISTRATION YEARS
-         * =========================
-         */
+        /* Années enregistrement véhicule */
         if (!empty($filters['registrationYearMin']) && ctype_digit((string) $filters['registrationYearMin'])) {
             $qb->andWhere('v.firstRegistrationDate >= :yearMin')
                 ->setParameter('yearMin', new \DateTime($filters['registrationYearMin'] . '-01-01'));
@@ -163,11 +125,15 @@ class VehicleRepository extends ServiceEntityRepository
                 ->setParameter('yearMax', new \DateTime($filters['registrationYearMax'] . '-12-31'));
         }
 
-        /*
-         * =========================
-         * SEARCH
-         * =========================
-         */
+        //   Filtre sur Favoris utilisateur
+        if (!empty($filters['favoritesOnly']) && $user instanceof User) {
+            $qb
+                ->innerJoin('v.favorites', 'fav')
+                ->andWhere('fav.user = :currentUser')
+                ->setParameter('currentUser', $user);
+        }
+
+        /* Recherche */
         if (!empty($searchTerm)) {
             $search = '%' . mb_strtolower(trim($searchTerm)) . '%';
 
@@ -182,11 +148,7 @@ class VehicleRepository extends ServiceEntityRepository
         return $qb->orderBy('b.name', 'ASC');
     }
 
-    /*
-     * =========================
-     * AUTOCOMPLETE
-     * =========================
-     */
+    /* Autocomplete */
     public function searchForAutocomplete(
         array $filters = [],
         ?string $searchTerm = null,
@@ -265,11 +227,7 @@ class VehicleRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /*
-     * =========================
-     * YEARS RANGE
-     * =========================
-     */
+    /* Années enregistrement */
     public function getRegistrationYears(): array
     {
         $result = $this->createQueryBuilder('v')
@@ -291,11 +249,7 @@ class VehicleRepository extends ServiceEntityRepository
         ];
     }
 
-    /*
-     * =========================
-     * STATUTS UI
-     * =========================
-     */
+    /* Status UI */
     public function getStatuses(): array
     {
         return array_map(

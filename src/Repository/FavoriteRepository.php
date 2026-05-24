@@ -24,7 +24,7 @@ class FavoriteRepository extends ServiceEntityRepository
             ->select('COUNT(f.id)')
             ->where('f.user = :user')
             ->andWhere('f.vehicle = :vehicle')
-            ->setParameter('user', $user)      // ✅ Sécurisé
+            ->setParameter('user', $user)
             ->setParameter('vehicle', $vehicle)
             ->setMaxResults(1);
 
@@ -39,25 +39,30 @@ class FavoriteRepository extends ServiceEntityRepository
      */
     public function toggleFavorite(User $user, Vehicle $vehicle): bool
     {
+    
         $em = $this->getEntityManager();
-        $favorite = $this->findOneBy(['user' => $user, 'vehicle' => $vehicle]);
+
+        $favorite = $this->findOneBy([
+            'user' => $user,
+            'vehicle' => $vehicle,
+        ]);
 
         if ($favorite) {
             $em->remove($favorite);
             $em->flush();
-            return false; // retiré
-        } else {
-            $fav = new Favorite();
-            $fav->setUser($user)
-                ->setVehicle($vehicle);
-
-            // Ajouter à la collection côté User et Vehicle
-            $user->addFavorite($fav);
-            $vehicle->addFavorite($fav);
-
-            $em->persist($fav);
-            $em->flush();
-            return true; // ajouté
+            return false;
         }
+
+        $favorite = new Favorite();
+        $favorite->setUser($user);
+        $favorite->setVehicle($vehicle);
+     
+
+        $em->persist($favorite);
+        $em->flush();
+
+     
+
+        return true;
     }
 }

@@ -1,0 +1,78 @@
+@startuml
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam defaultTextAlignment center
+
+' IMPORTANT : force une logique verticale stricte
+top to bottom direction
+
+actor "Utilisateur" as User
+actor "Administrateur" as Admin
+
+rectangle "Point d'entrée\nLoad Balancer / Reverse Proxy" as LB
+
+rectangle "Application M-Motors\nSymfony" as APP
+
+rectangle "Base de données\n(MySQL / PostgreSQL)" as DB
+rectangle "Stockage fichiers\nUploads / documents" as FS
+
+rectangle "Monitoring\nHealthcheck + alerting" as MON
+
+rectangle "PCA - Continuité" as PCA {
+  rectangle "Serveur secondaire\n(standby / failover)" as STBY
+}
+
+rectangle "PRA - Reprise" as PRA {
+  rectangle "Backup scheduler\n(cron)" as BCK
+  rectangle "Dump base de données" as DUMP
+  rectangle "Stockage distant\n(S3 / VPS)" as STORE
+  rectangle "Script de restauration" as RESTORE
+  rectangle "Rebuild Docker\n(infrastructure)" as DOCKER
+}
+
+' flux principal vertical
+User --> LB
+Admin --> LB
+
+LB --> APP
+
+APP --> DB
+APP --> FS
+
+MON --> APP
+MON --> DB
+
+' sauvegarde
+APP --> BCK
+BCK --> DUMP
+DUMP --> STORE
+
+' restauration
+STORE --> RESTORE
+RESTORE --> DB
+RESTORE --> FS
+
+' continuité
+STBY --> APP
+
+note right of BCK
+RPO (Recovery Point Objective) :
+Perte de données maximale acceptable
+→ dépend de la fréquence des sauvegardes
+end note
+
+note right of RESTORE
+RTO (Recovery Time Objective) :
+Temps maximal de restauration du service
+→ dépend du temps de rebuild + restore
+end note
+
+note right of MON
+Détection rapide :
+- indisponibilité
+- erreurs 5xx
+- latence
+end note
+
+@enduml

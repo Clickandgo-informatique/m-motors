@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
 use App\Enum\DossierType;
-use App\Enum\FinancingType;
 use App\EventListener\DossierFinancingListener;
 use App\Repository\DossierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -43,28 +42,40 @@ class Dossier
     #[ORM\Column(enumType: DossierType::class)]
     private ?DossierType $type = null;
 
+    /**
+     * code unique métier du dossier
+     */
     #[ORM\Column(length: 50, unique: true)]
     #[Assert\NotBlank]
     private ?string $dossierCode = null;
 
+    /**
+     * statut du workflow dossier
+     */
     #[ORM\Column(length: 50)]
     private string $status = 'draft';
 
-    #[ORM\Column(enumType: FinancingType::class, nullable: true)]
-    private ?FinancingType $financingType = null;
-
+    /**
+     * date de finalisation du dossier
+     */
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $completedAt = null;
 
+    /**
+     * date d'annulation du dossier
+     */
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $cancelledAt = null;
 
     /**
-     * @var Collection<int, DossierDocument>
+     * documents liés au dossier
      */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DossierDocument::class, cascade: ['persist'])]
     private Collection $documents;
 
+    /**
+     * financement associé (source unique de vérité métier financement)
+     */
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: Financing::class, cascade: ['persist', 'remove'])]
     private ?Financing $financing = null;
 
@@ -133,17 +144,6 @@ class Dossier
         return $this;
     }
 
-    public function getFinancingType(): ?FinancingType
-    {
-        return $this->financingType;
-    }
-
-    public function setFinancingType(?FinancingType $financingType): self
-    {
-        $this->financingType = $financingType;
-        return $this;
-    }
-
     public function getAssignedTo(): ?User
     {
         return $this->assignedTo;
@@ -165,11 +165,9 @@ class Dossier
         return $this;
     }
 
-    public function getDocuments(): Collection
-    {
-        return $this->documents;
-    }
-
+    /**
+     * relation financement (source unique)
+     */
     public function getFinancing(): ?Financing
     {
         return $this->financing;
@@ -178,23 +176,61 @@ class Dossier
     public function setFinancing(?Financing $financing): self
     {
         $this->financing = $financing;
+
+        if ($financing && $financing->getDossier() !== $this) {
+            $financing->setDossier($this);
+        }
+
         return $this;
     }
 
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function getCompletedAt(): ?\DateTimeImmutable
+    {
+        return $this->completedAt;
+    }
+
+    public function setCompletedAt(?\DateTimeImmutable $completedAt): self
+    {
+        $this->completedAt = $completedAt;
+        return $this;
+    }
+
+    public function getCancelledAt(): ?\DateTimeImmutable
+    {
+        return $this->cancelledAt;
+    }
+
+    public function setCancelledAt(?\DateTimeImmutable $cancelledAt): self
+    {
+        $this->cancelledAt = $cancelledAt;
+        return $this;
+    }
+
+    /**
+     * label statut pour UI
+     */
     public function getStatusLabel(): string
     {
         return match ($this->status) {
-            'draft' => 'Brouillon',
-            'vehicle_selected' => 'Véhicule sélectionné',
-            'documents_pending' => 'Documents à fournir',
-            'documents_review' => 'Documents en validation',
-            'financing_review' => 'Financement en cours',
-            'completed' => 'Terminé',
-            'cancelled' => 'Annulé',
+            'draft' => 'brouillon',
+            'vehicle_selected' => 'vehicule selectionne',
+            'documents_pending' => 'documents a fournir',
+            'documents_review' => 'documents en validation',
+            'financing_review' => 'financement en cours',
+            'completed' => 'termine',
+            'cancelled' => 'annule',
             default => $this->status,
         };
     }
 
+    /**
+     * badge statut UI
+     */
     public function getStatusBadge(): string
     {
         return match ($this->status) {
@@ -207,5 +243,13 @@ class Dossier
             'cancelled' => 'danger',
             default => 'secondary',
         };
+    }
+
+    /**
+     * helper métier : vérifie si financement existant
+     */
+    public function hasFinancing(): bool
+    {
+        return $this->financing !== null;
     }
 }

@@ -1,0 +1,19 @@
+@startuml
+robust "Système M-Motors" as SYS
+
+@0
+SYS is "En fonctionnement"
+
+@10
+SYS is "Incident détecté"
+
+@20
+SYS is "Sauvegarde activée"
+
+@40
+SYS is "Restauration en cours"
+
+@60
+SYS is "Service rétabli"
+
+@enduml

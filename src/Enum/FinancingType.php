@@ -4,10 +4,10 @@ namespace App\Enum;
 
 enum FinancingType: string
 {
-    case CASH = 'cash';
-    case CREDIT = 'credit';
-    case LOA = 'loa';
-    case LLD = 'lld';
+    case CASH = 'Cash';
+    case CREDIT = 'Crédit';
+    case LOA = 'LOA';
+    case LLD = 'LLD';
 
     public function label(): string
     {
@@ -19,6 +19,22 @@ enum FinancingType: string
         };
     }
 
+    /**
+     * icône fontawesome associée au type de financement
+     */
+    public function icon(): string
+    {
+        return match ($this) {
+            self::CASH => 'fa-solid fa-sack-dollar',
+            self::CREDIT => 'fa-solid fa-landmark',
+            self::LOA => 'fa-solid fa-car-side',
+            self::LLD => 'fa-solid fa-calendar-days',
+        };
+    }
+
+    /**
+     * choix pour formulaire symfony
+     */
     public static function choices(): array
     {
         return [

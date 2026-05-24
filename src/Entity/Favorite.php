@@ -25,7 +25,7 @@ class Favorite
 
     // Utilisateur propriétaire du favori
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'favorites')]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(nullable:false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
     // Véhicule mis en favori
