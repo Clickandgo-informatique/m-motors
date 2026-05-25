@@ -3,10 +3,12 @@
 {% block title %}M-Motors : Page d'accueil{% endblock %}
 
 {% block body %}
-<h1 class="text-center">Page d'accueil M-Motors</h1>
+<h1 class="text-center"><i class="fa-solid fa-home title-icon"></i>Page d'accueil M-Motors</h1>
+
+<h3 class="text-center">Nos derniers véhicules :</h3>
 
 {# Galerie des véhicules mis en avant #}
-<div id="vehicles-gallery-wrapper">
-
+<div id="featured-vehicles-gallery-wrapper">
+{% include "vehicles/_vehicles_gallery_items.html.twig" %}
 </div>
 {% endblock %}

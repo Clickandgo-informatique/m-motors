@@ -1,0 +1,51 @@
+@startuml
+
+top to bottom direction
+
+skinparam shadowing false
+skinparam state {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+
+title Workflow de gestion d'un dossier client
+
+[*] --> Brouillon
+
+state "Brouillon" as draft
+state "Véhicule sélectionné" as vehicle_selected
+state "Documents en attente" as documents_pending
+state "Documents en cours d'analyse" as documents_review
+state "Étude de financement" as financing_review
+state "Commande signée" as order_signed
+state "Dossier terminé" as completed
+state "Dossier annulé" as cancelled
+
+draft --> vehicle_selected : Sélection du véhicule
+
+vehicle_selected --> documents_pending : Demande des documents
+
+documents_pending --> documents_review : Soumission des documents
+
+documents_review --> financing_review : Validation des documents
+
+documents_review --> documents_pending : Documents refusés
+
+financing_review --> order_signed : Financement accepté
+
+financing_review --> documents_review : Financement refusé
+
+order_signed --> completed : Signature de la commande
+
+draft --> cancelled : Annulation
+vehicle_selected --> cancelled : Annulation
+documents_pending --> cancelled : Annulation
+documents_review --> cancelled : Annulation
+financing_review --> cancelled : Annulation
+order_signed --> cancelled : Annulation
+
+completed --> [*]
+cancelled --> [*]
+
+@enduml

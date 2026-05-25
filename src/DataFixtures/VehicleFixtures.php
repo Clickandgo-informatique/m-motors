@@ -34,6 +34,9 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
         $faker = Factory::create('fr_FR');
 
+        // nettoyage du dossier uploads/vehicles
+        $this->clearVehicleUploadsDirectory();
+
         // récupération des données de référence
         $vehicleModels = $manager->getRepository(VehicleModel::class)->findAll();
         $suppliers = $manager->getRepository(Supplier::class)->findAll();
@@ -57,6 +60,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
         ];
 
         foreach ($statuses as $status) {
+
             for ($i = 0; $i < self::MIN_PER_STATUS; $i++) {
 
                 $vehicle = new Vehicle();
@@ -93,9 +97,13 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
                 // date de première immatriculation
                 $year = $faker->numberBetween(2005, (int) date('Y'));
+
                 $vehicle->setFirstRegistrationDate(
                     \DateTimeImmutable::createFromFormat('Y-m-d', $year . '-01-01')
                 );
+
+                // véhicule mis en avant par défaut
+                $vehicle->setIsFeatured(false);
 
                 // ajout des images
                 $this->assignImages($vehicle, $manager);
@@ -104,14 +112,15 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
                 $vehicles[] = $vehicle;
             }
+        }
 
-            //Génère au moins 10 véhicules mis en avant pour galerie (homepage)
-            shuffle($vehicles);
+        // génère exactement 10 véhicules mis en avant pour galerie homepage
+        shuffle($vehicles);
 
-            $featuredVehicles = array_slice($vehicles, 0, 10);
-            foreach ($featuredVehicles as $vehicle) {
-                $vehicle->setIsFeatured(true);
-            }
+        $featuredVehicles = array_slice($vehicles, 0, 10);
+
+        foreach ($featuredVehicles as $vehicle) {
+            $vehicle->setIsFeatured(true);
         }
 
         $manager->flush();
@@ -142,6 +151,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
 
             // création entité image
             $image = new Image();
+
             $image->setFilename($data['filename']);
             $image->setThumbnail($data['thumbnail']);
             $image->setImagePath($data['path']);
@@ -151,6 +161,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
             $image->setVehicle($vehicle);
 
             $vehicle->addImage($image);
+
             $manager->persist($image);
         }
     }
@@ -160,8 +171,35 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
         $directory = dirname(__DIR__, 2) . '/public/uploads/vehicles_images';
 
         return array_values(array_filter(scandir($directory), function ($file) use ($directory) {
-            return $file !== '.' && $file !== '..' && is_file($directory . '/' . $file);
+
+            return $file !== '.'
+                && $file !== '..'
+                && is_file($directory . '/' . $file);
         }));
+    }
+
+    private function clearVehicleUploadsDirectory(): void
+    {
+        $directory = dirname(__DIR__, 2) . '/public/uploads/vehicles';
+
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $files = scandir($directory);
+
+        foreach ($files as $file) {
+
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            $path = $directory . '/' . $file;
+
+            if (is_file($path)) {
+                unlink($path);
+            }
+        }
     }
 
     public function getDependencies(): array

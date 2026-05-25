@@ -184,11 +184,7 @@ class VehicleRepository extends ServiceEntityRepository
         }, $qb->getQuery()->getResult());
     }
 
-    /*
-     * =========================
-     * FILTER DATASETS
-     * =========================
-     */
+    /* FILTER DATASETS */
     public function getUsedBrands(): array
     {
         return $this->getEntityManager()

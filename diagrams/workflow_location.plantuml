@@ -1,0 +1,34 @@
+@startuml
+
+top to bottom direction
+
+skinparam shadowing false
+skinparam state {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+
+title Workflow de gestion d'une location de véhicule
+
+[*] --> Creee
+
+state "Location créée" as Creee
+state "Location confirmée" as Confirmee
+state "Location active" as Active
+state "Location terminée" as Terminee
+state "Location annulée" as Annulee
+
+Creee --> Confirmee : Confirmation de la location
+
+Confirmee --> Active : Début de la location
+
+Active --> Terminee : Fin de la location
+
+Creee --> Annulee : Annulation
+Confirmee --> Annulee : Annulation
+
+Terminee --> [*]
+Annulee --> [*]
+
+@enduml

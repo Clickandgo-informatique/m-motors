@@ -1,0 +1,35 @@
+#featured-vehicles-gallery-wrapper {
+  max-width: 1200px;
+  overflow-y: auto;
+}
+
+#featured-vehicles-gallery-wrapper .cards-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 1rem;
+}
+
+#featured-vehicles-gallery-wrapper .vehicle-card {
+  flex-shrink: 0;
+  width: 320px;
+}
+/* Mobile */
+@media (max-width: 600px) {
+  #featured-vehicles-gallery-wrapper .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    padding: 10px;
+  }
+
+  #featured-vehicles-gallery-wrapper .card img {
+    height: 140px;
+  }
+
+  .card-content h3 {
+    font-size: 1rem;
+  }
+
+  .card-content p {
+    font-size: 0.85rem;
+  }

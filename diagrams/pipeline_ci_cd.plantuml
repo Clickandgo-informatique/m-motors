@@ -1,0 +1,45 @@
+@startuml
+
+top to bottom direction
+
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam rectangle {
+    BackgroundColor White
+    BorderColor Black
+}
+
+title Pipeline CI/CD M-Motors
+
+rectangle "Développeur" as Dev
+
+package "Gestion Git" {
+    rectangle "feature/*" as Feature
+    rectangle "preprod" as Preprod
+    rectangle "master" as Master
+}
+
+package "CI/CD (GitHub Actions)" {
+    rectangle "Build Docker" as Build
+    rectangle "Tests automatiques" as Tests
+    rectangle "Déploiement VPS" as Deploy
+}
+
+package "Production" {
+    rectangle "Serveur VPS" as VPS
+    rectangle "Application M-Motors" as App
+}
+
+Dev --> Feature : développement
+Feature --> Preprod : merge
+Preprod --> Master : validation
+
+Master --> Build : déclenchement CI
+
+Build --> Tests
+Tests --> Deploy
+
+Deploy --> VPS : upload / update
+VPS --> App : redémarrage
+
+@enduml

@@ -2,7 +2,7 @@ parameters:
     upload_dir: "%kernel.project_dir%/public/uploads"
     dossier_upload_dir: "%upload_dir%/dossiers"
     vehicle_upload_dir: "%upload_dir%/uploads/vehicles_images"
-    app.vehicle_default_image: "uploads/vehicles/default-vehicle.jpg"
+    app.vehicle_default_image: "uploads/vehicles_images/default-vehicle.jpg"
 
 services:
     _defaults:

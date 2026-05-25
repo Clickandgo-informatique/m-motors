@@ -1,0 +1,49 @@
+@startuml
+
+top to bottom direction
+
+skinparam shadowing false
+skinparam state {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+
+title Workflow de gestion des états d'un véhicule
+
+[*] --> DisponibleVente
+
+state "Disponible à la vente" as DisponibleVente
+state "Disponible à la location" as DisponibleLocation
+state "Réservé" as Reserve
+state "Vendu" as Vendu
+state "Loué" as Loue
+state "Commandé" as Commande
+state "En maintenance" as Maintenance
+
+DisponibleVente --> Reserve : Réservation
+DisponibleLocation --> Reserve : Réservation
+
+Reserve --> DisponibleVente : Annulation réservation vente
+Reserve --> DisponibleLocation : Annulation réservation location
+
+Reserve --> Loue : Mise en location
+DisponibleLocation --> Loue : Mise en location
+
+Loue --> DisponibleLocation : Retour du véhicule
+
+Reserve --> Vendu : Vente du véhicule
+DisponibleVente --> Vendu : Vente du véhicule
+
+DisponibleVente --> Commande : Commande fournisseur
+DisponibleLocation --> Commande : Commande fournisseur
+
+DisponibleVente --> Maintenance : Envoi en maintenance
+DisponibleLocation --> Maintenance : Envoi en maintenance
+
+Maintenance --> DisponibleVente : Retour maintenance vente
+Maintenance --> DisponibleLocation : Retour maintenance location
+
+Vendu --> [*]
+
+@enduml

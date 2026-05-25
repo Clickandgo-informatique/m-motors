@@ -1,0 +1,16 @@
+#featured-vehicles-gallery-wrapper {
+  max-width: 1200px;
+  overflow-y: auto;
+  scrollbar-width: ;
+}
+
+#featured-vehicles-gallery-wrapper .cards-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 1rem;
+}
+
+#featured-vehicles-gallery-wrapper .vehicle-card {
+  flex: 0 0 clamp(260px, 30vw, 380px);
+}

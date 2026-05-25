@@ -12,7 +12,9 @@ final class HomeController extends AbstractController
     #[Route(path: '/', name: 'app_home')]
     public function index(VehicleRepository $repo): Response
     {
-        $featuredVehicles=$repo->getFeaturedVehicles();
+        //Recherche les véhicules mis en avant pour la galerie homepage
+        $featuredVehicles=$repo->findBy(['isFeatured'=>'true']);
+        
         return $this->render('home/index.html.twig',[
             'vehicles'=>$featuredVehicles
         ]);
