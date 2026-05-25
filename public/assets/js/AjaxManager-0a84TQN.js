@@ -136,16 +136,10 @@ export default class AjaxManager {
   initImageZoom() {
     const overlay = this.modalBody.querySelector("#image-zoom-overlay");
     const target = this.modalBody.querySelector("#image-zoom-target");
-    const closeBtn = this.modalBody.querySelector(".image-zoom-close");
 
     if (!overlay || !target) return;
 
     const images = this.modalBody.querySelectorAll(".vehicle-gallery img, .vehicle-thumb");
-
-    const closeZoom = () => {
-      overlay.classList.remove("open");
-      target.src = "";
-    };
 
     images.forEach(img => {
       img.addEventListener("click", () => {
@@ -154,20 +148,21 @@ export default class AjaxManager {
       });
     });
 
-    if (closeBtn) {
-      closeBtn.addEventListener("click", closeZoom);
-    }
-
-    overlay.addEventListener("click", e => {
-      // éviter fermeture si clic sur image
-      if (e.target === target) return;
-      closeZoom();
+    overlay.addEventListener("click", () => {
+      overlay.classList.remove("open");
+      target.src = "";
     });
 
     document.addEventListener("keydown", e => {
       if (e.key === "Escape") {
-        closeZoom();
+        overlay.classList.remove("open");
+        target.src = "";
       }
     });
+  }
+
+  closeModal() {
+    this.modal.classList.remove("open");
+    this.modalBody.innerHTML = "";
   }
 }

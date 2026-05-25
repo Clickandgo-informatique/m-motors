@@ -1,9 +1,189 @@
-{% extends "base.html.twig" %}
-{% block title %}{{title}}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
+
 {% block body %}
-<a href="{{path("vehicles_index")}}"class="btn btn-primary"><i class="fa-solid fa-list"></i>Revenir à la liste</a>
-<h1 class="text-center">{{title}}</h1>
-<h3 class="text-center">{{vehicle.vehicleModel.brand.name}}&nbsp;{{vehicle.vehicleModel.model.name}}</h3>
+
+<div class="page-container vehicle-show">
+
+    <a href="{{ path('vehicles_index') }}" class="btn btn-primary">
+        <i class="fa-solid fa-list"></i>
+        Revenir à la liste
+    </a>
+
+    <h1 class="text-center">{{ title }}</h1>
+
+    <h3 class="text-center">
+        {{ vehicle.vehicleModel.brand.name }} {{ vehicle.vehicleModel.model.name }}
+    </h3>
+
+    <div class="vehicle-layout">
+
+        {# ================= LEFT COLUMN ================= #}
+        <div class="vehicle-left">
+
+            <div class="card vehicle-info-card">
+
+                <div class="card-header">
+                    Informations techniques
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table vehicle-table">
+                        <tbody>
+
+                            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+                                <tr>
+                                    <th>Immatriculation</th>
+                                    <td>{{ vehicle.registrationNumber }}</td>
+                                </tr>
+                            {% endif %}
+
+                            <tr>
+                                <th>Kilométrage</th>
+                                <td>{{ vehicle.mileage|number_format(0, ',', ' ') }} km</td>
+                            </tr>
+
+                            <tr>
+                                <th>Carrosserie</th>
+                                <td>{{ vehicle.vehicleModel.bodyType.name }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Énergie</th>
+                                <td>{{ vehicle.vehicleModel.fuelType.name }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Transmission</th>
+                                <td>{{ vehicle.vehicleModel.transmissionType.name ?? 'N/A' }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Puissance</th>
+                                <td>{{ vehicle.vehicleModel.power ?? 'N/A' }} ch</td>
+                            </tr>
+
+                            <tr>
+                                <th>Prix</th>
+                                <td>{{ vehicle.price|number_format(0, ',', ' ') }} €</td>
+                            </tr>
+
+                            <tr>
+                                <th>Mise en circulation</th>
+                                <td>{{ vehicle.firstRegistrationDate|date('m/Y') }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Statut</th>
+                                <td>
+                                    <span class="badge badge-{{ vehicle.status.badge }}">
+                                        {{ vehicle.status.label }}
+                                    </span>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="card vehicle-options-card">
+
+                <div class="card-header">
+                    Options & équipements
+                </div>
+
+                <div class="card-body">
+
+                    {% if vehicle.features is not empty %}
+
+                        <table class="table table-sm">
+                            <tbody>
+
+                                {% for feature in vehicle.features %}
+                                    <tr>
+                                        <td>{{ feature.label }}</td>
+                                    </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+
+                    {% else %}
+                        <p class="text-muted">Aucune option disponible</p>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {# ================= RIGHT COLUMN ================= #}
+        <div class="vehicle-right">
+
+            <div class="card vehicle-gallery-card">
+
+                <div class="card-header">
+                    Galerie photos
+                </div>
+
+                <div class="card-body">
+
+                    {% set images = vehicle.images %}
+
+                    {% if images is not empty %}
+
+                        <div class="vehicle-gallery">
+
+                            <div class="vehicle-main-image">
+                                <img
+                                    src="{{ asset('uploads/' ~ images|first.imagePath) }}"
+                                    alt="image principale"
+                                    class="vehicle-main-img"
+                                >
+                            </div>
+
+                            <div class="vehicle-thumbnails">
+
+                                {% for image in images|slice(1) %}
+
+                                    <img
+                                        src="{{ asset('uploads/' ~ image.imagePath) }}"
+                                        alt="thumbnail"
+                                        class="vehicle-thumb"
+                                    >
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="text-muted">Aucune image disponible</p>
+
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{# Zone de zoom #}
+<div id="image-zoom-overlay" class="image-zoom-overlay">
+    <button type="button" class="image-zoom-close" aria-label="Fermer">
+        &times;
+    </button>
+
+    <img id="image-zoom-target" src="" alt="zoom">
+</div>
 
 {% endblock %}
-

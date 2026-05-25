@@ -1,24 +1,32 @@
 #!/bin/sh
 set -e
 
-echo "Fixing permissions..."
+# fix permissions for symfony writable directories
 chown -R www-data:www-data /var/www/var /var/www/vendor
 
-# Installer les dépendances Composer si vendor est absent ou incomplet
+# install composer dependencies if vendor is missing or incomplete
 if [ ! -d /var/www/vendor ] || [ ! -f /var/www/vendor/autoload.php ]; then
-    echo "Vendor is missing — installing Composer dependencies..."
+    echo "vendor is missing, installing composer dependencies"
     cd /var/www
     composer install --no-interaction --optimize-autoloader
 fi
 
-# Export PostgreSQL password
+# export postgres password for psql commands
 export PGPASSWORD="$POSTGRES_PASSWORD"
 
-# Attendre PostgreSQL
-until pg_isready -h db -p 5432 -U "${POSTGRES_USER:-app}"; do
-  echo "Waiting for PostgreSQL..."
-  sleep 1
+# wait for postgres to be available
+until pg_isready -h db -p 5432 -U "$POSTGRES_USER"; do
+    echo "waiting for postgres"
+    sleep 1
 done
 
-# Lancer commande container
+echo "ensuring test database exists"
+
+psql -h db -U "$POSTGRES_USER" -d postgres -tAc \
+"SELECT 1 FROM pg_database WHERE datname='m_motors_test'" | grep -q 1 || \
+psql -h db -U "$POSTGRES_USER" -d postgres -c "CREATE DATABASE m_motors_test"
+
+echo "test database ready"
+
+# execute container command
 exec "$@"

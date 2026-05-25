@@ -25,8 +25,8 @@ export default class AjaxManager {
 
         if (!trigger) return;
 
-        // protection UX (ne pas ouvrir modal sur actions internes)
-        if (e.target.closest(".vehicle-card-actions, .favorite-btn")) {
+        // bloc de sécurité UX (cards véhicules)
+        if (trigger && e.target.closest(".vehicle-card-actions, .favorite-btn")) {
           return;
         }
 
@@ -114,15 +114,12 @@ export default class AjaxManager {
   }
 
   initModalComponents() {
-    this.initAutocomplete();
-    this.initImageZoom();
-  }
-
-  initAutocomplete() {
     const inputs = this.modalBody.querySelectorAll("input[data-url]");
 
     inputs.forEach(input => {
-      if (input.dataset.autocompleteInit === "1") return;
+      if (input.dataset.autocompleteInit === "1") {
+        return;
+      }
 
       if (typeof window.Autocomplete === "function") {
         new window.Autocomplete(input);
@@ -133,41 +130,8 @@ export default class AjaxManager {
     });
   }
 
-  initImageZoom() {
-    const overlay = this.modalBody.querySelector("#image-zoom-overlay");
-    const target = this.modalBody.querySelector("#image-zoom-target");
-    const closeBtn = this.modalBody.querySelector(".image-zoom-close");
-
-    if (!overlay || !target) return;
-
-    const images = this.modalBody.querySelectorAll(".vehicle-gallery img, .vehicle-thumb");
-
-    const closeZoom = () => {
-      overlay.classList.remove("open");
-      target.src = "";
-    };
-
-    images.forEach(img => {
-      img.addEventListener("click", () => {
-        target.src = img.src;
-        overlay.classList.add("open");
-      });
-    });
-
-    if (closeBtn) {
-      closeBtn.addEventListener("click", closeZoom);
-    }
-
-    overlay.addEventListener("click", e => {
-      // éviter fermeture si clic sur image
-      if (e.target === target) return;
-      closeZoom();
-    });
-
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") {
-        closeZoom();
-      }
-    });
+  closeModal() {
+    this.modal.classList.remove("open");
+    this.modalBody.innerHTML = "";
   }
 }

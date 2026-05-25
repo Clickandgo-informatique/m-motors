@@ -8,6 +8,7 @@
                     is-unavailable
                 {% endif %}
             "
+            data-ajax-modal="true"
             data-url="
                 {{ is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')
                     ? path('vehicle_edit', {id: vehicle.id})

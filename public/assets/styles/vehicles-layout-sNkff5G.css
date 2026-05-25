@@ -1,0 +1,39 @@
+.vehicle-layout {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    align-items: flex-start;
+}
+
+.vehicle-left {
+    flex: 1;
+}
+
+.vehicle-right {
+    flex: 1;
+}
+
+.vehicle-gallery img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.vehicle-thumbnails {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.vehicle-thumb {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+
+.vehicle-thumb:hover {
+    opacity: 1;
+}
