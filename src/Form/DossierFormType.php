@@ -49,7 +49,7 @@ class DossierFormType extends AbstractType
         ]);
 
         /**
-         * financement embedé (source unique de vérité)
+         * financement embedded (source unique de vérité)
          */
         $builder->add('financing', FinancingFormType::class, [
             'required' => false,

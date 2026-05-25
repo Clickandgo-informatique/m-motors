@@ -1,45 +1,144 @@
 {% extends "base.html.twig" %}
 
 {% block title %}
+    {% set user = app.user %}
+
     Profil de
-    {{ app.user
-        ? (app.user.nickname
-            ? app.user.nickname
-            : (app.user.lastName ~ ' ' ~ app.user.firstName)
-          )
+    {{ user
+        ? (user.nickname
+            ? user.nickname
+            : (
+                user.customer
+                    ? (user.customer.lastName ~ ' ' ~ user.customer.firstName)
+                    : 'utilisateur'
+            )
+        )
         : 'invité'
     }}
 {% endblock %}
 
 {% block body %}
 
+{% set user = app.user %}
+
+<div class="container profile-page">
+
     <h1 class="text-center">
-        <i class="fa-regular fa-address-card"></i> Mon profil
+        <i class="fa-regular fa-address-card"></i>
+        Mon profil
     </h1>
 
-    <p class="text-center">
-        Pseudo enregistré :
-        {{ app.user
-            ? (app.user.nickname ?: 'Aucun')
-            : 'Aucun'
-        }}
-    </p>
+    <div class="profile-card">
 
-    <p class="text-center">
-        Email :
-        {{ app.user ? app.user.email : 'Non disponible' }}
-    </p>
+        <div class="profile-section">
 
-    <p class="text-center">
-        Rôles :
-        {{ app.user ? app.user.roles|join(', ') : 'Aucun rôle' }}
-    </p>
+            <h2>
+                <i class="fa-solid fa-user"></i>
+                Informations personnelles
+            </h2>
 
-    {% if app.user and app.user.is2FAEnabled %}
-        <p class="text-center">
-            <i class="fa-solid fa-shield-halved"></i>
-            L'authentification à double facteur est activée sur votre compte.
-        </p>
-    {% endif %}
+            <p>
+                <strong>Prénom :</strong>
+                {{ user and user.customer ? (user.customer.firstName ?: 'Non renseigné') : 'Non renseigné' }}
+            </p>
+
+            <p>
+                <strong>Nom :</strong>
+                {{ user and user.customer ? (user.customer.lastName ?: 'Non renseigné') : 'Non renseigné' }}
+            </p>
+
+            <p>
+                <strong>Pseudo :</strong>
+                {{ user ? (user.nickname ?: 'Aucun') : 'Aucun' }}
+            </p>
+
+            <p>
+                <strong>Email :</strong>
+                {{ user ? (user.email ?: 'Non disponible') : 'Non disponible' }}
+            </p>
+
+            <p>
+                <strong>Téléphone 1 :</strong>
+                {{ user and user.customer ? (user.customer.phoneNumber1 ?: 'Non renseigné') : 'Non renseigné' }}
+            </p>
+
+            <p>
+                <strong>Téléphone 2 :</strong>
+                {{ user and user.customer ? (user.customer.phoneNumber2 ?: 'Non renseigné') : 'Non renseigné' }}
+            </p>
+
+        </div>
+
+        <div class="profile-section">
+
+            <h2>
+                <i class="fa-solid fa-location-dot"></i>
+                Adresse
+            </h2>
+
+            <p>
+                <strong>Adresse :</strong>
+                {{ user and user.customer ? (user.customer.address ?: 'Non renseignée') : 'Non renseignée' }}
+            </p>
+
+            <p>
+                <strong>Code postal :</strong>
+                {{ user and user.customer ? (user.customer.zipCode ?: 'Non renseigné') : 'Non renseigné' }}
+            </p>
+
+            <p>
+                <strong>Ville :</strong>
+                {{ user and user.customer ? (user.customer.city ?: 'Non renseignée') : 'Non renseignée' }}
+            </p>
+
+            <p>
+                <strong>Pays :</strong>
+                {{ user and user.customer ? (user.customer.country ?: 'Non renseigné') : 'Non renseigné' }}
+            </p>
+
+        </div>
+
+        <div class="profile-section">
+
+            <h2>
+                <i class="fa-solid fa-shield-halved"></i>
+                Sécurité
+            </h2>
+
+            <p>
+                <strong>Rôles :</strong>
+                {{ user ? user.roles|join(', ') : 'Aucun rôle' }}
+            </p>
+
+            <p>
+                <strong>Email vérifié :</strong>
+                {{ user and user.isVerified ? 'Oui' : 'Non' }}
+            </p>
+
+            <p>
+                <strong>Authentification à double facteur :</strong>
+                {{ user and user.is2FAEnabled ? 'Activée' : 'Désactivée' }}
+            </p>
+
+        </div>
+
+        {# {% if user and user.customer and user.customer.notes %}
+            <div class="profile-section">
+
+                <h2>
+                    <i class="fa-regular fa-note-sticky"></i>
+                    Notes
+                </h2>
+
+                <p>
+                    {{ user.customer.notes|nl2br }}
+                </p>
+
+            </div>
+        {% endif %} #}
+
+    </div>
+
+</div>
 
 {% endblock %}

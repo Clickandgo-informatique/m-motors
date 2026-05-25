@@ -107,6 +107,14 @@ class Customer
     #[Assert\Length(max: 255)]
     private ?string $addressDetails = null;
 
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100)]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-ZÀ-ÿ\s\-']+$/",
+        message: "Le pays contient des caractères invalides."
+    )]
+    private ?string $country = null;
+
     public function __construct()
     {
         $this->dossiers = new ArrayCollection();
@@ -261,6 +269,18 @@ class Customer
     public function setAddressDetails(?string $addressDetails): static
     {
         $this->addressDetails = $addressDetails;
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): static
+    {
+        $this->country = $country ? trim($country) : null;
+
         return $this;
     }
 

@@ -27,10 +27,10 @@
 @import "./vehicles-filters-layout.css";
 @import "./featured-gallery.css";
 @import "./vehicles-layout.css";
+@import "./dashboard.css";
+@import "./dossier-card.css";
 
-/* ========================================================= */
 /* BASE GLOBALE */
-/* ========================================================= */
 
 *,
 *::before,

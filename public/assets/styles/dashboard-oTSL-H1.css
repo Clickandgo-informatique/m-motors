@@ -1,0 +1,5 @@
+.dashboard-wrapper {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: repeat(2fr);
+}

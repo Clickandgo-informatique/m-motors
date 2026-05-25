@@ -1,64 +1,76 @@
-<table class="table table-hover mt-3">
+<div class="dossier-cards">
 
-	<thead>
-		<tr>
-			<th></th>
-			<th>Statut</th>
-			<th>Référence</th>
-			<th>Véhicule</th>
-			<th>Client</th>
-			<th>Type</th>
-			<th>Immatriculation</th>
-			<th>VIN</th>
-			<th>Date</th>
-		</tr>
-	</thead>
+    {% for dossier in dossiers %}
 
-	<tbody>
-		{% for dossier in dossiers %}
-			<tr>
-				<td data-label="">
-					<a href="{{ path('admin_dossier_show', {id: dossier.id}) }}"
-					   class="btn btn-sm btn-dark">
-						<i class="fa-regular fa-pen-to-square"></i>
-					</a>
-				</td>
+        <div class="dossier-card card">
 
-				<td data-label="Statut">
-					<span class="badge bg-{{ dossier.statusBadge }}">
-						{{ dossier.statusLabel }}
-					</span>
-				</td>
+            <div class="dossier-card-header">
 
-				<td data-label="Référence">
-					{{ dossier.dossierCode }}
-				</td>
+                <div class="dossier-card-actions">
+                    <a href="{{ path('admin_dossier_show', {id: dossier.id}) }}"
+                       class="btn btn-sm btn-dark">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                    </a>
+                </div>
 
-				<td data-label="Véhicule">
-					{{ dossier.vehicle.vehicleModel }}
-				</td>
+                <div class="dossier-card-status">
+                    <span class="badge bg-{{ dossier.statusBadge }}">
+                        {{ dossier.statusLabel }}
+                    </span>
+                </div>
 
-				<td data-label="Client">
-					{{ dossier.customer }}
-				</td>
+                <div class="dossier-card-date">
+                    {{ dossier.createdAt|date('d/m/Y') }}
+                </div>
 
-				<td data-label="Type">
-					{{ dossier.type.label }}
-				</td>
+            </div>
 
-				<td data-label="Immatriculation">
-					{{ dossier.vehicle.registrationNumber }}
-				</td>
+            <div class="dossier-card-body">
 
-				<td data-label="VIN">
-					{{ dossier.vehicle.vin }}
-				</td>	
+                <div class="dossier-card-main">
 
-				<td data-label="Créé le">
-					{{ dossier.createdAt|date('d/m/Y') }}
-				</td>
-			</tr>
-		{% endfor %}
-	</tbody>
+                    <h3 class="dossier-vehicle">
+                        {{ dossier.vehicle.vehicleModel }}
+                    </h3>
 
-</table>
+                    <div class="dossier-reference">
+                        {{ dossier.dossierCode }}
+                    </div>
+
+                </div>
+
+                <div class="dossier-card-grid">
+
+                    <div class="dossier-item">
+                        <span class="label">Client</span>
+                        <span class="value">{{ dossier.customer }}</span>
+                    </div>
+
+                    <div class="dossier-item">
+                        <span class="label">Type</span>
+                        <span class="value">{{ dossier.type.label }}</span>
+                    </div>
+
+                    <div class="dossier-item">
+                        <span class="label">Immatriculation</span>
+                        <span class="value">
+                            {{ dossier.vehicle.registrationNumber ?: 'Non renseignée' }}
+                        </span>
+                    </div>
+
+                    <div class="dossier-item">
+                        <span class="label">VIN</span>
+                        <span class="value">
+                            {{ dossier.vehicle.vin ?: 'Non renseigné' }}
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+</div>

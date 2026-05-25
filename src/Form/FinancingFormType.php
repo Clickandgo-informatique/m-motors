@@ -15,17 +15,20 @@ class FinancingFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+
             /**
              * type principal financement
              */
             ->add('type', ChoiceType::class, [
                 'choices' => [
-                    'cash' => 'cash',
-                    'credit' => 'credit',
-                    'leasing' => 'leasing',
+                    'Comptant' => 'cash',
+                    'Crédit' => 'credit',
+                    'Leasing' => 'leasing',
                 ],
-                'placeholder' => 'Choisir un type',
+                'placeholder' => false,
+                'empty_data' => 'cash',
                 'required' => true,
+                'label' => 'Type de financement',
             ])
 
             /**
@@ -38,7 +41,7 @@ class FinancingFormType extends AbstractType
                 ],
                 'required' => false,
                 'placeholder' => 'Choisir un type de leasing',
-                'label'=>'Type de leasing'
+                'label' => 'Type de leasing',
             ])
 
             /**
@@ -50,8 +53,10 @@ class FinancingFormType extends AbstractType
                     'Approuvé' => 'approved',
                     'Refusé' => 'rejected',
                 ],
+                'placeholder' => false,
+                'empty_data' => 'pending',
                 'required' => true,
-                'label'=>'Statut'
+                'label' => 'Statut',
             ])
 
             /**
@@ -60,7 +65,7 @@ class FinancingFormType extends AbstractType
             ->add('amount', MoneyType::class, [
                 'currency' => 'EUR',
                 'required' => false,
-                'label'=>'Montant financé'
+                'label' => 'Montant financé',
             ])
 
             /**
@@ -68,7 +73,7 @@ class FinancingFormType extends AbstractType
              */
             ->add('durationMonths', NumberType::class, [
                 'required' => false,
-                'label'=>'Durée en mois'
+                'label' => 'Durée en mois',
             ])
 
             /**
@@ -77,7 +82,7 @@ class FinancingFormType extends AbstractType
             ->add('monthlyPayment', MoneyType::class, [
                 'currency' => 'EUR',
                 'required' => false,
-                'label'=>'Mensualité'
+                'label' => 'Mensualité',
             ]);
     }
 

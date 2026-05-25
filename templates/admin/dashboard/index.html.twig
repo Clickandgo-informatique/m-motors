@@ -5,12 +5,18 @@ M-motors : Dashboard Admin
 {% endblock %}
 
 {% block body %}
-
+<div class="dashboard-wrapper">
 	{# KPI GLOBAL #}
 
-	<h3 class="mb-3">Indicateurs globaux</h3>
-
-	<div class="kpi-cards-grid mt-4">
+	<aside class="kpi-cards-grid mt-4">
+	
+	<h5 class="text-center mb-3">
+		
+		<i class="fa-solid fa-chart-line title-icon-sm"></i>
+		<span class="text-center">Indicateurs globaux	
+		</span>
+	</h5>	
+	
 
 		<div class="card kpi-card p-3">
 			<h6>Total véhicules</h6>
@@ -42,13 +48,13 @@ M-motors : Dashboard Admin
 				<strong>{{ stats.maintenance }}</strong>
 			</span>
 		</div>
-	</div>
+		
+	</aside>
+
+<section class="dashboard-content">	
 
 	{# RECHERCHE VEHICULE #}
-
-	<h5 class="mb-3">Recherche véhicule / modèle</h5>
-
-	{% include 'Components/Forms/_fetch_form.html.twig' with {
+	{# {% include 'Components/Forms/_fetch_form.html.twig' with {
         action: path('admin_dashboard_results'),
         fetchUrl: path('admin_dashboard_results'),
         target: '#vehicles-search-results',
@@ -60,10 +66,24 @@ M-motors : Dashboard Admin
         linkMode: 'replace',
         highlight: true,
 		fetchMode:'html'
-    } %}
+    } %} #}
 
 	{# RESULTATS AJAX (TABLEAU FINAL) #}
 
-	<div id="vehicles-search-results"></div>
+	{# <div id="vehicles-search-results"></div> #}
+	
+	<div class="last-10-dossiers">
+	<h5 class="text-center">Les 10 derniers dossiers</h5>
+	{% if dossiers|length >0 %}	
+	{% include "dossier/_dossiers_table.html.twig" %}
+	{% else %}
+		<p class="text-center">
+		Il n'existe encore aucun dossier client enregistré
+		</p>
+	{% endif %}	
+	</div>
+
+	</section>
+</div>
 
 {% endblock %}

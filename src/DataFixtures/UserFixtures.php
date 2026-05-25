@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Service\CustomerCodeGenerator;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -21,15 +22,20 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $faker = Factory::create('fr_FR');
+
         // admin
         $admin = new User();
+
         $admin->setEmail('admin@m-motors.com')
+
             ->setRoles(['ROLE_ADMIN'])
             ->setPassword(
                 $this->passwordHasher->hashPassword($admin, 'Admin2026!')
             );
 
         $adminCustomer = new Customer();
+
         $adminCustomer->setUser($admin);
         $adminCustomer->setFirstName('admin');
         $adminCustomer->setLastName('system');
@@ -46,14 +52,17 @@ class UserFixtures extends Fixture
 
         // manager
         $managerUser = new User();
+
         $managerUser->setEmail('commercial@m-motors.com')
-            ->setRoles(['ROLE_MANAGER'])
             ->setNickname('vendeur principal')
+
+            ->setRoles(['ROLE_MANAGER'])
             ->setPassword(
                 $this->passwordHasher->hashPassword($managerUser, 'Admin2026!')
             );
 
         $managerCustomer = new Customer();
+
         $managerCustomer->setUser($managerUser);
         $managerCustomer->setFirstName('manager');
         $managerCustomer->setLastName('sales');
@@ -70,22 +79,30 @@ class UserFixtures extends Fixture
 
         // clients
         for ($i = 1; $i <= 4; $i++) {
+
+            $firstname = $faker->firstName();
+            $lastname = $faker->lastName();
+
             $client = new User();
+
             $client->setEmail('client_' . $i . '@google.com')
+             
                 ->setNickname('client ' . $i)
+        
                 ->setRoles(['ROLE_USER'])
                 ->setPassword(
                     $this->passwordHasher->hashPassword($client, 'Client2026!')
                 );
 
             $customer = new Customer();
+
             $customer->setUser($client);
-            $customer->setFirstName('client');
-            $customer->setLastName((string) $i);
+            $customer->setFirstName($firstname);
+            $customer->setLastName($lastname);
             $customer->setEmail($client->getEmail());
 
             $customer->setCustomerCode(
-                $this->customerCodeGenerator->generateCustomerCodeFixture((string) $i, $i)
+                $this->customerCodeGenerator->generateCustomerCodeFixture($lastname, $i)
             );
 
             $client->setCustomer($customer);

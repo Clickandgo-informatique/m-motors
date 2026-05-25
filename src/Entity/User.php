@@ -255,4 +255,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->nickname = $nickname;
         return $this;
     }
+    
 }

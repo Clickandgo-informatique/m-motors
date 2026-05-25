@@ -44,7 +44,9 @@ class CustomerFixtures extends Fixture
                 ->setAddress($this->faker->streetAddress())
                 ->setZipCode($this->faker->postcode())
                 ->setCity($this->faker->city())
-                ->setAddressDetails('Détails de l\'adresse du client');
+                ->setAddressDetails('Détails de l\'adresse du client')
+                ->setCountry('France')
+            ;
 
             $user = new User();
             $user->setEmail($email);

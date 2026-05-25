@@ -64,31 +64,25 @@
 									<th>Paiement</th>
 								</tr>
 							</thead>
-
 							<tbody>
 
 								{% for dossier in vehicle.dossiers %}
 
 									<tr>
-
 										<td>
-											{{ dossier.customer ? dossier.customer.fullName : '-' }}
+											{{ dossier.customer ? dossier.customer.lastName : '-' }}
 										</td>
-
 										<td>
 											{{ dossier.type ? dossier.type.label() : '-' }}
 										</td>
-
 										<td>
-											<span class="badge bg-{{ dossier.status ? dossier.status.badge() : 'secondary' }}">
-												{{ dossier.status ? dossier.status.label() : '-' }}
+											<span class="badge bg-{{ dossier.status ? dossier.status : 'secondary' }}">
+												{{ dossier.status ? dossier.status : '-' }}
 											</span>
 										</td>
-
-										<td>
+										{# <td>
 											{{ dossier.paymentStatus ? dossier.paymentStatus.label() : '-' }}
-										</td>
-
+										</td> #}
 									</tr>
 
 								{% else %}

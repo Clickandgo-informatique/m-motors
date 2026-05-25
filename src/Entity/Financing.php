@@ -28,6 +28,7 @@ class Financing
      * rejected = refusé
      */
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank]
     #[Assert\Choice(choices: ['pending', 'approved', 'rejected'])]
     private string $status = 'pending';
 
@@ -38,6 +39,7 @@ class Financing
      * leasing = loa ou lld
      */
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank]
     #[Assert\Choice(choices: ['cash', 'credit', 'leasing'])]
     private string $type = 'cash';
 
@@ -90,6 +92,7 @@ class Financing
     public function setDossier(?Dossier $dossier): self
     {
         $this->dossier = $dossier;
+
         return $this;
     }
 
@@ -101,6 +104,7 @@ class Financing
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -141,6 +145,7 @@ class Financing
     public function setAmount(?int $amount): self
     {
         $this->amount = $amount;
+
         return $this;
     }
 
@@ -152,6 +157,7 @@ class Financing
     public function setDurationMonths(?int $durationMonths): self
     {
         $this->durationMonths = $durationMonths;
+
         return $this;
     }
 
@@ -163,6 +169,7 @@ class Financing
     public function setMonthlyPayment(?float $monthlyPayment): self
     {
         $this->monthlyPayment = $monthlyPayment;
+
         return $this;
     }
 
@@ -174,6 +181,7 @@ class Financing
     public function setDecidedAt(?\DateTimeImmutable $decidedAt): self
     {
         $this->decidedAt = $decidedAt;
+
         return $this;
     }
 
@@ -196,14 +204,17 @@ class Financing
     }
 
     public function validateConsistency(): void
-{
-    if ($this->type !== 'leasing') {
-        $this->leasingType = null;
-        return;
-    }
+    {
+        if ($this->type !== 'leasing') {
+            $this->leasingType = null;
 
-    if ($this->leasingType === null) {
-        throw new \InvalidArgumentException('leasingType obligatoire si type = leasing');
+            return;
+        }
+
+        if ($this->leasingType === null) {
+            throw new \InvalidArgumentException(
+                'leasingType obligatoire si type = leasing'
+            );
+        }
     }
-}
 }

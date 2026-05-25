@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Brand;
+use App\Repository\DossierRepository;
 use App\Repository\VehicleRepository;
 use App\Service\Dashboard\VehicleDashboardService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,9 +21,11 @@ class DashboardAdminController extends AbstractController
         Request $request,
         VehicleDashboardService $dashboardService,
         EntityManagerInterface $em,
-        PaginatorInterface $paginator
+        PaginatorInterface $paginator,
+        DossierRepository $dossierRepo
     ): Response {
 
+        $last10Dossiers = $dossierRepo->findBy([], ['createdAt' => 'DESC'], 10);  
         $stats = $dashboardService->getStats();
         $stock = $dashboardService->getStockByModel();
         $usage = $dashboardService->getUsageDistribution();
@@ -47,6 +50,7 @@ class DashboardAdminController extends AbstractController
             'usage' => $usage,
             'brands' => $brands,
             'selectedBrandId' => $selectedBrandId,
+            'dossiers' => $last10Dossiers
         ]);
     }
 
