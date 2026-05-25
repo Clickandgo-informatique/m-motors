@@ -19,6 +19,7 @@ services:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
       POSTGRES_DB: app
+      XDEBUG_MODE: off
 
   nginx:
     image: nginx:latest
