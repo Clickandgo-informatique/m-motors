@@ -88,6 +88,6 @@
 #filters-summary {
   padding: 5px;
 }
-.favorites-wrapper {
-  color: var(--color-primary); 
+#favorites-wrapper i{
+  color: red;
 }

@@ -243,7 +243,7 @@ class DossierController extends AbstractController
             return $this->redirectToRoute('admin_dossier_list');
         }
 
-        return $this->render('admin/dossier/new.html.twig', [
+        return $this->render('admin/dossier/edit.html.twig', [
             'form' => $form->createView(),
             'title' => 'créer un dossier'
         ]);

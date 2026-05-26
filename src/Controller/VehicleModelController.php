@@ -107,6 +107,7 @@ class VehicleModelController extends AbstractController
                 'Le nouveau modèle de véhicule a été enregistré avec succès.'
             );
 
+            // réponse simplifiée pour les requêtes ajax
             if ($request->isXmlHttpRequest()) {
                 return new Response('OK');
             }
@@ -114,9 +115,10 @@ class VehicleModelController extends AbstractController
             return $this->redirectToRoute('vehicles_models');
         }
 
+        // retourne directement le html pour les modales ajax
         if ($request->isXmlHttpRequest()) {
 
-            $html = $this->renderView(
+            return $this->render(
                 'vehicles/_vehicle_model_form.html.twig',
                 [
                     'form' => $form->createView(),
@@ -124,10 +126,6 @@ class VehicleModelController extends AbstractController
                     'title' => $title,
                 ]
             );
-
-            return new JsonResponse([
-                'html' => $html
-            ]);
         }
 
         return $this->render(
@@ -162,6 +160,7 @@ class VehicleModelController extends AbstractController
                 'Le modèle de véhicule a été modifié avec succès.'
             );
 
+            // réponse simplifiée pour les requêtes ajax
             if ($request->isXmlHttpRequest()) {
                 return new Response('OK');
             }
@@ -169,9 +168,10 @@ class VehicleModelController extends AbstractController
             return $this->redirectToRoute('vehicles_models');
         }
 
+        // retourne directement le html pour les modales ajax
         if ($request->isXmlHttpRequest()) {
 
-            $html = $this->renderView(
+            return $this->render(
                 'vehicles/_vehicle_model_form.html.twig',
                 [
                     'form' => $form->createView(),
@@ -179,10 +179,6 @@ class VehicleModelController extends AbstractController
                     'title' => $title,
                 ]
             );
-
-            return new JsonResponse([
-                'html' => $html
-            ]);
         }
 
         return $this->render(

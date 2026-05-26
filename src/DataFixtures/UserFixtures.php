@@ -77,39 +77,35 @@ class UserFixtures extends Fixture
         $manager->persist($managerUser);
         $manager->persist($managerCustomer);
 
-        // clients
-        for ($i = 1; $i <= 4; $i++) {
+        // Client demo        
 
-            $firstname = $faker->firstName();
-            $lastname = $faker->lastName();
+        $client = new User();
 
-            $client = new User();
+        $client->setEmail('client@mail.com')
 
-            $client->setEmail('client_' . $i . '@google.com')
-             
-                ->setNickname('client ' . $i)
-        
-                ->setRoles(['ROLE_USER'])
-                ->setPassword(
-                    $this->passwordHasher->hashPassword($client, 'Client2026!')
-                );
+            ->setNickname('Client_Demo')
 
-            $customer = new Customer();
-
-            $customer->setUser($client);
-            $customer->setFirstName($firstname);
-            $customer->setLastName($lastname);
-            $customer->setEmail($client->getEmail());
-
-            $customer->setCustomerCode(
-                $this->customerCodeGenerator->generateCustomerCodeFixture($lastname, $i)
+            ->setRoles(['ROLE_USER'])
+            ->setPassword(
+                $this->passwordHasher->hashPassword($client, 'Client2026!')
             );
 
-            $client->setCustomer($customer);
+        $customer = new Customer();
 
-            $manager->persist($client);
-            $manager->persist($customer);
-        }
+        $customer->setUser($client);
+        $customer->setFirstName('Client');
+        $customer->setLastName('Demo');
+        $customer->setEmail($client->getEmail());
+
+        $customer->setCustomerCode(
+            $this->customerCodeGenerator->generateCustomerCode('Demo')
+        );
+
+        $client->setCustomer($customer);
+
+        $manager->persist($client);
+        $manager->persist($customer);
+
 
         $manager->flush();
     }

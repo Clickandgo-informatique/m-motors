@@ -89,5 +89,6 @@
   padding: 5px;
 }
 .favorites-wrapper {
-  color: var(--color-primary); 
+  color: var(--color-primary);
+  cursor: pointer;
 }

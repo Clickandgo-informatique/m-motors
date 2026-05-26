@@ -14,7 +14,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -44,23 +43,26 @@ class VehicleModelFormType extends AbstractType
                 'label' => 'Modèle',
                 'class' => Model::class,
                 'choice_label' => 'name',
-                'attr' => ['placeholder' => 'Description du modèle']
+                'placeholder' => 'Description du modèle'
             ])
             ->add('variant', EntityType::class, [
                 'label' => 'Variante',
                 'class'=>Variant::class,
-                'choice_label'=>'name'
+                'choice_label'=>'name',
+                'placeholder'=>'Choisir une variante'
 
             ])
             ->add('fuelType', EntityType::class, [
                 'label' => 'Type énergie',
                 'class' => FuelType::class,
                 'choice_label' => 'name',
+                'placeholder'=>'Choisir type d\'énergie'
             ])
             ->add('gearType', EntityType::class, [
                 'label' => 'Boîte vitesse',
                 'class' => GearType::class,
                 'choice_label' => 'name',
+                'placeholder'=>'Choisir le type de transmission'
             ])
             ->add('bodyType', EntityType::class, [
                 'label' => 'Type carrosserie',

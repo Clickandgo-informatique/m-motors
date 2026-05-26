@@ -46,25 +46,33 @@
                 {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
                 {{ form_errors(form.type) }}
             </div>
-            <p>
-            <strong>Créé par :</strong>
-            {{ dossier.createdBy ? dossier.createdBy.fullName : '—' }}
-        </p>
+           <p>
+    <strong>Créé par :</strong>
+    {% if dossier is defined and dossier.createdBy is defined and dossier.createdBy %}
+        {{ dossier.createdBy.fullName }}
+    {% else %}
+        —
+    {% endif %}
+</p>
 
-        <p>
-            <strong>Assigné à :</strong>
-            {% if dossier.assignedTo %}
-                <i class="fa-solid fa-user"></i>
-                {{ dossier.assignedTo.fullName }}
-            {% else %}
-                —
-            {% endif %}
-        </p>
+<p>
+    <strong>Assigné à :</strong>
+    {% if dossier is defined and dossier.assignedTo is defined and dossier.assignedTo %}
+        <i class="fa-solid fa-user"></i>
+        {{ dossier.assignedTo.fullName }}
+    {% else %}
+        —
+    {% endif %}
+</p>
 
-        <p>
-            <strong>Validé par :</strong>
-            {{ dossier.validatedBy ? dossier.validatedBy.fullName : '—' }}
-        </p>
+<p>
+    <strong>Validé par :</strong>
+    {% if dossier is defined and dossier.validatedBy is defined and dossier.validatedBy %}
+        {{ dossier.validatedBy.fullName }}
+    {% else %}
+        —
+    {% endif %}
+</p>
 
             {# bloc financement (entité embedded financing) #}
             {% if form.financing is defined %}
