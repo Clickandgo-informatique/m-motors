@@ -65,7 +65,7 @@
 				{% for vmod in vm %}
 					<tr id="row-{{vmod.id}}">
 						<td>
-							<a href="{{ path('vehicle_model_edit', {id: vmod.id}) }}" data-ajax-modal>
+							<a href="{{ path('vehicle_model_edit', {id: vmod.id}) }}" data-ajax-modal="true">
 								<i class="fa-regular fa-pen-to-square"></i>
 							</a>
 						</td>
