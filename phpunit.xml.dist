@@ -29,15 +29,15 @@
     <include>
       <directory suffix=".php">src/</directory>
     </include>
-    <exclude>
+    <!-- <exclude>
       <directory>src/Kernel.php</directory>
-      <!-- <directory>src/Entity</directory> -->
+      <directory>src/Entity</directory>
       <directory>src/Repository</directory>
       <directory>src/Controller</directory>
       <directory>src/Form</directory>
       <directory>src/Security</directory>
       <directory>src/EventSubscriber</directory>
-    </exclude>
+    </exclude> -->
   </source>
 
 </phpunit>
