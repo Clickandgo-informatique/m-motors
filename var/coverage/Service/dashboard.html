@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/src/Service</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/billboard.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/var/www/src</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Service</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="CustomerCodeGenerator.php.html#12">App\Service\CustomerCodeGenerator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dashboard/VehicleDashboardService.php.html#7">App\Service\Dashboard\VehicleDashboardService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DocumentAuditService.php.html#7">App\Service\DocumentAuditService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierAuditService.php.html#11">App\Service\Dossier\DossierAuditService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierCreationService.php.html#12">App\Service\Dossier\DossierCreationService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentTypeResolver.php.html#8">App\Service\Dossier\DossierDocumentTypeResolver</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentUploadService.php.html#11">App\Service\Dossier\DossierDocumentUploadService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentValidator.php.html#8">App\Service\Dossier\DossierDocumentValidator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierFinanceService.php.html#9">App\Service\Dossier\DossierFinanceService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierProgressService.php.html#7">App\Service\Dossier\DossierProgressService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierTypeSwitchService.php.html#8">App\Service\Dossier\DossierTypeSwitchService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#11">App\Service\Dossier\DossierUploadService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowAuditService.php.html#19">App\Service\Dossier\DossierWorkflowAuditService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowGuard.php.html#17">App\Service\Dossier\DossierWorkflowGuard</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#11">App\Service\Dossier\DossierWorkflowService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#8">App\Service\Financing\DossierFinancingService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#15">App\Service\ImageProcessor</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TOTPService.php.html#12">App\Service\TOTPService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Utils/SluggerService.php.html#5">App\Service\Utils\SluggerService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#10">App\Service\VehicleGalleryManager</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#9">App\Service\VehicleWorkflowService</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ImageProcessor.php.html#15">App\Service\ImageProcessor</a></td><td class="text-right">0.0%</td><td class="text-right">27</td><td class="text-right">756</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#11">App\Service\Dossier\DossierWorkflowService</a></td><td class="text-right">0.0%</td><td class="text-right">22</td><td class="text-right">506</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#10">App\Service\VehicleGalleryManager</a></td><td class="text-right">0.0%</td><td class="text-right">18</td><td class="text-right">342</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#8">App\Service\Financing\DossierFinancingService</a></td><td class="text-right">0.0%</td><td class="text-right">13</td><td class="text-right">182</td></tr>
+       <tr><td><a href="CustomerCodeGenerator.php.html#12">App\Service\CustomerCodeGenerator</a></td><td class="text-right">0.0%</td><td class="text-right">12</td><td class="text-right">156</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#11">App\Service\Dossier\DossierUploadService</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#9">App\Service\VehicleWorkflowService</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="Dossier/DossierTypeSwitchService.php.html#8">App\Service\Dossier\DossierTypeSwitchService</a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="Dossier/DossierCreationService.php.html#12">App\Service\Dossier\DossierCreationService</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowGuard.php.html#17">App\Service\Dossier\DossierWorkflowGuard</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentTypeResolver.php.html#8">App\Service\Dossier\DossierDocumentTypeResolver</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentValidator.php.html#8">App\Service\Dossier\DossierDocumentValidator</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="Dossier/DossierFinanceService.php.html#9">App\Service\Dossier\DossierFinanceService</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="TOTPService.php.html#12">App\Service\TOTPService</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentUploadService.php.html#11">App\Service\Dossier\DossierDocumentUploadService</a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowAuditService.php.html#19">App\Service\Dossier\DossierWorkflowAuditService</a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Utils/SluggerService.php.html#5">App\Service\Utils\SluggerService</a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="CustomerCodeGenerator.php.html#17"><abbr title="App\Service\CustomerCodeGenerator::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CustomerCodeGenerator.php.html#25"><abbr title="App\Service\CustomerCodeGenerator::generateCustomerCode">generateCustomerCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CustomerCodeGenerator.php.html#45"><abbr title="App\Service\CustomerCodeGenerator::generateCustomerCodeFixture">generateCustomerCodeFixture</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CustomerCodeGenerator.php.html#52"><abbr title="App\Service\CustomerCodeGenerator::assignCustomerCode">assignCustomerCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CustomerCodeGenerator.php.html#63"><abbr title="App\Service\CustomerCodeGenerator::generateDossierCode">generateDossierCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CustomerCodeGenerator.php.html#80"><abbr title="App\Service\CustomerCodeGenerator::assignDossierCode">assignDossierCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CustomerCodeGenerator.php.html#91"><abbr title="App\Service\CustomerCodeGenerator::buildPrefix">buildPrefix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dashboard/VehicleDashboardService.php.html#9"><abbr title="App\Service\Dashboard\VehicleDashboardService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dashboard/VehicleDashboardService.php.html#17"><abbr title="App\Service\Dashboard\VehicleDashboardService::getStats">getStats</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dashboard/VehicleDashboardService.php.html#32"><abbr title="App\Service\Dashboard\VehicleDashboardService::getStockByModel">getStockByModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dashboard/VehicleDashboardService.php.html#50"><abbr title="App\Service\Dashboard\VehicleDashboardService::getUsageDistribution">getUsageDistribution</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DocumentAuditService.php.html#9"><abbr title="App\Service\DocumentAuditService::logUpload">logUpload</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierAuditService.php.html#13"><abbr title="App\Service\Dossier\DossierAuditService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierAuditService.php.html#17"><abbr title="App\Service\Dossier\DossierAuditService::log">log</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierCreationService.php.html#14"><abbr title="App\Service\Dossier\DossierCreationService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierCreationService.php.html#18"><abbr title="App\Service\Dossier\DossierCreationService::createFromVehicle">createFromVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierCreationService.php.html#54"><abbr title="App\Service\Dossier\DossierCreationService::assertAllowedType">assertAllowedType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentTypeResolver.php.html#10"><abbr title="App\Service\Dossier\DossierDocumentTypeResolver::resolve">resolve</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentUploadService.php.html#13"><abbr title="App\Service\Dossier\DossierDocumentUploadService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentUploadService.php.html#25"><abbr title="App\Service\Dossier\DossierDocumentUploadService::upload">upload</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentValidator.php.html#13"><abbr title="App\Service\Dossier\DossierDocumentValidator::getRequiredDocuments">getRequiredDocuments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentValidator.php.html#26"><abbr title="App\Service\Dossier\DossierDocumentValidator::isComplete">isComplete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierFinanceService.php.html#11"><abbr title="App\Service\Dossier\DossierFinanceService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierFinanceService.php.html#15"><abbr title="App\Service\Dossier\DossierFinanceService::approve">approve</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierProgressService.php.html#40"><abbr title="App\Service\Dossier\DossierProgressService::getProgress">getProgress</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierProgressService.php.html#45"><abbr title="App\Service\Dossier\DossierProgressService::getLabel">getLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierProgressService.php.html#50"><abbr title="App\Service\Dossier\DossierProgressService::getSteps">getSteps</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierProgressService.php.html#55"><abbr title="App\Service\Dossier\DossierProgressService::isCompleted">isCompleted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierTypeSwitchService.php.html#13"><abbr title="App\Service\Dossier\DossierTypeSwitchService::switchType">switchType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#13"><abbr title="App\Service\Dossier\DossierUploadService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#23"><abbr title="App\Service\Dossier\DossierUploadService::upload">upload</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#51"><abbr title="App\Service\Dossier\DossierUploadService::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#60"><abbr title="App\Service\Dossier\DossierUploadService::safeDelete">safeDelete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#69"><abbr title="App\Service\Dossier\DossierUploadService::deleteFromDocument">deleteFromDocument</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#78"><abbr title="App\Service\Dossier\DossierUploadService::deleteEntity">deleteEntity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#89"><abbr title="App\Service\Dossier\DossierUploadService::replace">replace</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowAuditService.php.html#21"><abbr title="App\Service\Dossier\DossierWorkflowAuditService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowAuditService.php.html#26"><abbr title="App\Service\Dossier\DossierWorkflowAuditService::log">log</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowGuard.php.html#19"><abbr title="App\Service\Dossier\DossierWorkflowGuard::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowGuard.php.html#27"><abbr title="App\Service\Dossier\DossierWorkflowGuard::can">can</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowGuard.php.html#35"><abbr title="App\Service\Dossier\DossierWorkflowGuard::assertCan">assertCan</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowGuard.php.html#59"><abbr title="App\Service\Dossier\DossierWorkflowGuard::apply">apply</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#13"><abbr title="App\Service\Dossier\DossierWorkflowService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#27"><abbr title="App\Service\Dossier\DossierWorkflowService::apply">apply</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#43"><abbr title="App\Service\Dossier\DossierWorkflowService::selectVehicle">selectVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#48"><abbr title="App\Service\Dossier\DossierWorkflowService::requestDocuments">requestDocuments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#53"><abbr title="App\Service\Dossier\DossierWorkflowService::submitDocuments">submitDocuments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#58"><abbr title="App\Service\Dossier\DossierWorkflowService::validateDocuments">validateDocuments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#63"><abbr title="App\Service\Dossier\DossierWorkflowService::rejectDocuments">rejectDocuments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#68"><abbr title="App\Service\Dossier\DossierWorkflowService::approveFinancing">approveFinancing</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#73"><abbr title="App\Service\Dossier\DossierWorkflowService::rejectFinancing">rejectFinancing</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#78"><abbr title="App\Service\Dossier\DossierWorkflowService::cancel">cancel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#88"><abbr title="App\Service\Dossier\DossierWorkflowService::refreshDossierStatus">refreshDossierStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#105"><abbr title="App\Service\Dossier\DossierWorkflowService::getCompletionRate">getCompletionRate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#127"><abbr title="App\Service\Dossier\DossierWorkflowService::can">can</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#132"><abbr title="App\Service\Dossier\DossierWorkflowService::applySafe">applySafe</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#14"><abbr title="App\Service\Financing\DossierFinancingService::syncFromDossier">syncFromDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#35"><abbr title="App\Service\Financing\DossierFinancingService::onFinancingReview">onFinancingReview</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#46"><abbr title="App\Service\Financing\DossierFinancingService::onCompleted">onCompleted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#58"><abbr title="App\Service\Financing\DossierFinancingService::onCancelled">onCancelled</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#68"><abbr title="App\Service\Financing\DossierFinancingService::approve">approve</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#41"><abbr title="App\Service\ImageProcessor::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#50"><abbr title="App\Service\ImageProcessor::ensureDirectory">ensureDirectory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#61"><abbr title="App\Service\ImageProcessor::getHtmlAcceptFilter">getHtmlAcceptFilter</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#66"><abbr title="App\Service\ImageProcessor::validateFile">validateFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#83"><abbr title="App\Service\ImageProcessor::process">process</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#140"><abbr title="App\Service\ImageProcessor::cropToAspectRatio">cropToAspectRatio</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#176"><abbr title="App\Service\ImageProcessor::resize">resize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#208"><abbr title="App\Service\ImageProcessor::saveWebp">saveWebp</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#213"><abbr title="App\Service\ImageProcessor::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#240"><abbr title="App\Service\ImageProcessor::processFromPath">processFromPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TOTPService.php.html#16"><abbr title="App\Service\TOTPService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TOTPService.php.html#21"><abbr title="App\Service\TOTPService::generateSecret">generateSecret</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TOTPService.php.html#26"><abbr title="App\Service\TOTPService::getQRCode">getQRCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TOTPService.php.html#45"><abbr title="App\Service\TOTPService::verifyCode">verifyCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Utils/SluggerService.php.html#7"><abbr title="App\Service\Utils\SluggerService::slugify">slugify</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#12"><abbr title="App\Service\VehicleGalleryManager::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#22"><abbr title="App\Service\VehicleGalleryManager::uploadImages">uploadImages</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#59"><abbr title="App\Service\VehicleGalleryManager::deleteImage">deleteImage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#75"><abbr title="App\Service\VehicleGalleryManager::setFeatured">setFeatured</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#91"><abbr title="App\Service\VehicleGalleryManager::reorderPositions">reorderPositions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#105"><abbr title="App\Service\VehicleGalleryManager::ensureFeatured">ensureFeatured</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#121"><abbr title="App\Service\VehicleGalleryManager::getNextPosition">getNextPosition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#132"><abbr title="App\Service\VehicleGalleryManager::isFirstImage">isFirstImage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#11"><abbr title="App\Service\VehicleWorkflowService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#16"><abbr title="App\Service\VehicleWorkflowService::reserve">reserve</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#23"><abbr title="App\Service\VehicleWorkflowService::sell">sell</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#30"><abbr title="App\Service\VehicleWorkflowService::rent">rent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#37"><abbr title="App\Service\VehicleWorkflowService::return">return</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Dossier/DossierTypeSwitchService.php.html#13"><abbr title="App\Service\Dossier\DossierTypeSwitchService::switchType">switchType</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#14"><abbr title="App\Service\Financing\DossierFinancingService::syncFromDossier">syncFromDossier</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentTypeResolver.php.html#10"><abbr title="App\Service\Dossier\DossierDocumentTypeResolver::resolve">resolve</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#105"><abbr title="App\Service\Dossier\DossierWorkflowService::getCompletionRate">getCompletionRate</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#240"><abbr title="App\Service\ImageProcessor::processFromPath">processFromPath</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#22"><abbr title="App\Service\VehicleGalleryManager::uploadImages">uploadImages</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="CustomerCodeGenerator.php.html#63"><abbr title="App\Service\CustomerCodeGenerator::generateDossierCode">generateDossierCode</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="Dossier/DossierFinanceService.php.html#15"><abbr title="App\Service\Dossier\DossierFinanceService::approve">approve</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#88"><abbr title="App\Service\Dossier\DossierWorkflowService::refreshDossierStatus">refreshDossierStatus</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#83"><abbr title="App\Service\ImageProcessor::process">process</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#105"><abbr title="App\Service\VehicleGalleryManager::ensureFeatured">ensureFeatured</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="CustomerCodeGenerator.php.html#25"><abbr title="App\Service\CustomerCodeGenerator::generateCustomerCode">generateCustomerCode</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Dossier/DossierCreationService.php.html#18"><abbr title="App\Service\Dossier\DossierCreationService::createFromVehicle">createFromVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentUploadService.php.html#25"><abbr title="App\Service\Dossier\DossierDocumentUploadService::upload">upload</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentValidator.php.html#26"><abbr title="App\Service\Dossier\DossierDocumentValidator::isComplete">isComplete</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#50"><abbr title="App\Service\ImageProcessor::ensureDirectory">ensureDirectory</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#66"><abbr title="App\Service\ImageProcessor::validateFile">validateFile</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#140"><abbr title="App\Service\ImageProcessor::cropToAspectRatio">cropToAspectRatio</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#213"><abbr title="App\Service\ImageProcessor::delete">delete</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Dossier/DossierCreationService.php.html#54"><abbr title="App\Service\Dossier\DossierCreationService::assertAllowedType">assertAllowedType</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Dossier/DossierDocumentValidator.php.html#13"><abbr title="App\Service\Dossier\DossierDocumentValidator::getRequiredDocuments">getRequiredDocuments</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#51"><abbr title="App\Service\Dossier\DossierUploadService::delete">delete</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Dossier/DossierUploadService.php.html#60"><abbr title="App\Service\Dossier\DossierUploadService::safeDelete">safeDelete</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowAuditService.php.html#26"><abbr title="App\Service\Dossier\DossierWorkflowAuditService::log">log</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowGuard.php.html#35"><abbr title="App\Service\Dossier\DossierWorkflowGuard::assertCan">assertCan</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowGuard.php.html#59"><abbr title="App\Service\Dossier\DossierWorkflowGuard::apply">apply</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Dossier/DossierWorkflowService.php.html#132"><abbr title="App\Service\Dossier\DossierWorkflowService::applySafe">applySafe</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#35"><abbr title="App\Service\Financing\DossierFinancingService::onFinancingReview">onFinancingReview</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#46"><abbr title="App\Service\Financing\DossierFinancingService::onCompleted">onCompleted</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Financing/DossierFinancingService.php.html#68"><abbr title="App\Service\Financing\DossierFinancingService::approve">approve</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#41"><abbr title="App\Service\ImageProcessor::__construct">__construct</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ImageProcessor.php.html#176"><abbr title="App\Service\ImageProcessor::resize">resize</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="TOTPService.php.html#45"><abbr title="App\Service\TOTPService::verifyCode">verifyCode</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Utils/SluggerService.php.html#7"><abbr title="App\Service\Utils\SluggerService::slugify">slugify</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#75"><abbr title="App\Service\VehicleGalleryManager::setFeatured">setFeatured</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#91"><abbr title="App\Service\VehicleGalleryManager::reorderPositions">reorderPositions</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleGalleryManager.php.html#121"><abbr title="App\Service\VehicleGalleryManager::getNextPosition">getNextPosition</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#16"><abbr title="App\Service\VehicleWorkflowService::reserve">reserve</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#23"><abbr title="App\Service\VehicleWorkflowService::sell">sell</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#30"><abbr title="App\Service\VehicleWorkflowService::rent">rent</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleWorkflowService.php.html#37"><abbr title="App\Service\VehicleWorkflowService::return">return</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.3</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.21</a> and <a href="https://phpunit.de/">PHPUnit 12.5.15</a> at Wed May 27 11:23:40 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/billboard.pkgd.min.js?v=12.5.3" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,12,"CustomerCodeGenerator.php.html#12","App\\Service\\CustomerCodeGenerator","156"],[0,4,"Dashboard\/VehicleDashboardService.php.html#7","App\\Service\\Dashboard\\VehicleDashboardService","20"],[0,1,"DocumentAuditService.php.html#7","App\\Service\\DocumentAuditService","2"],[0,2,"Dossier\/DossierAuditService.php.html#11","App\\Service\\Dossier\\DossierAuditService","6"],[0,6,"Dossier\/DossierCreationService.php.html#12","App\\Service\\Dossier\\DossierCreationService","42"],[0,5,"Dossier\/DossierDocumentTypeResolver.php.html#8","App\\Service\\Dossier\\DossierDocumentTypeResolver","30"],[0,4,"Dossier\/DossierDocumentUploadService.php.html#11","App\\Service\\Dossier\\DossierDocumentUploadService","20"],[0,5,"Dossier\/DossierDocumentValidator.php.html#8","App\\Service\\Dossier\\DossierDocumentValidator","30"],[0,5,"Dossier\/DossierFinanceService.php.html#9","App\\Service\\Dossier\\DossierFinanceService","30"],[0,4,"Dossier\/DossierProgressService.php.html#7","App\\Service\\Dossier\\DossierProgressService","20"],[0,7,"Dossier\/DossierTypeSwitchService.php.html#8","App\\Service\\Dossier\\DossierTypeSwitchService","56"],[0,9,"Dossier\/DossierUploadService.php.html#11","App\\Service\\Dossier\\DossierUploadService","90"],[0,3,"Dossier\/DossierWorkflowAuditService.php.html#19","App\\Service\\Dossier\\DossierWorkflowAuditService","12"],[0,6,"Dossier\/DossierWorkflowGuard.php.html#17","App\\Service\\Dossier\\DossierWorkflowGuard","42"],[0,22,"Dossier\/DossierWorkflowService.php.html#11","App\\Service\\Dossier\\DossierWorkflowService","506"],[0,13,"Financing\/DossierFinancingService.php.html#8","App\\Service\\Financing\\DossierFinancingService","182"],[0,27,"ImageProcessor.php.html#15","App\\Service\\ImageProcessor","756"],[0,5,"TOTPService.php.html#12","App\\Service\\TOTPService","30"],[0,2,"Utils\/SluggerService.php.html#5","App\\Service\\Utils\\SluggerService","6"],[0,18,"VehicleGalleryManager.php.html#10","App\\Service\\VehicleGalleryManager","342"],[0,9,"VehicleWorkflowService.php.html#9","App\\Service\\VehicleWorkflowService","90"],[100,1,"PriceCalculator.php.html#5","App\\Service\\PriceCalculator","1"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"CustomerCodeGenerator.php.html#17","App\\Service\\CustomerCodeGenerator::__construct","2"],[0,3,"CustomerCodeGenerator.php.html#25","App\\Service\\CustomerCodeGenerator::generateCustomerCode","12"],[0,1,"CustomerCodeGenerator.php.html#45","App\\Service\\CustomerCodeGenerator::generateCustomerCodeFixture","2"],[0,1,"CustomerCodeGenerator.php.html#52","App\\Service\\CustomerCodeGenerator::assignCustomerCode","2"],[0,4,"CustomerCodeGenerator.php.html#63","App\\Service\\CustomerCodeGenerator::generateDossierCode","20"],[0,1,"CustomerCodeGenerator.php.html#80","App\\Service\\CustomerCodeGenerator::assignDossierCode","2"],[0,1,"CustomerCodeGenerator.php.html#91","App\\Service\\CustomerCodeGenerator::buildPrefix","2"],[0,1,"Dashboard\/VehicleDashboardService.php.html#9","App\\Service\\Dashboard\\VehicleDashboardService::__construct","2"],[0,1,"Dashboard\/VehicleDashboardService.php.html#17","App\\Service\\Dashboard\\VehicleDashboardService::getStats","2"],[0,1,"Dashboard\/VehicleDashboardService.php.html#32","App\\Service\\Dashboard\\VehicleDashboardService::getStockByModel","2"],[0,1,"Dashboard\/VehicleDashboardService.php.html#50","App\\Service\\Dashboard\\VehicleDashboardService::getUsageDistribution","2"],[0,1,"DocumentAuditService.php.html#9","App\\Service\\DocumentAuditService::logUpload","2"],[0,1,"Dossier\/DossierAuditService.php.html#13","App\\Service\\Dossier\\DossierAuditService::__construct","2"],[0,1,"Dossier\/DossierAuditService.php.html#17","App\\Service\\Dossier\\DossierAuditService::log","2"],[0,1,"Dossier\/DossierCreationService.php.html#14","App\\Service\\Dossier\\DossierCreationService::__construct","2"],[0,3,"Dossier\/DossierCreationService.php.html#18","App\\Service\\Dossier\\DossierCreationService::createFromVehicle","12"],[0,2,"Dossier\/DossierCreationService.php.html#54","App\\Service\\Dossier\\DossierCreationService::assertAllowedType","6"],[0,5,"Dossier\/DossierDocumentTypeResolver.php.html#10","App\\Service\\Dossier\\DossierDocumentTypeResolver::resolve","30"],[0,1,"Dossier\/DossierDocumentUploadService.php.html#13","App\\Service\\Dossier\\DossierDocumentUploadService::__construct","2"],[0,3,"Dossier\/DossierDocumentUploadService.php.html#25","App\\Service\\Dossier\\DossierDocumentUploadService::upload","12"],[0,2,"Dossier\/DossierDocumentValidator.php.html#13","App\\Service\\Dossier\\DossierDocumentValidator::getRequiredDocuments","6"],[0,3,"Dossier\/DossierDocumentValidator.php.html#26","App\\Service\\Dossier\\DossierDocumentValidator::isComplete","12"],[0,1,"Dossier\/DossierFinanceService.php.html#11","App\\Service\\Dossier\\DossierFinanceService::__construct","2"],[0,4,"Dossier\/DossierFinanceService.php.html#15","App\\Service\\Dossier\\DossierFinanceService::approve","20"],[0,1,"Dossier\/DossierProgressService.php.html#40","App\\Service\\Dossier\\DossierProgressService::getProgress","2"],[0,1,"Dossier\/DossierProgressService.php.html#45","App\\Service\\Dossier\\DossierProgressService::getLabel","2"],[0,1,"Dossier\/DossierProgressService.php.html#50","App\\Service\\Dossier\\DossierProgressService::getSteps","2"],[0,1,"Dossier\/DossierProgressService.php.html#55","App\\Service\\Dossier\\DossierProgressService::isCompleted","2"],[0,7,"Dossier\/DossierTypeSwitchService.php.html#13","App\\Service\\Dossier\\DossierTypeSwitchService::switchType","56"],[0,1,"Dossier\/DossierUploadService.php.html#13","App\\Service\\Dossier\\DossierUploadService::__construct","2"],[0,1,"Dossier\/DossierUploadService.php.html#23","App\\Service\\Dossier\\DossierUploadService::upload","2"],[0,2,"Dossier\/DossierUploadService.php.html#51","App\\Service\\Dossier\\DossierUploadService::delete","6"],[0,2,"Dossier\/DossierUploadService.php.html#60","App\\Service\\Dossier\\DossierUploadService::safeDelete","6"],[0,1,"Dossier\/DossierUploadService.php.html#69","App\\Service\\Dossier\\DossierUploadService::deleteFromDocument","2"],[0,1,"Dossier\/DossierUploadService.php.html#78","App\\Service\\Dossier\\DossierUploadService::deleteEntity","2"],[0,1,"Dossier\/DossierUploadService.php.html#89","App\\Service\\Dossier\\DossierUploadService::replace","2"],[0,1,"Dossier\/DossierWorkflowAuditService.php.html#21","App\\Service\\Dossier\\DossierWorkflowAuditService::__construct","2"],[0,2,"Dossier\/DossierWorkflowAuditService.php.html#26","App\\Service\\Dossier\\DossierWorkflowAuditService::log","6"],[0,1,"Dossier\/DossierWorkflowGuard.php.html#19","App\\Service\\Dossier\\DossierWorkflowGuard::__construct","2"],[0,1,"Dossier\/DossierWorkflowGuard.php.html#27","App\\Service\\Dossier\\DossierWorkflowGuard::can","2"],[0,2,"Dossier\/DossierWorkflowGuard.php.html#35","App\\Service\\Dossier\\DossierWorkflowGuard::assertCan","6"],[0,2,"Dossier\/DossierWorkflowGuard.php.html#59","App\\Service\\Dossier\\DossierWorkflowGuard::apply","6"],[0,1,"Dossier\/DossierWorkflowService.php.html#13","App\\Service\\Dossier\\DossierWorkflowService::__construct","2"],[0,1,"Dossier\/DossierWorkflowService.php.html#27","App\\Service\\Dossier\\DossierWorkflowService::apply","2"],[0,1,"Dossier\/DossierWorkflowService.php.html#43","App\\Service\\Dossier\\DossierWorkflowService::selectVehicle","2"],[0,1,"Dossier\/DossierWorkflowService.php.html#48","App\\Service\\Dossier\\DossierWorkflowService::requestDocuments","2"],[0,1,"Dossier\/DossierWorkflowService.php.html#53","App\\Service\\Dossier\\DossierWorkflowService::submitDocuments","2"],[0,1,"Dossier\/DossierWorkflowService.php.html#58","App\\Service\\Dossier\\DossierWorkflowService::validateDocuments","2"],[0,1,"Dossier\/DossierWorkflowService.php.html#63","App\\Service\\Dossier\\DossierWorkflowService::rejectDocuments","2"],[0,1,"Dossier\/DossierWorkflowService.php.html#68","App\\Service\\Dossier\\DossierWorkflowService::approveFinancing","2"],[0,1,"Dossier\/DossierWorkflowService.php.html#73","App\\Service\\Dossier\\DossierWorkflowService::rejectFinancing","2"],[0,1,"Dossier\/DossierWorkflowService.php.html#78","App\\Service\\Dossier\\DossierWorkflowService::cancel","2"],[0,4,"Dossier\/DossierWorkflowService.php.html#88","App\\Service\\Dossier\\DossierWorkflowService::refreshDossierStatus","20"],[0,5,"Dossier\/DossierWorkflowService.php.html#105","App\\Service\\Dossier\\DossierWorkflowService::getCompletionRate","30"],[0,1,"Dossier\/DossierWorkflowService.php.html#127","App\\Service\\Dossier\\DossierWorkflowService::can","2"],[0,2,"Dossier\/DossierWorkflowService.php.html#132","App\\Service\\Dossier\\DossierWorkflowService::applySafe","6"],[0,6,"Financing\/DossierFinancingService.php.html#14","App\\Service\\Financing\\DossierFinancingService::syncFromDossier","42"],[0,2,"Financing\/DossierFinancingService.php.html#35","App\\Service\\Financing\\DossierFinancingService::onFinancingReview","6"],[0,2,"Financing\/DossierFinancingService.php.html#46","App\\Service\\Financing\\DossierFinancingService::onCompleted","6"],[0,1,"Financing\/DossierFinancingService.php.html#58","App\\Service\\Financing\\DossierFinancingService::onCancelled","2"],[0,2,"Financing\/DossierFinancingService.php.html#68","App\\Service\\Financing\\DossierFinancingService::approve","6"],[0,2,"ImageProcessor.php.html#41","App\\Service\\ImageProcessor::__construct","6"],[0,3,"ImageProcessor.php.html#50","App\\Service\\ImageProcessor::ensureDirectory","12"],[0,1,"ImageProcessor.php.html#61","App\\Service\\ImageProcessor::getHtmlAcceptFilter","2"],[0,3,"ImageProcessor.php.html#66","App\\Service\\ImageProcessor::validateFile","12"],[0,4,"ImageProcessor.php.html#83","App\\Service\\ImageProcessor::process","20"],[0,3,"ImageProcessor.php.html#140","App\\Service\\ImageProcessor::cropToAspectRatio","12"],[0,2,"ImageProcessor.php.html#176","App\\Service\\ImageProcessor::resize","6"],[0,1,"ImageProcessor.php.html#208","App\\Service\\ImageProcessor::saveWebp","2"],[0,3,"ImageProcessor.php.html#213","App\\Service\\ImageProcessor::delete","12"],[0,5,"ImageProcessor.php.html#240","App\\Service\\ImageProcessor::processFromPath","30"],[0,1,"TOTPService.php.html#16","App\\Service\\TOTPService::__construct","2"],[0,1,"TOTPService.php.html#21","App\\Service\\TOTPService::generateSecret","2"],[0,1,"TOTPService.php.html#26","App\\Service\\TOTPService::getQRCode","2"],[0,2,"TOTPService.php.html#45","App\\Service\\TOTPService::verifyCode","6"],[0,2,"Utils\/SluggerService.php.html#7","App\\Service\\Utils\\SluggerService::slugify","6"],[0,1,"VehicleGalleryManager.php.html#12","App\\Service\\VehicleGalleryManager::__construct","2"],[0,5,"VehicleGalleryManager.php.html#22","App\\Service\\VehicleGalleryManager::uploadImages","30"],[0,1,"VehicleGalleryManager.php.html#59","App\\Service\\VehicleGalleryManager::deleteImage","2"],[0,2,"VehicleGalleryManager.php.html#75","App\\Service\\VehicleGalleryManager::setFeatured","6"],[0,2,"VehicleGalleryManager.php.html#91","App\\Service\\VehicleGalleryManager::reorderPositions","6"],[0,4,"VehicleGalleryManager.php.html#105","App\\Service\\VehicleGalleryManager::ensureFeatured","20"],[0,2,"VehicleGalleryManager.php.html#121","App\\Service\\VehicleGalleryManager::getNextPosition","6"],[0,1,"VehicleGalleryManager.php.html#132","App\\Service\\VehicleGalleryManager::isFirstImage","2"],[0,1,"VehicleWorkflowService.php.html#11","App\\Service\\VehicleWorkflowService::__construct","2"],[0,2,"VehicleWorkflowService.php.html#16","App\\Service\\VehicleWorkflowService::reserve","6"],[0,2,"VehicleWorkflowService.php.html#23","App\\Service\\VehicleWorkflowService::sell","6"],[0,2,"VehicleWorkflowService.php.html#30","App\\Service\\VehicleWorkflowService::rent","6"],[0,2,"VehicleWorkflowService.php.html#37","App\\Service\\VehicleWorkflowService::return","6"],[100,1,"PriceCalculator.php.html#7","App\\Service\\PriceCalculator::calculate","1"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [21,0,0,0,0,0,0,0,0,0,0,1])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [89,0,0,0,0,0,0,0,0,0,0,1])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

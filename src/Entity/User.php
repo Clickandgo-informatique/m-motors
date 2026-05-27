@@ -187,6 +187,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->favorites->contains($favorite)) {
             $this->favorites->add($favorite);
+            $favorite->setUser($this);
         }
 
         return $this;

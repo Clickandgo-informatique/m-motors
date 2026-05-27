@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/src/Controller</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/billboard.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/var/www/src</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Controller</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Admin/AdminController.php.html#8">App\Controller\Admin\AdminController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/AdminDossierDocumentController.php.html#13">App\Controller\Admin\AdminDossierDocumentController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#18">App\Controller\Admin\CustomerController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/DashboardAdminController.php.html#16">App\Controller\Admin\DashboardAdminController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/DossierWorkflowLogController.php.html#19">App\Controller\Admin\DossierWorkflowLogController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/VehicleBadgeController.php.html#14">App\Controller\Admin\VehicleBadgeController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#23">App\Controller\DossierController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#26">App\Controller\DossierDocumentController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocumentUploadController.php.html#12">App\Controller\DossierDocumentUploadController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FavoriteController.php.html#13">App\Controller\FavoriteController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomeController.php.html#10">App\Controller\HomeController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Profile/ProfileController.php.html#10">App\Controller\Profile\ProfileController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProfileController.php.html#14">App\Controller\ProfileController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RegistrationController.php.html#22">App\Controller\RegistrationController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RentalController.php.html#12">App\Controller\RentalController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SecurityController.php.html#12">App\Controller\SecurityController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwoFactorController.php.html#14">App\Controller\TwoFactorController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwoFactorSetupController.php.html#13">App\Controller\TwoFactorSetupController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleController.php.html#20">App\Controller\VehicleController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleFeaturesController.php.html#13">App\Controller\VehicleFeaturesController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#16">App\Controller\VehicleModelController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclesFilterController.php.html#13">App\Controller\VehiclesFilterController</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="DossierController.php.html#23">App\Controller\DossierController</a></td><td class="text-right">0.0%</td><td class="text-right">40</td><td class="text-right">1640</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#18">App\Controller\Admin\CustomerController</a></td><td class="text-right">0.0%</td><td class="text-right">22</td><td class="text-right">506</td></tr>
+       <tr><td><a href="VehiclesFilterController.php.html#13">App\Controller\VehiclesFilterController</a></td><td class="text-right">0.0%</td><td class="text-right">22</td><td class="text-right">506</td></tr>
+       <tr><td><a href="VehicleController.php.html#20">App\Controller\VehicleController</a></td><td class="text-right">0.0%</td><td class="text-right">17</td><td class="text-right">306</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#16">App\Controller\VehicleModelController</a></td><td class="text-right">0.0%</td><td class="text-right">17</td><td class="text-right">306</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#26">App\Controller\DossierDocumentController</a></td><td class="text-right">0.0%</td><td class="text-right">15</td><td class="text-right">240</td></tr>
+       <tr><td><a href="Admin/VehicleBadgeController.php.html#14">App\Controller\Admin\VehicleBadgeController</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="RegistrationController.php.html#22">App\Controller\RegistrationController</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="TwoFactorController.php.html#14">App\Controller\TwoFactorController</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="Admin/AdminDossierDocumentController.php.html#13">App\Controller\Admin\AdminDossierDocumentController</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="FavoriteController.php.html#13">App\Controller\FavoriteController</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="RentalController.php.html#12">App\Controller\RentalController</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="TwoFactorSetupController.php.html#13">App\Controller\TwoFactorSetupController</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="Admin/DashboardAdminController.php.html#16">App\Controller\Admin\DashboardAdminController</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="SecurityController.php.html#12">App\Controller\SecurityController</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="DossierDocumentUploadController.php.html#12">App\Controller\DossierDocumentUploadController</a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="VehicleFeaturesController.php.html#13">App\Controller\VehicleFeaturesController</a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProfileController.php.html#14">App\Controller\ProfileController</a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Admin/AdminController.php.html#11"><abbr title="App\Controller\Admin\AdminController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/AdminDossierDocumentController.php.html#16"><abbr title="App\Controller\Admin\AdminDossierDocumentController::validate">validate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/AdminDossierDocumentController.php.html#48"><abbr title="App\Controller\Admin\AdminDossierDocumentController::reject">reject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#21"><abbr title="App\Controller\Admin\CustomerController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#26"><abbr title="App\Controller\Admin\CustomerController::list">list</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#43"><abbr title="App\Controller\Admin\CustomerController::new">new</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#106"><abbr title="App\Controller\Admin\CustomerController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#131"><abbr title="App\Controller\Admin\CustomerController::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#150"><abbr title="App\Controller\Admin\CustomerController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#163"><abbr title="App\Controller\Admin\CustomerController::searchCustomer">searchCustomer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/DashboardAdminController.php.html#19"><abbr title="App\Controller\Admin\DashboardAdminController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/DashboardAdminController.php.html#57"><abbr title="App\Controller\Admin\DashboardAdminController::dashboardSearch">dashboardSearch</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/DashboardAdminController.php.html#70"><abbr title="App\Controller\Admin\DashboardAdminController::results">results</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/DossierWorkflowLogController.php.html#21"><abbr title="App\Controller\Admin\DossierWorkflowLogController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/DossierWorkflowLogController.php.html#28"><abbr title="App\Controller\Admin\DossierWorkflowLogController::list">list</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/VehicleBadgeController.php.html#17"><abbr title="App\Controller\Admin\VehicleBadgeController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/VehicleBadgeController.php.html#25"><abbr title="App\Controller\Admin\VehicleBadgeController::new">new</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/VehicleBadgeController.php.html#45"><abbr title="App\Controller\Admin\VehicleBadgeController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Admin/VehicleBadgeController.php.html#67"><abbr title="App\Controller\Admin\VehicleBadgeController::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#25"><abbr title="App\Controller\DossierController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#30"><abbr title="App\Controller\DossierController::getAppUser">getAppUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#42"><abbr title="App\Controller\DossierController::isAdminOrManager">isAdminOrManager</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#48"><abbr title="App\Controller\DossierController::createFromVehicle">createFromVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#91"><abbr title="App\Controller\DossierController::adminCreateFromVehicle">adminCreateFromVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#143"><abbr title="App\Controller\DossierController::myDossiers">myDossiers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#165"><abbr title="App\Controller\DossierController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#176"><abbr title="App\Controller\DossierController::adminList">adminList</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#201"><abbr title="App\Controller\DossierController::adminShow">adminShow</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#219"><abbr title="App\Controller\DossierController::new">new</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#253"><abbr title="App\Controller\DossierController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierController.php.html#299"><abbr title="App\Controller\DossierController::search">search</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#28"><abbr title="App\Controller\DossierDocumentController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#34"><abbr title="App\Controller\DossierDocumentController::upload">upload</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#101"><abbr title="App\Controller\DossierDocumentController::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#125"><abbr title="App\Controller\DossierDocumentController::replace">replace</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#180"><abbr title="App\Controller\DossierDocumentController::list">list</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#190"><abbr title="App\Controller\DossierDocumentController::serializeDocuments">serializeDocuments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocumentUploadController.php.html#14"><abbr title="App\Controller\DossierDocumentUploadController::upload">upload</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FavoriteController.php.html#18"><abbr title="App\Controller\FavoriteController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FavoriteController.php.html#24"><abbr title="App\Controller\FavoriteController::toggleFavorite">toggleFavorite</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FavoriteController.php.html#56"><abbr title="App\Controller\FavoriteController::isFavorite">isFavorite</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HomeController.php.html#12"><abbr title="App\Controller\HomeController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Profile/ProfileController.php.html#12"><abbr title="App\Controller\Profile\ProfileController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProfileController.php.html#16"><abbr title="App\Controller\ProfileController::twoFactor">twoFactor</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RegistrationController.php.html#26"><abbr title="App\Controller\RegistrationController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RegistrationController.php.html#35"><abbr title="App\Controller\RegistrationController::register">register</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RegistrationController.php.html#118"><abbr title="App\Controller\RegistrationController::verifyUserEmail">verifyUserEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RentalController.php.html#15"><abbr title="App\Controller\RentalController::start">start</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RentalController.php.html#34"><abbr title="App\Controller\RentalController::finish">finish</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RentalController.php.html#53"><abbr title="App\Controller\RentalController::cancel">cancel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SecurityController.php.html#17"><abbr title="App\Controller\SecurityController::login">login</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SecurityController.php.html#33"><abbr title="App\Controller\SecurityController::logout">logout</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SecurityController.php.html#42"><abbr title="App\Controller\SecurityController::connect">connect</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SecurityController.php.html#54"><abbr title="App\Controller\SecurityController::connectCheck">connectCheck</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwoFactorController.php.html#17"><abbr title="App\Controller\TwoFactorController::showVerify">showVerify</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwoFactorController.php.html#38"><abbr title="App\Controller\TwoFactorController::verify">verify</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TwoFactorSetupController.php.html#15"><abbr title="App\Controller\TwoFactorSetupController::setup">setup</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleController.php.html#26"><abbr title="App\Controller\VehicleController::new">new</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleController.php.html#57"><abbr title="App\Controller\VehicleController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleController.php.html#81"><abbr title="App\Controller\VehicleController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleController.php.html#94"><abbr title="App\Controller\VehicleController::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleController.php.html#113"><abbr title="App\Controller\VehicleController::images">images</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleController.php.html#140"><abbr title="App\Controller\VehicleController::uploadImages">uploadImages</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleController.php.html#184"><abbr title="App\Controller\VehicleController::deleteImage">deleteImage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleController.php.html#200"><abbr title="App\Controller\VehicleController::featuredImage">featuredImage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleFeaturesController.php.html#15"><abbr title="App\Controller\VehicleFeaturesController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#18"><abbr title="App\Controller\VehicleModelController::search">search</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#63"><abbr title="App\Controller\VehicleModelController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#89"><abbr title="App\Controller\VehicleModelController::new">new</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#141"><abbr title="App\Controller\VehicleModelController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#194"><abbr title="App\Controller\VehicleModelController::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclesFilterController.php.html#16"><abbr title="App\Controller\VehiclesFilterController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclesFilterController.php.html#52"><abbr title="App\Controller\VehiclesFilterController::list">list</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclesFilterController.php.html#98"><abbr title="App\Controller\VehiclesFilterController::search">search</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclesFilterController.php.html#112"><abbr title="App\Controller\VehiclesFilterController::buildFiltersContext">buildFiltersContext</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclesFilterController.php.html#134"><abbr title="App\Controller\VehiclesFilterController::normalizeFilters">normalizeFilters</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclesFilterController.php.html#169"><abbr title="App\Controller\VehiclesFilterController::hydrateFilterLabels">hydrateFilterLabels</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclesFilterController.php.html#206"><abbr title="App\Controller\VehiclesFilterController::sidebarFilters">sidebarFilters</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="VehiclesFilterController.php.html#134"><abbr title="App\Controller\VehiclesFilterController::normalizeFilters">normalizeFilters</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">13</td><td class="text-right">182</td></tr>
+       <tr><td><a href="DossierController.php.html#91"><abbr title="App\Controller\DossierController::adminCreateFromVehicle">adminCreateFromVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#34"><abbr title="App\Controller\DossierDocumentController::upload">upload</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="DossierController.php.html#253"><abbr title="App\Controller\DossierController::edit">edit</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="TwoFactorController.php.html#38"><abbr title="App\Controller\TwoFactorController::verify">verify</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="TwoFactorSetupController.php.html#15"><abbr title="App\Controller\TwoFactorSetupController::setup">setup</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#106"><abbr title="App\Controller\Admin\CustomerController::edit">edit</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="DossierController.php.html#48"><abbr title="App\Controller\DossierController::createFromVehicle">createFromVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="DossierController.php.html#219"><abbr title="App\Controller\DossierController::new">new</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="DossierController.php.html#299"><abbr title="App\Controller\DossierController::search">search</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#89"><abbr title="App\Controller\VehicleModelController::new">new</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#141"><abbr title="App\Controller\VehicleModelController::edit">edit</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#131"><abbr title="App\Controller\Admin\CustomerController::delete">delete</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="RegistrationController.php.html#35"><abbr title="App\Controller\RegistrationController::register">register</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="RegistrationController.php.html#118"><abbr title="App\Controller\RegistrationController::verifyUserEmail">verifyUserEmail</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="VehicleController.php.html#140"><abbr title="App\Controller\VehicleController::uploadImages">uploadImages</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="VehiclesFilterController.php.html#169"><abbr title="App\Controller\VehiclesFilterController::hydrateFilterLabels">hydrateFilterLabels</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="Admin/AdminDossierDocumentController.php.html#16"><abbr title="App\Controller\Admin\AdminDossierDocumentController::validate">validate</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Admin/AdminDossierDocumentController.php.html#48"><abbr title="App\Controller\Admin\AdminDossierDocumentController::reject">reject</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#26"><abbr title="App\Controller\Admin\CustomerController::list">list</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#43"><abbr title="App\Controller\Admin\CustomerController::new">new</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#150"><abbr title="App\Controller\Admin\CustomerController::show">show</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Admin/CustomerController.php.html#163"><abbr title="App\Controller\Admin\CustomerController::searchCustomer">searchCustomer</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Admin/DashboardAdminController.php.html#70"><abbr title="App\Controller\Admin\DashboardAdminController::results">results</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Admin/VehicleBadgeController.php.html#25"><abbr title="App\Controller\Admin\VehicleBadgeController::new">new</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Admin/VehicleBadgeController.php.html#45"><abbr title="App\Controller\Admin\VehicleBadgeController::edit">edit</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#125"><abbr title="App\Controller\DossierDocumentController::replace">replace</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="DossierDocumentUploadController.php.html#14"><abbr title="App\Controller\DossierDocumentUploadController::upload">upload</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="FavoriteController.php.html#24"><abbr title="App\Controller\FavoriteController::toggleFavorite">toggleFavorite</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TwoFactorController.php.html#17"><abbr title="App\Controller\TwoFactorController::showVerify">showVerify</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="VehicleController.php.html#26"><abbr title="App\Controller\VehicleController::new">new</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="VehicleController.php.html#57"><abbr title="App\Controller\VehicleController::edit">edit</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="VehicleFeaturesController.php.html#15"><abbr title="App\Controller\VehicleFeaturesController::edit">edit</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#194"><abbr title="App\Controller\VehicleModelController::delete">delete</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Admin/VehicleBadgeController.php.html#67"><abbr title="App\Controller\Admin\VehicleBadgeController::delete">delete</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="DossierController.php.html#30"><abbr title="App\Controller\DossierController::getAppUser">getAppUser</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="DossierController.php.html#42"><abbr title="App\Controller\DossierController::isAdminOrManager">isAdminOrManager</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="DossierController.php.html#143"><abbr title="App\Controller\DossierController::myDossiers">myDossiers</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="DossierController.php.html#176"><abbr title="App\Controller\DossierController::adminList">adminList</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="DossierController.php.html#201"><abbr title="App\Controller\DossierController::adminShow">adminShow</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="DossierDocumentController.php.html#101"><abbr title="App\Controller\DossierDocumentController::delete">delete</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FavoriteController.php.html#56"><abbr title="App\Controller\FavoriteController::isFavorite">isFavorite</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProfileController.php.html#16"><abbr title="App\Controller\ProfileController::twoFactor">twoFactor</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RentalController.php.html#15"><abbr title="App\Controller\RentalController::start">start</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RentalController.php.html#34"><abbr title="App\Controller\RentalController::finish">finish</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RentalController.php.html#53"><abbr title="App\Controller\RentalController::cancel">cancel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SecurityController.php.html#17"><abbr title="App\Controller\SecurityController::login">login</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleController.php.html#94"><abbr title="App\Controller\VehicleController::delete">delete</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleController.php.html#113"><abbr title="App\Controller\VehicleController::images">images</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#18"><abbr title="App\Controller\VehicleModelController::search">search</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleModelController.php.html#63"><abbr title="App\Controller\VehicleModelController::index">index</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.3</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.21</a> and <a href="https://phpunit.de/">PHPUnit 12.5.15</a> at Wed May 27 10:59:02 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/billboard.pkgd.min.js?v=12.5.3" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,1,"Admin\/AdminController.php.html#8","App\\Controller\\Admin\\AdminController","2"],[0,6,"Admin\/AdminDossierDocumentController.php.html#13","App\\Controller\\Admin\\AdminDossierDocumentController","42"],[0,22,"Admin\/CustomerController.php.html#18","App\\Controller\\Admin\\CustomerController","506"],[0,5,"Admin\/DashboardAdminController.php.html#16","App\\Controller\\Admin\\DashboardAdminController","30"],[0,2,"Admin\/DossierWorkflowLogController.php.html#19","App\\Controller\\Admin\\DossierWorkflowLogController","6"],[0,9,"Admin\/VehicleBadgeController.php.html#14","App\\Controller\\Admin\\VehicleBadgeController","90"],[0,40,"DossierController.php.html#23","App\\Controller\\DossierController","1640"],[0,15,"DossierDocumentController.php.html#26","App\\Controller\\DossierDocumentController","240"],[0,3,"DossierDocumentUploadController.php.html#12","App\\Controller\\DossierDocumentUploadController","12"],[0,6,"FavoriteController.php.html#13","App\\Controller\\FavoriteController","42"],[0,1,"HomeController.php.html#10","App\\Controller\\HomeController","2"],[0,1,"Profile\/ProfileController.php.html#10","App\\Controller\\Profile\\ProfileController","2"],[0,2,"ProfileController.php.html#14","App\\Controller\\ProfileController","6"],[0,9,"RegistrationController.php.html#22","App\\Controller\\RegistrationController","90"],[0,6,"RentalController.php.html#12","App\\Controller\\RentalController","42"],[0,5,"SecurityController.php.html#12","App\\Controller\\SecurityController","30"],[0,9,"TwoFactorController.php.html#14","App\\Controller\\TwoFactorController","90"],[0,6,"TwoFactorSetupController.php.html#13","App\\Controller\\TwoFactorSetupController","42"],[0,17,"VehicleController.php.html#20","App\\Controller\\VehicleController","306"],[0,3,"VehicleFeaturesController.php.html#13","App\\Controller\\VehicleFeaturesController","12"],[0,17,"VehicleModelController.php.html#16","App\\Controller\\VehicleModelController","306"],[0,22,"VehiclesFilterController.php.html#13","App\\Controller\\VehiclesFilterController","506"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"Admin\/AdminController.php.html#11","App\\Controller\\Admin\\AdminController::index","2"],[0,3,"Admin\/AdminDossierDocumentController.php.html#16","App\\Controller\\Admin\\AdminDossierDocumentController::validate","12"],[0,3,"Admin\/AdminDossierDocumentController.php.html#48","App\\Controller\\Admin\\AdminDossierDocumentController::reject","12"],[0,1,"Admin\/CustomerController.php.html#21","App\\Controller\\Admin\\CustomerController::__construct","2"],[0,3,"Admin\/CustomerController.php.html#26","App\\Controller\\Admin\\CustomerController::list","12"],[0,3,"Admin\/CustomerController.php.html#43","App\\Controller\\Admin\\CustomerController::new","12"],[0,5,"Admin\/CustomerController.php.html#106","App\\Controller\\Admin\\CustomerController::edit","30"],[0,4,"Admin\/CustomerController.php.html#131","App\\Controller\\Admin\\CustomerController::delete","20"],[0,3,"Admin\/CustomerController.php.html#150","App\\Controller\\Admin\\CustomerController::show","12"],[0,3,"Admin\/CustomerController.php.html#163","App\\Controller\\Admin\\CustomerController::searchCustomer","12"],[0,1,"Admin\/DashboardAdminController.php.html#19","App\\Controller\\Admin\\DashboardAdminController::index","2"],[0,1,"Admin\/DashboardAdminController.php.html#57","App\\Controller\\Admin\\DashboardAdminController::dashboardSearch","2"],[0,3,"Admin\/DashboardAdminController.php.html#70","App\\Controller\\Admin\\DashboardAdminController::results","12"],[0,1,"Admin\/DossierWorkflowLogController.php.html#21","App\\Controller\\Admin\\DossierWorkflowLogController::__construct","2"],[0,1,"Admin\/DossierWorkflowLogController.php.html#28","App\\Controller\\Admin\\DossierWorkflowLogController::list","2"],[0,1,"Admin\/VehicleBadgeController.php.html#17","App\\Controller\\Admin\\VehicleBadgeController::index","2"],[0,3,"Admin\/VehicleBadgeController.php.html#25","App\\Controller\\Admin\\VehicleBadgeController::new","12"],[0,3,"Admin\/VehicleBadgeController.php.html#45","App\\Controller\\Admin\\VehicleBadgeController::edit","12"],[0,2,"Admin\/VehicleBadgeController.php.html#67","App\\Controller\\Admin\\VehicleBadgeController::delete","6"],[0,1,"DossierController.php.html#25","App\\Controller\\DossierController::__construct","2"],[0,2,"DossierController.php.html#30","App\\Controller\\DossierController::getAppUser","6"],[0,2,"DossierController.php.html#42","App\\Controller\\DossierController::isAdminOrManager","6"],[0,5,"DossierController.php.html#48","App\\Controller\\DossierController::createFromVehicle","30"],[0,7,"DossierController.php.html#91","App\\Controller\\DossierController::adminCreateFromVehicle","56"],[0,2,"DossierController.php.html#143","App\\Controller\\DossierController::myDossiers","6"],[0,1,"DossierController.php.html#165","App\\Controller\\DossierController::show","2"],[0,2,"DossierController.php.html#176","App\\Controller\\DossierController::adminList","6"],[0,2,"DossierController.php.html#201","App\\Controller\\DossierController::adminShow","6"],[0,5,"DossierController.php.html#219","App\\Controller\\DossierController::new","30"],[0,6,"DossierController.php.html#253","App\\Controller\\DossierController::edit","42"],[0,5,"DossierController.php.html#299","App\\Controller\\DossierController::search","30"],[0,1,"DossierDocumentController.php.html#28","App\\Controller\\DossierDocumentController::__construct","2"],[0,7,"DossierDocumentController.php.html#34","App\\Controller\\DossierDocumentController::upload","56"],[0,2,"DossierDocumentController.php.html#101","App\\Controller\\DossierDocumentController::delete","6"],[0,3,"DossierDocumentController.php.html#125","App\\Controller\\DossierDocumentController::replace","12"],[0,1,"DossierDocumentController.php.html#180","App\\Controller\\DossierDocumentController::list","2"],[0,1,"DossierDocumentController.php.html#190","App\\Controller\\DossierDocumentController::serializeDocuments","2"],[0,3,"DossierDocumentUploadController.php.html#14","App\\Controller\\DossierDocumentUploadController::upload","12"],[0,1,"FavoriteController.php.html#18","App\\Controller\\FavoriteController::__construct","2"],[0,3,"FavoriteController.php.html#24","App\\Controller\\FavoriteController::toggleFavorite","12"],[0,2,"FavoriteController.php.html#56","App\\Controller\\FavoriteController::isFavorite","6"],[0,1,"HomeController.php.html#12","App\\Controller\\HomeController::index","2"],[0,1,"Profile\/ProfileController.php.html#12","App\\Controller\\Profile\\ProfileController::index","2"],[0,2,"ProfileController.php.html#16","App\\Controller\\ProfileController::twoFactor","6"],[0,1,"RegistrationController.php.html#26","App\\Controller\\RegistrationController::__construct","2"],[0,4,"RegistrationController.php.html#35","App\\Controller\\RegistrationController::register","20"],[0,4,"RegistrationController.php.html#118","App\\Controller\\RegistrationController::verifyUserEmail","20"],[0,2,"RentalController.php.html#15","App\\Controller\\RentalController::start","6"],[0,2,"RentalController.php.html#34","App\\Controller\\RentalController::finish","6"],[0,2,"RentalController.php.html#53","App\\Controller\\RentalController::cancel","6"],[0,2,"SecurityController.php.html#17","App\\Controller\\SecurityController::login","6"],[0,1,"SecurityController.php.html#33","App\\Controller\\SecurityController::logout","2"],[0,1,"SecurityController.php.html#42","App\\Controller\\SecurityController::connect","2"],[0,1,"SecurityController.php.html#54","App\\Controller\\SecurityController::connectCheck","2"],[0,3,"TwoFactorController.php.html#17","App\\Controller\\TwoFactorController::showVerify","12"],[0,6,"TwoFactorController.php.html#38","App\\Controller\\TwoFactorController::verify","42"],[0,6,"TwoFactorSetupController.php.html#15","App\\Controller\\TwoFactorSetupController::setup","42"],[0,3,"VehicleController.php.html#26","App\\Controller\\VehicleController::new","12"],[0,3,"VehicleController.php.html#57","App\\Controller\\VehicleController::edit","12"],[0,1,"VehicleController.php.html#81","App\\Controller\\VehicleController::show","2"],[0,2,"VehicleController.php.html#94","App\\Controller\\VehicleController::delete","6"],[0,2,"VehicleController.php.html#113","App\\Controller\\VehicleController::images","6"],[0,4,"VehicleController.php.html#140","App\\Controller\\VehicleController::uploadImages","20"],[0,1,"VehicleController.php.html#184","App\\Controller\\VehicleController::deleteImage","2"],[0,1,"VehicleController.php.html#200","App\\Controller\\VehicleController::featuredImage","2"],[0,3,"VehicleFeaturesController.php.html#15","App\\Controller\\VehicleFeaturesController::edit","12"],[0,2,"VehicleModelController.php.html#18","App\\Controller\\VehicleModelController::search","6"],[0,2,"VehicleModelController.php.html#63","App\\Controller\\VehicleModelController::index","6"],[0,5,"VehicleModelController.php.html#89","App\\Controller\\VehicleModelController::new","30"],[0,5,"VehicleModelController.php.html#141","App\\Controller\\VehicleModelController::edit","30"],[0,3,"VehicleModelController.php.html#194","App\\Controller\\VehicleModelController::delete","12"],[0,1,"VehiclesFilterController.php.html#16","App\\Controller\\VehiclesFilterController::index","2"],[0,1,"VehiclesFilterController.php.html#52","App\\Controller\\VehiclesFilterController::list","2"],[0,1,"VehiclesFilterController.php.html#98","App\\Controller\\VehiclesFilterController::search","2"],[0,1,"VehiclesFilterController.php.html#112","App\\Controller\\VehiclesFilterController::buildFiltersContext","2"],[0,13,"VehiclesFilterController.php.html#134","App\\Controller\\VehiclesFilterController::normalizeFilters","182"],[0,4,"VehiclesFilterController.php.html#169","App\\Controller\\VehiclesFilterController::hydrateFilterLabels","20"],[0,1,"VehiclesFilterController.php.html#206","App\\Controller\\VehiclesFilterController::sidebarFilters","2"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [22,0,0,0,0,0,0,0,0,0,0,0])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [78,0,0,0,0,0,0,0,0,0,0,0])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

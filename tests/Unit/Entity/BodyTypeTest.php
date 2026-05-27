@@ -19,6 +19,13 @@ class BodyTypeTest extends KernelTestCase
         $this->validator = static::getContainer()->get(ValidatorInterface::class);
     }
 
+    //Test pour vérifier que l'id est bien null par défaut
+    public function testIdIsNullByDefault(): void
+{
+    $bodyType = new BodyType();
+    $this->assertNull($bodyType->getId());
+}
+
     public function testBodyTypeCreation(): void
     {
         $bodyType = new BodyType();
@@ -51,6 +58,7 @@ class BodyTypeTest extends KernelTestCase
         $this->assertCount(2, $errors);
     }
 
+    //Test sur la longueur trop courte du champ "name"
     public function testNameIsTooShort(): void
     {
         $bodyType = new BodyType();
@@ -59,6 +67,8 @@ class BodyTypeTest extends KernelTestCase
         $errors = $this->validator->validate($bodyType);
         $this->assertGreaterThan(0, count($errors));
     }
+
+    //Test sur la longueur trop longue du champ "name"
     public function testNameIsTooLong(): void
     {
         $bodyType = new BodyType();
@@ -68,7 +78,7 @@ class BodyTypeTest extends KernelTestCase
         $this->assertGreaterThan(0, count($errors));
     }
 
-    
+
 
     //Tests concernant la collection vehicleModel
 
@@ -128,5 +138,67 @@ class BodyTypeTest extends KernelTestCase
         //On vérifie la relation inverse
         $this->assertNull($vehicleModel->getBodyType());
     }
-}
 
+    //test concernant le slug
+    public function testSetAndGetSlug(): void
+    {
+        $bodyType = new BodyType();
+        $bodyType->setSlug('my-slug');
+
+        $this->assertSame('my-slug', $bodyType->getSlug());
+    }
+
+
+    //test concernant la position
+    public function testSetAndGetPosition(): void
+    {
+        $bodyType = new BodyType();
+        $bodyType->setPosition(5);
+
+        $this->assertSame(5, $bodyType->getPosition());
+    }
+
+    //test concernant l'icône
+    public function testSetAndGetIcon(): void
+    {
+        $bodyType = new BodyType();
+        $bodyType->setIcon('car.png');
+
+        $this->assertSame('car.png', $bodyType->getIcon());
+    }
+
+    //Test __toString() quand name est null
+    public function testToStringReturnsEmptyStringWhenNameIsNull(): void
+    {
+        $bodyType = new BodyType();
+        $this->assertSame('', (string) $bodyType);
+    }
+    //Test addVehicleModel quand le modèle a déjà un BodyType
+    public function testAddVehicleModelWhenAlreadyAssigned(): void
+    {
+        $bodyType1 = new BodyType();
+        $bodyType2 = new BodyType();
+        $vehicleModel = new VehicleModel();
+
+        $bodyType1->addVehicleModel($vehicleModel);
+
+        // On réassigne
+        $bodyType2->addVehicleModel($vehicleModel);
+
+        $this->assertFalse($bodyType1->getVehicleModels()->contains($vehicleModel));
+        $this->assertTrue($bodyType2->getVehicleModels()->contains($vehicleModel));
+        $this->assertSame($bodyType2, $vehicleModel->getBodyType());
+    }
+
+    //Tester removeVehicleModel quand il n’est pas dans la collection
+    public function testRemoveVehicleModelWhenNotPresent(): void
+    {
+        $bodyType = new BodyType();
+        $vehicleModel = new VehicleModel();
+
+        // Ne doit pas planter
+        $bodyType->removeVehicleModel($vehicleModel);
+
+        $this->assertCount(0, $bodyType->getVehicleModels());
+    }
+}

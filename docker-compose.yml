@@ -19,7 +19,9 @@ services:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
       POSTGRES_DB: app
-      XDEBUG_MODE: off
+      XDEBUG_MODE: develop,debug,coverage
+      DATABASE_URL: "postgresql://app:app@db:5432/app?serverVersion=16&charset=utf8"
+      DATABASE_URL_TEST: "postgresql://app:app@db:5432/m_motors_test?serverVersion=16&charset=utf8"
 
   nginx:
     image: nginx:latest

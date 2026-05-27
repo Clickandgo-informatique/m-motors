@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/src/Entity</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/billboard.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/var/www/src</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Entity</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Customer.php.html#13">App\Entity\Customer</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#14">App\Entity\Dossier</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#9">App\Entity\DossierAudit</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#12">App\Entity\DossierDocument</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#17">App\Entity\DossierWorkflowLog</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#10">App\Entity\Feature</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#10">App\Entity\FeatureCategory</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#9">App\Entity\Financing</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FuelType.php.html#11">App\Entity\FuelType</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#10">App\Entity\Image</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Maintenance.php.html#9">App\Entity\Maintenance</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#11">App\Entity\Model</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Rental.php.html#8">App\Entity\Rental</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Sale.php.html#8">App\Entity\Sale</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#12">App\Entity\Supplier</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Variant.php.html#11">App\Entity\Variant</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#12">App\Entity\VehicleBadge</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Traits/TimestampableTrait.php.html#7">App\Entity\Traits\TimestampableTrait</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#15">App\Entity\Vehicle</a></td><td class="text-right">5%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#11">App\Entity\VehicleModel</a></td><td class="text-right">13%</td></tr>
+       <tr><td><a href="User.php.html#15">App\Entity\User</a></td><td class="text-right">23%</td></tr>
+       <tr><td><a href="Brand.php.html#11">App\Entity\Brand</a></td><td class="text-right">56%</td></tr>
+       <tr><td><a href="GearType.php.html#11">App\Entity\GearType</a></td><td class="text-right">58%</td></tr>
+       <tr><td><a href="Favorite.php.html#8">App\Entity\Favorite</a></td><td class="text-right">66%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Vehicle.php.html#15">App\Entity\Vehicle</a></td><td class="text-right">5.9%</td><td class="text-right">83</td><td class="text-right">5826</td></tr>
+       <tr><td><a href="Dossier.php.html#14">App\Entity\Dossier</a></td><td class="text-right">0.0%</td><td class="text-right">44</td><td class="text-right">1980</td></tr>
+       <tr><td><a href="VehicleModel.php.html#11">App\Entity\VehicleModel</a></td><td class="text-right">13.5%</td><td class="text-right">50</td><td class="text-right">1667</td></tr>
+       <tr><td><a href="Customer.php.html#13">App\Entity\Customer</a></td><td class="text-right">0.0%</td><td class="text-right">36</td><td class="text-right">1332</td></tr>
+       <tr><td><a href="Supplier.php.html#12">App\Entity\Supplier</a></td><td class="text-right">0.0%</td><td class="text-right">36</td><td class="text-right">1332</td></tr>
+       <tr><td><a href="Financing.php.html#9">App\Entity\Financing</a></td><td class="text-right">0.0%</td><td class="text-right">24</td><td class="text-right">600</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#12">App\Entity\VehicleBadge</a></td><td class="text-right">0.0%</td><td class="text-right">22</td><td class="text-right">506</td></tr>
+       <tr><td><a href="User.php.html#15">App\Entity\User</a></td><td class="text-right">23.9%</td><td class="text-right">31</td><td class="text-right">454</td></tr>
+       <tr><td><a href="Model.php.html#11">App\Entity\Model</a></td><td class="text-right">0.0%</td><td class="text-right">18</td><td class="text-right">342</td></tr>
+       <tr><td><a href="DossierDocument.php.html#12">App\Entity\DossierDocument</a></td><td class="text-right">0.0%</td><td class="text-right">14</td><td class="text-right">210</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#10">App\Entity\FeatureCategory</a></td><td class="text-right">0.0%</td><td class="text-right">14</td><td class="text-right">210</td></tr>
+       <tr><td><a href="Feature.php.html#10">App\Entity\Feature</a></td><td class="text-right">0.0%</td><td class="text-right">13</td><td class="text-right">182</td></tr>
+       <tr><td><a href="Variant.php.html#11">App\Entity\Variant</a></td><td class="text-right">0.0%</td><td class="text-right">12</td><td class="text-right">156</td></tr>
+       <tr><td><a href="FuelType.php.html#11">App\Entity\FuelType</a></td><td class="text-right">0.0%</td><td class="text-right">10</td><td class="text-right">110</td></tr>
+       <tr><td><a href="Brand.php.html#11">App\Entity\Brand</a></td><td class="text-right">56.0%</td><td class="text-right">17</td><td class="text-right">41</td></tr>
+       <tr><td><a href="GearType.php.html#11">App\Entity\GearType</a></td><td class="text-right">58.3%</td><td class="text-right">16</td><td class="text-right">34</td></tr>
+       <tr><td><a href="Traits/TimestampableTrait.php.html#7">App\Entity\Traits\TimestampableTrait</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Brand.php.html#35"><abbr title="App\Entity\Brand::__toString">__toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Brand.php.html#46"><abbr title="App\Entity\Brand::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Brand.php.html#63"><abbr title="App\Entity\Brand::getModels">getModels</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Brand.php.html#68"><abbr title="App\Entity\Brand::addModel">addModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Brand.php.html#78"><abbr title="App\Entity\Brand::removeModel">removeModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#118"><abbr title="App\Entity\Customer::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#123"><abbr title="App\Entity\Customer::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#128"><abbr title="App\Entity\Customer::getCustomerCode">getCustomerCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#133"><abbr title="App\Entity\Customer::setCustomerCode">setCustomerCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#139"><abbr title="App\Entity\Customer::getFirstName">getFirstName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#144"><abbr title="App\Entity\Customer::setFirstName">setFirstName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#150"><abbr title="App\Entity\Customer::getLastName">getLastName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#155"><abbr title="App\Entity\Customer::setLastName">setLastName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#161"><abbr title="App\Entity\Customer::getEmail">getEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#166"><abbr title="App\Entity\Customer::setEmail">setEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#172"><abbr title="App\Entity\Customer::getPhoneNumber1">getPhoneNumber1</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#177"><abbr title="App\Entity\Customer::setPhoneNumber1">setPhoneNumber1</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#183"><abbr title="App\Entity\Customer::getPhoneNumber2">getPhoneNumber2</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#188"><abbr title="App\Entity\Customer::setPhoneNumber2">setPhoneNumber2</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#194"><abbr title="App\Entity\Customer::getUser">getUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#199"><abbr title="App\Entity\Customer::setUser">setUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#210"><abbr title="App\Entity\Customer::getDossiers">getDossiers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#215"><abbr title="App\Entity\Customer::addDossier">addDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#225"><abbr title="App\Entity\Customer::removeDossier">removeDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#231"><abbr title="App\Entity\Customer::getAddress">getAddress</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#236"><abbr title="App\Entity\Customer::setAddress">setAddress</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#242"><abbr title="App\Entity\Customer::getZipCode">getZipCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#247"><abbr title="App\Entity\Customer::setZipCode">setZipCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#253"><abbr title="App\Entity\Customer::getCity">getCity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#258"><abbr title="App\Entity\Customer::setCity">setCity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#264"><abbr title="App\Entity\Customer::getAddressDetails">getAddressDetails</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#269"><abbr title="App\Entity\Customer::setAddressDetails">setAddressDetails</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#275"><abbr title="App\Entity\Customer::getCountry">getCountry</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#280"><abbr title="App\Entity\Customer::setCountry">setCountry</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Customer.php.html#287"><abbr title="App\Entity\Customer::__toString">__toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#82"><abbr title="App\Entity\Dossier::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#87"><abbr title="App\Entity\Dossier::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#92"><abbr title="App\Entity\Dossier::getCustomer">getCustomer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#97"><abbr title="App\Entity\Dossier::setCustomer">setCustomer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#103"><abbr title="App\Entity\Dossier::getVehicle">getVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#108"><abbr title="App\Entity\Dossier::setVehicle">setVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#114"><abbr title="App\Entity\Dossier::getType">getType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#119"><abbr title="App\Entity\Dossier::setType">setType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#125"><abbr title="App\Entity\Dossier::getStatus">getStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#130"><abbr title="App\Entity\Dossier::setStatus">setStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#136"><abbr title="App\Entity\Dossier::getDossierCode">getDossierCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#141"><abbr title="App\Entity\Dossier::setDossierCode">setDossierCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#147"><abbr title="App\Entity\Dossier::getAssignedTo">getAssignedTo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#152"><abbr title="App\Entity\Dossier::getValidatedBy">getValidatedBy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#157"><abbr title="App\Entity\Dossier::getCreatedBy">getCreatedBy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#162"><abbr title="App\Entity\Dossier::setCreatedBy">setCreatedBy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#171"><abbr title="App\Entity\Dossier::getFinancing">getFinancing</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#176"><abbr title="App\Entity\Dossier::setFinancing">setFinancing</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#187"><abbr title="App\Entity\Dossier::getDocuments">getDocuments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#192"><abbr title="App\Entity\Dossier::getCompletedAt">getCompletedAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#197"><abbr title="App\Entity\Dossier::setCompletedAt">setCompletedAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#203"><abbr title="App\Entity\Dossier::getCancelledAt">getCancelledAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#208"><abbr title="App\Entity\Dossier::setCancelledAt">setCancelledAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#217"><abbr title="App\Entity\Dossier::getStatusLabel">getStatusLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#234"><abbr title="App\Entity\Dossier::getStatusBadge">getStatusBadge</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dossier.php.html#251"><abbr title="App\Entity\Dossier::hasFinancing">hasFinancing</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#63"><abbr title="App\Entity\DossierAudit::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#68"><abbr title="App\Entity\DossierAudit::getDossier">getDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#73"><abbr title="App\Entity\DossierAudit::setDossier">setDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#79"><abbr title="App\Entity\DossierAudit::getUser">getUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#84"><abbr title="App\Entity\DossierAudit::setUser">setUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#90"><abbr title="App\Entity\DossierAudit::getAction">getAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#95"><abbr title="App\Entity\DossierAudit::setAction">setAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#101"><abbr title="App\Entity\DossierAudit::getMessage">getMessage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#106"><abbr title="App\Entity\DossierAudit::setMessage">setMessage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#112"><abbr title="App\Entity\DossierAudit::getDocument">getDocument</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierAudit.php.html#117"><abbr title="App\Entity\DossierAudit::setDocument">setDocument</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#48"><abbr title="App\Entity\DossierDocument::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#53"><abbr title="App\Entity\DossierDocument::getDossier">getDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#58"><abbr title="App\Entity\DossierDocument::setDossier">setDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#64"><abbr title="App\Entity\DossierDocument::getDocumentType">getDocumentType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#69"><abbr title="App\Entity\DossierDocument::setDocumentType">setDocumentType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#75"><abbr title="App\Entity\DossierDocument::getOriginalName">getOriginalName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#80"><abbr title="App\Entity\DossierDocument::setOriginalName">setOriginalName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#86"><abbr title="App\Entity\DossierDocument::getFileName">getFileName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#91"><abbr title="App\Entity\DossierDocument::setFileName">setFileName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#97"><abbr title="App\Entity\DossierDocument::getPath">getPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#102"><abbr title="App\Entity\DossierDocument::setPath">setPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#108"><abbr title="App\Entity\DossierDocument::getStatus">getStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierDocument.php.html#113"><abbr title="App\Entity\DossierDocument::setStatus">setStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#64"><abbr title="App\Entity\DossierWorkflowLog::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#73"><abbr title="App\Entity\DossierWorkflowLog::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#78"><abbr title="App\Entity\DossierWorkflowLog::getDossier">getDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#83"><abbr title="App\Entity\DossierWorkflowLog::setDossier">setDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#89"><abbr title="App\Entity\DossierWorkflowLog::getTransition">getTransition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#94"><abbr title="App\Entity\DossierWorkflowLog::setTransition">setTransition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#100"><abbr title="App\Entity\DossierWorkflowLog::getFromStatus">getFromStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#105"><abbr title="App\Entity\DossierWorkflowLog::setFromStatus">setFromStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#111"><abbr title="App\Entity\DossierWorkflowLog::getToStatus">getToStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#116"><abbr title="App\Entity\DossierWorkflowLog::setToStatus">setToStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#122"><abbr title="App\Entity\DossierWorkflowLog::getUserId">getUserId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#127"><abbr title="App\Entity\DossierWorkflowLog::setUserId">setUserId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#133"><abbr title="App\Entity\DossierWorkflowLog::getCreatedAt">getCreatedAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DossierWorkflowLog.php.html#138"><abbr title="App\Entity\DossierWorkflowLog::setCreatedAt">setCreatedAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Favorite.php.html#45"><abbr title="App\Entity\Favorite::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Favorite.php.html#61"><abbr title="App\Entity\Favorite::getVehicle">getVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Favorite.php.html#71"><abbr title="App\Entity\Favorite::getCreatedAt">getCreatedAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#35"><abbr title="App\Entity\Feature::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#44"><abbr title="App\Entity\Feature::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#49"><abbr title="App\Entity\Feature::getCode">getCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#54"><abbr title="App\Entity\Feature::setCode">setCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#60"><abbr title="App\Entity\Feature::getLabel">getLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#65"><abbr title="App\Entity\Feature::setLabel">setLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#71"><abbr title="App\Entity\Feature::getCategory">getCategory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#76"><abbr title="App\Entity\Feature::setCategory">setCategory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#85"><abbr title="App\Entity\Feature::getVehicles">getVehicles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#94"><abbr title="App\Entity\Feature::generateCode">generateCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Feature.php.html#102"><abbr title="App\Entity\Feature::slugify">slugify</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#34"><abbr title="App\Entity\FeatureCategory::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#43"><abbr title="App\Entity\FeatureCategory::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#48"><abbr title="App\Entity\FeatureCategory::getCode">getCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#53"><abbr title="App\Entity\FeatureCategory::setCode">setCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#59"><abbr title="App\Entity\FeatureCategory::getLabel">getLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#64"><abbr title="App\Entity\FeatureCategory::setLabel">setLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#70"><abbr title="App\Entity\FeatureCategory::getPosition">getPosition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#75"><abbr title="App\Entity\FeatureCategory::setPosition">setPosition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#84"><abbr title="App\Entity\FeatureCategory::getFeatures">getFeatures</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#89"><abbr title="App\Entity\FeatureCategory::addFeature">addFeature</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#99"><abbr title="App\Entity\FeatureCategory::removeFeature">removeFeature</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#82"><abbr title="App\Entity\Financing::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#87"><abbr title="App\Entity\Financing::getDossier">getDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#92"><abbr title="App\Entity\Financing::setDossier">setDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#99"><abbr title="App\Entity\Financing::getStatus">getStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#104"><abbr title="App\Entity\Financing::setStatus">setStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#111"><abbr title="App\Entity\Financing::getType">getType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#116"><abbr title="App\Entity\Financing::setType">setType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#128"><abbr title="App\Entity\Financing::getLeasingType">getLeasingType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#133"><abbr title="App\Entity\Financing::setLeasingType">setLeasingType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#140"><abbr title="App\Entity\Financing::getAmount">getAmount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#145"><abbr title="App\Entity\Financing::setAmount">setAmount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#152"><abbr title="App\Entity\Financing::getDurationMonths">getDurationMonths</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#157"><abbr title="App\Entity\Financing::setDurationMonths">setDurationMonths</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#164"><abbr title="App\Entity\Financing::getMonthlyPayment">getMonthlyPayment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#169"><abbr title="App\Entity\Financing::setMonthlyPayment">setMonthlyPayment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#176"><abbr title="App\Entity\Financing::getDecidedAt">getDecidedAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#181"><abbr title="App\Entity\Financing::setDecidedAt">setDecidedAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#191"><abbr title="App\Entity\Financing::isLeasing">isLeasing</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#196"><abbr title="App\Entity\Financing::isCash">isCash</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#201"><abbr title="App\Entity\Financing::isCredit">isCredit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Financing.php.html#206"><abbr title="App\Entity\Financing::validateConsistency">validateConsistency</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FuelType.php.html#42"><abbr title="App\Entity\FuelType::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FuelType.php.html#53"><abbr title="App\Entity\FuelType::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FuelType.php.html#58"><abbr title="App\Entity\FuelType::getName">getName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FuelType.php.html#63"><abbr title="App\Entity\FuelType::setName">setName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FuelType.php.html#72"><abbr title="App\Entity\FuelType::getVehicles">getVehicles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FuelType.php.html#77"><abbr title="App\Entity\FuelType::addVehicle">addVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FuelType.php.html#87"><abbr title="App\Entity\FuelType::removeVehicle">removeVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GearType.php.html#61"><abbr title="App\Entity\GearType::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GearType.php.html#83"><abbr title="App\Entity\GearType::getVehicles">getVehicles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GearType.php.html#88"><abbr title="App\Entity\GearType::addVehicle">addVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GearType.php.html#98"><abbr title="App\Entity\GearType::removeVehicle">removeVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#55"><abbr title="App\Entity\Image::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#60"><abbr title="App\Entity\Image::getVehicle">getVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#65"><abbr title="App\Entity\Image::setVehicle">setVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#71"><abbr title="App\Entity\Image::getFilename">getFilename</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#76"><abbr title="App\Entity\Image::setFilename">setFilename</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#82"><abbr title="App\Entity\Image::getThumbnail">getThumbnail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#87"><abbr title="App\Entity\Image::setThumbnail">setThumbnail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#93"><abbr title="App\Entity\Image::getOriginalName">getOriginalName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#98"><abbr title="App\Entity\Image::setOriginalName">setOriginalName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#104"><abbr title="App\Entity\Image::getMimeType">getMimeType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#109"><abbr title="App\Entity\Image::setMimeType">setMimeType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#115"><abbr title="App\Entity\Image::getSize">getSize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#120"><abbr title="App\Entity\Image::setSize">setSize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#126"><abbr title="App\Entity\Image::getPosition">getPosition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#131"><abbr title="App\Entity\Image::setPosition">setPosition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#137"><abbr title="App\Entity\Image::isFeatured">isFeatured</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#142"><abbr title="App\Entity\Image::setIsFeatured">setIsFeatured</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#148"><abbr title="App\Entity\Image::getImagePath">getImagePath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Image.php.html#153"><abbr title="App\Entity\Image::setImagePath">setImagePath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Maintenance.php.html#34"><abbr title="App\Entity\Maintenance::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Maintenance.php.html#39"><abbr title="App\Entity\Maintenance::getDate">getDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Maintenance.php.html#44"><abbr title="App\Entity\Maintenance::setDate">setDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Maintenance.php.html#50"><abbr title="App\Entity\Maintenance::getDescription">getDescription</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Maintenance.php.html#55"><abbr title="App\Entity\Maintenance::setDescription">setDescription</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Maintenance.php.html#61"><abbr title="App\Entity\Maintenance::getMileage">getMileage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Maintenance.php.html#66"><abbr title="App\Entity\Maintenance::setMileage">setMileage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Maintenance.php.html#72"><abbr title="App\Entity\Maintenance::getVehicle">getVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Maintenance.php.html#77"><abbr title="App\Entity\Maintenance::setVehicle">setVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#39"><abbr title="App\Entity\Model::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#45"><abbr title="App\Entity\Model::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#50"><abbr title="App\Entity\Model::getName">getName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#55"><abbr title="App\Entity\Model::setName">setName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#61"><abbr title="App\Entity\Model::getBrand">getBrand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#66"><abbr title="App\Entity\Model::setBrand">setBrand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#73"><abbr title="App\Entity\Model::getVariants">getVariants</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#78"><abbr title="App\Entity\Model::addVariant">addVariant</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#88"><abbr title="App\Entity\Model::removeVariant">removeVariant</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#100"><abbr title="App\Entity\Model::getVehicleModels">getVehicleModels</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#105"><abbr title="App\Entity\Model::addVehicleModel">addVehicleModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model.php.html#115"><abbr title="App\Entity\Model::removeVehicleModel">removeVehicleModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Rental.php.html#29"><abbr title="App\Entity\Rental::getVehicle">getVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Rental.php.html#34"><abbr title="App\Entity\Rental::setVehicle">setVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Sale.php.html#29"><abbr title="App\Entity\Sale::getVehicle">getVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Sale.php.html#34"><abbr title="App\Entity\Sale::setVehicle">setVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#102"><abbr title="App\Entity\Supplier::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#109"><abbr title="App\Entity\Supplier::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#114"><abbr title="App\Entity\Supplier::getName">getName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#119"><abbr title="App\Entity\Supplier::setName">setName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#125"><abbr title="App\Entity\Supplier::getAddress">getAddress</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#130"><abbr title="App\Entity\Supplier::setAddress">setAddress</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#136"><abbr title="App\Entity\Supplier::getCity">getCity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#141"><abbr title="App\Entity\Supplier::setCity">setCity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#147"><abbr title="App\Entity\Supplier::getPostalCode">getPostalCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#152"><abbr title="App\Entity\Supplier::setPostalCode">setPostalCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#158"><abbr title="App\Entity\Supplier::getCountry">getCountry</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#163"><abbr title="App\Entity\Supplier::setCountry">setCountry</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#169"><abbr title="App\Entity\Supplier::getSiret">getSiret</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#174"><abbr title="App\Entity\Supplier::setSiret">setSiret</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#180"><abbr title="App\Entity\Supplier::getEmail">getEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#185"><abbr title="App\Entity\Supplier::setEmail">setEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#191"><abbr title="App\Entity\Supplier::getPhone">getPhone</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#196"><abbr title="App\Entity\Supplier::setPhone">setPhone</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#202"><abbr title="App\Entity\Supplier::getType">getType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#207"><abbr title="App\Entity\Supplier::setType">setType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#213"><abbr title="App\Entity\Supplier::getAverageDeliveryDelay">getAverageDeliveryDelay</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#218"><abbr title="App\Entity\Supplier::setAverageDeliveryDelay">setAverageDeliveryDelay</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#224"><abbr title="App\Entity\Supplier::getRating">getRating</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#229"><abbr title="App\Entity\Supplier::setRating">setRating</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#238"><abbr title="App\Entity\Supplier::getVehicles">getVehicles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#243"><abbr title="App\Entity\Supplier::addVehicle">addVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Supplier.php.html#253"><abbr title="App\Entity\Supplier::removeVehicle">removeVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#50"><abbr title="App\Entity\User::getTotpSecret">getTotpSecret</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#54"><abbr title="App\Entity\User::setTotpSecret">setTotpSecret</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#96"><abbr title="App\Entity\User::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#100"><abbr title="App\Entity\User::setId">setId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#107"><abbr title="App\Entity\User::getEmail">getEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#112"><abbr title="App\Entity\User::setEmail">setEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#118"><abbr title="App\Entity\User::getUserIdentifier">getUserIdentifier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#123"><abbr title="App\Entity\User::getRoles">getRoles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#128"><abbr title="App\Entity\User::setRoles">setRoles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#134"><abbr title="App\Entity\User::getPassword">getPassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#139"><abbr title="App\Entity\User::setPassword">setPassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#145"><abbr title="App\Entity\User::eraseCredentials">eraseCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#149"><abbr title="App\Entity\User::isVerified">isVerified</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#154"><abbr title="App\Entity\User::setIsVerified">setIsVerified</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#162"><abbr title="App\Entity\User::getCustomer">getCustomer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#167"><abbr title="App\Entity\User::setCustomer">setCustomer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#214"><abbr title="App\Entity\User::getGoogle2FASecret">getGoogle2FASecret</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#219"><abbr title="App\Entity\User::setGoogle2FASecret">setGoogle2FASecret</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#225"><abbr title="App\Entity\User::is2FAEnabled">is2FAEnabled</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#230"><abbr title="App\Entity\User::setIs2FAEnabled">setIs2FAEnabled</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#236"><abbr title="App\Entity\User::isTwoFactorVerified">isTwoFactorVerified</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#241"><abbr title="App\Entity\User::setIsTwoFactorVerified">setIsTwoFactorVerified</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#249"><abbr title="App\Entity\User::getNickname">getNickname</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="User.php.html#254"><abbr title="App\Entity\User::setNickname">setNickname</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Variant.php.html#48"><abbr title="App\Entity\Variant::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Variant.php.html#53"><abbr title="App\Entity\Variant::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Variant.php.html#64"><abbr title="App\Entity\Variant::getName">getName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Variant.php.html#69"><abbr title="App\Entity\Variant::setName">setName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Variant.php.html#81"><abbr title="App\Entity\Variant::getModel">getModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Variant.php.html#86"><abbr title="App\Entity\Variant::setModel">setModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Variant.php.html#98"><abbr title="App\Entity\Variant::getVehicleModels">getVehicleModels</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Variant.php.html#103"><abbr title="App\Entity\Variant::addVehicleModel">addVehicleModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Variant.php.html#113"><abbr title="App\Entity\Variant::removeVehicleModel">removeVehicleModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#29"><abbr title="App\Entity\Vehicle::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#40"><abbr title="App\Entity\Vehicle::getStatus">getStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#45"><abbr title="App\Entity\Vehicle::setStatus">setStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#58"><abbr title="App\Entity\Vehicle::getUsageType">getUsageType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#63"><abbr title="App\Entity\Vehicle::setUsageType">setUsageType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#74"><abbr title="App\Entity\Vehicle::getFirstRegistrationDate">getFirstRegistrationDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#79"><abbr title="App\Entity\Vehicle::setFirstRegistrationDate">setFirstRegistrationDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#89"><abbr title="App\Entity\Vehicle::getMileage">getMileage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#94"><abbr title="App\Entity\Vehicle::setMileage">setMileage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#103"><abbr title="App\Entity\Vehicle::getPrice">getPrice</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#108"><abbr title="App\Entity\Vehicle::setPrice">setPrice</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#120"><abbr title="App\Entity\Vehicle::getVin">getVin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#125"><abbr title="App\Entity\Vehicle::setVin">setVin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#134"><abbr title="App\Entity\Vehicle::getRegistrationNumber">getRegistrationNumber</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#139"><abbr title="App\Entity\Vehicle::setRegistrationNumber">setRegistrationNumber</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#210"><abbr title="App\Entity\Vehicle::getVehicleModel">getVehicleModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#215"><abbr title="App\Entity\Vehicle::setVehicleModel">setVehicleModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#224"><abbr title="App\Entity\Vehicle::getFuelType">getFuelType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#229"><abbr title="App\Entity\Vehicle::setFuelType">setFuelType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#238"><abbr title="App\Entity\Vehicle::getGearType">getGearType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#243"><abbr title="App\Entity\Vehicle::setGearType">setGearType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#252"><abbr title="App\Entity\Vehicle::getColor">getColor</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#257"><abbr title="App\Entity\Vehicle::setColor">setColor</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#266"><abbr title="App\Entity\Vehicle::getSupplier">getSupplier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#271"><abbr title="App\Entity\Vehicle::setSupplier">setSupplier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#280"><abbr title="App\Entity\Vehicle::getImages">getImages</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#285"><abbr title="App\Entity\Vehicle::addImage">addImage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#295"><abbr title="App\Entity\Vehicle::removeImage">removeImage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#309"><abbr title="App\Entity\Vehicle::getDossiers">getDossiers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#314"><abbr title="App\Entity\Vehicle::addDossier">addDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#324"><abbr title="App\Entity\Vehicle::removeDossier">removeDossier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#338"><abbr title="App\Entity\Vehicle::getMaintenances">getMaintenances</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#343"><abbr title="App\Entity\Vehicle::addMaintenance">addMaintenance</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#353"><abbr title="App\Entity\Vehicle::removeMaintenance">removeMaintenance</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#367"><abbr title="App\Entity\Vehicle::getRentals">getRentals</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#372"><abbr title="App\Entity\Vehicle::addRental">addRental</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#382"><abbr title="App\Entity\Vehicle::removeRental">removeRental</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#395"><abbr title="App\Entity\Vehicle::getSales">getSales</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#400"><abbr title="App\Entity\Vehicle::addSale">addSale</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#410"><abbr title="App\Entity\Vehicle::removeSale">removeSale</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#424"><abbr title="App\Entity\Vehicle::getFavorites">getFavorites</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#429"><abbr title="App\Entity\Vehicle::addFavorite">addFavorite</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#438"><abbr title="App\Entity\Vehicle::removeFavorite">removeFavorite</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#452"><abbr title="App\Entity\Vehicle::getFeatures">getFeatures</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#457"><abbr title="App\Entity\Vehicle::addFeature">addFeature</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#466"><abbr title="App\Entity\Vehicle::removeFeature">removeFeature</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#475"><abbr title="App\Entity\Vehicle::isAvailable">isAvailable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#482"><abbr title="App\Entity\Vehicle::isLocked">isLocked</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#495"><abbr title="App\Entity\Vehicle::reserve">reserve</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#504"><abbr title="App\Entity\Vehicle::markAsSold">markAsSold</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#512"><abbr title="App\Entity\Vehicle::markAsRented">markAsRented</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#520"><abbr title="App\Entity\Vehicle::makeAvailable">makeAvailable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#531"><abbr title="App\Entity\Vehicle::getMainImagePath">getMainImagePath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#550"><abbr title="App\Entity\Vehicle::isFeatured">isFeatured</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#555"><abbr title="App\Entity\Vehicle::setIsFeatured">setIsFeatured</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#572"><abbr title="App\Entity\Vehicle::getBadges">getBadges</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#577"><abbr title="App\Entity\Vehicle::addBadge">addBadge</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Vehicle.php.html#586"><abbr title="App\Entity\Vehicle::removeBadge">removeBadge</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#58"><abbr title="App\Entity\VehicleBadge::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#63"><abbr title="App\Entity\VehicleBadge::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#68"><abbr title="App\Entity\VehicleBadge::getCode">getCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#73"><abbr title="App\Entity\VehicleBadge::setCode">setCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#80"><abbr title="App\Entity\VehicleBadge::getLabel">getLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#85"><abbr title="App\Entity\VehicleBadge::setLabel">setLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#92"><abbr title="App\Entity\VehicleBadge::getCategory">getCategory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#97"><abbr title="App\Entity\VehicleBadge::setCategory">setCategory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#104"><abbr title="App\Entity\VehicleBadge::getPriority">getPriority</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#109"><abbr title="App\Entity\VehicleBadge::setPriority">setPriority</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#116"><abbr title="App\Entity\VehicleBadge::getColor">getColor</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#121"><abbr title="App\Entity\VehicleBadge::setColor">setColor</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#128"><abbr title="App\Entity\VehicleBadge::getIcon">getIcon</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#133"><abbr title="App\Entity\VehicleBadge::setIcon">setIcon</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#140"><abbr title="App\Entity\VehicleBadge::isActive">isActive</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#145"><abbr title="App\Entity\VehicleBadge::setIsActive">setIsActive</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#155"><abbr title="App\Entity\VehicleBadge::getVehicles">getVehicles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#160"><abbr title="App\Entity\VehicleBadge::addVehicle">addVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#169"><abbr title="App\Entity\VehicleBadge::removeVehicle">removeVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#132"><abbr title="App\Entity\VehicleModel::getAvailableStock">getAvailableStock</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#137"><abbr title="App\Entity\VehicleModel::setAvailableStock">setAvailableStock</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#143"><abbr title="App\Entity\VehicleModel::getAvailableForSale">getAvailableForSale</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#148"><abbr title="App\Entity\VehicleModel::setAvailableForSale">setAvailableForSale</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#154"><abbr title="App\Entity\VehicleModel::getAvailableForRent">getAvailableForRent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#159"><abbr title="App\Entity\VehicleModel::setAvailableForRent">setAvailableForRent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#171"><abbr title="App\Entity\VehicleModel::__toString">__toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#176"><abbr title="App\Entity\VehicleModel::getDisplayName">getDisplayName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#191"><abbr title="App\Entity\VehicleModel::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#207"><abbr title="App\Entity\VehicleModel::getModel">getModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#212"><abbr title="App\Entity\VehicleModel::setModel">setModel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#218"><abbr title="App\Entity\VehicleModel::getVariant">getVariant</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#223"><abbr title="App\Entity\VehicleModel::setVariant">setVariant</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#229"><abbr title="App\Entity\VehicleModel::getFuelType">getFuelType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#234"><abbr title="App\Entity\VehicleModel::setFuelType">setFuelType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#268"><abbr title="App\Entity\VehicleModel::getVehicles">getVehicles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#273"><abbr title="App\Entity\VehicleModel::addVehicle">addVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#283"><abbr title="App\Entity\VehicleModel::removeVehicle">removeVehicle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#300"><abbr title="App\Entity\VehicleModel::getEuroNorm">getEuroNorm</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#305"><abbr title="App\Entity\VehicleModel::setEuroNorm">setEuroNorm</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#311"><abbr title="App\Entity\VehicleModel::getPowerHp">getPowerHp</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#316"><abbr title="App\Entity\VehicleModel::setPowerHp">setPowerHp</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#322"><abbr title="App\Entity\VehicleModel::getPowerFiscal">getPowerFiscal</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#327"><abbr title="App\Entity\VehicleModel::setPowerFiscal">setPowerFiscal</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#333"><abbr title="App\Entity\VehicleModel::getConsumption">getConsumption</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#338"><abbr title="App\Entity\VehicleModel::setConsumption">setConsumption</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#344"><abbr title="App\Entity\VehicleModel::getCo2">getCo2</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#349"><abbr title="App\Entity\VehicleModel::setCo2">setCo2</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#361"><abbr title="App\Entity\VehicleModel::getCnit">getCnit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#366"><abbr title="App\Entity\VehicleModel::setCnit">setCnit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#372"><abbr title="App\Entity\VehicleModel::getUtacCode">getUtacCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#377"><abbr title="App\Entity\VehicleModel::setUtacCode">setUtacCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#383"><abbr title="App\Entity\VehicleModel::getHomologationDate">getHomologationDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#388"><abbr title="App\Entity\VehicleModel::setHomologationDate">setHomologationDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#394"><abbr title="App\Entity\VehicleModel::getMassMin">getMassMin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#399"><abbr title="App\Entity\VehicleModel::setMassMin">setMassMin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#405"><abbr title="App\Entity\VehicleModel::getMassMax">getMassMax</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehicleModel.php.html#410"><abbr title="App\Entity\VehicleModel::setMassMax">setMassMax</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Traits/TimestampableTrait.php.html#15"><abbr title="App\Entity\Traits\TimestampableTrait::getCreatedAt">getCreatedAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Traits/TimestampableTrait.php.html#20"><abbr title="App\Entity\Traits\TimestampableTrait::getUpdatedAt">getUpdatedAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Traits/TimestampableTrait.php.html#25"><abbr title="App\Entity\Traits\TimestampableTrait::onPrePersist">onPrePersist</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Traits/TimestampableTrait.php.html#37"><abbr title="App\Entity\Traits\TimestampableTrait::onPreUpdate">onPreUpdate</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Dossier.php.html#217"><abbr title="App\Entity\Dossier::getStatusLabel">getStatusLabel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="Dossier.php.html#234"><abbr title="App\Entity\Dossier::getStatusBadge">getStatusBadge</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="Vehicle.php.html#531"><abbr title="App\Entity\Vehicle::getMainImagePath">getMainImagePath</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="Brand.php.html#78"><abbr title="App\Entity\Brand::removeModel">removeModel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Customer.php.html#199"><abbr title="App\Entity\Customer::setUser">setUser</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Dossier.php.html#176"><abbr title="App\Entity\Dossier::setFinancing">setFinancing</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Feature.php.html#94"><abbr title="App\Entity\Feature::generateCode">generateCode</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#99"><abbr title="App\Entity\FeatureCategory::removeFeature">removeFeature</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Financing.php.html#206"><abbr title="App\Entity\Financing::validateConsistency">validateConsistency</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="FuelType.php.html#87"><abbr title="App\Entity\FuelType::removeVehicle">removeVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="GearType.php.html#98"><abbr title="App\Entity\GearType::removeVehicle">removeVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Model.php.html#88"><abbr title="App\Entity\Model::removeVariant">removeVariant</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Model.php.html#115"><abbr title="App\Entity\Model::removeVehicleModel">removeVehicleModel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Supplier.php.html#253"><abbr title="App\Entity\Supplier::removeVehicle">removeVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Variant.php.html#113"><abbr title="App\Entity\Variant::removeVehicleModel">removeVehicleModel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Vehicle.php.html#295"><abbr title="App\Entity\Vehicle::removeImage">removeImage</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Vehicle.php.html#324"><abbr title="App\Entity\Vehicle::removeDossier">removeDossier</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Vehicle.php.html#353"><abbr title="App\Entity\Vehicle::removeMaintenance">removeMaintenance</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Vehicle.php.html#382"><abbr title="App\Entity\Vehicle::removeRental">removeRental</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Vehicle.php.html#410"><abbr title="App\Entity\Vehicle::removeSale">removeSale</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Vehicle.php.html#438"><abbr title="App\Entity\Vehicle::removeFavorite">removeFavorite</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="VehicleModel.php.html#283"><abbr title="App\Entity\VehicleModel::removeVehicle">removeVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Brand.php.html#68"><abbr title="App\Entity\Brand::addModel">addModel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Customer.php.html#177"><abbr title="App\Entity\Customer::setPhoneNumber1">setPhoneNumber1</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Customer.php.html#188"><abbr title="App\Entity\Customer::setPhoneNumber2">setPhoneNumber2</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Customer.php.html#215"><abbr title="App\Entity\Customer::addDossier">addDossier</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Customer.php.html#280"><abbr title="App\Entity\Customer::setCountry">setCountry</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="DossierDocument.php.html#113"><abbr title="App\Entity\DossierDocument::setStatus">setStatus</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FeatureCategory.php.html#89"><abbr title="App\Entity\FeatureCategory::addFeature">addFeature</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Financing.php.html#116"><abbr title="App\Entity\Financing::setType">setType</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FuelType.php.html#77"><abbr title="App\Entity\FuelType::addVehicle">addVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="GearType.php.html#88"><abbr title="App\Entity\GearType::addVehicle">addVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Model.php.html#78"><abbr title="App\Entity\Model::addVariant">addVariant</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Model.php.html#105"><abbr title="App\Entity\Model::addVehicleModel">addVehicleModel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Supplier.php.html#130"><abbr title="App\Entity\Supplier::setAddress">setAddress</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Supplier.php.html#141"><abbr title="App\Entity\Supplier::setCity">setCity</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Supplier.php.html#163"><abbr title="App\Entity\Supplier::setCountry">setCountry</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Supplier.php.html#174"><abbr title="App\Entity\Supplier::setSiret">setSiret</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Supplier.php.html#185"><abbr title="App\Entity\Supplier::setEmail">setEmail</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Supplier.php.html#196"><abbr title="App\Entity\Supplier::setPhone">setPhone</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Supplier.php.html#243"><abbr title="App\Entity\Supplier::addVehicle">addVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Variant.php.html#103"><abbr title="App\Entity\Variant::addVehicleModel">addVehicleModel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Vehicle.php.html#139"><abbr title="App\Entity\Vehicle::setRegistrationNumber">setRegistrationNumber</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Vehicle.php.html#285"><abbr title="App\Entity\Vehicle::addImage">addImage</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Vehicle.php.html#314"><abbr title="App\Entity\Vehicle::addDossier">addDossier</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Vehicle.php.html#343"><abbr title="App\Entity\Vehicle::addMaintenance">addMaintenance</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Vehicle.php.html#372"><abbr title="App\Entity\Vehicle::addRental">addRental</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Vehicle.php.html#400"><abbr title="App\Entity\Vehicle::addSale">addSale</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Vehicle.php.html#429"><abbr title="App\Entity\Vehicle::addFavorite">addFavorite</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Vehicle.php.html#457"><abbr title="App\Entity\Vehicle::addFeature">addFeature</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Vehicle.php.html#577"><abbr title="App\Entity\Vehicle::addBadge">addBadge</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#121"><abbr title="App\Entity\VehicleBadge::setColor">setColor</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#133"><abbr title="App\Entity\VehicleBadge::setIcon">setIcon</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleBadge.php.html#160"><abbr title="App\Entity\VehicleBadge::addVehicle">addVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleModel.php.html#273"><abbr title="App\Entity\VehicleModel::addVehicle">addVehicle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleModel.php.html#366"><abbr title="App\Entity\VehicleModel::setCnit">setCnit</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehicleModel.php.html#377"><abbr title="App\Entity\VehicleModel::setUtacCode">setUtacCode</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Traits/TimestampableTrait.php.html#25"><abbr title="App\Entity\Traits\TimestampableTrait::onPrePersist">onPrePersist</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.3</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.21</a> and <a href="https://phpunit.de/">PHPUnit 12.5.15</a> at Wed May 27 11:23:40 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/billboard.pkgd.min.js?v=12.5.3" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,36,"Customer.php.html#13","App\\Entity\\Customer","1332"],[0,44,"Dossier.php.html#14","App\\Entity\\Dossier","1980"],[0,11,"DossierAudit.php.html#9","App\\Entity\\DossierAudit","132"],[0,14,"DossierDocument.php.html#12","App\\Entity\\DossierDocument","210"],[0,14,"DossierWorkflowLog.php.html#17","App\\Entity\\DossierWorkflowLog","210"],[0,13,"Feature.php.html#10","App\\Entity\\Feature","182"],[0,14,"FeatureCategory.php.html#10","App\\Entity\\FeatureCategory","210"],[0,24,"Financing.php.html#9","App\\Entity\\Financing","600"],[0,10,"FuelType.php.html#11","App\\Entity\\FuelType","110"],[0,19,"Image.php.html#10","App\\Entity\\Image","380"],[0,9,"Maintenance.php.html#9","App\\Entity\\Maintenance","90"],[0,18,"Model.php.html#11","App\\Entity\\Model","342"],[0,2,"Rental.php.html#8","App\\Entity\\Rental","6"],[0,2,"Sale.php.html#8","App\\Entity\\Sale","6"],[0,36,"Supplier.php.html#12","App\\Entity\\Supplier","1332"],[0,12,"Variant.php.html#11","App\\Entity\\Variant","156"],[0,22,"VehicleBadge.php.html#12","App\\Entity\\VehicleBadge","506"],[0,5,"Traits\/TimestampableTrait.php.html#7","App\\Entity\\Traits\\TimestampableTrait","30"],[5.88235294117647,83,"Vehicle.php.html#15","App\\Entity\\Vehicle","5826.40"],[13.513513513513514,50,"VehicleModel.php.html#11","App\\Entity\\VehicleModel","1667.28"],[23.91304347826087,31,"User.php.html#15","App\\Entity\\User","454.31"],[56.00000000000001,17,"Brand.php.html#11","App\\Entity\\Brand","41.62"],[58.333333333333336,16,"GearType.php.html#11","App\\Entity\\GearType","34.52"],[66.66666666666666,7,"Favorite.php.html#8","App\\Entity\\Favorite","8.81"],[100,17,"BodyType.php.html#11","App\\Entity\\BodyType","17"],[100,5,"Color.php.html#11","App\\Entity\\Color","5"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"Brand.php.html#35","App\\Entity\\Brand::__toString","2"],[0,1,"Brand.php.html#46","App\\Entity\\Brand::getId","2"],[0,1,"Brand.php.html#63","App\\Entity\\Brand::getModels","2"],[0,2,"Brand.php.html#68","App\\Entity\\Brand::addModel","6"],[0,3,"Brand.php.html#78","App\\Entity\\Brand::removeModel","12"],[0,1,"Customer.php.html#118","App\\Entity\\Customer::__construct","2"],[0,1,"Customer.php.html#123","App\\Entity\\Customer::getId","2"],[0,1,"Customer.php.html#128","App\\Entity\\Customer::getCustomerCode","2"],[0,1,"Customer.php.html#133","App\\Entity\\Customer::setCustomerCode","2"],[0,1,"Customer.php.html#139","App\\Entity\\Customer::getFirstName","2"],[0,1,"Customer.php.html#144","App\\Entity\\Customer::setFirstName","2"],[0,1,"Customer.php.html#150","App\\Entity\\Customer::getLastName","2"],[0,1,"Customer.php.html#155","App\\Entity\\Customer::setLastName","2"],[0,1,"Customer.php.html#161","App\\Entity\\Customer::getEmail","2"],[0,1,"Customer.php.html#166","App\\Entity\\Customer::setEmail","2"],[0,1,"Customer.php.html#172","App\\Entity\\Customer::getPhoneNumber1","2"],[0,2,"Customer.php.html#177","App\\Entity\\Customer::setPhoneNumber1","6"],[0,1,"Customer.php.html#183","App\\Entity\\Customer::getPhoneNumber2","2"],[0,2,"Customer.php.html#188","App\\Entity\\Customer::setPhoneNumber2","6"],[0,1,"Customer.php.html#194","App\\Entity\\Customer::getUser","2"],[0,3,"Customer.php.html#199","App\\Entity\\Customer::setUser","12"],[0,1,"Customer.php.html#210","App\\Entity\\Customer::getDossiers","2"],[0,2,"Customer.php.html#215","App\\Entity\\Customer::addDossier","6"],[0,1,"Customer.php.html#225","App\\Entity\\Customer::removeDossier","2"],[0,1,"Customer.php.html#231","App\\Entity\\Customer::getAddress","2"],[0,1,"Customer.php.html#236","App\\Entity\\Customer::setAddress","2"],[0,1,"Customer.php.html#242","App\\Entity\\Customer::getZipCode","2"],[0,1,"Customer.php.html#247","App\\Entity\\Customer::setZipCode","2"],[0,1,"Customer.php.html#253","App\\Entity\\Customer::getCity","2"],[0,1,"Customer.php.html#258","App\\Entity\\Customer::setCity","2"],[0,1,"Customer.php.html#264","App\\Entity\\Customer::getAddressDetails","2"],[0,1,"Customer.php.html#269","App\\Entity\\Customer::setAddressDetails","2"],[0,1,"Customer.php.html#275","App\\Entity\\Customer::getCountry","2"],[0,2,"Customer.php.html#280","App\\Entity\\Customer::setCountry","6"],[0,1,"Customer.php.html#287","App\\Entity\\Customer::__toString","2"],[0,1,"Dossier.php.html#82","App\\Entity\\Dossier::__construct","2"],[0,1,"Dossier.php.html#87","App\\Entity\\Dossier::getId","2"],[0,1,"Dossier.php.html#92","App\\Entity\\Dossier::getCustomer","2"],[0,1,"Dossier.php.html#97","App\\Entity\\Dossier::setCustomer","2"],[0,1,"Dossier.php.html#103","App\\Entity\\Dossier::getVehicle","2"],[0,1,"Dossier.php.html#108","App\\Entity\\Dossier::setVehicle","2"],[0,1,"Dossier.php.html#114","App\\Entity\\Dossier::getType","2"],[0,1,"Dossier.php.html#119","App\\Entity\\Dossier::setType","2"],[0,1,"Dossier.php.html#125","App\\Entity\\Dossier::getStatus","2"],[0,1,"Dossier.php.html#130","App\\Entity\\Dossier::setStatus","2"],[0,1,"Dossier.php.html#136","App\\Entity\\Dossier::getDossierCode","2"],[0,1,"Dossier.php.html#141","App\\Entity\\Dossier::setDossierCode","2"],[0,1,"Dossier.php.html#147","App\\Entity\\Dossier::getAssignedTo","2"],[0,1,"Dossier.php.html#152","App\\Entity\\Dossier::getValidatedBy","2"],[0,1,"Dossier.php.html#157","App\\Entity\\Dossier::getCreatedBy","2"],[0,1,"Dossier.php.html#162","App\\Entity\\Dossier::setCreatedBy","2"],[0,1,"Dossier.php.html#171","App\\Entity\\Dossier::getFinancing","2"],[0,3,"Dossier.php.html#176","App\\Entity\\Dossier::setFinancing","12"],[0,1,"Dossier.php.html#187","App\\Entity\\Dossier::getDocuments","2"],[0,1,"Dossier.php.html#192","App\\Entity\\Dossier::getCompletedAt","2"],[0,1,"Dossier.php.html#197","App\\Entity\\Dossier::setCompletedAt","2"],[0,1,"Dossier.php.html#203","App\\Entity\\Dossier::getCancelledAt","2"],[0,1,"Dossier.php.html#208","App\\Entity\\Dossier::setCancelledAt","2"],[0,9,"Dossier.php.html#217","App\\Entity\\Dossier::getStatusLabel","90"],[0,9,"Dossier.php.html#234","App\\Entity\\Dossier::getStatusBadge","90"],[0,1,"Dossier.php.html#251","App\\Entity\\Dossier::hasFinancing","2"],[0,1,"DossierAudit.php.html#63","App\\Entity\\DossierAudit::getId","2"],[0,1,"DossierAudit.php.html#68","App\\Entity\\DossierAudit::getDossier","2"],[0,1,"DossierAudit.php.html#73","App\\Entity\\DossierAudit::setDossier","2"],[0,1,"DossierAudit.php.html#79","App\\Entity\\DossierAudit::getUser","2"],[0,1,"DossierAudit.php.html#84","App\\Entity\\DossierAudit::setUser","2"],[0,1,"DossierAudit.php.html#90","App\\Entity\\DossierAudit::getAction","2"],[0,1,"DossierAudit.php.html#95","App\\Entity\\DossierAudit::setAction","2"],[0,1,"DossierAudit.php.html#101","App\\Entity\\DossierAudit::getMessage","2"],[0,1,"DossierAudit.php.html#106","App\\Entity\\DossierAudit::setMessage","2"],[0,1,"DossierAudit.php.html#112","App\\Entity\\DossierAudit::getDocument","2"],[0,1,"DossierAudit.php.html#117","App\\Entity\\DossierAudit::setDocument","2"],[0,1,"DossierDocument.php.html#48","App\\Entity\\DossierDocument::getId","2"],[0,1,"DossierDocument.php.html#53","App\\Entity\\DossierDocument::getDossier","2"],[0,1,"DossierDocument.php.html#58","App\\Entity\\DossierDocument::setDossier","2"],[0,1,"DossierDocument.php.html#64","App\\Entity\\DossierDocument::getDocumentType","2"],[0,1,"DossierDocument.php.html#69","App\\Entity\\DossierDocument::setDocumentType","2"],[0,1,"DossierDocument.php.html#75","App\\Entity\\DossierDocument::getOriginalName","2"],[0,1,"DossierDocument.php.html#80","App\\Entity\\DossierDocument::setOriginalName","2"],[0,1,"DossierDocument.php.html#86","App\\Entity\\DossierDocument::getFileName","2"],[0,1,"DossierDocument.php.html#91","App\\Entity\\DossierDocument::setFileName","2"],[0,1,"DossierDocument.php.html#97","App\\Entity\\DossierDocument::getPath","2"],[0,1,"DossierDocument.php.html#102","App\\Entity\\DossierDocument::setPath","2"],[0,1,"DossierDocument.php.html#108","App\\Entity\\DossierDocument::getStatus","2"],[0,2,"DossierDocument.php.html#113","App\\Entity\\DossierDocument::setStatus","6"],[0,1,"DossierWorkflowLog.php.html#64","App\\Entity\\DossierWorkflowLog::__construct","2"],[0,1,"DossierWorkflowLog.php.html#73","App\\Entity\\DossierWorkflowLog::getId","2"],[0,1,"DossierWorkflowLog.php.html#78","App\\Entity\\DossierWorkflowLog::getDossier","2"],[0,1,"DossierWorkflowLog.php.html#83","App\\Entity\\DossierWorkflowLog::setDossier","2"],[0,1,"DossierWorkflowLog.php.html#89","App\\Entity\\DossierWorkflowLog::getTransition","2"],[0,1,"DossierWorkflowLog.php.html#94","App\\Entity\\DossierWorkflowLog::setTransition","2"],[0,1,"DossierWorkflowLog.php.html#100","App\\Entity\\DossierWorkflowLog::getFromStatus","2"],[0,1,"DossierWorkflowLog.php.html#105","App\\Entity\\DossierWorkflowLog::setFromStatus","2"],[0,1,"DossierWorkflowLog.php.html#111","App\\Entity\\DossierWorkflowLog::getToStatus","2"],[0,1,"DossierWorkflowLog.php.html#116","App\\Entity\\DossierWorkflowLog::setToStatus","2"],[0,1,"DossierWorkflowLog.php.html#122","App\\Entity\\DossierWorkflowLog::getUserId","2"],[0,1,"DossierWorkflowLog.php.html#127","App\\Entity\\DossierWorkflowLog::setUserId","2"],[0,1,"DossierWorkflowLog.php.html#133","App\\Entity\\DossierWorkflowLog::getCreatedAt","2"],[0,1,"DossierWorkflowLog.php.html#138","App\\Entity\\DossierWorkflowLog::setCreatedAt","2"],[0,1,"Favorite.php.html#45","App\\Entity\\Favorite::getId","2"],[0,1,"Favorite.php.html#61","App\\Entity\\Favorite::getVehicle","2"],[0,1,"Favorite.php.html#71","App\\Entity\\Favorite::getCreatedAt","2"],[0,1,"Feature.php.html#35","App\\Entity\\Feature::__construct","2"],[0,1,"Feature.php.html#44","App\\Entity\\Feature::getId","2"],[0,1,"Feature.php.html#49","App\\Entity\\Feature::getCode","2"],[0,1,"Feature.php.html#54","App\\Entity\\Feature::setCode","2"],[0,1,"Feature.php.html#60","App\\Entity\\Feature::getLabel","2"],[0,1,"Feature.php.html#65","App\\Entity\\Feature::setLabel","2"],[0,1,"Feature.php.html#71","App\\Entity\\Feature::getCategory","2"],[0,1,"Feature.php.html#76","App\\Entity\\Feature::setCategory","2"],[0,1,"Feature.php.html#85","App\\Entity\\Feature::getVehicles","2"],[0,3,"Feature.php.html#94","App\\Entity\\Feature::generateCode","12"],[0,1,"Feature.php.html#102","App\\Entity\\Feature::slugify","2"],[0,1,"FeatureCategory.php.html#34","App\\Entity\\FeatureCategory::__construct","2"],[0,1,"FeatureCategory.php.html#43","App\\Entity\\FeatureCategory::getId","2"],[0,1,"FeatureCategory.php.html#48","App\\Entity\\FeatureCategory::getCode","2"],[0,1,"FeatureCategory.php.html#53","App\\Entity\\FeatureCategory::setCode","2"],[0,1,"FeatureCategory.php.html#59","App\\Entity\\FeatureCategory::getLabel","2"],[0,1,"FeatureCategory.php.html#64","App\\Entity\\FeatureCategory::setLabel","2"],[0,1,"FeatureCategory.php.html#70","App\\Entity\\FeatureCategory::getPosition","2"],[0,1,"FeatureCategory.php.html#75","App\\Entity\\FeatureCategory::setPosition","2"],[0,1,"FeatureCategory.php.html#84","App\\Entity\\FeatureCategory::getFeatures","2"],[0,2,"FeatureCategory.php.html#89","App\\Entity\\FeatureCategory::addFeature","6"],[0,3,"FeatureCategory.php.html#99","App\\Entity\\FeatureCategory::removeFeature","12"],[0,1,"Financing.php.html#82","App\\Entity\\Financing::getId","2"],[0,1,"Financing.php.html#87","App\\Entity\\Financing::getDossier","2"],[0,1,"Financing.php.html#92","App\\Entity\\Financing::setDossier","2"],[0,1,"Financing.php.html#99","App\\Entity\\Financing::getStatus","2"],[0,1,"Financing.php.html#104","App\\Entity\\Financing::setStatus","2"],[0,1,"Financing.php.html#111","App\\Entity\\Financing::getType","2"],[0,2,"Financing.php.html#116","App\\Entity\\Financing::setType","6"],[0,1,"Financing.php.html#128","App\\Entity\\Financing::getLeasingType","2"],[0,1,"Financing.php.html#133","App\\Entity\\Financing::setLeasingType","2"],[0,1,"Financing.php.html#140","App\\Entity\\Financing::getAmount","2"],[0,1,"Financing.php.html#145","App\\Entity\\Financing::setAmount","2"],[0,1,"Financing.php.html#152","App\\Entity\\Financing::getDurationMonths","2"],[0,1,"Financing.php.html#157","App\\Entity\\Financing::setDurationMonths","2"],[0,1,"Financing.php.html#164","App\\Entity\\Financing::getMonthlyPayment","2"],[0,1,"Financing.php.html#169","App\\Entity\\Financing::setMonthlyPayment","2"],[0,1,"Financing.php.html#176","App\\Entity\\Financing::getDecidedAt","2"],[0,1,"Financing.php.html#181","App\\Entity\\Financing::setDecidedAt","2"],[0,1,"Financing.php.html#191","App\\Entity\\Financing::isLeasing","2"],[0,1,"Financing.php.html#196","App\\Entity\\Financing::isCash","2"],[0,1,"Financing.php.html#201","App\\Entity\\Financing::isCredit","2"],[0,3,"Financing.php.html#206","App\\Entity\\Financing::validateConsistency","12"],[0,1,"FuelType.php.html#42","App\\Entity\\FuelType::__construct","2"],[0,1,"FuelType.php.html#53","App\\Entity\\FuelType::getId","2"],[0,1,"FuelType.php.html#58","App\\Entity\\FuelType::getName","2"],[0,1,"FuelType.php.html#63","App\\Entity\\FuelType::setName","2"],[0,1,"FuelType.php.html#72","App\\Entity\\FuelType::getVehicles","2"],[0,2,"FuelType.php.html#77","App\\Entity\\FuelType::addVehicle","6"],[0,3,"FuelType.php.html#87","App\\Entity\\FuelType::removeVehicle","12"],[0,1,"GearType.php.html#61","App\\Entity\\GearType::getId","2"],[0,1,"GearType.php.html#83","App\\Entity\\GearType::getVehicles","2"],[0,2,"GearType.php.html#88","App\\Entity\\GearType::addVehicle","6"],[0,3,"GearType.php.html#98","App\\Entity\\GearType::removeVehicle","12"],[0,1,"Image.php.html#55","App\\Entity\\Image::getId","2"],[0,1,"Image.php.html#60","App\\Entity\\Image::getVehicle","2"],[0,1,"Image.php.html#65","App\\Entity\\Image::setVehicle","2"],[0,1,"Image.php.html#71","App\\Entity\\Image::getFilename","2"],[0,1,"Image.php.html#76","App\\Entity\\Image::setFilename","2"],[0,1,"Image.php.html#82","App\\Entity\\Image::getThumbnail","2"],[0,1,"Image.php.html#87","App\\Entity\\Image::setThumbnail","2"],[0,1,"Image.php.html#93","App\\Entity\\Image::getOriginalName","2"],[0,1,"Image.php.html#98","App\\Entity\\Image::setOriginalName","2"],[0,1,"Image.php.html#104","App\\Entity\\Image::getMimeType","2"],[0,1,"Image.php.html#109","App\\Entity\\Image::setMimeType","2"],[0,1,"Image.php.html#115","App\\Entity\\Image::getSize","2"],[0,1,"Image.php.html#120","App\\Entity\\Image::setSize","2"],[0,1,"Image.php.html#126","App\\Entity\\Image::getPosition","2"],[0,1,"Image.php.html#131","App\\Entity\\Image::setPosition","2"],[0,1,"Image.php.html#137","App\\Entity\\Image::isFeatured","2"],[0,1,"Image.php.html#142","App\\Entity\\Image::setIsFeatured","2"],[0,1,"Image.php.html#148","App\\Entity\\Image::getImagePath","2"],[0,1,"Image.php.html#153","App\\Entity\\Image::setImagePath","2"],[0,1,"Maintenance.php.html#34","App\\Entity\\Maintenance::getId","2"],[0,1,"Maintenance.php.html#39","App\\Entity\\Maintenance::getDate","2"],[0,1,"Maintenance.php.html#44","App\\Entity\\Maintenance::setDate","2"],[0,1,"Maintenance.php.html#50","App\\Entity\\Maintenance::getDescription","2"],[0,1,"Maintenance.php.html#55","App\\Entity\\Maintenance::setDescription","2"],[0,1,"Maintenance.php.html#61","App\\Entity\\Maintenance::getMileage","2"],[0,1,"Maintenance.php.html#66","App\\Entity\\Maintenance::setMileage","2"],[0,1,"Maintenance.php.html#72","App\\Entity\\Maintenance::getVehicle","2"],[0,1,"Maintenance.php.html#77","App\\Entity\\Maintenance::setVehicle","2"],[0,1,"Model.php.html#39","App\\Entity\\Model::__construct","2"],[0,1,"Model.php.html#45","App\\Entity\\Model::getId","2"],[0,1,"Model.php.html#50","App\\Entity\\Model::getName","2"],[0,1,"Model.php.html#55","App\\Entity\\Model::setName","2"],[0,1,"Model.php.html#61","App\\Entity\\Model::getBrand","2"],[0,1,"Model.php.html#66","App\\Entity\\Model::setBrand","2"],[0,1,"Model.php.html#73","App\\Entity\\Model::getVariants","2"],[0,2,"Model.php.html#78","App\\Entity\\Model::addVariant","6"],[0,3,"Model.php.html#88","App\\Entity\\Model::removeVariant","12"],[0,1,"Model.php.html#100","App\\Entity\\Model::getVehicleModels","2"],[0,2,"Model.php.html#105","App\\Entity\\Model::addVehicleModel","6"],[0,3,"Model.php.html#115","App\\Entity\\Model::removeVehicleModel","12"],[0,1,"Rental.php.html#29","App\\Entity\\Rental::getVehicle","2"],[0,1,"Rental.php.html#34","App\\Entity\\Rental::setVehicle","2"],[0,1,"Sale.php.html#29","App\\Entity\\Sale::getVehicle","2"],[0,1,"Sale.php.html#34","App\\Entity\\Sale::setVehicle","2"],[0,1,"Supplier.php.html#102","App\\Entity\\Supplier::__construct","2"],[0,1,"Supplier.php.html#109","App\\Entity\\Supplier::getId","2"],[0,1,"Supplier.php.html#114","App\\Entity\\Supplier::getName","2"],[0,1,"Supplier.php.html#119","App\\Entity\\Supplier::setName","2"],[0,1,"Supplier.php.html#125","App\\Entity\\Supplier::getAddress","2"],[0,2,"Supplier.php.html#130","App\\Entity\\Supplier::setAddress","6"],[0,1,"Supplier.php.html#136","App\\Entity\\Supplier::getCity","2"],[0,2,"Supplier.php.html#141","App\\Entity\\Supplier::setCity","6"],[0,1,"Supplier.php.html#147","App\\Entity\\Supplier::getPostalCode","2"],[0,1,"Supplier.php.html#152","App\\Entity\\Supplier::setPostalCode","2"],[0,1,"Supplier.php.html#158","App\\Entity\\Supplier::getCountry","2"],[0,2,"Supplier.php.html#163","App\\Entity\\Supplier::setCountry","6"],[0,1,"Supplier.php.html#169","App\\Entity\\Supplier::getSiret","2"],[0,2,"Supplier.php.html#174","App\\Entity\\Supplier::setSiret","6"],[0,1,"Supplier.php.html#180","App\\Entity\\Supplier::getEmail","2"],[0,2,"Supplier.php.html#185","App\\Entity\\Supplier::setEmail","6"],[0,1,"Supplier.php.html#191","App\\Entity\\Supplier::getPhone","2"],[0,2,"Supplier.php.html#196","App\\Entity\\Supplier::setPhone","6"],[0,1,"Supplier.php.html#202","App\\Entity\\Supplier::getType","2"],[0,1,"Supplier.php.html#207","App\\Entity\\Supplier::setType","2"],[0,1,"Supplier.php.html#213","App\\Entity\\Supplier::getAverageDeliveryDelay","2"],[0,1,"Supplier.php.html#218","App\\Entity\\Supplier::setAverageDeliveryDelay","2"],[0,1,"Supplier.php.html#224","App\\Entity\\Supplier::getRating","2"],[0,1,"Supplier.php.html#229","App\\Entity\\Supplier::setRating","2"],[0,1,"Supplier.php.html#238","App\\Entity\\Supplier::getVehicles","2"],[0,2,"Supplier.php.html#243","App\\Entity\\Supplier::addVehicle","6"],[0,3,"Supplier.php.html#253","App\\Entity\\Supplier::removeVehicle","12"],[0,1,"User.php.html#50","App\\Entity\\User::getTotpSecret","2"],[0,1,"User.php.html#54","App\\Entity\\User::setTotpSecret","2"],[0,1,"User.php.html#96","App\\Entity\\User::getId","2"],[0,1,"User.php.html#100","App\\Entity\\User::setId","2"],[0,1,"User.php.html#107","App\\Entity\\User::getEmail","2"],[0,1,"User.php.html#112","App\\Entity\\User::setEmail","2"],[0,1,"User.php.html#118","App\\Entity\\User::getUserIdentifier","2"],[0,1,"User.php.html#123","App\\Entity\\User::getRoles","2"],[0,1,"User.php.html#128","App\\Entity\\User::setRoles","2"],[0,1,"User.php.html#134","App\\Entity\\User::getPassword","2"],[0,1,"User.php.html#139","App\\Entity\\User::setPassword","2"],[0,1,"User.php.html#145","App\\Entity\\User::eraseCredentials","2"],[0,1,"User.php.html#149","App\\Entity\\User::isVerified","2"],[0,1,"User.php.html#154","App\\Entity\\User::setIsVerified","2"],[0,1,"User.php.html#162","App\\Entity\\User::getCustomer","2"],[0,1,"User.php.html#167","App\\Entity\\User::setCustomer","2"],[0,1,"User.php.html#214","App\\Entity\\User::getGoogle2FASecret","2"],[0,1,"User.php.html#219","App\\Entity\\User::setGoogle2FASecret","2"],[0,1,"User.php.html#225","App\\Entity\\User::is2FAEnabled","2"],[0,1,"User.php.html#230","App\\Entity\\User::setIs2FAEnabled","2"],[0,1,"User.php.html#236","App\\Entity\\User::isTwoFactorVerified","2"],[0,1,"User.php.html#241","App\\Entity\\User::setIsTwoFactorVerified","2"],[0,1,"User.php.html#249","App\\Entity\\User::getNickname","2"],[0,1,"User.php.html#254","App\\Entity\\User::setNickname","2"],[0,1,"Variant.php.html#48","App\\Entity\\Variant::__construct","2"],[0,1,"Variant.php.html#53","App\\Entity\\Variant::getId","2"],[0,1,"Variant.php.html#64","App\\Entity\\Variant::getName","2"],[0,1,"Variant.php.html#69","App\\Entity\\Variant::setName","2"],[0,1,"Variant.php.html#81","App\\Entity\\Variant::getModel","2"],[0,1,"Variant.php.html#86","App\\Entity\\Variant::setModel","2"],[0,1,"Variant.php.html#98","App\\Entity\\Variant::getVehicleModels","2"],[0,2,"Variant.php.html#103","App\\Entity\\Variant::addVehicleModel","6"],[0,3,"Variant.php.html#113","App\\Entity\\Variant::removeVehicleModel","12"],[0,1,"Vehicle.php.html#29","App\\Entity\\Vehicle::getId","2"],[0,1,"Vehicle.php.html#40","App\\Entity\\Vehicle::getStatus","2"],[0,1,"Vehicle.php.html#45","App\\Entity\\Vehicle::setStatus","2"],[0,1,"Vehicle.php.html#58","App\\Entity\\Vehicle::getUsageType","2"],[0,1,"Vehicle.php.html#63","App\\Entity\\Vehicle::setUsageType","2"],[0,1,"Vehicle.php.html#74","App\\Entity\\Vehicle::getFirstRegistrationDate","2"],[0,1,"Vehicle.php.html#79","App\\Entity\\Vehicle::setFirstRegistrationDate","2"],[0,1,"Vehicle.php.html#89","App\\Entity\\Vehicle::getMileage","2"],[0,1,"Vehicle.php.html#94","App\\Entity\\Vehicle::setMileage","2"],[0,1,"Vehicle.php.html#103","App\\Entity\\Vehicle::getPrice","2"],[0,1,"Vehicle.php.html#108","App\\Entity\\Vehicle::setPrice","2"],[0,1,"Vehicle.php.html#120","App\\Entity\\Vehicle::getVin","2"],[0,1,"Vehicle.php.html#125","App\\Entity\\Vehicle::setVin","2"],[0,1,"Vehicle.php.html#134","App\\Entity\\Vehicle::getRegistrationNumber","2"],[0,2,"Vehicle.php.html#139","App\\Entity\\Vehicle::setRegistrationNumber","6"],[0,1,"Vehicle.php.html#210","App\\Entity\\Vehicle::getVehicleModel","2"],[0,1,"Vehicle.php.html#215","App\\Entity\\Vehicle::setVehicleModel","2"],[0,1,"Vehicle.php.html#224","App\\Entity\\Vehicle::getFuelType","2"],[0,1,"Vehicle.php.html#229","App\\Entity\\Vehicle::setFuelType","2"],[0,1,"Vehicle.php.html#238","App\\Entity\\Vehicle::getGearType","2"],[0,1,"Vehicle.php.html#243","App\\Entity\\Vehicle::setGearType","2"],[0,1,"Vehicle.php.html#252","App\\Entity\\Vehicle::getColor","2"],[0,1,"Vehicle.php.html#257","App\\Entity\\Vehicle::setColor","2"],[0,1,"Vehicle.php.html#266","App\\Entity\\Vehicle::getSupplier","2"],[0,1,"Vehicle.php.html#271","App\\Entity\\Vehicle::setSupplier","2"],[0,1,"Vehicle.php.html#280","App\\Entity\\Vehicle::getImages","2"],[0,2,"Vehicle.php.html#285","App\\Entity\\Vehicle::addImage","6"],[0,3,"Vehicle.php.html#295","App\\Entity\\Vehicle::removeImage","12"],[0,1,"Vehicle.php.html#309","App\\Entity\\Vehicle::getDossiers","2"],[0,2,"Vehicle.php.html#314","App\\Entity\\Vehicle::addDossier","6"],[0,3,"Vehicle.php.html#324","App\\Entity\\Vehicle::removeDossier","12"],[0,1,"Vehicle.php.html#338","App\\Entity\\Vehicle::getMaintenances","2"],[0,2,"Vehicle.php.html#343","App\\Entity\\Vehicle::addMaintenance","6"],[0,3,"Vehicle.php.html#353","App\\Entity\\Vehicle::removeMaintenance","12"],[0,1,"Vehicle.php.html#367","App\\Entity\\Vehicle::getRentals","2"],[0,2,"Vehicle.php.html#372","App\\Entity\\Vehicle::addRental","6"],[0,3,"Vehicle.php.html#382","App\\Entity\\Vehicle::removeRental","12"],[0,1,"Vehicle.php.html#395","App\\Entity\\Vehicle::getSales","2"],[0,2,"Vehicle.php.html#400","App\\Entity\\Vehicle::addSale","6"],[0,3,"Vehicle.php.html#410","App\\Entity\\Vehicle::removeSale","12"],[0,1,"Vehicle.php.html#424","App\\Entity\\Vehicle::getFavorites","2"],[0,2,"Vehicle.php.html#429","App\\Entity\\Vehicle::addFavorite","6"],[0,3,"Vehicle.php.html#438","App\\Entity\\Vehicle::removeFavorite","12"],[0,1,"Vehicle.php.html#452","App\\Entity\\Vehicle::getFeatures","2"],[0,2,"Vehicle.php.html#457","App\\Entity\\Vehicle::addFeature","6"],[0,1,"Vehicle.php.html#466","App\\Entity\\Vehicle::removeFeature","2"],[0,1,"Vehicle.php.html#475","App\\Entity\\Vehicle::isAvailable","2"],[0,1,"Vehicle.php.html#482","App\\Entity\\Vehicle::isLocked","2"],[0,1,"Vehicle.php.html#495","App\\Entity\\Vehicle::reserve","2"],[0,1,"Vehicle.php.html#504","App\\Entity\\Vehicle::markAsSold","2"],[0,1,"Vehicle.php.html#512","App\\Entity\\Vehicle::markAsRented","2"],[0,1,"Vehicle.php.html#520","App\\Entity\\Vehicle::makeAvailable","2"],[0,4,"Vehicle.php.html#531","App\\Entity\\Vehicle::getMainImagePath","20"],[0,1,"Vehicle.php.html#550","App\\Entity\\Vehicle::isFeatured","2"],[0,1,"Vehicle.php.html#555","App\\Entity\\Vehicle::setIsFeatured","2"],[0,1,"Vehicle.php.html#572","App\\Entity\\Vehicle::getBadges","2"],[0,2,"Vehicle.php.html#577","App\\Entity\\Vehicle::addBadge","6"],[0,1,"Vehicle.php.html#586","App\\Entity\\Vehicle::removeBadge","2"],[0,1,"VehicleBadge.php.html#58","App\\Entity\\VehicleBadge::__construct","2"],[0,1,"VehicleBadge.php.html#63","App\\Entity\\VehicleBadge::getId","2"],[0,1,"VehicleBadge.php.html#68","App\\Entity\\VehicleBadge::getCode","2"],[0,1,"VehicleBadge.php.html#73","App\\Entity\\VehicleBadge::setCode","2"],[0,1,"VehicleBadge.php.html#80","App\\Entity\\VehicleBadge::getLabel","2"],[0,1,"VehicleBadge.php.html#85","App\\Entity\\VehicleBadge::setLabel","2"],[0,1,"VehicleBadge.php.html#92","App\\Entity\\VehicleBadge::getCategory","2"],[0,1,"VehicleBadge.php.html#97","App\\Entity\\VehicleBadge::setCategory","2"],[0,1,"VehicleBadge.php.html#104","App\\Entity\\VehicleBadge::getPriority","2"],[0,1,"VehicleBadge.php.html#109","App\\Entity\\VehicleBadge::setPriority","2"],[0,1,"VehicleBadge.php.html#116","App\\Entity\\VehicleBadge::getColor","2"],[0,2,"VehicleBadge.php.html#121","App\\Entity\\VehicleBadge::setColor","6"],[0,1,"VehicleBadge.php.html#128","App\\Entity\\VehicleBadge::getIcon","2"],[0,2,"VehicleBadge.php.html#133","App\\Entity\\VehicleBadge::setIcon","6"],[0,1,"VehicleBadge.php.html#140","App\\Entity\\VehicleBadge::isActive","2"],[0,1,"VehicleBadge.php.html#145","App\\Entity\\VehicleBadge::setIsActive","2"],[0,1,"VehicleBadge.php.html#155","App\\Entity\\VehicleBadge::getVehicles","2"],[0,2,"VehicleBadge.php.html#160","App\\Entity\\VehicleBadge::addVehicle","6"],[0,1,"VehicleBadge.php.html#169","App\\Entity\\VehicleBadge::removeVehicle","2"],[0,1,"VehicleModel.php.html#132","App\\Entity\\VehicleModel::getAvailableStock","2"],[0,1,"VehicleModel.php.html#137","App\\Entity\\VehicleModel::setAvailableStock","2"],[0,1,"VehicleModel.php.html#143","App\\Entity\\VehicleModel::getAvailableForSale","2"],[0,1,"VehicleModel.php.html#148","App\\Entity\\VehicleModel::setAvailableForSale","2"],[0,1,"VehicleModel.php.html#154","App\\Entity\\VehicleModel::getAvailableForRent","2"],[0,1,"VehicleModel.php.html#159","App\\Entity\\VehicleModel::setAvailableForRent","2"],[0,1,"VehicleModel.php.html#171","App\\Entity\\VehicleModel::__toString","2"],[0,1,"VehicleModel.php.html#176","App\\Entity\\VehicleModel::getDisplayName","2"],[0,1,"VehicleModel.php.html#191","App\\Entity\\VehicleModel::getId","2"],[0,1,"VehicleModel.php.html#207","App\\Entity\\VehicleModel::getModel","2"],[0,1,"VehicleModel.php.html#212","App\\Entity\\VehicleModel::setModel","2"],[0,1,"VehicleModel.php.html#218","App\\Entity\\VehicleModel::getVariant","2"],[0,1,"VehicleModel.php.html#223","App\\Entity\\VehicleModel::setVariant","2"],[0,1,"VehicleModel.php.html#229","App\\Entity\\VehicleModel::getFuelType","2"],[0,1,"VehicleModel.php.html#234","App\\Entity\\VehicleModel::setFuelType","2"],[0,1,"VehicleModel.php.html#268","App\\Entity\\VehicleModel::getVehicles","2"],[0,2,"VehicleModel.php.html#273","App\\Entity\\VehicleModel::addVehicle","6"],[0,3,"VehicleModel.php.html#283","App\\Entity\\VehicleModel::removeVehicle","12"],[0,1,"VehicleModel.php.html#300","App\\Entity\\VehicleModel::getEuroNorm","2"],[0,1,"VehicleModel.php.html#305","App\\Entity\\VehicleModel::setEuroNorm","2"],[0,1,"VehicleModel.php.html#311","App\\Entity\\VehicleModel::getPowerHp","2"],[0,1,"VehicleModel.php.html#316","App\\Entity\\VehicleModel::setPowerHp","2"],[0,1,"VehicleModel.php.html#322","App\\Entity\\VehicleModel::getPowerFiscal","2"],[0,1,"VehicleModel.php.html#327","App\\Entity\\VehicleModel::setPowerFiscal","2"],[0,1,"VehicleModel.php.html#333","App\\Entity\\VehicleModel::getConsumption","2"],[0,1,"VehicleModel.php.html#338","App\\Entity\\VehicleModel::setConsumption","2"],[0,1,"VehicleModel.php.html#344","App\\Entity\\VehicleModel::getCo2","2"],[0,1,"VehicleModel.php.html#349","App\\Entity\\VehicleModel::setCo2","2"],[0,1,"VehicleModel.php.html#361","App\\Entity\\VehicleModel::getCnit","2"],[0,2,"VehicleModel.php.html#366","App\\Entity\\VehicleModel::setCnit","6"],[0,1,"VehicleModel.php.html#372","App\\Entity\\VehicleModel::getUtacCode","2"],[0,2,"VehicleModel.php.html#377","App\\Entity\\VehicleModel::setUtacCode","6"],[0,1,"VehicleModel.php.html#383","App\\Entity\\VehicleModel::getHomologationDate","2"],[0,1,"VehicleModel.php.html#388","App\\Entity\\VehicleModel::setHomologationDate","2"],[0,1,"VehicleModel.php.html#394","App\\Entity\\VehicleModel::getMassMin","2"],[0,1,"VehicleModel.php.html#399","App\\Entity\\VehicleModel::setMassMin","2"],[0,1,"VehicleModel.php.html#405","App\\Entity\\VehicleModel::getMassMax","2"],[0,1,"VehicleModel.php.html#410","App\\Entity\\VehicleModel::setMassMax","2"],[0,1,"Traits\/TimestampableTrait.php.html#15","App\\Entity\\Traits\\TimestampableTrait::getCreatedAt","2"],[0,1,"Traits\/TimestampableTrait.php.html#20","App\\Entity\\Traits\\TimestampableTrait::getUpdatedAt","2"],[0,2,"Traits\/TimestampableTrait.php.html#25","App\\Entity\\Traits\\TimestampableTrait::onPrePersist","6"],[0,1,"Traits\/TimestampableTrait.php.html#37","App\\Entity\\Traits\\TimestampableTrait::onPreUpdate","2"],[100,1,"BodyType.php.html#48","App\\Entity\\BodyType::__construct","1"],[100,1,"BodyType.php.html#59","App\\Entity\\BodyType::getId","1"],[100,1,"BodyType.php.html#64","App\\Entity\\BodyType::getName","1"],[100,1,"BodyType.php.html#69","App\\Entity\\BodyType::setName","1"],[100,1,"BodyType.php.html#76","App\\Entity\\BodyType::getSlug","1"],[100,1,"BodyType.php.html#81","App\\Entity\\BodyType::setSlug","1"],[100,1,"BodyType.php.html#88","App\\Entity\\BodyType::getPosition","1"],[100,1,"BodyType.php.html#93","App\\Entity\\BodyType::setPosition","1"],[100,1,"BodyType.php.html#100","App\\Entity\\BodyType::getIcon","1"],[100,1,"BodyType.php.html#105","App\\Entity\\BodyType::setIcon","1"],[100,1,"BodyType.php.html#118","App\\Entity\\BodyType::getVehicleModels","1"],[100,2,"BodyType.php.html#123","App\\Entity\\BodyType::addVehicleModel","2"],[100,3,"BodyType.php.html#133","App\\Entity\\BodyType::removeVehicleModel","3"],[100,1,"BodyType.php.html#144","App\\Entity\\BodyType::__toString","1"],[100,1,"Brand.php.html#40","App\\Entity\\Brand::__construct","1"],[100,1,"Brand.php.html#51","App\\Entity\\Brand::getName","1"],[100,1,"Brand.php.html#56","App\\Entity\\Brand::setName","1"],[100,1,"Brand.php.html#90","App\\Entity\\Brand::getVehicleModels","1"],[100,2,"Brand.php.html#95","App\\Entity\\Brand::addVehicleModel","2"],[100,3,"Brand.php.html#105","App\\Entity\\Brand::removeVehicleModel","3"],[100,1,"Color.php.html#36","App\\Entity\\Color::__construct","1"],[100,1,"Color.php.html#41","App\\Entity\\Color::getId","1"],[100,1,"Color.php.html#46","App\\Entity\\Color::getName","1"],[100,1,"Color.php.html#51","App\\Entity\\Color::setName","1"],[100,1,"Color.php.html#60","App\\Entity\\Color::getVehicles","1"],[100,1,"Favorite.php.html#40","App\\Entity\\Favorite::__construct","1"],[100,1,"Favorite.php.html#50","App\\Entity\\Favorite::getUser","1"],[100,1,"Favorite.php.html#55","App\\Entity\\Favorite::setUser","1"],[100,1,"Favorite.php.html#65","App\\Entity\\Favorite::setVehicle","1"],[100,1,"GearType.php.html#49","App\\Entity\\GearType::__construct","1"],[100,1,"GearType.php.html#66","App\\Entity\\GearType::getName","1"],[100,1,"GearType.php.html#71","App\\Entity\\GearType::setName","1"],[100,1,"GearType.php.html#115","App\\Entity\\GearType::getVehicleModels","1"],[100,2,"GearType.php.html#120","App\\Entity\\GearType::addVehicleModel","2"],[100,3,"GearType.php.html#130","App\\Entity\\GearType::removeVehicleModel","3"],[100,1,"User.php.html#88","App\\Entity\\User::__construct","1"],[100,1,"User.php.html#178","App\\Entity\\User::getFavorites","1"],[100,2,"User.php.html#186","App\\Entity\\User::addFavorite","2"],[100,3,"User.php.html#200","App\\Entity\\User::removeFavorite","3"],[100,1,"Vehicle.php.html#194","App\\Entity\\Vehicle::__construct","1"],[100,1,"VehicleModel.php.html#121","App\\Entity\\VehicleModel::__construct","1"],[100,1,"VehicleModel.php.html#196","App\\Entity\\VehicleModel::getBrand","1"],[100,1,"VehicleModel.php.html#201","App\\Entity\\VehicleModel::setBrand","1"],[100,1,"VehicleModel.php.html#240","App\\Entity\\VehicleModel::getGearType","1"],[100,1,"VehicleModel.php.html#245","App\\Entity\\VehicleModel::setGearType","1"],[100,1,"VehicleModel.php.html#251","App\\Entity\\VehicleModel::getBodyType","1"],[100,1,"VehicleModel.php.html#256","App\\Entity\\VehicleModel::setBodyType","1"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [18,1,1,1,0,0,2,1,0,0,0,2])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [379,0,0,0,0,0,0,0,0,0,0,47])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>
