@@ -177,21 +177,19 @@ deploy-fast:
 
 # Coverage HTML (rapport lisible dans un navigateur)
 coverage-html:
-    docker compose exec php vendor/bin/phpunit --coverage-html var/coverage
+	$(DC) exec php vendor/bin/phpunit --coverage-html var/coverage
 
 # Coverage texte (affiché dans le terminal)
 coverage-text:
-    docker compose exec php vendor/bin/phpunit --coverage-text
+	$(DC) exec php vendor/bin/phpunit --coverage-text
 
 # Coverage Clover (pour GitLab CI, SonarQube, PHPStorm)
 coverage-clover:
-    docker compose exec php vendor/bin/phpunit --coverage-clover var/coverage/clover.xml
+	$(DC) exec php vendor/bin/phpunit --coverage-clover var/coverage/clover.xml
 
 # Coverage Cobertura (pour Jenkins, Azure DevOps, GitHub Actions)
 coverage-cobertura:
-    docker compose exec php vendor/bin/phpunit --coverage-cobertura var/coverage/cobertura.xml
+	$(DC) exec php vendor/bin/phpunit --coverage-cobertura var/coverage/cobertura.xml
 
 # Tout générer d'un coup
 coverage-all: coverage-html coverage-text coverage-clover coverage-cobertura
-
-
