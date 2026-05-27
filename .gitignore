@@ -36,3 +36,4 @@ yarn-error.log
 /config/reference.php
 
 /docker-compose.override.yml
+/var/coverage/
