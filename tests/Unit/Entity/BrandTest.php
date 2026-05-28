@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Brand;
+use App\Entity\Model;
 use App\Entity\VehicleModel;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -19,6 +20,12 @@ class BrandTest extends KernelTestCase
         $this->validator = static::getContainer()->get(ValidatorInterface::class);
     }
 
+    //Vérifie que l'id de brand est à null par défaut
+    public function testIdIsNullByDefault(): void
+    {
+        $brand = new Brand();
+        $this->assertNull($brand->getId());
+    }
     public function testBrandCreation(): void
     {
         $brand = new Brand();
@@ -42,30 +49,47 @@ class BrandTest extends KernelTestCase
     public function testNameCannotBeBlank(): void
     {
         $brand = new Brand();
-        //Attention à mettre un espace vide dans la parenthèse:
         $brand->setName(' ');
 
         $errors = $this->validator->validate($brand);
 
-        $this->assertCount(1, $errors);
+        $this->assertGreaterThan(0, count($errors));
+
+        $this->assertSame('Le nom de la marque est obligatoire.', $errors[0]->getMessage());
     }
 
     public function testNameIsTooShort(): void
     {
         $brand = new Brand();
-
         $brand->setName('a');
+
         $errors = $this->validator->validate($brand);
-        $this->assertGreaterThan(0, count($errors));
+
+        $this->assertSame(
+            'Le nom doit contenir au moins 2 caractères.',
+            $errors[0]->getMessage()
+        );
     }
     public function testNameIsTooLong(): void
     {
         $brand = new Brand();
-
         $brand->setName(str_repeat('a', 121));
+
         $errors = $this->validator->validate($brand);
-        $this->assertGreaterThan(0, count($errors));
+
+        $this->assertSame(
+            'Le nom ne peut pas dépasser 120 caractères.',
+            $errors[0]->getMessage()
+        );
     }
+
+    public function testSetNameDoesNotAcceptNullType(): void
+{
+    $this->expectException(\TypeError::class);
+
+    $brand = new Brand();
+    $brand->setName(null);
+}
 
     //Tests concernant la collection vehicleModel
 
@@ -124,5 +148,59 @@ class BrandTest extends KernelTestCase
 
         //On vérifie la relation inverse
         $this->assertNull($vehicleModel->getBrand());
+    }
+
+    public function testToStringReturnsName(): void
+    {
+        $brand = new Brand();
+        $brand->setName('BMW');
+
+        $this->assertSame('BMW', (string) $brand);
+    }
+
+    public function testToStringReturnsEmptyStringWhenNameIsNull(): void
+    {
+        $brand = new Brand();
+
+        $this->assertSame('', (string) $brand);
+    }
+
+    public function testModelsCollectionIsEmptyByDefault(): void
+    {
+        $brand = new Brand();
+
+        $this->assertInstanceOf(Collection::class, $brand->getModels());
+        $this->assertCount(0, $brand->getModels());
+    }
+    public function testAddModel(): void
+    {
+        $brand = new Brand();
+        $model = new Model();
+
+        $brand->addModel($model);
+
+        $this->assertTrue($brand->getModels()->contains($model));
+        $this->assertSame($brand, $model->getBrand());
+    }
+    public function testRemoveModel(): void
+    {
+        $brand = new Brand();
+        $model = new Model();
+
+        $brand->addModel($model);
+        $brand->removeModel($model);
+
+        $this->assertCount(0, $brand->getModels());
+        $this->assertNull($model->getBrand());
+    }
+    public function testModelIsNotDuplicated(): void
+    {
+        $brand = new Brand();
+        $model = new Model();
+
+        $brand->addModel($model);
+        $brand->addModel($model);
+
+        $this->assertCount(1, $brand->getModels());
     }
 }

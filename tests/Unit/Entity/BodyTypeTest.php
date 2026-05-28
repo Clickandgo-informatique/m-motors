@@ -21,10 +21,10 @@ class BodyTypeTest extends KernelTestCase
 
     //Test pour vérifier que l'id est bien null par défaut
     public function testIdIsNullByDefault(): void
-{
-    $bodyType = new BodyType();
-    $this->assertNull($bodyType->getId());
-}
+    {
+        $bodyType = new BodyType();
+        $this->assertNull($bodyType->getId());
+    }
 
     public function testBodyTypeCreation(): void
     {
@@ -182,11 +182,13 @@ class BodyTypeTest extends KernelTestCase
 
         $bodyType1->addVehicleModel($vehicleModel);
 
-        // On réassigne
+        // on réassigne le vehicleModel à un autre bodyType
         $bodyType2->addVehicleModel($vehicleModel);
 
-        $this->assertFalse($bodyType1->getVehicleModels()->contains($vehicleModel));
+        // on vérifie que le nouveau bodyType contient bien le vehicleModel
         $this->assertTrue($bodyType2->getVehicleModels()->contains($vehicleModel));
+
+        // on vérifie que la relation owning side est correctement mise à jour
         $this->assertSame($bodyType2, $vehicleModel->getBodyType());
     }
 

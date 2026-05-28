@@ -1,199 +1,138 @@
-# =========================
-# CONFIG (auto local / prod)
-# =========================
-
-ifeq ($(wildcard docker-compose.prod.yml),docker-compose.prod.yml)
-	DC = docker compose -f docker-compose.prod.yml
-else
-	DC = docker compose
-endif
-
-PHP = $(DC) exec php
-CONSOLE = $(PHP) php bin/console
-COMPOSER = $(PHP) composer
-
-# =========================
-# PHONY
-# =========================
+dc = docker compose
+php = $(dc) exec php
+console = $(dc) exec php bin/console
+composer = $(dc) exec php composer
 
 .PHONY: up down restart build logs ps bash \
-		composer-install composer-update composer-require \
-		cache-clear cache-warmup debug-router debug-container \
-		db-create db-drop db-reset fixtures db-fixtures \
-		migration migrate migration-clean migration-reset \
-		db-fresh validate-schema debug-entities \
-		tests perm deploy deploy-fast coverage-html coverage-text coverage-clover coverage-cobertura coverage-all
-
-# =========================
-# DOCKER
-# =========================
+	composer-install composer-update composer-require \
+	cache-clear cache-warmup debug-router debug-container \
+	db-create db-drop db-reset fixtures db-fixtures \
+	migration migrate migration-clean migration-reset \
+	db-fresh validate-schema debug-entities \
+	tests perm deploy deploy-fast coverage-html coverage-text coverage-clover coverage-cobertura coverage-all
 
 up:
-	$(DC) up -d
+	$(dc) up -d
 
 down:
-	$(DC) down
+	$(dc) down
 
 restart:
-	$(DC) down
-	$(DC) up -d
+	$(dc) down
+	$(dc) up -d
 
 build:
-	$(DC) build
+	$(dc) build
 
 logs:
-	$(DC) logs -f
+	$(dc) logs -f
 
 ps:
-	$(DC) ps
-
-# =========================
-# CONTAINER
-# =========================
+	$(dc) ps
 
 bash:
-	$(PHP) bash
-
-# =========================
-# COMPOSER
-# =========================
+	$(php) bash
 
 composer-install:
-	$(COMPOSER) install
+	$(composer) install
 
 composer-update:
-	$(COMPOSER) update
+	$(composer) update
 
 composer-require:
-	$(COMPOSER) require $(pkg)
-
-# =========================
-# SYMFONY
-# =========================
+	$(composer) require $(pkg)
 
 cache-clear:
-	$(CONSOLE) cache:clear
+	$(console) cache:clear
 
 cache-warmup:
-	$(CONSOLE) cache:warmup
+	$(console) cache:warmup
 
 debug-router:
-	$(CONSOLE) debug:router
+	$(console) debug:router
 
 debug-container:
-	$(CONSOLE) debug:container
-
-# =========================
-# DATABASE
-# =========================
+	$(console) debug:container
 
 db-create:
-	$(CONSOLE) doctrine:database:create
+	$(console) doctrine:database:create
 
 db-drop:
-	$(CONSOLE) doctrine:database:drop --force --if-exists
+	$(console) doctrine:database:drop --force --if-exists
 
 db-reset:
-	$(CONSOLE) doctrine:database:drop --force --if-exists
-	$(CONSOLE) doctrine:database:create
-	$(CONSOLE) doctrine:migrations:migrate --no-interaction
+	$(console) doctrine:database:drop --force --if-exists
+	$(console) doctrine:database:create
+	$(console) doctrine:migrations:migrate --no-interaction
 
 fixtures:
-	$(CONSOLE) doctrine:fixtures:load --no-interaction
+	$(console) doctrine:fixtures:load --no-interaction
 
 db-fixtures:
-	$(CONSOLE) doctrine:database:drop --force --if-exists
-	$(CONSOLE) doctrine:database:create
-	$(CONSOLE) doctrine:migrations:migrate --no-interaction
-	$(CONSOLE) doctrine:fixtures:load --no-interaction
-
-# =========================
-# MIGRATIONS
-# =========================
+	$(console) doctrine:database:drop --force --if-exists
+	$(console) doctrine:database:create
+	$(console) doctrine:migrations:migrate --no-interaction
+	$(console) doctrine:fixtures:load --no-interaction
 
 migration:
-	$(CONSOLE) make:migration
+	$(console) make:migration
 
 migrate:
-	$(CONSOLE) doctrine:migrations:migrate
+	$(console) doctrine:migrations:migrate
 
 migration-clean:
 	rm -f migrations/*.php
 
 migration-reset:
 	rm -f migrations/*.php
-	$(CONSOLE) make:migration
-
-# =========================
-# FULL RESET DEV
-# =========================
+	$(console) make:migration
 
 db-fresh:
 	rm -f migrations/*.php
-	$(CONSOLE) doctrine:database:drop --force --if-exists
-	$(CONSOLE) doctrine:database:create
-	$(CONSOLE) make:migration
-	$(CONSOLE) doctrine:migrations:migrate --no-interaction
-	$(CONSOLE) doctrine:fixtures:load --no-interaction
-
-# =========================
-# QUALITY / DEBUG
-# =========================
+	$(console) doctrine:database:drop --force --if-exists
+	$(console) doctrine:database:create
+	$(console) make:migration
+	$(console) doctrine:migrations:migrate --no-interaction
+	$(console) doctrine:fixtures:load --no-interaction
 
 validate-schema:
-	$(CONSOLE) doctrine:schema:validate
+	$(console) doctrine:schema:validate
 
 debug-entities:
-	$(CONSOLE) doctrine:mapping:info
-
-# =========================
-# TESTS
-# =========================
+	$(console) doctrine:mapping:info
 
 tests:
 	clear
-	$(PHP) vendor/bin/phpunit
-
-# =========================
-# PERMISSIONS (Linux)
-# =========================
+	$(php) vendor/bin/phpunit
 
 perm:
 	sudo chown -R $$USER:$$USER .
 
-# =========================
-# DEPLOY (PRODUCTION)
-# =========================
-
 deploy:
 	git pull
-	$(DC) build
-	$(DC) up -d
-	$(PHP) composer install --no-dev --optimize-autoloader
-	$(CONSOLE) doctrine:migrations:migrate --no-interaction
-	$(CONSOLE) cache:clear
-	$(CONSOLE) cache:warmup
+	$(dc) build
+	$(dc) up -d
+	$(php) composer install --no-dev --optimize-autoloader
+	$(console) doctrine:migrations:migrate --no-interaction
+	$(console) cache:clear
+	$(console) cache:warmup
 
 deploy-fast:
 	git pull
-	$(DC) up -d
-	$(CONSOLE) doctrine:migrations:migrate --no-interaction
-	$(CONSOLE) cache:clear
-
-# =========================
-# COVERAGE
-# =========================
+	$(dc) up -d
+	$(console) doctrine:migrations:migrate --no-interaction
+	$(console) cache:clear
 
 coverage-html:
-	$(DC) exec php vendor/bin/phpunit --coverage-html var/coverage
+	$(dc) exec php vendor/bin/phpunit --coverage-html var/coverage
 
 coverage-text:
-	$(DC) exec php vendor/bin/phpunit --coverage-text
+	$(dc) exec php vendor/bin/phpunit --coverage-text
 
 coverage-clover:
-	$(DC) exec php vendor/bin/phpunit --coverage-clover var/coverage/clover.xml
+	$(dc) exec php vendor/bin/phpunit --coverage-clover var/coverage/clover.xml
 
 coverage-cobertura:
-	$(DC) exec php vendor/bin/phpunit --coverage-cobertura var/coverage/cobertura.xml
+	$(dc) exec php vendor/bin/phpunit --coverage-cobertura var/coverage/cobertura.xml
 
 coverage-all: coverage-html coverage-text coverage-clover coverage-cobertura
