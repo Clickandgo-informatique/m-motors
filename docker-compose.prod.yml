@@ -21,7 +21,9 @@ services:
       DATABASE_URL: "postgresql://app:app@db:5432/app?serverVersion=16&charset=utf8"
 
   nginx:
-    image: nginx:latest
+    build:
+      context: .
+      dockerfile: docker/nginx/prod/Dockerfile
     container_name: nginx
     ports:
       - "80:80"
@@ -33,7 +35,6 @@ services:
       - certbot-www:/var/www/certbot
     depends_on:
       - php
-      - certbot
 
   certbot:
     image: certbot/certbot
