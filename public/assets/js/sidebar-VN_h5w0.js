@@ -9,6 +9,7 @@ export default function initSidebar() {
 
   const toggle = document.getElementById("sidebar-toggle");
   const body = document.body;
+
   const sidebar = document.getElementById("sidebar");
   const groups = document.querySelectorAll(".sidebar-group");
 
@@ -41,13 +42,13 @@ export default function initSidebar() {
    * (utile quand utilisateur navigue en mode icônes)
    */
   if (sidebar) {
-    const clickableElements = sidebar.querySelectorAll("a, .sidebar-group summary");
+    const links = sidebar.querySelectorAll("a");
 
-    clickableElements.forEach(el => {
-      if (el.dataset.initialized === "1") return;
-      el.dataset.initialized = "1";
+    links.forEach(link => {
+      if (link.dataset.initialized === "1") return;
+      link.dataset.initialized = "1";
 
-      el.addEventListener("click", () => {
+      link.addEventListener("click", () => {
         if (body.classList.contains("sidebar-collapsed")) {
           body.classList.remove("sidebar-collapsed");
         }

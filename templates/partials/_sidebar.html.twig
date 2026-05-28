@@ -1,123 +1,175 @@
 <aside class="sidebar" id="sidebar">
 
-	<button id="sidebar-toggle" class="sidebar-handle">
-		<i class="fa-solid fa-chevron-left"></i>
-	</button>
+    <button id="sidebar-toggle" class="sidebar-handle">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
 
-	<nav
-		class="sidenav sidenav-filters" aria-label="Navigation latérale">
+    <nav
+        class="sidenav sidenav-filters"
+        aria-label="Navigation latérale"
+    >
 
-		{# Si l'utilisateur est authentifié il voit ses dossiers en cours #}
+        {% if app.user and (is_granted('ROLE_USER') or is_granted('ROLE_CUSTOMER')) %}
 
-			{% if app.user and (is_granted('ROLE_USER') or is_granted('ROLE_CUSTOMER')) %}
-					<ul class="items-list">
-						<li>
-							<a href="{{ path('dossier_user_list') }}">
-								<i class="fa-solid fa-folder-open"></i>
-								Mes dossiers
-							</a>
-						</li>
-					</ul>
-				{% endif %}
+            <ul class="items-list standalone-links">
 
-		{# ========================= VEHICULES ========================= #}
-		<details open>
-			<summary>
-				<i class="fa-solid fa-car-side"></i>
-				<span>Véhicules</span>
-			</summary>
+                <li>
+                    <a
+                        href="{{ path('dossier_user_list') }}"
+                        data-tooltip="Mes dossiers"
+                    >
+                        <i class="fa-solid fa-folder-open"></i>
+                        <span>Mes dossiers</span>
+                    </a>
+                </li>
 
-			<ul class="items-list">
+            </ul>
 
-				<li>
-					<a href="{{ path('vehicles_index') }}">
-						<i class="fa-solid fa-car-tunnel"></i>
-						Catalogue véhicules
-					</a>
-				</li>
+        {% endif %}
 
-				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-					<li>
-						<a href="{{ path('vehicles_models') }}">
-							<i class="fa-solid fa-book"></i>
-							Catalogue fabricants
-						</a>
-					</li>
+        {# VEHICULES #}
+        <details class="sidebar-group">
+            <summary data-tooltip="Véhicules">
+                <i class="fa-solid fa-car-side"></i>
+                <span>Véhicules</span>
+            </summary>
+            <ul class="items-list">
 
-					<li>
-						<a href="{{ path('vehicle_new') }}" data-ajax-modal>
-							<i class="fa-solid fa-file-circle-plus"></i>
-							Créer un véhicule
-						</a>
-					</li>
+                <li>
+                    <a
+                        href="{{ path('vehicles_index') }}"
+                        data-tooltip="Catalogue véhicules"
+                    >
+                        <i class="fa-solid fa-car-tunnel"></i>
+                        <span>Catalogue véhicules</span>
+                    </a>
+                </li>
 
-					<li>
-						<a href="{{ path('vehicle_model_new') }}" data-ajax-modal>
-							<i class="fa-solid fa-file-circle-plus"></i>
-							Créer un modèle de véhicule
-						</a>
-					</li>
-				{% endif %}
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-			</ul>
+                    <li>
+                        <a
+                            href="{{ path('vehicles_models') }}"
+                            data-tooltip="Catalogue fabricants"
+                        >
+                            <i class="fa-solid fa-book"></i>
+                            <span>Catalogue fabricants</span>
+                        </a>
+                    </li>
 
-		</details>
+                    <li>
+                        <a
+                            href="{{ path('vehicle_new') }}"
+                            data-ajax-modal
+                            data-tooltip="Créer un véhicule"
+                        >
+                            <i class="fa-solid fa-file-circle-plus"></i>
+                            <span>Créer un véhicule</span>
+                        </a>
+                    </li>
 
-		{# ========================= CLIENTS ========================= #}
-		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-			<details open>
-				<summary>
-					<i class="fa-regular fa-address-book"></i>
-					Clients
-				</summary>
+                    <li>
+                        <a
+                            href="{{ path('vehicle_model_new') }}"
+                            data-ajax-modal
+                            data-tooltip="Créer un modèle de véhicule"
+                        >
+                            <i class="fa-solid fa-file-circle-plus"></i>
+                            <span>Créer un modèle de véhicule</span>
+                        </a>
+                    </li>
 
-				<ul class="items-list">
+                {% endif %}
 
-					<li>
-						<a href="{{ path('customer_list') }}">
-							<i class="fa-regular fa-address-book"></i>
-							Liste clients
-						</a>
-					</li>
+            </ul>
 
-					<li>
-						<a href="{{ path('customer_new') }}" data-ajax-modal>
-							<i class="fa-solid fa-user-plus"></i>
-							Créer client
-						</a>
-					</li>
+        </details>
 
-				</ul>
-			</details>
-		{% endif %}
+        {# CLIENTS #}
 
-		{# ========================= DOSSIERS ========================= #}
-		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-			<details open>
-				<summary>
-					<i class="fa-solid fa-file-lines"></i>
-					Dossiers
-				</summary>
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-				<ul class="items-list">
+            <details class="sidebar-group">
 
-					<li>
-						<a href="{{ path('admin_dossier_list') }}">
-							<i class="fa-solid fa-list"></i>
-							Liste dossiers (Admin)
-						</a>
-					</li>
+                <summary data-tooltip="Clients">
 
-					<li>
-						<a href="{{ path('admin_dossier_new') }}">
-							<i class="fa-solid fa-file-circle-plus"></i>
-							Créer dossier
-						</a>
-					</li>
+                    <i class="fa-regular fa-address-book"></i>
 
-				</ul>
-			</details>
-		{% endif %}
+                    <span>Clients</span>
 
-	</nav>
+                </summary>
+
+                <ul class="items-list">
+
+                    <li>
+                        <a
+                            href="{{ path('customer_list') }}"
+                            data-tooltip="Liste clients"
+                        >
+                            <i class="fa-regular fa-address-book"></i>
+                            <span>Liste clients</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a
+                            href="{{ path('customer_new') }}"
+                            data-ajax-modal
+                            data-tooltip="Créer client"
+                        >
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>Créer client</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </details>
+
+        {% endif %}
+
+        {# DOSSIERS #}
+
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+
+            <details class="sidebar-group">
+
+                <summary data-tooltip="Dossiers">
+
+                    <i class="fa-solid fa-folder-open"></i>
+
+                    <span>Dossiers</span>
+
+                </summary>
+
+                <ul class="items-list">
+
+                    <li>
+                        <a
+                            href="{{ path('admin_dossier_list') }}"
+                            data-tooltip="Liste dossiers (Admin)"
+                        >
+                            <i class="fa-solid fa-list"></i>
+                            <span>Liste dossiers (Admin)</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a
+                            href="{{ path('admin_dossier_new') }}"
+                            data-tooltip="Créer dossier"
+                        >
+                            <i class="fa-solid fa-file-circle-plus"></i>
+                            <span>Créer dossier</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </details>
+
+        {% endif %}
+
+    </nav>
+
 </aside>
