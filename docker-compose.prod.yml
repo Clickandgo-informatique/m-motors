@@ -1,3 +1,4 @@
+name: m-motors-prod
 services:
   php:
     build:
@@ -36,19 +37,32 @@ services:
     depends_on:
       - php
 
-  certbot:
+  certbot-init:
     image: certbot/certbot
-    container_name: certbot
+    container_name: certbot-init
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    command: >
+      certbot certonly --webroot
+      --webroot-path=/var/www/certbot
+      -d app.m-motors.clickandgo-informatique.com
+      --email mail@clickandgo-informatique.com
+      --agree-tos
+      --non-interactive
+
+  certbot-renew:
+    image: certbot/certbot
+    container_name: certbot-renew
     volumes:
       - letsencrypt:/etc/letsencrypt
       - certbot-www:/var/www/certbot
     entrypoint: >
-      sh -c "certbot certonly --webroot
-      --webroot-path=/var/www/certbot
-      -d app.m-motors.clickandgo-informatique.com
-      --email ton-email@example.com
-      --agree-tos
-      --non-interactive || true"
+      sh -c "while true; do
+      certbot renew --webroot --webroot-path=/var/www/certbot &&
+      nginx -s reload;
+      sleep 12h;
+      done"
 
   db:
     image: postgres:16

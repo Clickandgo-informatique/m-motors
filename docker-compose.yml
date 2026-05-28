@@ -1,3 +1,4 @@
+name: m-motors-dev
 services:
   php:
     build:
