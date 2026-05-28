@@ -1,11 +1,24 @@
 # =========================
-# CONFIG
+# CONFIG (auto local / docker)
 # =========================
 
 DC = docker compose
-PHP = $(DC) exec php
-CONSOLE = $(PHP) php bin/console
-COMPOSER = $(PHP) composer
+
+# Détection du container PHP
+DOCKER_PHP = $(shell docker ps --format "{{.Names}}" | grep -w php 2>/dev/null)
+
+ifeq ($(DOCKER_PHP),php)
+    # Mode DOCKER
+    PHP = $(DC) exec php
+    CONSOLE = $(PHP) php bin/console
+    COMPOSER = $(PHP) composer
+else
+    # Mode LOCAL
+    PHP = php
+    CONSOLE = php bin/console
+    COMPOSER = composer
+endif
+
 
 # =========================
 # PHONY
