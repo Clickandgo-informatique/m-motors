@@ -44,7 +44,7 @@ services:
       - letsencrypt:/etc/letsencrypt
       - certbot-www:/var/www/certbot
     command: >
-      certbot certonly --webroot
+      certonly --webroot
       --webroot-path=/var/www/certbot
       -d app.m-motors.clickandgo-informatique.com
       --email mail@clickandgo-informatique.com
