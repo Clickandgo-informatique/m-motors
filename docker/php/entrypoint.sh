@@ -2,12 +2,12 @@
 set -e
 
 # fix permissions for symfony writable directories
-chown -R www-data:www-data /var/www/var /var/www/vendor
+chown -R www-data:www-data /var/www/html/var /var/www/html/vendor
 
 # install composer dependencies if vendor is missing or incomplete
-if [ ! -d /var/www/vendor ] || [ ! -f /var/www/vendor/autoload.php ]; then
+if [ ! -d /var/www/html/vendor ] || [ ! -f /var/www/html/vendor/autoload.php ]; then
     echo "vendor is missing, installing composer dependencies"
-    cd /var/www
+    cd /var/www/html
     composer install --no-interaction --optimize-autoloader
 fi
 
