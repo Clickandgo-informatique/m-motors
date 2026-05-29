@@ -1,19 +1,21 @@
-<table class="table table-striped">
+<div class="table-wrapper">
+
+<table>
 	<thead>
 		<tr>
-			<th>Statut</th>
-			<th>Marque</th>
-			<th>Modèle</th>
-			<th>Kilométrage</th>
-			<th>Carrosserie</th>
-			<th>Énergie</th>
-			<th>Prix</th>
+			<th>statut</th>
+			<th>marque</th>
+			<th>modele</th>
+			<th>kilometrage</th>
+			<th>carrosserie</th>
+			<th>energie</th>
+			<th>prix</th>
 
 			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-				<th>Immatriculation</th>
-				<th>Stock</th>
-				<th>Disponibilité</th>
-				<th>Créé le</th>
+				<th>immatriculation</th>
+				<th>stock</th>
+				<th>disponibilite</th>
+				<th>cree le</th>
 			{% endif %}
 		</tr>
 	</thead>
@@ -22,73 +24,61 @@
 		{% for vehicle in vehicles %}
 			<tr>
 
-				{# =========================
-				   STATUT GLOBAL VEHICULE
-				   ========================= #}
-				<td data-label="Statut">
+				<td data-label="statut">
 					<span class="badge bg-{{ vehicle.status.badge }}">
 						{{ vehicle.status.label }}
 					</span>
 				</td>
 
-				<td data-label="Marque">
+				<td data-label="marque">
 					<strong>{{ vehicle.vehicleModel.brand.name }}</strong>
 				</td>
 
-				<td data-label="Modèle">
+				<td data-label="modele">
 					{{ vehicle.vehicleModel.model.name }}
 				</td>
 
-				<td data-label="Kilométrage">
+				<td data-label="kilometrage">
 					{{ vehicle.mileage|number_format(0, ',', '.') }} km
 				</td>
 
-				<td data-label="Carrosserie">
+				<td data-label="carrosserie">
 					{{ vehicle.vehicleModel.bodyType.name }}
 				</td>
 
-				<td data-label="Énergie">
+				<td data-label="energie">
 					{{ vehicle.vehicleModel.fuelType.name }}
 				</td>
 
-				<td data-label="Prix">
+				<td data-label="prix">
 					{{ vehicle.price|number_format(0, ',', '.') }} €
 				</td>
 
 				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-					{# =========================
-					   IMMATRICULATION
-					   ========================= #}
-					<td data-label="Immatriculation">
+					<td data-label="immatriculation">
 						{{ vehicle.registrationNumber ?? '-' }}
 					</td>
 
-					{# =========================
-					   STOCK (ETAT METIER)
-					   ========================= #}
-					<td data-label="Stock">
+					<td data-label="stock">
 						<span class="badge bg-{{ vehicle.status.badge }}">
 							{{ vehicle.status.label }}
 						</span>
 					</td>
 
-					{# =========================
-					   DISPONIBILITE LOGIQUE
-					   ========================= #}
-					<td data-label="Disponibilité">
+					<td data-label="disponibilite">
 
 						{% if vehicle.status.isAvailable %}
-							<span class="badge bg-success">Disponible</span>
+							<span class="badge bg-success">disponible</span>
 
 						{% elseif vehicle.status.isReserved %}
-							<span class="badge bg-warning text-dark">Réservé</span>
+							<span class="badge bg-warning text-dark">reserve</span>
 
 						{% elseif vehicle.status.isInUse %}
-							<span class="badge bg-info">En utilisation</span>
+							<span class="badge bg-info">en utilisation</span>
 
 						{% elseif vehicle.status.isUnavailable %}
-							<span class="badge bg-danger">Indisponible</span>
+							<span class="badge bg-danger">indisponible</span>
 
 						{% else %}
 							<span class="badge bg-secondary">-</span>
@@ -96,10 +86,7 @@
 
 					</td>
 
-					{# =========================
-					   DATE CREATION
-					   ========================= #}
-					<td data-label="Créé le">
+					<td data-label="cree le">
 						{{ vehicle.createdAt ? vehicle.createdAt|date('d/m/Y') : '-' }}
 					</td>
 
@@ -108,11 +95,18 @@
 			</tr>
 
 		{% else %}
+
 			<tr>
-				<td colspan="11" class="text-center text-muted">
-					Aucun véhicule trouvé
+				<td colspan="{{ is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') ? 11 : 7 }}"
+					class="text-center text-muted">
+
+					aucun vehicule trouvé
+
 				</td>
 			</tr>
+
 		{% endfor %}
 	</tbody>
 </table>
+
+</div>

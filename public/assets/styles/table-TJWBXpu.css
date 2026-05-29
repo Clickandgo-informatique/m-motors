@@ -52,6 +52,9 @@ tbody tr:hover {
   background: var(--focus-bg);
   transition: background 0.2s ease;
 }
+thead{
+  background: var(--color-primary);
+}
 
 /* responsive tablet */
 
@@ -64,10 +67,6 @@ tbody tr:hover {
   td {
     padding: 8px 10px;
   }
-}
-.vehicle-specs thead th {
-  background: var(--color-primary);
-  color: var(--text-primary);
 }
 
 /* responsive stack */

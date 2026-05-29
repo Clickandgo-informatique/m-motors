@@ -1,6 +1,11 @@
 <aside class="sidebar" id="sidebar">
 
-    <button id="sidebar-toggle" class="sidebar-handle">
+    <button
+        id="sidebar-toggle"
+        class="sidebar-handle"
+        type="button"
+        aria-label="Réduire la navigation"
+    >
         <i class="fa-solid fa-chevron-left"></i>
     </button>
 
@@ -9,74 +14,116 @@
         aria-label="Navigation latérale"
     >
 
+        {% set currentRoute = app.request.attributes.get('_route') %}
+
+        {% set vehiclesRoutes = currentRoute starts with 'vehicle' or currentRoute starts with 'vehicles_' %}
+        {% set customersRoutes = currentRoute starts with 'customer_' %}
+        {% set dossiersRoutes = currentRoute starts with 'admin_dossier_' %}
+
         {% if app.user and (is_granted('ROLE_USER') or is_granted('ROLE_CUSTOMER')) %}
 
             <ul class="items-list standalone-links">
 
                 <li>
+
                     <a
                         href="{{ path('dossier_user_list') }}"
-                        data-tooltip="Mes dossiers"
+                        class="{% if currentRoute == 'dossier_user_list' %}is-active{% endif %}"
                     >
+
                         <i class="fa-solid fa-folder-open"></i>
+
                         <span>Mes dossiers</span>
+
                     </a>
+
                 </li>
 
             </ul>
 
         {% endif %}
 
-        {# VEHICULES #}
-        <details class="sidebar-group">
-            <summary data-tooltip="Véhicules">
+        {# vehicules #}
+
+        <details
+            class="sidebar-group {% if vehiclesRoutes %}is-active{% endif %}"
+            {% if vehiclesRoutes %}
+                open
+            {% endif %}
+        >
+
+            <summary>
+
                 <i class="fa-solid fa-car-side"></i>
+
                 <span>Véhicules</span>
+
             </summary>
+
             <ul class="items-list">
 
                 <li>
+
                     <a
                         href="{{ path('vehicles_index') }}"
-                        data-tooltip="Catalogue véhicules"
+                        class="{% if currentRoute == 'vehicles_index' %}is-active{% endif %}"
                     >
+
                         <i class="fa-solid fa-car-tunnel"></i>
+
                         <span>Catalogue véhicules</span>
+
                     </a>
+
                 </li>
 
                 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
                     <li>
+
                         <a
                             href="{{ path('vehicles_models') }}"
-                            data-tooltip="Catalogue fabricants"
+                            class="{% if currentRoute == 'vehicles_models' %}is-active{% endif %}"
                         >
+
                             <i class="fa-solid fa-book"></i>
+
                             <span>Catalogue fabricants</span>
+
                         </a>
+
                     </li>
 
                     <li>
+
                         <a
                             href="{{ path('vehicle_new') }}"
                             data-ajax-modal
-                            data-tooltip="Créer un véhicule"
+                            class="{% if currentRoute == 'vehicle_new' %}is-active{% endif %}"
                         >
+
                             <i class="fa-solid fa-file-circle-plus"></i>
+
                             <span>Créer un véhicule</span>
+
                         </a>
+
                     </li>
 
                     <li>
+
                         <a
                             href="{{ path('vehicle_model_new') }}"
                             data-ajax-modal
-                            data-tooltip="Créer un modèle de véhicule"
+                            class="{% if currentRoute == 'vehicle_model_new' %}is-active{% endif %}"
                         >
+
                             <i class="fa-solid fa-file-circle-plus"></i>
+
                             <span>Créer un modèle de véhicule</span>
+
                         </a>
+
                     </li>
 
                 {% endif %}
@@ -85,13 +132,18 @@
 
         </details>
 
-        {# CLIENTS #}
+        {# clients #}
 
         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-            <details class="sidebar-group">
+            <details
+                class="sidebar-group {% if customersRoutes %}is-active{% endif %}"
+                {% if customersRoutes %}
+                    open
+                {% endif %}
+            >
 
-                <summary data-tooltip="Clients">
+                <summary>
 
                     <i class="fa-regular fa-address-book"></i>
 
@@ -102,24 +154,34 @@
                 <ul class="items-list">
 
                     <li>
+
                         <a
                             href="{{ path('customer_list') }}"
-                            data-tooltip="Liste clients"
+                            class="{% if currentRoute == 'customer_list' %}is-active{% endif %}"
                         >
+
                             <i class="fa-regular fa-address-book"></i>
+
                             <span>Liste clients</span>
+
                         </a>
+
                     </li>
 
                     <li>
+
                         <a
                             href="{{ path('customer_new') }}"
                             data-ajax-modal
-                            data-tooltip="Créer client"
+                            class="{% if currentRoute == 'customer_new' %}is-active{% endif %}"
                         >
+
                             <i class="fa-solid fa-user-plus"></i>
+
                             <span>Créer client</span>
+
                         </a>
+
                     </li>
 
                 </ul>
@@ -128,13 +190,18 @@
 
         {% endif %}
 
-        {# DOSSIERS #}
+        {# dossiers #}
 
         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-            <details class="sidebar-group">
+            <details
+                class="sidebar-group {% if dossiersRoutes %}is-active{% endif %}"
+                {% if dossiersRoutes %}
+                    open
+                {% endif %}
+            >
 
-                <summary data-tooltip="Dossiers">
+                <summary>
 
                     <i class="fa-solid fa-folder-open"></i>
 
@@ -145,23 +212,33 @@
                 <ul class="items-list">
 
                     <li>
+
                         <a
                             href="{{ path('admin_dossier_list') }}"
-                            data-tooltip="Liste dossiers (Admin)"
+                            class="{% if currentRoute == 'admin_dossier_list' %}is-active{% endif %}"
                         >
+
                             <i class="fa-solid fa-list"></i>
+
                             <span>Liste dossiers (Admin)</span>
+
                         </a>
+
                     </li>
 
                     <li>
+
                         <a
                             href="{{ path('admin_dossier_new') }}"
-                            data-tooltip="Créer dossier"
+                            class="{% if currentRoute == 'admin_dossier_new' %}is-active{% endif %}"
                         >
+
                             <i class="fa-solid fa-file-circle-plus"></i>
+
                             <span>Créer dossier</span>
+
                         </a>
+
                     </li>
 
                 </ul>

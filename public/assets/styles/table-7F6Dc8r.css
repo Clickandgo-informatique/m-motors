@@ -3,7 +3,6 @@
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
-  margin: 1.25rem 0;
 }
 
 /* table base */
@@ -64,10 +63,6 @@ tbody tr:hover {
   td {
     padding: 8px 10px;
   }
-}
-.vehicle-specs thead th {
-  background: var(--color-primary);
-  color: var(--text-primary);
 }
 
 /* responsive stack */

@@ -45,6 +45,8 @@
 	<a class="btn btn-new" href="{{ path('vehicle_model_new') }}" data-ajax-modal>
 		<i class="fa-solid fa-circle-plus"></i>Ajouter un nouveau modèle de véhicule</a>
 	<div id="vehicle-model-results">
+
+	<div class="table-wrapper">
 		<table class="table-utac">
 			<thead>
 				<tr>
@@ -90,6 +92,7 @@
 				{% endfor %}
 			</tbody>
 		</table>
+		</div>
 	</div>
 	<div class="pagination">
 		{{ knp_pagination_render(vm) }}

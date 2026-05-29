@@ -65,10 +65,6 @@ tbody tr:hover {
     padding: 8px 10px;
   }
 }
-.vehicle-specs thead th {
-  background: var(--color-primary);
-  color: var(--text-primary);
-}
 
 /* responsive stack */
 

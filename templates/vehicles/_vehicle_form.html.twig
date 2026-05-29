@@ -1,10 +1,5 @@
 {% block body %}
 
-	<h1 class="text-center">
-		<i class="fa-solid fa-circle-plus"></i>
-		{{ title }}
-	</h1>
-
 	{{ form_start(form, {
 		attr: {
 			'data-search-form': path('vehicle_model_search'),
@@ -17,6 +12,10 @@
 			'data-ajax-form': 'true'
 		}
 	}) }}
+	<h1 class="text-center">
+		<i class="fa-solid fa-circle-plus"></i>
+		{{ title }}
+	</h1>
 
 	{# vehicle model display #}
 	{% if vehicle.vehicleModel and vehicle.vehicleModel.brand and vehicle.vehicleModel.model %}
