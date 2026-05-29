@@ -86,7 +86,8 @@
   }
 }
 #filters-summary {
-  padding: 5px; 
+  padding: 5px;
+  background: transparent;
 }
 .favorites-wrapper {
   color: var(--color-primary);

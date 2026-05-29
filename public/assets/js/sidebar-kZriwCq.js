@@ -14,20 +14,23 @@ export default function initSidebar() {
   const filtersBackdrop = document.getElementById("filters-backdrop");
 
   /**
-   * force un état stable au chargement
-   * sidebar toujours collapsed par défaut
+   * etat initial sidebar
+   * force la cohérence (évite "ouverte au démarrage")
    */
-  const ensureCollapsedState = () => {
-    body.classList.add("sidebar-collapsed");
-    groups.forEach(g => g.removeAttribute("open"));
+  const initCollapsed = () => {
+    const isCollapsed = body.classList.contains("sidebar-collapsed");
+
+    if (isCollapsed) {
+      groups.forEach(g => g.removeAttribute("open"));
+    }
   };
 
-  ensureCollapsedState();
+  initCollapsed();
 
   /**
    * toggle sidebar
    */
-  if (toggle && !toggle.dataset.initialized) {
+  if (toggle && toggle.dataset.initialized !== "1") {
     toggle.dataset.initialized = "1";
 
     toggle.addEventListener("click", () => {
@@ -40,8 +43,8 @@ export default function initSidebar() {
   }
 
   /**
-   * interaction navigation
-   * si sidebar collapsed => on réouvre
+   * clic sur navigation
+   * réouvre sidebar si collapsed
    */
   if (sidebar) {
     const clickableElements = sidebar.querySelectorAll("a, .sidebar-group summary");
@@ -65,7 +68,7 @@ export default function initSidebar() {
     filtersDrawer &&
     filtersClose &&
     filtersBackdrop &&
-    !filtersFab.dataset.initialized
+    filtersFab.dataset.initialized !== "1"
   ) {
     filtersFab.dataset.initialized = "1";
 

@@ -27,14 +27,14 @@ body.sidebar-collapsed .sidebar {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border-color);
-  background: var(--bg-primary);
+  background: var(--color-primary);
   border-radius: 6px;
   cursor: pointer;
   z-index: 10;
 }
 
 .sidebar-handle i {
-  color: var(--text-primary);
+  color: white;
   transition: transform 0.25s ease;
 }
 

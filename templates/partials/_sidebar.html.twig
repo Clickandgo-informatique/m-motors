@@ -4,15 +4,12 @@
         id="sidebar-toggle"
         class="sidebar-handle"
         type="button"
-        aria-label="Réduire la navigation"
+        aria-label="toggle navigation"
     >
         <i class="fa-solid fa-chevron-left"></i>
     </button>
 
-    <nav
-        class="sidenav sidenav-filters"
-        aria-label="Navigation latérale"
-    >
+    <nav class="sidenav sidenav-filters" aria-label="navigation laterale">
 
         {% set currentRoute = app.request.attributes.get('_route') %}
 
@@ -25,105 +22,62 @@
             <ul class="items-list standalone-links">
 
                 <li>
-
                     <a
                         href="{{ path('dossier_user_list') }}"
                         class="{% if currentRoute == 'dossier_user_list' %}is-active{% endif %}"
                     >
-
                         <i class="fa-solid fa-folder-open"></i>
-
-                        <span>Mes dossiers</span>
-
+                        <span>mes dossiers</span>
                     </a>
-
                 </li>
 
             </ul>
 
         {% endif %}
 
-        {# vehicules #}
-
-        <details
-            class="sidebar-group {% if vehiclesRoutes %}is-active{% endif %}"
-            {% if vehiclesRoutes %}
-                open
-            {% endif %}
-        >
+        <details class="sidebar-group {% if vehiclesRoutes %}is-active{% endif %}" {% if vehiclesRoutes %}open{% endif %}>
 
             <summary>
-
                 <i class="fa-solid fa-car-side"></i>
-
-                <span>Véhicules</span>
-
+                <span>vehicules</span>
             </summary>
 
             <ul class="items-list">
 
                 <li>
-
                     <a
                         href="{{ path('vehicles_index') }}"
                         class="{% if currentRoute == 'vehicles_index' %}is-active{% endif %}"
                     >
-
                         <i class="fa-solid fa-car-tunnel"></i>
-
-                        <span>Catalogue véhicules</span>
-
+                        <span>catalogue vehicules</span>
                     </a>
-
                 </li>
 
                 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
                     <li>
-
                         <a
                             href="{{ path('vehicles_models') }}"
                             class="{% if currentRoute == 'vehicles_models' %}is-active{% endif %}"
                         >
-
                             <i class="fa-solid fa-book"></i>
-
-                            <span>Catalogue fabricants</span>
-
+                            <span>catalogue fabricants</span>
                         </a>
-
                     </li>
 
                     <li>
-
-                        <a
-                            href="{{ path('vehicle_new') }}"
-                            data-ajax-modal
-                            class="{% if currentRoute == 'vehicle_new' %}is-active{% endif %}"
-                        >
-
+                        <a href="{{ path('vehicle_new') }}" data-ajax-modal>
                             <i class="fa-solid fa-file-circle-plus"></i>
-
-                            <span>Créer un véhicule</span>
-
+                            <span>creer vehicule</span>
                         </a>
-
                     </li>
 
                     <li>
-
-                        <a
-                            href="{{ path('vehicle_model_new') }}"
-                            data-ajax-modal
-                            class="{% if currentRoute == 'vehicle_model_new' %}is-active{% endif %}"
-                        >
-
+                        <a href="{{ path('vehicle_model_new') }}" data-ajax-modal>
                             <i class="fa-solid fa-file-circle-plus"></i>
-
-                            <span>Créer un modèle de véhicule</span>
-
+                            <span>creer modele</span>
                         </a>
-
                     </li>
 
                 {% endif %}
@@ -132,56 +86,32 @@
 
         </details>
 
-        {# clients #}
-
         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-            <details
-                class="sidebar-group {% if customersRoutes %}is-active{% endif %}"
-                {% if customersRoutes %}
-                    open
-                {% endif %}
-            >
+            <details class="sidebar-group {% if customersRoutes %}is-active{% endif %}" {% if customersRoutes %}open{% endif %}>
 
                 <summary>
-
                     <i class="fa-regular fa-address-book"></i>
-
-                    <span>Clients</span>
-
+                    <span>clients</span>
                 </summary>
 
                 <ul class="items-list">
 
                     <li>
-
                         <a
                             href="{{ path('customer_list') }}"
                             class="{% if currentRoute == 'customer_list' %}is-active{% endif %}"
                         >
-
                             <i class="fa-regular fa-address-book"></i>
-
-                            <span>Liste clients</span>
-
+                            <span>liste clients</span>
                         </a>
-
                     </li>
 
                     <li>
-
-                        <a
-                            href="{{ path('customer_new') }}"
-                            data-ajax-modal
-                            class="{% if currentRoute == 'customer_new' %}is-active{% endif %}"
-                        >
-
+                        <a href="{{ path('customer_new') }}" data-ajax-modal>
                             <i class="fa-solid fa-user-plus"></i>
-
-                            <span>Créer client</span>
-
+                            <span>creer client</span>
                         </a>
-
                     </li>
 
                 </ul>
@@ -190,55 +120,35 @@
 
         {% endif %}
 
-        {# dossiers #}
-
         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-            <details
-                class="sidebar-group {% if dossiersRoutes %}is-active{% endif %}"
-                {% if dossiersRoutes %}
-                    open
-                {% endif %}
-            >
+            <details class="sidebar-group {% if dossiersRoutes %}is-active{% endif %}" {% if dossiersRoutes %}open{% endif %}>
 
                 <summary>
-
                     <i class="fa-solid fa-folder-open"></i>
-
-                    <span>Dossiers</span>
-
+                    <span>dossiers</span>
                 </summary>
 
                 <ul class="items-list">
 
                     <li>
-
                         <a
                             href="{{ path('admin_dossier_list') }}"
                             class="{% if currentRoute == 'admin_dossier_list' %}is-active{% endif %}"
                         >
-
                             <i class="fa-solid fa-list"></i>
-
-                            <span>Liste dossiers (Admin)</span>
-
+                            <span>liste dossiers</span>
                         </a>
-
                     </li>
 
                     <li>
-
                         <a
                             href="{{ path('admin_dossier_new') }}"
                             class="{% if currentRoute == 'admin_dossier_new' %}is-active{% endif %}"
                         >
-
                             <i class="fa-solid fa-file-circle-plus"></i>
-
-                            <span>Créer dossier</span>
-
+                            <span>creer dossier</span>
                         </a>
-
                     </li>
 
                 </ul>

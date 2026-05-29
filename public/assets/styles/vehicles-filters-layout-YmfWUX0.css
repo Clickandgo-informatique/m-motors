@@ -23,8 +23,6 @@
 
   background: var(--surface-1);
   z-index: 1200;
-
-  isolation: isolate;
 }
 
 .vehicles-filters::-webkit-scrollbar {
@@ -121,8 +119,8 @@
   .vehicles-active-filters {
     position: sticky;
     top: 0;
-    z-index: 10;
-    margin-bottom: 0.75rem;  
+    z-index: 2;
+    margin-bottom: 0.75rem;
   }
 
   /* drawer */
@@ -131,26 +129,38 @@
     top: 0;
     right: 0;
     bottom: 0;
+
     width: 90%;
     max-width: 400px;
-    height: 100dvh;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
+
+    height: auto;
+
     margin: 0;
-    padding: 0;
+
     transform: translate3d(100%, 0, 0);
     transition: transform 0.25s ease;
-    overflow: hidden;
+
+    background: var(--surface-1);
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
     box-shadow: var(--shadow-heavy);
+
     z-index: 1200;
+
     pointer-events: none;
     visibility: hidden;
+
+    padding: 0.75rem;
+
+    display: flex;
+    flex-direction: column;
   }
 
   .vehicles-filters.is-open {
-    transform: translate3d(0, 0, 0);
     visibility: visible;
+    transform: translate3d(0, 0, 0);
     pointer-events: auto;
   }
 
@@ -160,8 +170,6 @@
     align-items: center;
     justify-content: space-between;
 
-    flex: 0 0 auto;
-
     position: sticky;
     top: 0;
 
@@ -170,9 +178,10 @@
     background: var(--surface-1);
     border-bottom: 1px solid var(--border-light);
 
-    z-index: 10;
+    z-index: 2;
   }
 
+  /* close button */
   .filters-drawer-close {
     width: 36px;
     height: 36px;
@@ -189,33 +198,13 @@
 
     font-size: 1.25rem;
 
+    z-index: 1400;
+
     margin-left: auto;
   }
 
-  /* contenu scrollable du drawer */
-  .vehicles-filters > *:not(.filters-drawer-header) {
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
-  }
-
-  /* fab */
+  /* fab visible only mobile */
   .filters-fab {
     display: flex;
-  }
-
-  .filters-drawer-title {
-    display: flex;
-    align-items: center;
-    gap: var(--space-s);
-    font-weight: 600;
-  }
-
-  .filters-drawer-count {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    display: flex;
-    gap: 4px;
-    align-items: center;
   }
 }
