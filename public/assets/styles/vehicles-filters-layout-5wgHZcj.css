@@ -64,20 +64,29 @@
   position: fixed;
   right: 1rem;
   bottom: 1rem;
+
   width: 56px;
   height: 56px;
-  display: flex;
+
+  display: none;
   align-items: center;
   justify-content: center;
+
   border: none;
   border-radius: 999px;
+
   background: var(--color-primary);
   color: white;
+
   cursor: pointer;
+
   box-shadow: var(--shadow-heavy);
-  transition: transform 0.2s ease, background 0.2s ease;
-  z-index: 99999;
-  pointer-events: auto;
+
+  z-index: 1300;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .filters-fab:hover {
@@ -100,7 +109,9 @@
   opacity: 0;
   visibility: hidden;
 
-  transition: opacity 0.25s ease, visibility 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
 
   z-index: 1100;
 }
@@ -117,50 +128,139 @@
     display: block;
   }
 
+  .vehicles-active-filters {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin-bottom: 0.75rem;    
+  }
+
+  /* drawer */
+
   .vehicles-filters {
     position: fixed;
+
     top: 0;
     right: 0;
-    height: 100vh;
-    height: 100dvh;
 
     width: 90%;
     max-width: 400px;
 
+    height: 100vh;
+    height: 100dvh;
+
     display: flex;
     flex-direction: column;
+
+    margin: 0;
+    padding: 0;
+
+    background: var(--surface-1);
 
     transform: translateX(100%);
     transition: transform 0.25s ease;
 
-    background: var(--surface-1);
+    overflow: hidden;
+
+    box-shadow: var(--shadow-heavy);
+
     z-index: 1200;
 
     visibility: hidden;
     pointer-events: none;
-
-    overflow: hidden;
   }
 
   .vehicles-filters.is-open {
     transform: translateX(0);
+
     visibility: visible;
     pointer-events: auto;
   }
 
+  /* header drawer */
+
   .filters-drawer-header {
-    flex: 0 0 auto;
     position: sticky;
     top: 0;
-    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    flex-shrink: 0;
+
+    padding: 0.75rem;
+
     background: var(--surface-1);
+
     border-bottom: 1px solid var(--border-light);
+
+    z-index: 20;
   }
 
+  .filters-drawer-close {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    background: transparent;
+
+    color: var(--text-primary);
+
+    cursor: pointer;
+
+    font-size: 1.25rem;
+
+    margin-left: auto;
+  }
+
+  /* contenu scrollable */
+
   .vehicles-filters-content {
-    flex: 1;
-    overflow-y: auto;
+    flex: 1 1 auto;
+
     min-height: 0;
-    padding: 0.75rem;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 0.75rem 0.75rem 5rem;
+  }
+
+  .vehicles-filters-content::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .vehicles-filters-content::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+  }
+
+  /* fab */
+
+  .filters-fab {
+    display: flex;
+  }
+
+  .filters-drawer-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+
+    font-weight: 600;
+  }
+
+  .filters-drawer-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    font-size: 0.85rem;
+
+    color: var(--text-secondary);
   }
 }

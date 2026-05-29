@@ -43,6 +43,7 @@ footer {
   flex-direction: column;
   width: 100%;
   min-width: 0;
+  min-height: 100vh;
 }
 
 /* topbar */
@@ -55,7 +56,6 @@ footer {
 
 .main-content {
   flex: 1;
-  min-width: 0;
+  min-height: 0;
   margin: 5px 10px;
-  overflow: visible;
 }

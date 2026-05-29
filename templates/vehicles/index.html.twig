@@ -7,19 +7,27 @@
 {% block body %}
 
     <div class="vehicles-layout">
+
         {# filtres #}
+
         <aside
             class="vehicles-filters"
-            id="filters-drawer">
+            id="filters-drawer"
+        >
 
-            <div class="filters-drawer-header"> 
+            <div class="filters-drawer-header">
 
-                <div class="filters-drawer-count"> 
-                <span id="vehicles-results-count">
-                    {{ vehicles|length }}
-                </span>
-                <span>résultats</span>
-             </div>            
+                {#
+                <div class="filters-drawer-count">
+
+                    <span id="vehicles-results-count">
+                        {{ vehicles|length }}
+                    </span>
+
+                    <span>résultats</span>
+
+                </div>
+                #}
 
                 <button
                     type="button"
@@ -32,88 +40,50 @@
 
             </div>
 
-            <div class="filters-drawer-body">
+            <div class="vehicles-filters-content">
 
                 {{ render(controller(
                     'App\\Controller\\VehiclesFilterController::sidebarFilters'
                 )) }}
+
             </div>
+
         </aside>
+
         <div
             class="filters-backdrop"
-            id="filters-backdrop">
-        </div>
+            id="filters-backdrop"
+        ></div>
 
+
+    {# Bouton fab drawer mobile #}
         <button
             class="filters-fab"
             id="filters-fab"
-            aria-label="Ouvrir les filtres">
+            aria-label="Ouvrir les filtres"
+        >
             <i class="fa-solid fa-sliders"></i>
         </button>
 
         {# contenu principal #}
+
         <main class="vehicles-main">
 
             <h1 class="text-center">
+
                 <i class="fa-solid fa-car-side title-icon"></i>
+
                 Catalogue véhicules
+
             </h1>
 
             {# badges filtres actifs #}
+
             <div class="vehicles-active-filters">
+
                 <div id="filters-summary"></div>
+
             </div>
-            
-            {# view switcher #}
-
-            {#
-            <form
-                id="view-switcher-form"
-                class="fetch-form"
-                data-module="fetch-form"
-                data-fetch-url="{{ path('vehicles_ajax_list') }}"
-                data-fetch-mode="json"
-                data-target="#vehicles-results"
-                data-filters-target=".vehicles-filters"
-                data-pagination-top="#vehicles-pagination-top"
-                data-pagination-bottom="#vehicles-pagination-bottom"
-            >
-
-                <div id="view-toggle">
-
-                    <input
-                        type="radio"
-                        name="filters[view]"
-                        value="grid"
-                        checked
-                    >
-
-                    <input
-                        type="radio"
-                        name="filters[view]"
-                        value="table"
-                    >
-
-                    <label>
-                        <span class="icon-grid"></span>
-                    </label>
-
-                    <label>
-                        <span class="icon-table"></span>
-                    </label>
-
-                    <div class="toggle-thumb"></div>
-
-                </div>
-
-                <input
-                    type="hidden"
-                    name="page"
-                    value="1"
-                >
-
-            </form>
-            #}
 
             {# recherche autocomplete #}
 
@@ -135,6 +105,7 @@
             } %}
 
             {# pagination top #}
+
             <div id="vehicles-pagination-top">
 
                 {% include 'vehicles/_pagination.html.twig' with {
@@ -144,18 +115,25 @@
             </div>
 
             {# résultats #}
+
             <div id="vehicles-results">
+
                 {% include 'vehicles/_vehicles_list.html.twig' %}
+
             </div>
 
             {# pagination bottom #}
+
             <div id="vehicles-pagination-bottom">
 
                 {% include 'vehicles/_pagination.html.twig' with {
                     vehicles: vehicles
                 } %}
+
             </div>
+
         </main>
+
     </div>
 
 {% endblock %}

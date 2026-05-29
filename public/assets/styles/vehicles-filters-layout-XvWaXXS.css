@@ -64,20 +64,27 @@
   position: fixed;
   right: 1rem;
   bottom: 1rem;
+
   width: 56px;
   height: 56px;
-  display: flex;
+
+  display: none;
   align-items: center;
   justify-content: center;
+
   border: none;
   border-radius: 999px;
+
   background: var(--color-primary);
   color: white;
+
   cursor: pointer;
+
   box-shadow: var(--shadow-heavy);
+
+  z-index: 1300;
+
   transition: transform 0.2s ease, background 0.2s ease;
-  z-index: 99999;
-  pointer-events: auto;
 }
 
 .filters-fab:hover {
