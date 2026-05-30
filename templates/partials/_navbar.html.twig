@@ -1,64 +1,179 @@
 <div class="connection">
-	{% if app.user %}
-		<p class="connected">
-			Vous êtes connecté en tant que
-			{% if app.user.nickname %}
-				<span class="user-nickname">
-					<i class="fa-regular fa-circle-user"></i>
-					{{ app.user.nickname }}</span>
-			{% else %}
-				<span class="user-email">
-					<i class="fa-regular fa-circle-user"></i>
-					{{app.user.email}}</span>
-			{% endif %}
+    {% if app.user %}
+        <p class="connected">
+            Vous êtes connecté en tant que
 
-		</p>
-		<a href="{{ path('app_logout') }}">
-			<i class="fa-solid fa-arrow-right-from-bracket"></i>Se déconnecter</a>
-	{% else %}
-		<p class="not-connected">Vous n'êtes pas encore connecté.e</p>
-		<a href="{{ path('app_login') }}">
-			<i class="fa-solid fa-right-to-bracket"></i>Se connecter</a>
-		<a href="{{ path('app_register') }}">
-			<i class="fa-solid fa-user-plus"></i>S'inscrire</a>
-	{% endif %}
+            {% if app.user.nickname %}
+                <span class="user-nickname">
+                    <i class="fa-regular fa-circle-user"></i>
+                    {{ app.user.nickname }}
+                </span>
+            {% else %}
+                <span class="user-email">
+                    <i class="fa-regular fa-circle-user"></i>
+                    {{ app.user.email }}
+                </span>
+            {% endif %}
+        </p>
+
+        <a href="{{ path('app_logout') }}">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            Se déconnecter
+        </a>
+    {% else %}
+        <p class="not-connected">
+            Vous n'êtes pas encore connecté.e
+        </p>
+
+        <a href="{{ path('app_login') }}">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Se connecter
+        </a>
+
+        <a href="{{ path('app_register') }}">
+            <i class="fa-solid fa-user-plus"></i>
+            S'inscrire
+        </a>
+    {% endif %}
 </div>
 
+{% set currentRoute = app.request.attributes.get('_route') %}
+
+{% set vehiclesRoutes =
+    currentRoute starts with 'vehicle'
+    or currentRoute starts with 'vehicles_'
+%}
+
+{% set customersRoutes =
+    currentRoute starts with 'customer_'
+%}
+
+{% set dossiersRoutes =
+    currentRoute starts with 'admin_dossier_'
+%}
+
 <div class="navbar-links">
-	<ul>
-		<li>
-			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-				<a href="{{ path('admin_dashboard') }}" class="{{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'active' : '' }}">
-					<i class="fa-solid fa-tachograph-digital"></i>Dashboard Administration
-				</a>
-			{% else %}
+    <ul>
 
-				<a href="{{ path('app_home') }}" class="{{ app.request.attributes.get('_route') == 'app_home' ? 'active' : '' }}">
-					<i class="fa-regular fa-house"></i>Accueil
-				</a>
-			{% endif %}
+        <li>
 
-		</li>
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-		<li>
-			<a href="#" class="{{ app.request.attributes.get('_route') == 'app_about' ? 'active' : '' }}">
-				<i class="fa-solid fa-circle-info"></i>À propos
-			</a>
-		</li>
+                <a
+                    href="{{ path('admin_dashboard') }}"
+                    class="{{ currentRoute == 'admin_dashboard' ? 'active' : '' }}"
+                >
+                    <i class="fa-solid fa-tachograph-digital"></i>
+                    Dashboard administration
+                </a>
 
-		<li>
-			<a href="#" class="{{ app.request.attributes.get('_route') == 'app_contact' ? 'active' : '' }}">
-				<i class="fa-regular fa-envelope"></i>Contact
-			</a>
-		</li>
-		{% if app.user %}
-			<li>
-				<a href="{{path('app_profile')}}" class="{{ app.request.attributes.get('_route') == 'app_profile' ? 'active' : '' }}">
-					<i class="fa-regular fa-address-card"></i>Mon profil
-				</a>
-			</li>
+            {% else %}
 
-		{% endif %}
-	</ul>
+                <a
+                    href="{{ path('app_home') }}"
+                    class="{{ currentRoute == 'app_home' ? 'active' : '' }}"
+                >
+                    <i class="fa-regular fa-house"></i>
+                    Accueil
+                </a>
+
+            {% endif %}
+
+        </li>
+
+        <li>
+
+            <a
+                href="{{ path('vehicles_index') }}"
+                class="{{ vehiclesRoutes ? 'active' : '' }}"
+            >
+                <i class="fa-solid fa-car-side"></i>
+                Catalogue véhicules
+            </a>
+
+        </li>
+
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+
+            <li>
+
+                <a
+                    href="{{ path('vehicles_models') }}"
+                    class="{{ currentRoute == 'vehicles_models' ? 'active' : '' }}"
+                >
+                    <i class="fa-solid fa-book"></i>
+                    Catalogue fabricants
+                </a>
+
+            </li>
+
+            <li>
+
+                <a
+                    href="{{ path('customer_list') }}"
+                    class="{{ customersRoutes ? 'active' : '' }}"
+                >
+                    <i class="fa-regular fa-address-book"></i>
+                    Clients
+                </a>
+
+            </li>
+
+            <li>
+
+                <a
+                    href="{{ path('admin_dossier_list') }}"
+                    class="{{ dossiersRoutes ? 'active' : '' }}"
+                >
+                    <i class="fa-solid fa-folder-open"></i>
+                    Dossiers
+                </a>
+
+            </li>
+
+        {% endif %}
+
+        <li>
+
+            <a
+                href="#"
+                class="{{ currentRoute == 'app_about' ? 'active' : '' }}"
+            >
+                <i class="fa-solid fa-circle-info"></i>
+                À propos
+            </a>
+
+        </li>
+
+        <li>
+
+            <a
+                href="#"
+                class="{{ currentRoute == 'app_contact' ? 'active' : '' }}"
+            >
+                <i class="fa-regular fa-envelope"></i>
+                Contact
+            </a>
+
+        </li>
+
+        {% if app.user %}
+
+            <li>
+
+                <a
+                    href="{{ path('app_profile') }}"
+                    class="{{ currentRoute == 'app_profile' ? 'active' : '' }}"
+                >
+                    <i class="fa-regular fa-address-card"></i>
+                    Mon profil
+                </a>
+
+            </li>
+
+        {% endif %}
+
+    </ul>
+
 </div>

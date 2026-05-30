@@ -136,14 +136,18 @@ body.sidebar-collapsed .sidebar-handle i {
   color: var(--color-primary);
 }
 
-/* collapse mode */
+/* collapsed mode */
+body.sidebar-collapsed .sidebar span {
+  display: none;
+}
+
+body.sidebar-collapsed .sidebar-group {
+  border: none;
+}
+
 body.sidebar-collapsed .sidebar-group summary {
   justify-content: center;
   padding: 10px;
-}
-
-body.sidebar-collapsed .sidebar-group summary span {
-  display: none;
 }
 
 body.sidebar-collapsed .sidebar-group summary::after {
@@ -160,8 +164,6 @@ body.sidebar-collapsed .standalone-links a {
   margin-left: 0;
   padding: 10px;
 }
-
-/* mobile */
 @media (max-width: 991px) {
   .sidebar {
     display: none;

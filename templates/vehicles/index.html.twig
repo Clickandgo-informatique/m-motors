@@ -1,91 +1,42 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    m-motors : catalogue véhicules
-{% endblock %}
+{% block title %}M-motors : Catalogue véhicules{% endblock %}
 
 {% block body %}
 
+<div class="vehicles-page">
+
     <div class="vehicles-layout">
 
-        {# filtres #}
-
-        <aside
-            class="vehicles-filters"
-            id="filters-drawer"
-        >
+        <aside class="vehicles-filters" id="filters-drawer">
 
             <div class="filters-drawer-header">
-
-                {#
-                <div class="filters-drawer-count">
-
-                    <span id="vehicles-results-count">
-                        {{ vehicles|length }}
-                    </span>
-
-                    <span>résultats</span>
-
-                </div>
-                #}
-
                 <button
                     type="button"
                     id="filters-drawer-close"
                     class="filters-drawer-close"
-                    aria-label="Fermer les filtres"
+                    aria-label="fermer"
                 >
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-
             </div>
 
             <div class="vehicles-filters-content">
-
-                {{ render(controller(
-                    'App\\Controller\\VehiclesFilterController::sidebarFilters'
-                )) }}
-
+                {{ render(controller('App\\Controller\\VehiclesFilterController::sidebarFilters')) }}
             </div>
 
         </aside>
 
-        <div
-            class="filters-backdrop"
-            id="filters-backdrop"
-        ></div>
-
-
-    {# Bouton fab drawer mobile #}
-        <button
-            class="filters-fab"
-            id="filters-fab"
-            aria-label="Ouvrir les filtres"
-        >
-            <i class="fa-solid fa-sliders"></i>
-        </button>
-
-        {# contenu principal #}
-
         <main class="vehicles-main">
 
             <h1 class="text-center">
-
-                <i class="fa-solid fa-car-side title-icon"></i>
-
-                Catalogue véhicules
-
+                <i class="fa-solid fa-car-side"></i>
+                catalogue véhicules
             </h1>
 
-            {# badges filtres actifs #}
-
             <div class="vehicles-active-filters">
-
                 <div id="filters-summary"></div>
-
             </div>
-
-            {# recherche autocomplete #}
 
             {% include 'Components/Forms/_fetch_form.html.twig' with {
                 action: path('vehicles_index'),
@@ -97,43 +48,30 @@
                 autocompleteUrl: path('vehicles_ajax_search'),
                 resultDiv: 'autocomplete-results',
                 name: 'q',
-                placeholder: 'Rechercher un véhicule',
+                placeholder: 'rechercher un véhicule',
                 linkMode: '1',
                 fetchMode: 'json',
                 editRouteTemplate: path('vehicle_edit', { id: 0 }),
                 baseUrl: '/vehicles/'
             } %}
 
-            {# pagination top #}
-
-            <div id="vehicles-pagination-top">
-
-                {% include 'vehicles/_pagination.html.twig' with {
-                    vehicles: vehicles
-                } %}
-
-            </div>
-
-            {# résultats #}
+            <div id="vehicles-pagination-top"></div>
 
             <div id="vehicles-results">
-
                 {% include 'vehicles/_vehicles_list.html.twig' %}
-
             </div>
 
-            {# pagination bottom #}
-
-            <div id="vehicles-pagination-bottom">
-
-                {% include 'vehicles/_pagination.html.twig' with {
-                    vehicles: vehicles
-                } %}
-
-            </div>
+            <div id="vehicles-pagination-bottom"></div>
 
         </main>
 
     </div>
 
+</div>
+
+<div class="filters-backdrop" id="filters-backdrop"></div>
+
+<button class="filters-fab" id="filters-fab">
+    <i class="fa-solid fa-sliders"></i>
+</button>
 {% endblock %}
