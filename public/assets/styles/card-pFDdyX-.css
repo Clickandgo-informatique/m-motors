@@ -154,7 +154,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    margin-bottom: 0.1rem;
+    margin-bottom: 1rem;
     padding: 8px;
     background: var(--surface-1);
   }
@@ -168,9 +168,6 @@
   .vehicle-specs th,
   .vehicle-specs tr {
     border: none;
-  }
-  .vehicle-specs th {
-    display: none;
   }
 
   .vehicle-specs td::before {
