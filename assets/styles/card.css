@@ -17,7 +17,6 @@
 }
 
 /* dark mode */
-
 :root.dark .card {
   background: var(--surface-1);
   color: var(--text-primary);
