@@ -38,7 +38,7 @@ class DocumentUploadedSubscriber implements EventSubscriberInterface
         ]);
 
         // 2. Exemple logique métier
-    
+
 
         if ($dossier->getStatus() === 'pending') {
             $this->logger->info('Dossier still pending after upload');

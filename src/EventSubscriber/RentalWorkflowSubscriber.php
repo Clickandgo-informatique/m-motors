@@ -3,7 +3,7 @@
 namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Workflow\Event\CompletedEvent;
+use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Registry;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -23,7 +23,7 @@ class RentalWorkflowSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onRentalStarted(CompletedEvent $event): void
+    public function onRentalStarted(Event $event): void
     {
         $rental = $event->getSubject();
         $vehicle = $rental->getVehicle();
@@ -39,17 +39,17 @@ class RentalWorkflowSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onRentalFinished(CompletedEvent $event): void
+    public function onRentalFinished(Event $event): void
     {
         $this->makeVehicleAvailable($event);
     }
 
-    public function onRentalCanceled(CompletedEvent $event): void
+    public function onRentalCanceled(Event $event): void
     {
         $this->makeVehicleAvailable($event);
     }
 
-    private function makeVehicleAvailable(CompletedEvent $event): void
+    private function makeVehicleAvailable(Event $event): void
     {
         $rental = $event->getSubject();
         $vehicle = $rental->getVehicle();

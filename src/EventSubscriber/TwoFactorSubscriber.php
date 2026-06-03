@@ -1,5 +1,4 @@
 <?php
-// src/EventSubscriber/TwoFactorSubscriber.php
 
 namespace App\EventSubscriber;
 
@@ -12,42 +11,40 @@ use Symfony\Component\Routing\RouterInterface;
 
 class TwoFactorSubscriber implements EventSubscriberInterface
 {
-    private Security $security;
-    private RouterInterface $router;
-
-    public function __construct(Security $security, RouterInterface $router)
-    {
-        $this->security = $security;
-        $this->router = $router;
-    }
+    public function __construct(
+        private Security $security,
+        private RouterInterface $router
+    ) {}
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        // ✅ uniquement requête principale
+        // uniquement requête principale
         if (!$event->isMainRequest()) {
             return;
         }
 
         $request = $event->getRequest();
-        $session = $request->getSession();
 
-        if (!$session) {
+        // sécurité : la session peut ne pas exister
+        if (!$request->hasSession()) {
             return;
         }
 
-        // ✅ attendre que la route soit connue
+        $session = $request->getSession();
+
+        // route pas encore disponible
         $route = $request->attributes->get('_route');
         if (!$route) {
             return;
         }
 
-        // ✅ utilisateur connecté ?
+        // utilisateur connecté ?
         $user = $this->security->getUser();
         if (!$user) {
             return;
         }
 
-        // 🔓 routes autorisées SANS 2FA
+        // routes whitelist (sans 2FA)
         $allowedRoutes = [
             'app_home',
             'app_login',
@@ -55,7 +52,7 @@ class TwoFactorSubscriber implements EventSubscriberInterface
             '2fa_verify',
             '2fa_check',
             'app_2fa_setup',
-            '_wdt', // toolbar Symfony
+            '_wdt',
             '_profiler',
         ];
 
@@ -63,12 +60,12 @@ class TwoFactorSubscriber implements EventSubscriberInterface
             return;
         }
 
-        // ✅ si 2FA pas activée → on laisse passer
+        // si 2FA désactivée → on laisse passer
         if (!method_exists($user, 'is2FAEnabled') || !$user->is2FAEnabled()) {
             return;
         }
 
-        // 🔥 si 2FA pas validée → redirection
+        // si 2FA non validée → redirection
         if (!$session->get('2fa_passed', false)) {
             $event->setResponse(
                 new RedirectResponse($this->router->generate('2fa_verify'))
