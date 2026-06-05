@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Routing\RouterInterface;
 
-
 class TwoFactorSubscriber implements EventSubscriberInterface
 {
     public function __construct(
@@ -18,59 +17,74 @@ class TwoFactorSubscriber implements EventSubscriberInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        // uniquement requête principale
+        // Ne traiter que la requête principale
         if (!$event->isMainRequest()) {
             return;
         }
 
         $request = $event->getRequest();
 
-        // sécurité : la session peut ne pas exister
+        // Session obligatoire pour stocker l'état 2FA
         if (!$request->hasSession()) {
             return;
         }
 
         $session = $request->getSession();
 
-        // route pas encore disponible
+        // Récupération de la route actuelle
         $route = $request->attributes->get('_route');
+
         if (!$route) {
             return;
         }
 
-        // utilisateur connecté ?
+        // Pas d'utilisateur connecté => pas de 2FA
         $user = $this->security->getUser();
+
         if (!$user) {
             return;
         }
 
-        // routes whitelist (sans 2FA)
-        $allowedRoutes = [
-            'app_home',
-            'app_login',
-            'app_logout',
-            '2fa_verify',
-            '2fa_check',
-            'app_2fa_setup',
-            '_wdt',
-            '_profiler',
+        // Zones protégées par 2FA (uniquement admin / actions sensibles)
+        // On utilise des préfixes pour éviter de devoir lister toutes les routes
+        $protectedRoutePrefixes = [
+            'admin',
+            'dossier',
+            'account',
+            'profile',
+            'vehicle_manage',
         ];
 
-        if (in_array($route, $allowedRoutes, true)) {
+        $isProtectedRoute = false;
+
+        foreach ($protectedRoutePrefixes as $prefix) {
+            if (str_starts_with((string) $route, $prefix)) {
+                $isProtectedRoute = true;
+                break;
+            }
+        }
+
+        // Si la route n'est pas protégée, on ne bloque jamais
+        if (!$isProtectedRoute) {
             return;
         }
 
-        // si 2FA désactivée → on laisse passer
+        // Si l'utilisateur n'a pas activé la 2FA, on ignore la logique
         if (!method_exists($user, 'is2FAEnabled') || !$user->is2FAEnabled()) {
             return;
         }
 
-        // si 2FA non validée → redirection
-        if (!$session->get('2fa_passed', false)) {
-            $event->setResponse(
-                new RedirectResponse($this->router->generate('2fa_verify'))
-            );
+        // Si la 2FA a déjà été validée dans la session, on laisse passer
+        if ($session->get('2fa_passed', false)) {
+            return;
         }
+
+        // Sinon redirection vers la vérification 2FA
+        $event->setResponse(
+            new RedirectResponse(
+                $this->router->generate('2fa_verify')
+            )
+        );
     }
 
     public static function getSubscribedEvents(): array
