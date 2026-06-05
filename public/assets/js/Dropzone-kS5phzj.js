@@ -1,7 +1,5 @@
 export default class Dropzone {
   constructor(element) {
-     console.log("DROPZONE CONSTRUCTOR OK", element);
-    
     this.el = element;
 
     // URLs backend

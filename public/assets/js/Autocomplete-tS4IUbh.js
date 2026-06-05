@@ -53,10 +53,6 @@ export default class Autocomplete {
     this.input.addEventListener("input", () => this.onInput());
 
     document.addEventListener("click", e => {
-      // Ignorer les dropzones
-      if (e.target.closest(".dropzone")) {
-        return;
-      }
       if (this.dropdown && !this.dropdown.contains(e.target) && e.target !== this.input) {
         this.close();
       }
@@ -161,7 +157,7 @@ export default class Autocomplete {
         element.href = item.url;
         element.className = "dropdown-item";
         element.innerHTML = this.highlight(item.label, query);
-        element.dataset.ajaxModal = "true";
+        element.dataAjaxModal=true
       } else {
         element = document.createElement("div");
         element.className = "dropdown-item";

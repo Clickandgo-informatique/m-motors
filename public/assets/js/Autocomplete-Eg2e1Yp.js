@@ -53,10 +53,6 @@ export default class Autocomplete {
     this.input.addEventListener("input", () => this.onInput());
 
     document.addEventListener("click", e => {
-      // Ignorer les dropzones
-      if (e.target.closest(".dropzone")) {
-        return;
-      }
       if (this.dropdown && !this.dropdown.contains(e.target) && e.target !== this.input) {
         this.close();
       }

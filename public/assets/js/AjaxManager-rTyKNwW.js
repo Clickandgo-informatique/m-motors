@@ -1,6 +1,3 @@
-import Dropzone from "./Dropzone.js";
-import Autocomplete from "./Autocomplete.js";
-
 export default class AjaxManager {
   constructor() {
     console.log("ajaxmanager.js initialisé");
@@ -154,11 +151,14 @@ export default class AjaxManager {
       if (input.dataset.autocompleteInit === "1") {
         return;
       }
-   
-        new Autocomplete(input);
+
+      if (typeof window.Autocomplete === "function") {
+        new window.Autocomplete(input);
 
         input.dataset.autocompleteInit = "1";
-
+      } else {
+        console.warn("[AjaxManager] autocomplete non disponible globalement");
+      }
     });
   }
 
@@ -218,7 +218,11 @@ export default class AjaxManager {
 
       el.dataset.dropzoneInitialized = "1";
 
-      new Dropzone(el);
+      if (typeof window.Dropzone === "function") {
+        new window.Dropzone(el);
+      } else {
+        console.warn("[AjaxManager] Dropzone non disponible globalement");
+      }
     });
   }
 }

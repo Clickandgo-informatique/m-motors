@@ -20,7 +20,7 @@ class DossierFinanceService
             return;
         }
 
-        if ($dossier->getType() === DossierType::SALE) {
+        if ($dossier->getType() === DossierType::PURCHASE) {
             $this->vehicleWorkflow->sell($vehicle);
             return;
         }

@@ -1,5 +1,14 @@
 {% block body %}
-	<h1 class="text-center">{{title}}</h1>
+
+<h1 class="text-center">
+    {% if mode == 'edit' %}
+        <i class="fa-solid fa-pen-to-square"></i>
+    {% else %}
+        <i class="fa-solid fa-circle-plus"></i>
+    {% endif %}
+    {{ title }}
+</h1>
+
 	{{ form_start(form, { attr: { 'data-ajax-form': true } }) }}
 
 	<div class="form-row">

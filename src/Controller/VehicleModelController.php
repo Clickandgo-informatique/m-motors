@@ -124,6 +124,7 @@ class VehicleModelController extends AbstractController
                     'form' => $form->createView(),
                     'vm' => $vm,
                     'title' => $title,
+                    'mode' => 'new'
                 ]
             );
         }
@@ -177,6 +178,7 @@ class VehicleModelController extends AbstractController
                     'form' => $form->createView(),
                     'vm' => $vm,
                     'title' => $title,
+                    'mode' => 'edit'
                 ]
             );
         }
@@ -187,6 +189,7 @@ class VehicleModelController extends AbstractController
                 'form' => $form->createView(),
                 'vm' => $vm,
                 'title' => $title,
+                'mode' => 'edit'
             ]
         );
     }

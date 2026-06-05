@@ -39,7 +39,6 @@
 }
 .connected {
   display: flex;
-  align-items: center;
   justify-content: space-between;
 }
 
@@ -55,7 +54,6 @@
   padding: var(--space-s) var(--space-m);
   background: var(--surface-1);
   border-bottom: 1px solid var(--border-light);
-  overflow: auto;
 }
 .navbar-links ul {
   display: flex;
@@ -64,9 +62,6 @@
 }
 .navbar-links li {
   list-style: none;
-}
-.navbar-links ul li {
-  display: inline-flex;
 }
 
 .navbar-links a {

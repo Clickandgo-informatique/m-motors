@@ -16,9 +16,7 @@ class DossierUploadService
         private SluggerService $slugger
     ) {}
 
-    // =========================================================
     // UPLOAD
-    // =========================================================
 
     public function upload(UploadedFile $file, string $folder): array
     {
@@ -30,8 +28,8 @@ class DossierUploadService
         $safeName = $this->slugger->slugify($originalName);
 
         $extension = $file->guessExtension()
-            ?? $file->getClientOriginalExtension()
-            ?? 'bin';
+            ?: $file->getClientOriginalExtension()
+            ?: 'bin';
 
         $newName = $safeName . '-' . bin2hex(random_bytes(16)) . '.' . $extension;
 
@@ -44,9 +42,7 @@ class DossierUploadService
         ];
     }
 
-    // =========================================================
     // DELETE FILE ONLY
-    // =========================================================
 
     public function delete(string $path): void
     {
@@ -71,9 +67,7 @@ class DossierUploadService
         $this->safeDelete($document->getPath());
     }
 
-    // =========================================================
     // DELETE ENTITY + FILE
-    // =========================================================
 
     public function deleteEntity(DossierDocument $document, EntityManagerInterface $em): void
     {
@@ -82,9 +76,7 @@ class DossierUploadService
         $em->flush();
     }
 
-    // =========================================================
-    // REPLACE FILE (IMPORTANT)
-    // =========================================================
+    // REPLACE FILE 
 
     public function replace(
         DossierDocument $document,
@@ -92,13 +84,13 @@ class DossierUploadService
         string $folder,
         EntityManagerInterface $em
     ): DossierDocument {
-        // 1. supprimer ancien fichier
+        // suppression ancien fichier
         $this->deleteFromDocument($document);
 
-        // 2. upload nouveau fichier
+        // upload nouveau fichier
         $upload = $this->upload($file, $folder);
 
-        // 3. update entity
+        // mise à jour entité
         $document->setFileName($upload['filename']);
         $document->setOriginalName($upload['originalName']);
         $document->setPath($upload['path']);

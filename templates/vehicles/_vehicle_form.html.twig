@@ -1,210 +1,228 @@
 {% block body %}
 
-	{{ form_start(form, {
-		attr: {
-			'data-search-form': path('vehicle_model_search'),
-			'data-query-param': 'q',
-			'data-dropdown-class': 'dropdown-results',
-			'data-item-class': 'dropdown-item',
-			'data-link-class': 'dropdown-link',
-			'data-no-results-class': 'dropdown-no-results',
-			'data-item-url': '/vehicles/models/__ID__/edit',
-			'data-ajax-form': 'true'
-		}
-	}) }}
-	<h1 class="text-center">
-		<i class="fa-solid fa-circle-plus"></i>
-		{{ title }}
-	</h1>
+<div class="vehicle-edit-layout">
 
-	{# vehicle model display #}
-	{% if vehicle.vehicleModel and vehicle.vehicleModel.brand and vehicle.vehicleModel.model %}
-		<h4 class="text-center">
-			<strong>{{ vehicle.vehicleModel.brand.name }}</strong>
-			{{ vehicle.vehicleModel.model.name }}
-		</h4>
-	{% endif %}
-<details>
-<summary><span><i class="fa-solid fa-gauge-high"></i>
-Données techniques</span></summary>
-	{# status / supplier #}
-	<div class="form-row">
+    <div class="vehicle-edit-main">
+    
+        {{ form_start(form, {
+            attr: {
+                'data-search-form': path('vehicle_model_search'),
+                'data-query-param': 'q',
+                'data-dropdown-class': 'dropdown-results',
+                'data-item-class': 'dropdown-item',
+                'data-link-class': 'dropdown-link',
+                'data-no-results-class': 'dropdown-no-results',
+                'data-item-url': '/vehicles/models/__ID__/edit',
+                'data-ajax-form': 'true'
+            }
+        }) }}
 
-		<div class="form-group">
-			{{ form_label(form.status) }}
-			{{ form_widget(form.status) }}
-			{{ form_errors(form.status) }}
-		</div>
+        <h1 class="text-center">
+            <i class="fa-solid fa-circle-plus"></i>
+            {{ title }}
+        </h1>
 
-		<div class="form-group">
-			{{ form_label(form.supplier) }}
-			{{ form_widget(form.supplier) }}
-			{{ form_errors(form.supplier) }}
-		</div>
+        {% if vehicle.vehicleModel and vehicle.vehicleModel.brand and vehicle.vehicleModel.model %}
+            <h4 class="text-center">
+                <strong>{{ vehicle.vehicleModel.brand.name }}</strong>
+                {{ vehicle.vehicleModel.model.name }}
+            </h4>
+        {% endif %}
 
-	</div>
+        <details open>
+            <summary>
+                <span>
+                    <i class="fa-solid fa-gauge-high"></i>
+                    Données techniques
+                </span>
+            </summary>
 
-	{# vehicle model autocomplete #}
-	<div class="form-row">
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form_label(form.status) }}
+                    {{ form_widget(form.status) }}
+                    {{ form_errors(form.status) }}
+                </div>
 
-		<div class="form-group autocomplete-container flex-3">
+                <div class="form-group">
+                    {{ form_label(form.supplier) }}
+                    {{ form_widget(form.supplier) }}
+                    {{ form_errors(form.supplier) }}
+                </div>
+            </div>
 
-			{{ form_label(form.vehicleModelSearch) }}
+            <div class="form-row">
+                <div class="form-group autocomplete-container flex-3">
 
-			<div class="dropdown-wrapper">
+                    {{ form_label(form.vehicleModelSearch) }}
 
-				{{ form_widget(form.vehicleModelSearch, {
-					attr: {
-						autocomplete: 'off',
-						'data-autocomplete': 'true',
-						'data-result-div': '#vehicle-model-results',
-						'data-hidden-target': '#vehicle_vehicleModel'
-					}
-				}) }}
+                    <div class="dropdown-wrapper">
 
-				{{ form_widget(form.vehicleModel, {
-					attr: { style: 'display:none;' }
-				}) }}
+                        {{ form_widget(form.vehicleModelSearch, {
+                            attr: {
+                                autocomplete: 'off',
+                                'data-autocomplete': 'true',
+                                'data-result-div': '#vehicle-model-results',
+                                'data-hidden-target': '#vehicle_vehicleModel'
+                            }
+                        }) }}
 
-				<div id="vehicle-model-results" class="dropdown-results"></div>
+                        {{ form_widget(form.vehicleModel, {
+                            attr: { style: 'display:none;' }
+                        }) }}
 
-			</div>
+                        <div id="vehicle-model-results" class="dropdown-results"></div>
 
-			{{ form_errors(form.vehicleModelSearch) }}
+                    </div>
 
-		</div>
+                    {{ form_errors(form.vehicleModelSearch) }}
 
-		<div class="form-actions flex-1">
-			<a href="javascript:void(0)">
-				<i class="fa-regular fa-folder-open"></i>
-			</a>
+                </div>
 
-			<a href="{{ path('vehicle_model_new') }}">
-				<i class="fa-solid fa-circle-plus"></i>
-			</a>
-		</div>
+                <div class="form-actions flex-1">
+                    <a href="javascript:void(0)">
+                        <i class="fa-regular fa-folder-open"></i>
+                    </a>
 
-	</div>
+                    <a href="{{ path('vehicle_model_new') }}" data-ajax-modal>
+                        <i class="fa-solid fa-circle-plus"></i>
+                    </a>
+                </div>
+            </div>
 
-	{# identifiers #}
-	<div class="form-row">
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form_label(form.vin) }}
+                    {{ form_widget(form.vin) }}
+                    {{ form_errors(form.vin) }}
+                </div>
 
-		<div class="form-group">
-			{{ form_label(form.vin) }}
-			{{ form_widget(form.vin) }}
-			{{ form_errors(form.vin) }}
-		</div>
+                <div class="form-group">
+                    {{ form_label(form.registrationNumber) }}
+                    {{ form_widget(form.registrationNumber) }}
+                    {{ form_errors(form.registrationNumber) }}
+                </div>
+            </div>
 
-		<div class="form-group">
-			{{ form_label(form.registrationNumber) }}
-			{{ form_widget(form.registrationNumber) }}
-			{{ form_errors(form.registrationNumber) }}
-		</div>
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form_label(form.mileage) }}
+                    {{ form_widget(form.mileage) }}
+                    {{ form_errors(form.mileage) }}
+                </div>
 
-	</div>
+                <div class="form-group">
+                    {{ form_label(form.firstRegistrationDate) }}
+                    {{ form_widget(form.firstRegistrationDate) }}
+                    {{ form_errors(form.firstRegistrationDate) }}
+                </div>
 
-	{# main infos #}
-	<div class="form-row">
+                <div class="form-group">
+                    {{ form_label(form.price) }}
+                    {{ form_widget(form.price) }}
+                    {{ form_errors(form.price) }}
+                </div>
+            </div>
 
-		<div class="form-group">
-			{{ form_label(form.mileage) }}
-			{{ form_widget(form.mileage) }}
-			{{ form_errors(form.mileage) }}
-		</div>
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form_label(form.color) }}
+                    {{ form_widget(form.color) }}
+                    {{ form_errors(form.color) }}
+                </div>
 
-		<div class="form-group">
-			{{ form_label(form.firstRegistrationDate) }}
-			{{ form_widget(form.firstRegistrationDate) }}
-			{{ form_errors(form.firstRegistrationDate) }}
-		</div>
+                <div class="form-group">
+                    {{ form_label(form.fuelType) }}
+                    {{ form_widget(form.fuelType) }}
+                    {{ form_errors(form.fuelType) }}
+                </div>
 
-		<div class="form-group">
-			{{ form_label(form.price) }}
-			{{ form_widget(form.price) }}
-			{{ form_errors(form.price) }}
-		</div>
+                <div class="form-group">
+                    {{ form_label(form.gearType) }}
+                    {{ form_widget(form.gearType) }}
+                    {{ form_errors(form.gearType) }}
+                </div>
+            </div>
+        </details>
 
-	</div>
+        <details open>
+            <summary>
+                <span>
+                    <i class="fa-solid fa-list-check"></i>
+                    Options
+                </span>
+            </summary>
 
-	{# tech infos #}
-	<div class="form-row">
+            <div class="form-row">
 
-		<div class="form-group">
-			{{ form_label(form.color) }}
-			{{ form_widget(form.color) }}
-			{{ form_errors(form.color) }}
-		</div>
+                <div class="vehicle-features-list flex-3">
 
-		<div class="form-group">
-			{{ form_label(form.fuelType) }}
-			{{ form_widget(form.fuelType) }}
-			{{ form_errors(form.fuelType) }}
-		</div>
+                    {% if vehicle.features|length > 0 %}
 
-		<div class="form-group">
-			{{ form_label(form.gearType) }}
-			{{ form_widget(form.gearType) }}
-			{{ form_errors(form.gearType) }}
-		</div>
+                        {% for feature in vehicle.features|sort((a, b) => a.label <=> b.label) %}
+                            {{ feature.label }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
 
-	</div>
-</details>
-<details>
-<summary>
-<span><i class="fa-solid fa-list-check"></i>
-Options
-</span>
-</summary>
-	{# features #}
-	<div class="form-row">
+                    {% else %}
+                        <p class="alert alert-warning text-center">
+                            Aucune option enregistrée
+                        </p>
+                    {% endif %}
 
-		<div class="vehicle-features-list flex-3">
+                </div>
 
-			{% if vehicle.features|length > 0 %}
+                <div class="add-button flex-1">
+                    {# <a href="{{ path('vehicle_features_edit') }}">
+                        <i class="fa-solid fa-circle-plus"></i>
+                    </a> #}
+                </div>
 
-				{% for feature in vehicle.features|sort((a, b) => a.label <=> b.label) %}
-					{{ feature.label }}
-					{% if not loop.last %},
-					{% endif %}
-				{% endfor %}
+            </div>
+        </details>
 
-			{% else %}
-				<p class="alert alert-warning text-center">
-					Aucune option enregistrée
-				</p>
-			{% endif %}
+    </div> {# fin vehicle-edit-main #}
 
-		</div>
+    <aside class="vehicle-edit-sidebar">
+        <details open>
+            <summary>
+                <span>
+                    <i class="fa-solid fa-photo-film"></i>
+                    Galerie
+                </span>
+            </summary>
 
-		<div class="add-button flex-1">
-			{# <a href="{{path('vehicle_features_edit')}}"> #}
-				<i class="fa-solid fa-circle-plus"></i>
-			</a>
-		</div>
-	</div>
-	</details>
-<details><summary><span><i class="fa-solid fa-photo-film"></i>Galerie</span></summary>
-	{# dropzone #}
-	{% set isNew = vehicle.id is null %}
+            {% set isNew = vehicle.id is null %}
 
-	<div class="dropzone" data-mode="media" data-upload-url="{{ path('vehicle_image_upload', {id: vehicle.id}) }}" data-delete-url="{{ path('vehicle_image_delete', {id: '__id__'}) }}" data-documents-url="{{ isNew ? '' : path('vehicle_images', {id: vehicle.id}) }}" data-preview-id="vehicle-gallery-preview" data-destination="{{ vehicle.id ?? '' }}" data-status="{{ vehicle.status.value ?? 'draft' }}" data-locked="{{ isNew ? 1 : 0 }}">
+            <div
+                class="dropzone"
+                data-mode="media"
+                data-upload-url="{{ path('vehicle_image_upload', {id: vehicle.id}) }}"
+                data-delete-url="{{ path('vehicle_image_delete', {id: '__id__'}) }}"
+                data-documents-url="{{ isNew ? '' : path('vehicle_images', {id: vehicle.id}) }}"
+                data-preview-id="vehicle-gallery-preview"
+                data-destination="{{ vehicle.id ?? '' }}"
+                data-status="{{ vehicle.status?.value ?? 'draft' }}"
+                data-locked="{{ isNew ? 1 : 0 }}"
+            >
 
-		<p>Glissez vos fichiers ici ou cliquez pour ajouter</p>
+                <p>Glissez vos fichiers ici ou cliquez pour ajouter</p>
 
-		<button type="button" class="dz-upload-btn" disabled>
-			<i class="fa-solid fa-upload"></i>
-			Envoyer les fichiers
-		</button>
+                <button type="button" class="dz-upload-btn" disabled>
+                    <i class="fa-solid fa-upload"></i>
+                    Envoyer les fichiers
+                </button>
 
-	</div>
+            </div>
 
-	<div id="vehicle-gallery-preview"></div>
+            <div id="vehicle-gallery-preview"></div>
 
-	{{ form_end(form) }}
+            {% include "vehicles/_vehicle_images_gallery.html.twig" %}
 
-	{# Galerie d'images du véhicule #}
-	{% include "vehicles/_vehicle_images_gallery.html.twig" %}
+        </details>
+    </aside>
 
-	</details>
+</div>
+
+{{ form_end(form) }}
 
 {% endblock %}

@@ -38,7 +38,9 @@ class RentalWorkflowSubscriberTest extends TestCase
         $event->method('getSubject')->willReturn($rental);
 
         $workflow = $this->createMock(Workflow::class);
-        $workflow->method('can')->with($vehicle, 'vehicle_rent')->willReturn(true);
+        $workflow->method('can')
+            ->with($vehicle, 'vehicle_rent')
+            ->willReturn(true);
 
         $workflow->expects($this->once())
             ->method('apply')
@@ -46,6 +48,42 @@ class RentalWorkflowSubscriberTest extends TestCase
 
         $registry = $this->createMock(Registry::class);
         $registry->method('get')
+            ->with($vehicle, 'vehicle')
+            ->willReturn($workflow);
+
+        $subscriber = new RentalWorkflowSubscriber(
+            $registry,
+            $this->createMock(EntityManagerInterface::class)
+        );
+
+        $subscriber->onRentalStarted($event);
+    }
+
+    public function testRentalStartedDoesNothingWhenTransitionNotAllowed(): void
+    {
+        // vérifie qu'aucune transition n'est appliquée si le workflow la refuse
+
+        $vehicle = $this->createMock(Vehicle::class);
+
+        $rental = $this->createMockRental($vehicle);
+
+        $event = $this->createMock(Event::class);
+        $event->method('getSubject')->willReturn($rental);
+
+        $workflow = $this->createMock(Workflow::class);
+
+        $workflow->expects($this->once())
+            ->method('can')
+            ->with($vehicle, 'vehicle_rent')
+            ->willReturn(false);
+
+        $workflow->expects($this->never())
+            ->method('apply');
+
+        $registry = $this->createMock(Registry::class);
+
+        $registry->expects($this->once())
+            ->method('get')
             ->with($vehicle, 'vehicle')
             ->willReturn($workflow);
 
@@ -69,7 +107,9 @@ class RentalWorkflowSubscriberTest extends TestCase
         $event->method('getSubject')->willReturn($rental);
 
         $workflow = $this->createMock(Workflow::class);
-        $workflow->method('can')->with($vehicle, 'vehicle_return')->willReturn(true);
+        $workflow->method('can')
+            ->with($vehicle, 'vehicle_return')
+            ->willReturn(true);
 
         $workflow->expects($this->once())
             ->method('apply')
@@ -77,6 +117,42 @@ class RentalWorkflowSubscriberTest extends TestCase
 
         $registry = $this->createMock(Registry::class);
         $registry->method('get')
+            ->with($vehicle, 'vehicle')
+            ->willReturn($workflow);
+
+        $subscriber = new RentalWorkflowSubscriber(
+            $registry,
+            $this->createMock(EntityManagerInterface::class)
+        );
+
+        $subscriber->onRentalFinished($event);
+    }
+
+    public function testRentalFinishedDoesNothingWhenReturnTransitionNotAllowed(): void
+    {
+        // vérifie qu'aucune transition n'est appliquée si le retour n'est pas autorisé
+
+        $vehicle = $this->createMock(Vehicle::class);
+
+        $rental = $this->createMockRental($vehicle);
+
+        $event = $this->createMock(Event::class);
+        $event->method('getSubject')->willReturn($rental);
+
+        $workflow = $this->createMock(Workflow::class);
+
+        $workflow->expects($this->once())
+            ->method('can')
+            ->with($vehicle, 'vehicle_return')
+            ->willReturn(false);
+
+        $workflow->expects($this->never())
+            ->method('apply');
+
+        $registry = $this->createMock(Registry::class);
+
+        $registry->expects($this->once())
+            ->method('get')
             ->with($vehicle, 'vehicle')
             ->willReturn($workflow);
 
@@ -100,7 +176,9 @@ class RentalWorkflowSubscriberTest extends TestCase
         $event->method('getSubject')->willReturn($rental);
 
         $workflow = $this->createMock(Workflow::class);
-        $workflow->method('can')->with($vehicle, 'vehicle_return')->willReturn(true);
+        $workflow->method('can')
+            ->with($vehicle, 'vehicle_return')
+            ->willReturn(true);
 
         $workflow->expects($this->once())
             ->method('apply')
@@ -108,6 +186,42 @@ class RentalWorkflowSubscriberTest extends TestCase
 
         $registry = $this->createMock(Registry::class);
         $registry->method('get')
+            ->with($vehicle, 'vehicle')
+            ->willReturn($workflow);
+
+        $subscriber = new RentalWorkflowSubscriber(
+            $registry,
+            $this->createMock(EntityManagerInterface::class)
+        );
+
+        $subscriber->onRentalCanceled($event);
+    }
+
+    public function testRentalCanceledDoesNothingWhenReturnTransitionNotAllowed(): void
+    {
+        // vérifie qu'aucune transition n'est appliquée lors d'une annulation si le retour est refusé
+
+        $vehicle = $this->createMock(Vehicle::class);
+
+        $rental = $this->createMockRental($vehicle);
+
+        $event = $this->createMock(Event::class);
+        $event->method('getSubject')->willReturn($rental);
+
+        $workflow = $this->createMock(Workflow::class);
+
+        $workflow->expects($this->once())
+            ->method('can')
+            ->with($vehicle, 'vehicle_return')
+            ->willReturn(false);
+
+        $workflow->expects($this->never())
+            ->method('apply');
+
+        $registry = $this->createMock(Registry::class);
+
+        $registry->expects($this->once())
+            ->method('get')
             ->with($vehicle, 'vehicle')
             ->willReturn($workflow);
 
@@ -143,7 +257,7 @@ class RentalWorkflowSubscriberTest extends TestCase
 
     private function createMockRental(?Vehicle $vehicle): object
     {
-        $rental = new class($vehicle) {
+        return new class($vehicle) {
             public function __construct(private ?Vehicle $vehicle) {}
 
             public function getVehicle(): ?Vehicle
@@ -151,7 +265,47 @@ class RentalWorkflowSubscriberTest extends TestCase
                 return $this->vehicle;
             }
         };
+    }
+    public function testRentalFinishedIgnoresInvalidVehicle(): void
+    {
+        // vérifie qu'aucun workflow n'est chargé si le véhicule est invalide
 
-        return $rental;
+        $rental = $this->createMockRental(null);
+
+        $event = $this->createMock(Event::class);
+        $event->method('getSubject')->willReturn($rental);
+
+        $registry = $this->createMock(Registry::class);
+
+        $registry->expects($this->never())
+            ->method('get');
+
+        $subscriber = new RentalWorkflowSubscriber(
+            $registry,
+            $this->createMock(EntityManagerInterface::class)
+        );
+
+        $subscriber->onRentalFinished($event);
+    }
+    public function testRentalCanceledIgnoresInvalidVehicle(): void
+    {
+        // vérifie qu'aucun workflow n'est chargé si le véhicule est invalide
+
+        $rental = $this->createMockRental(null);
+
+        $event = $this->createMock(Event::class);
+        $event->method('getSubject')->willReturn($rental);
+
+        $registry = $this->createMock(Registry::class);
+
+        $registry->expects($this->never())
+            ->method('get');
+
+        $subscriber = new RentalWorkflowSubscriber(
+            $registry,
+            $this->createMock(EntityManagerInterface::class)
+        );
+
+        $subscriber->onRentalCanceled($event);
     }
 }

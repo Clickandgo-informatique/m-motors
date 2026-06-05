@@ -136,3 +136,6 @@ coverage-cobertura:
 	$(dc) exec php vendor/bin/phpunit --coverage-cobertura var/coverage/cobertura.xml
 
 coverage-all: coverage-html coverage-text coverage-clover coverage-cobertura
+
+asset-compile:
+	$(dc) exec php bin/console asset-map:compile

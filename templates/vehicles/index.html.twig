@@ -40,7 +40,7 @@
 
             {% include 'Components/Forms/_fetch_form.html.twig' with {
                 action: path('vehicles_index'),
-                fetchUrl: path('vehicles_ajax_list'),
+                fetchUrl: path('vehicles_ajax_search'),
                 target: '#vehicles-results',
                 filtersTarget: '.vehicles-filters',
                 paginationTop: '#vehicles-pagination-top',
@@ -48,11 +48,16 @@
                 autocompleteUrl: path('vehicles_ajax_search'),
                 resultDiv: 'autocomplete-results',
                 name: 'q',
-                placeholder: 'rechercher un véhicule',
+                placeholder: 'Rechercher un véhicule par marque, modèle, status',
                 linkMode: '1',
                 fetchMode: 'json',
                 editRouteTemplate: path('vehicle_edit', { id: 0 }),
-                baseUrl: '/vehicles/'
+                baseUrl: path('vehicles_index'),
+                target:'',
+                ajaxModal:true,
+                autocomplete:true,
+                itemUrl: path('vehicle_edit', { id: 0 }),
+
             } %}
 
             <div id="vehicles-pagination-top"></div>

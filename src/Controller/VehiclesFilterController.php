@@ -2,13 +2,14 @@
 
 namespace App\Controller;
 
-use App\Repository\VehicleRepository;
 use App\Enum\VehicleStatus;
+use App\Repository\VehicleRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route('/vehicles')]
 class VehiclesFilterController extends AbstractController
@@ -98,17 +99,26 @@ class VehiclesFilterController extends AbstractController
     #[Route('/ajax/search', name: 'vehicles_ajax_search', methods: ['GET'])]
     public function search(
         Request $request,
-        VehicleRepository $vehicleRepo
+        VehicleRepository $vehicleRepo,
+        UrlGeneratorInterface $urlGenerator
     ): Response {
+        $items = $vehicleRepo->searchForAutocomplete(
+            [],
+            (string) $request->query->get('q', ''),
+            10
+        );
+
+        foreach ($items as &$item) {
+            $item['url'] = $urlGenerator->generate(
+                'vehicle_edit',
+                ['id' => $item['id']]
+            );
+        }
+
         return $this->json([
-            'items' => $vehicleRepo->searchForAutocomplete(
-                [],
-                (string) $request->query->get('q', ''),
-                10
-            )
+            'items' => $items
         ]);
     }
-
     private function buildFiltersContext(VehicleRepository $vehicleRepo): array
     {
         $years = $vehicleRepo->getRegistrationYears();
@@ -116,7 +126,7 @@ class VehiclesFilterController extends AbstractController
         return [
             'brands' => $vehicleRepo->getUsedBrands(),
             'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
-            'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),         
+            'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
 
             'registrationYearsMin' => $years['min'] ?? null,
             'registrationYearsMax' => $years['max'] ?? null,
