@@ -6,6 +6,7 @@ use App\EventSubscriber\TwoFactorSubscriber;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -15,6 +16,8 @@ class TwoFactorSubscriberTest extends TestCase
 {
     public function testGetSubscribedEvents(): void
     {
+        // Vérifie l'enregistrement de l'événement kernel.request
+
         $this->assertSame(
             [
                 'kernel.request' => 'onKernelRequest',
@@ -25,6 +28,8 @@ class TwoFactorSubscriberTest extends TestCase
 
     public function testSkipsSubRequest(): void
     {
+        // Vérifie que les sous-requêtes sont ignorées
+
         $security = $this->createMock(Security::class);
         $router = $this->createMock(RouterInterface::class);
 
@@ -46,13 +51,15 @@ class TwoFactorSubscriberTest extends TestCase
 
     public function testSkipsIfNoSession(): void
     {
+        // Vérifie qu'aucun traitement n'est effectué sans session
+
         $security = $this->createMock(Security::class);
         $router = $this->createMock(RouterInterface::class);
 
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $request = new Request();
 
-        $request->attributes->set('_route', 'app_home');
+        $request = new Request();
+        $request->attributes->set('_route', 'admin_dashboard');
 
         $event = new RequestEvent(
             $kernel,
@@ -69,6 +76,8 @@ class TwoFactorSubscriberTest extends TestCase
 
     public function testSkipsAllowedRoute(): void
     {
+        // Vérifie qu'une route non protégée n'est jamais bloquée
+
         $user = new class implements UserInterface {
             public function getRoles(): array
             {
@@ -93,11 +102,11 @@ class TwoFactorSubscriberTest extends TestCase
 
         $router = $this->createMock(RouterInterface::class);
 
+        $session = $this->createMock(SessionInterface::class);
+        $session->method('get')->willReturn(true);
+
         $request = new Request();
         $request->attributes->set('_route', 'app_home');
-
-        $session = $this->createMock(\Symfony\Component\HttpFoundation\Session\SessionInterface::class);
-        $session->method('get')->willReturn(true);
         $request->setSession($session);
 
         $kernel = $this->createMock(HttpKernelInterface::class);
@@ -117,6 +126,8 @@ class TwoFactorSubscriberTest extends TestCase
 
     public function testRedirectsWhen2FANotPassed(): void
     {
+        // Vérifie la redirection lorsqu'une route protégée nécessite la 2FA
+
         $user = new class implements UserInterface {
             public function getRoles(): array
             {
@@ -140,13 +151,17 @@ class TwoFactorSubscriberTest extends TestCase
         $security->method('getUser')->willReturn($user);
 
         $router = $this->createMock(RouterInterface::class);
-        $router->method('generate')->with('2fa_verify')->willReturn('/2fa');
+        $router->method('generate')
+            ->with('2fa_verify')
+            ->willReturn('/2fa');
+
+        $session = $this->createMock(SessionInterface::class);
+        $session->method('get')
+            ->with('2fa_passed', false)
+            ->willReturn(false);
 
         $request = new Request();
-        $request->attributes->set('_route', 'dashboard');
-
-        $session = $this->createMock(\Symfony\Component\HttpFoundation\Session\SessionInterface::class);
-        $session->method('get')->willReturn(false);
+        $request->attributes->set('_route', 'admin_dashboard');
         $request->setSession($session);
 
         $kernel = $this->createMock(HttpKernelInterface::class);
@@ -162,20 +177,19 @@ class TwoFactorSubscriberTest extends TestCase
         $subscriber->onKernelRequest($event);
 
         $this->assertNotNull($event->getResponse());
+        $this->assertSame('/2fa', $event->getResponse()->headers->get('Location'));
     }
+
     public function testSkipsWhenRouteIsMissing(): void
     {
-        // vérifie qu'aucun traitement n'est effectué sans route
+        // Vérifie qu'aucun traitement n'est effectué sans route
 
         $security = $this->createMock(Security::class);
         $router = $this->createMock(RouterInterface::class);
 
+        $session = $this->createMock(SessionInterface::class);
+
         $request = new Request();
-
-        $session = $this->createMock(
-            \Symfony\Component\HttpFoundation\Session\SessionInterface::class
-        );
-
         $request->setSession($session);
 
         $kernel = $this->createMock(HttpKernelInterface::class);
@@ -192,22 +206,20 @@ class TwoFactorSubscriberTest extends TestCase
 
         $this->assertNull($event->getResponse());
     }
+
     public function testSkipsWhenUserIsNotAuthenticated(): void
     {
-        // vérifie qu'aucun traitement n'est effectué sans utilisateur connecté
+        // Vérifie qu'aucun traitement n'est effectué sans utilisateur connecté
 
         $security = $this->createMock(Security::class);
         $security->method('getUser')->willReturn(null);
 
         $router = $this->createMock(RouterInterface::class);
 
+        $session = $this->createMock(SessionInterface::class);
+
         $request = new Request();
-        $request->attributes->set('_route', 'dashboard');
-
-        $session = $this->createMock(
-            \Symfony\Component\HttpFoundation\Session\SessionInterface::class
-        );
-
+        $request->attributes->set('_route', 'admin_dashboard');
         $request->setSession($session);
 
         $kernel = $this->createMock(HttpKernelInterface::class);
@@ -224,9 +236,10 @@ class TwoFactorSubscriberTest extends TestCase
 
         $this->assertNull($event->getResponse());
     }
+
     public function testSkipsWhen2FAIsDisabled(): void
     {
-        // vérifie que la requête passe lorsque le compte n'utilise pas la 2FA
+        // Vérifie que la requête passe lorsque la 2FA n'est pas activée
 
         $user = new class implements UserInterface {
             public function getRoles(): array
@@ -252,13 +265,10 @@ class TwoFactorSubscriberTest extends TestCase
 
         $router = $this->createMock(RouterInterface::class);
 
+        $session = $this->createMock(SessionInterface::class);
+
         $request = new Request();
-        $request->attributes->set('_route', 'dashboard');
-
-        $session = $this->createMock(
-            \Symfony\Component\HttpFoundation\Session\SessionInterface::class
-        );
-
+        $request->attributes->set('_route', 'admin_dashboard');
         $request->setSession($session);
 
         $kernel = $this->createMock(HttpKernelInterface::class);
@@ -275,9 +285,10 @@ class TwoFactorSubscriberTest extends TestCase
 
         $this->assertNull($event->getResponse());
     }
+
     public function testAllowsRequestWhen2FAAlreadyPassed(): void
     {
-        // vérifie qu'aucune redirection n'est effectuée après validation 2FA
+        // Vérifie qu'aucune redirection n'est effectuée après validation 2FA
 
         $user = new class implements UserInterface {
             public function getRoles(): array
@@ -303,17 +314,13 @@ class TwoFactorSubscriberTest extends TestCase
 
         $router = $this->createMock(RouterInterface::class);
 
-        $request = new Request();
-        $request->attributes->set('_route', 'dashboard');
-
-        $session = $this->createMock(
-            \Symfony\Component\HttpFoundation\Session\SessionInterface::class
-        );
-
+        $session = $this->createMock(SessionInterface::class);
         $session->method('get')
             ->with('2fa_passed', false)
             ->willReturn(true);
 
+        $request = new Request();
+        $request->attributes->set('_route', 'admin_dashboard');
         $request->setSession($session);
 
         $kernel = $this->createMock(HttpKernelInterface::class);
