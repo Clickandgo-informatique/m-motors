@@ -10,8 +10,6 @@ framework:
         type: method
         property: status
 
-      initial_marking: draft
-
       places:
         - draft
         - vehicle_selected
