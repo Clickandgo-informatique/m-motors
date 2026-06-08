@@ -1,0 +1,17 @@
+{% extends "base.html.twig" %}
+{% block title %}M-motors : Nous contacter{% endblock %}
+{% block body %}
+<h1 class="text-center"><i class="fa-regular fa-envelope title-icon"></i>Nous contacter</h1>
+<h3 class="text-center">Vous pouvez nous contacter au <strong>01.02.03.04.05</strong> ou bien par mail en remplissant le formulaire ci-joint :</h3>
+
+    {{form_start(form)}}
+        {{form_errors(form)}}
+        <div class="form-row">
+            {{form_row(form.email)}}
+        </div>
+        <div class="form-row">
+            {{form_row(form.body)}}
+        </div>
+        <button type="submit"><i class="fa-regular fa-paper-plane"></i>Envoyer</button>
+    {{form_end(form)}}
+{% endblock %}
