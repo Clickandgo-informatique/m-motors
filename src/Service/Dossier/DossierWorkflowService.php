@@ -137,4 +137,8 @@ class DossierWorkflowService
 
         $this->apply($dossier, $transition);
     }
+    public function signOrder(Dossier $dossier): void
+    {
+        $this->apply($dossier, 'sign_order');
+    }
 }
