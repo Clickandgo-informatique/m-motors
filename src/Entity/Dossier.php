@@ -218,12 +218,12 @@ class Dossier
     {
         return match ($this->status) {
             'draft' => 'brouillon',
-            'vehicle_selected' => 'vehicule selectionne',
-            'documents_pending' => 'documents a fournir',
-            'documents_review' => 'documents en validation',
-            'financing_review' => 'financement en cours',
-            'completed' => 'termine',
-            'cancelled' => 'annule',
+            'vehicle_selected' => 'Véhicule selectionné',
+            'documents_pending' => 'Documents à fournir',
+            'documents_review' => 'Documents en validation',
+            'financing_review' => 'Financement en cours',
+            'completed' => 'Terminé',
+            'cancelled' => 'Annulé',
             default => $this->status,
         };
     }

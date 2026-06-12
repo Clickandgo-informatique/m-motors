@@ -10,6 +10,7 @@
                     <a href="{{ path('admin_dossier_show', {id: dossier.id}) }}"
                        class="btn btn-sm btn-dark">
                         <i class="fa-regular fa-pen-to-square"></i>
+                          {{ dossier.dossierCode }}
                     </a>
                 </div>
 
@@ -20,7 +21,7 @@
                 </div>
 
                 <div class="dossier-card-date">
-                    {{ dossier.createdAt|date('d/m/Y') }}
+                    {{ dossier.createdAt|date('d/m/Y H:i:s') }}
                 </div>
 
             </div>
@@ -32,14 +33,20 @@
                     <h3 class="dossier-vehicle">
                         {{ dossier.vehicle.vehicleModel }}
                     </h3>
-
-                    <div class="dossier-reference">
-                        {{ dossier.dossierCode }}
-                    </div>
-
                 </div>
 
                 <div class="dossier-card-grid">
+
+                    {% if dossier.vehicle.images|length > 0 %}
+        <div class="dossier-item dossier-item-image">
+            <img
+                src="{{ asset('uploads/' ~ dossier.vehicle.images|first.imagePath) }}"
+                alt="{{ dossier.vehicle.vehicleModel.brand.name }} {{ dossier.vehicle.vehicleModel.model.name }}"
+                class="vehicle-image-thumbnail"
+                loading="lazy"
+            >
+        </div>
+    {% endif %}
 
                     <div class="dossier-item">
                         <span class="label">Client</span>

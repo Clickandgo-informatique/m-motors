@@ -53,9 +53,8 @@
 
 .dossier-card-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-  align-items: center;
 }
 
 .dossier-item {
@@ -73,7 +72,7 @@
 .dossier-item .value {
   word-break: break-word;
 }
-.dossier-item .vehicle-image-thumbnail {
+.dossier-item-image.vehicle-image-thumbnail {
   max-width: 120px;
   max-height: 80px;
   width: auto;
