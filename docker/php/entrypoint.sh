@@ -1,25 +1,40 @@
 #!/bin/sh
 set -e
 
-# fix permissions for symfony writable directories
-chown -R www-data:www-data /var/www/html/var /var/www/html/vendor
+# Répertoire de l'application dans le container
+APP_DIR="/var/www"
 
-# install composer dependencies if vendor is missing or incomplete
-if [ ! -d /var/www/html/vendor ] || [ ! -f /var/www/html/vendor/autoload.php ]; then
-    echo "vendor is missing, installing composer dependencies"
-    cd /var/www/html
+echo "Starting entrypoint..."
+
+# Correction des permissions Symfony pour le cache et les logs
+if [ -d "$APP_DIR/var" ]; then
+    chown -R www-data:www-data "$APP_DIR/var"
+fi
+
+# Correction des permissions du vendor si déjà présent
+if [ -d "$APP_DIR/vendor" ]; then
+    chown -R www-data:www-data "$APP_DIR/vendor"
+fi
+
+# Installation automatique des dépendances si vendor absent ou incomplet
+if [ ! -d "$APP_DIR/vendor" ] || [ ! -f "$APP_DIR/vendor/autoload.php" ]; then
+    echo "vendor missing, running composer install"
+    cd "$APP_DIR"
     composer install --no-interaction --optimize-autoloader
 fi
 
-# export postgres password for psql commands
+# Export du mot de passe PostgreSQL pour psql / pg_isready
 export PGPASSWORD="$POSTGRES_PASSWORD"
 
-# wait for postgres to be available
+# Attente de disponibilité de PostgreSQL
+echo "waiting for postgres..."
 until pg_isready -h db -p 5432 -U "$POSTGRES_USER"; do
-    echo "waiting for postgres"
     sleep 1
 done
 
+echo "postgres is ready"
+
+# Création de la base de test si elle n'existe pas
 echo "ensuring test database exists"
 
 psql -h db -U "$POSTGRES_USER" -d postgres -tAc \
@@ -28,5 +43,5 @@ psql -h db -U "$POSTGRES_USER" -d postgres -c "CREATE DATABASE m_motors_test"
 
 echo "test database ready"
 
-# execute container command
+# Exécution de la commande principale du container (php-fpm ou autre)
 exec "$@"
