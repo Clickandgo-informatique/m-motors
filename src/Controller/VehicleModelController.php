@@ -15,57 +15,48 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class VehicleModelController extends AbstractController
 {
-    #[Route('/vehicle-model/search', name: 'vehicle_model_search', methods: ['GET'])]
-    public function search(Request $request, VehicleModelRepository $repo): JsonResponse
-    {
-        $term = trim($request->query->get('q', ''));
-
-        $page = max(1, (int) $request->query->get('page', 1));
-        $limit = 10;
-        $offset = ($page - 1) * $limit;
-
-        if ($term === '') {
-            return $this->json([
-                'items' => [],
-                'total' => 0,
-                'page' => 1,
-                'pages' => 0,
-            ]);
-        }
-
-        $models = $repo->searchPaginated($term, $limit, $offset);
-        $total = $repo->countSearch($term);
-
-        $items = array_map(function ($model) {
-            $brand = $model['brand_name'] ?? '';
-            $name  = $model['model_name'] ?? '';
-            $variant = $model['variant_name'] ?? '';
-
-            $label = trim($brand . ' ' . $name . ' ' . $variant);
-
-            return [
-                'id' => $model['id'],
-                'label' => $label,
-                'url' => $this->generateUrl('vehicle_model_edit', [
-                    'id' => $model['id']
-                ])
-            ];
-        }, $models);
-
-        return $this->json([
-            'items' => $items,
-            'total' => $total,
-            'page' => $page,
-            'pages' => (int) ceil($total / $limit),
-        ]);
-    }
-
+    /**
+     * Page principale (HTML)
+     * Source unique de vérité pour la liste + pagination KNP
+     */
     #[Route('/vehicles/models', name: 'vehicles_models', methods: ['GET'])]
     public function index(
         Request $request,
         VehicleModelRepository $repo,
         PaginatorInterface $paginator
     ): Response {
+
+        $term = trim($request->query->get('q', ''));
+        $page = $request->query->getInt('page', 1);
+
+        // Construction de la requête (filtrée ou non)
+        $queryBuilder = $term
+            ? $repo->searchQueryBuilder($term)
+            : $repo->findAllWithRelations();
+
+        // Pagination unique KNP
+        $vehicleModels = $paginator->paginate(
+            $queryBuilder,
+            $page,
+            20
+        );
+
+        return $this->render('vehicles_models/vehicles_models.html.twig', [
+            'vm' => $vehicleModels,
+            'search' => $term,
+        ]);
+    }
+
+    /**
+     * Endpoint AJAX pour FetchForm
+     * Retourne HTML + pagination synchronisée
+     */
+    #[Route('/vehicles/models/ajax', name: 'vehicles_models_ajax', methods: ['GET'])]
+    public function indexAjax(
+        Request $request,
+        VehicleModelRepository $repo,
+        PaginatorInterface $paginator
+    ): JsonResponse {
 
         $term = trim($request->query->get('q', ''));
         $page = $request->query->getInt('page', 1);
@@ -80,12 +71,64 @@ class VehicleModelController extends AbstractController
             20
         );
 
-        return $this->render('vehicles/vehicles_models.html.twig', [
-            'vm' => $vehicleModels,
-            'search' => $term,
+        return $this->json([
+            // HTML du tableau (source unique via partial)
+            'results' => $this->renderView('vehicles_models/_table.html.twig', [
+                'vm' => $vehicleModels
+            ]),
+
+            // Pagination haute
+            'paginationTop' => $this->renderView('vehicles_models/_pagination_info.html.twig', [
+                'vm' => $vehicleModels
+            ]),
+
+            // Pagination basse
+            'paginationBottom' => $this->renderView('vehicles_models/_pagination_info.html.twig', [
+                'vm' => $vehicleModels
+            ]),
         ]);
     }
 
+    /**
+     * Autocomplete uniquement (sans pagination KNP)
+     * Doit rester simple et indépendant du système principal
+     */
+    #[Route('/vehicle-model/search', name: 'vehicle_model_search', methods: ['GET'])]
+    public function search(Request $request, VehicleModelRepository $repo): JsonResponse
+    {
+        $term = trim($request->query->get('q', ''));
+
+        if ($term === '') {
+            return $this->json([
+                'items' => []
+            ]);
+        }
+
+        // réutilise ta méthode existante
+        $models = $repo->searchPaginated($term, 10, 0);
+
+        $items = array_map(function ($model) {
+            $brand = $model['brand_name'] ?? '';
+            $name = $model['model_name'] ?? '';
+            $variant = $model['variant_name'] ?? '';
+
+            return [
+                'id' => $model['id'],
+                'label' => trim($brand . ' ' . $name . ' ' . $variant),
+                'url' => $this->generateUrl('vehicle_model_edit', [
+                    'id' => $model['id']
+                ])
+            ];
+        }, $models);
+
+        return $this->json([
+            'items' => $items
+        ]);
+    }
+
+    /**
+     * Création véhicule modèle
+     */
     #[Route('/vehicles/models/new', name: 'vehicle_model_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
@@ -102,12 +145,8 @@ class VehicleModelController extends AbstractController
             $em->persist($vm);
             $em->flush();
 
-            $this->addFlash(
-                'message',
-                'Le nouveau modèle de véhicule a été enregistré avec succès.'
-            );
+            $this->addFlash('message', 'Modèle créé avec succès.');
 
-            // réponse simplifiée pour les requêtes ajax
             if ($request->isXmlHttpRequest()) {
                 return new Response('OK');
             }
@@ -115,30 +154,17 @@ class VehicleModelController extends AbstractController
             return $this->redirectToRoute('vehicles_models');
         }
 
-        // retourne directement le html pour les modales ajax
-        if ($request->isXmlHttpRequest()) {
-
-            return $this->render(
-                'vehicles/_vehicle_model_form.html.twig',
-                [
-                    'form' => $form->createView(),
-                    'vm' => $vm,
-                    'title' => $title,
-                    'mode' => 'new'
-                ]
-            );
-        }
-
-        return $this->render(
-            'vehicles/_vehicle_model_form.html.twig',
-            [
-                'form' => $form->createView(),
-                'vm' => $vm,
-                'title' => $title,
-            ]
-        );
+        return $this->render('vehicles/_vehicle_model_form.html.twig', [
+            'form' => $form->createView(),
+            'vm' => $vm,
+            'title' => $title,
+            'mode' => 'new'
+        ]);
     }
 
+    /**
+     * Edition véhicule modèle
+     */
     #[Route('/vehicles/models/{id}/edit', name: 'vehicle_model_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
@@ -156,12 +182,8 @@ class VehicleModelController extends AbstractController
 
             $em->flush();
 
-            $this->addFlash(
-                'message',
-                'Le modèle de véhicule a été modifié avec succès.'
-            );
+            $this->addFlash('message', 'Modèle modifié avec succès.');
 
-            // réponse simplifiée pour les requêtes ajax
             if ($request->isXmlHttpRequest()) {
                 return new Response('OK');
             }
@@ -169,31 +191,17 @@ class VehicleModelController extends AbstractController
             return $this->redirectToRoute('vehicles_models');
         }
 
-        // retourne directement le html pour les modales ajax
-        if ($request->isXmlHttpRequest()) {
-
-            return $this->render(
-                'vehicles/_vehicle_model_form.html.twig',
-                [
-                    'form' => $form->createView(),
-                    'vm' => $vm,
-                    'title' => $title,
-                    'mode' => 'edit'
-                ]
-            );
-        }
-
-        return $this->render(
-            'vehicles/_vehicle_model_form.html.twig',
-            [
-                'form' => $form->createView(),
-                'vm' => $vm,
-                'title' => $title,
-                'mode' => 'edit'
-            ]
-        );
+        return $this->render('vehicles/_vehicle_model_form.html.twig', [
+            'form' => $form->createView(),
+            'vm' => $vm,
+            'title' => $title,
+            'mode' => 'edit'
+        ]);
     }
 
+    /**
+     * Suppression
+     */
     #[Route('/vehicles/models/{id}', name: 'vehicle_model_delete', methods: ['POST'])]
     public function delete(
         Request $request,
@@ -213,10 +221,7 @@ class VehicleModelController extends AbstractController
                 return new Response('OK');
             }
 
-            $this->addFlash(
-                'message',
-                'Le modèle de véhicule a été supprimé.'
-            );
+            $this->addFlash('message', 'Modèle supprimé avec succès.');
         }
 
         return $this->redirectToRoute('vehicles_models');

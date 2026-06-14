@@ -14,7 +14,7 @@ M-motors: Admin - Dossiers
 
 {# Formulaire de recherche #}
 {% include "Components/Forms/_fetch_form.html.twig" with {
-    action: path('dossiers_ajax_search'),
+    action: path('admin_dossier_list'),
     fetchUrl: path('dossiers_ajax_search'),
     baseUrl: path('admin_dossier_list'),
     name: 'q',
@@ -46,6 +46,7 @@ M-motors: Admin - Dossiers
 		<div class="pagination-wrapper" id="dossiers-pagination-bottom">
 			{% include "dossier/_pagination_info.html.twig" with { dossiers: dossiers } %}
 		</div>
+	
 
 	</div>
 

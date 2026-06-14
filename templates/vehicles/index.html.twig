@@ -38,6 +38,7 @@
                 <div id="filters-summary"></div>
             </div>
 
+{# Formulaire de recherche #}
             {% include 'Components/Forms/_fetch_form.html.twig' with {
                 action: path('vehicles_index'),
                 fetchUrl: path('vehicles_ajax_search'),

@@ -1,0 +1,77 @@
+<div class="vehicle-model-cards">
+
+    {% for vmod in vm %}
+        <div class="vehicle-model-card" id="card-{{ vmod.id }}">
+
+            <div class="card-header">
+                <div class="card-title">
+                    {{ vmod.brand.name }} {{ vmod.variant.model.name ?? '' }}
+                </div>
+
+                <div class="card-actions">
+                    <a href="{{ path('vehicle_model_edit', {id: vmod.id}) }}"
+                       data-ajax-modal="true"
+                       class="btn-icon">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                    </a>
+
+                    <form method="post"
+                          class="form-delete-btn"
+                          action="{{ path('vehicle_model_delete', {id: vmod.id}) }}"
+                          data-ajax-delete
+                          data-delete-target="#card-{{ vmod.id }}">
+
+                        <input type="hidden"
+                               name="_token"
+                               value="{{ csrf_token('delete_vehicle_model_' ~ vmod.id) }}">
+
+                        <button class="btn-icon danger">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <div class="card-line">
+                    <span class="label">Id</span>
+                    <span class="value">{{ vmod.id }}</span>
+                </div>
+
+                <div class="card-line">
+                    <span class="label">Carrosserie</span>
+                    <span class="value">{{ vmod.bodyType.name }}</span>
+                </div>
+
+                <div class="card-line">
+                    <span class="label">Variante</span>
+                    <span class="value">{{ vmod.variant.name ?? '-' }}</span>
+                </div>
+
+                <div class="card-line">
+                    <span class="label">CNIT</span>
+                    <span class="value">{{ vmod.cnit }}</span>
+                </div>
+
+                <div class="card-line">
+                    <span class="label">CO₂</span>
+                    <span class="value">{{ vmod.co2 }}</span>
+                </div>
+
+                <div class="card-line">
+                    <span class="label">Masse min</span>
+                    <span class="value">{{ vmod.massMin }}</span>
+                </div>
+
+                <div class="card-line">
+                    <span class="label">Masse max</span>
+                    <span class="value">{{ vmod.massMax }}</span>
+                </div>
+
+            </div>
+
+        </div>
+    {% endfor %}
+
+</div>

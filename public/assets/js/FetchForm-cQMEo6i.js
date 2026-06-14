@@ -1,3 +1,5 @@
+import initPagination from "./Pagination.js";
+
 export default class FetchForm {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) {
@@ -138,6 +140,9 @@ export default class FetchForm {
 
       // Déclenchement global pour réinitialisation des composants UI
       window.dispatchEvent(new Event("ui:updated"));
+
+      // Réinitialisation de la pagination après injection DOM
+      initPagination();
 
       // Mise à jour éventuelle des badges de filtres
       window.__filterBadges?.updateBadges();

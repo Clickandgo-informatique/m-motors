@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+{% block title %}M-Motors: Catalogue des modèles véhicules
+{% endblock %}
+
+{% block body %}
+
+
+	<h1 class="text-center">Catalogue des modèles de véhicules</h1>
+
+	{# Formulaire de recherche #}
+	{% include "Components/Forms/_fetch_form.html.twig" with {
+		action: path('vehicles_models'),
+		fetchUrl: path('vehicles_models_ajax'),
+		baseUrl: path('vehicles_models'),    
+		name: "q",
+		hiddenName: "vehicle[vehicleModelSearch]",    
+		resultDiv: '#vehicle-model-results',
+		placeholder: "Rechercher par marque ou modèle",
+		autocompleteUrl: path('vehicle_model_search'),    
+		itemUrl: path('vehicle_model_edit', { id: '__ID__' }),
+		target: '#vehicle-model-results',
+		fetchMode: 'json',
+		filtersTarget: '',
+		paginationTop: '#vehicles-models-pagination-top',
+		paginationBottom: '#vehicles-models-pagination-bottom',
+		ajaxModal: true,
+		autocomplete: true,
+		linkMode:'1'
+} %}
+
+		{# Pagination haut #}
+		<div class="pagination-wrapper" id="vehicles-models-pagination-top">
+			{% include "vehicles_models/_pagination_info.html.twig" with { vm:vm } %}
+		</div>
+
+	<a class="btn btn-new" href="{{ path('vehicle_model_new') }}" data-ajax-modal>
+		<i class="fa-solid fa-circle-plus"></i>Ajouter un nouveau modèle de véhicule</a>
+	
+	
+	<div id="vehicle-model-results">
+		{% include "vehicles_models/_table.html.twig" with { vm: vm } %}
+	</div>
+
+
+		{# Pagination bas #}
+		<div class="pagination-wrapper" id="vehicles-models-pagination-bottom">
+			{% include "vehicles_models/_pagination_info.html.twig" with { vm:vm } %}
+		</div>
+{% endblock %}
