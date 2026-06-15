@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-u469k-M.js",
+        "path": "\/assets\/app-_dVEA-2.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-CoDPQbZ.css",
+        "path": "\/assets\/styles\/app-F9RVePr.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -69,6 +69,10 @@
     },
     "\/assets\/js\/FilterBadges.js": {
         "path": "\/assets\/js\/FilterBadges-zt5kLQO.js",
+        "type": "js"
+    },
+    "\/assets\/js\/cookie-banner.js": {
+        "path": "\/assets\/js\/cookie-banner-WXkTDEM.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {

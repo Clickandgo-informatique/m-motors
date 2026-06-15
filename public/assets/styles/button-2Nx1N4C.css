@@ -93,7 +93,7 @@ button i {
   background-color: transparent;
 }
 .btn-cancel {
-  background: red;
+  background-color: red;
   opacity: 0.7;
   color: white;
 }

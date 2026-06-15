@@ -1,0 +1,55 @@
+{% if app.request.cookies.get('m_motors_cookie_consent') is null %}
+    <div class="cookie-banner">
+<div class="cookie-banner-container">
+        <div class="cookie-banner-icon">
+
+            <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    aria-hidden="true"
+            >
+                <path
+                        d="M256 512C114.6 512 0 397.4 0 256S114.6 0 256 0c13.3 0 24 10.7 24 24 0 44.2 35.8 80 80 80 8.8 0 17.3-1.4 25.2-4.1 7.5-2.5 15.8-1.3 22.2 3.3 6.4 4.6 10.2 11.9 10.2 19.8 0 6.4-.8 12.7-2.3 18.8-1.9 7.4-2.9 15.1-2.9 22.2 0 44.2 35.8 80 80 80 7.1 0 14.8-1 22.2-2.9 6.1-1.5 12.4-2.3 18.8-2.3 7.9 0 15.2 3.8 19.8 10.2 4.6 6.4 5.8 14.7 3.3 22.2C469.4 417.4 372.1 512 256 512z"
+                />
+
+                <circle cx="160" cy="160" r="28"/>
+                <circle cx="140" cy="280" r="20"/>
+                <circle cx="250" cy="340" r="25"/>
+                <circle cx="320" cy="200" r="22"/>
+                <circle cx="360" cy="320" r="18"/>
+            </svg>
+
+        </div>
+
+        <div class="cookie-banner-content">
+            <h3>Gestion des cookies</h3>
+
+            <p>
+                Ce site utilise des cookies nécessaires à son fonctionnement.
+                Des cookies de mesure d'audience peuvent également être utilisés
+                avec votre consentement.
+            </p>
+        </div>
+
+        <div class="cookie-banner-actions">
+
+            <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="cookie-accept-btn"
+            >
+                Accepter
+            </button>
+
+            <button
+                    type="button"
+                    class="btn btn-cancel"
+                    id="cookie-refuse-btn"
+            >
+                Refuser
+            </button>
+
+        </div>
+</div>
+    </div>
+{% endif %}
