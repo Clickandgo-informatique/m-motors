@@ -61,13 +61,20 @@
 
             } %}
 
-            <div id="vehicles-pagination-top"></div>
+           
+		{# Pagination haut #}
+		<div class="pagination-wrapper" id="vehicles-pagination-top">
+			{% include "vehicles/_pagination_info.html.twig" with { vehicles:vehicles } %}
+		</div>
 
             <div id="vehicles-results">
-                {% include 'vehicles/_vehicles_list.html.twig' %}
+                {% include 'vehicles/_vehicles_gallery_items.html.twig' %}
             </div>
 
-            <div id="vehicles-pagination-bottom"></div>
+		{# Pagination bas #}
+		<div class="pagination-wrapper" id="vehicles-pagination-bottom">
+			{% include "vehicles/_pagination_info.html.twig" with { vehicles:vehicles } %}
+		</div>            
 
         </main>
 

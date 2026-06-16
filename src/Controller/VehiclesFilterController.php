@@ -75,12 +75,12 @@ class VehiclesFilterController extends AbstractController
         $context = $this->buildFiltersContext($vehicleRepo);
 
         return $this->json([
-            'list' => $this->renderView('vehicles/_vehicles_list.html.twig', [
+            'list' => $this->renderView('vehicles/_vehicles_gallery_items.html.twig', [
                 'vehicles' => $vehicles,
                 'view' => $view
             ]),
 
-            'pagination' => $this->renderView('vehicles/_pagination.html.twig', [
+            'pagination' => $this->renderView('vehicles/_pagination_info.html.twig', [
                 'vehicles' => $vehicles
             ]),
 
