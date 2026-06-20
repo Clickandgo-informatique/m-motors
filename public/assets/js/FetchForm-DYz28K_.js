@@ -1,3 +1,5 @@
+import initPagination from "./Pagination.js";
+
 export default class FetchForm {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) {
@@ -7,9 +9,7 @@ export default class FetchForm {
     this.form = form;
     this.isLoading = false;
     this.abortController = new AbortController();
-
     this.isReady = false;
-    this._timeout = null;
 
     this.init();
   }
@@ -21,48 +21,28 @@ export default class FetchForm {
       this.send();
     });
 
-    /**
-     * IMPORTANT FIX :
-     * On ne dépend plus du form.change (cassé par DOM Symfony / render controller)
-     * On écoute globalement et on filtre via form.contains()
-     */
-    document.addEventListener("change", e => {
-      if (!this.isReady) return;
-      if (!this.form.contains(e.target)) return;
+    let timeout = null;
 
-      this.scheduleSend();
+    // Change global (filtres + search + inputs)
+    this.form.addEventListener("change", () => {
+      if (!this.isReady) return;
+
+      clearTimeout(timeout);
+
+      timeout = setTimeout(() => {
+        this.send();
+      }, 120);
     });
 
-    /**
-     * Même logique pour input (sliders / champs texte rapides)
-     */
-    document.addEventListener("input", e => {
-      if (!this.isReady) return;
-      if (!this.form.contains(e.target)) return;
-
-      this.scheduleSend();
-    });
-
-    // petit délai pour éviter les triggers init
+    // évite les triggers initiaux
     setTimeout(() => {
       this.isReady = true;
-    }, 200);
-  }
-
-  scheduleSend() {
-    clearTimeout(this._timeout);
-
-    this._timeout = setTimeout(() => {
-      this.send();
-    }, 120);
+    }, 300);
   }
 
   async send() {
-    if (this.isLoading) {
-      return;
-    }
+    if (this.isLoading) return;
 
-    // annule requête précédente
     this.abortController?.abort();
     this.abortController = new AbortController();
 
@@ -80,14 +60,31 @@ export default class FetchForm {
     }
 
     try {
-      // construction params GET
       const formData = new FormData(this.form);
+
+      // Reset page si ce n’est pas une action pagination
+      if (!this._fromPagination) {
+        const pageInput = this.form.querySelector("input[name='page']");
+        if (pageInput) {
+          pageInput.value = 1;
+        }
+      }
+
+      // Sérialisation SAFE (évite bug Symfony "non-scalar filters")
       const params = new URLSearchParams();
 
-      formData.forEach((value, key) => {
-        params.append(key, value);
-      });
+      for (const [key, value] of formData.entries()) {
+        if (value !== null && value !== undefined && value !== "") {
+          params.append(key, value);
+        }
+      }
 
+      // URL navigateur synchronisée
+      const browserUrl = `${window.location.pathname}?${params.toString()}`;
+
+      window.history.replaceState({}, "", browserUrl);
+
+      // Fetch AJAX
       const response = await fetch(`${url}?${params.toString()}`, {
         method: "GET",
         signal: this.abortController.signal
@@ -95,30 +92,34 @@ export default class FetchForm {
 
       const data = await response.json();
 
-      // résultats
+      // Results
       if (data.results) {
         target.innerHTML = data.results;
       } else if (data.list) {
         target.innerHTML = data.list;
       }
 
-      // pagination top
+      // Pagination
       const paginationTopSelector = this.form.dataset.paginationTop;
+      const paginationBottomSelector = this.form.dataset.paginationBottom;
 
       if (paginationTopSelector && data.paginationTop) {
         const top = document.querySelector(paginationTopSelector);
-        if (top) top.innerHTML = data.paginationTop;
+        if (top) {
+          top.innerHTML = data.paginationTop;
+          initPagination(top);
+        }
       }
-
-      // pagination bottom
-      const paginationBottomSelector = this.form.dataset.paginationBottom;
 
       if (paginationBottomSelector && data.paginationBottom) {
         const bottom = document.querySelector(paginationBottomSelector);
-        if (bottom) bottom.innerHTML = data.paginationBottom;
+        if (bottom) {
+          bottom.innerHTML = data.paginationBottom;
+          initPagination(bottom);
+        }
       }
 
-      // fallback pagination legacy
+      // fallback ancien format
       if (data.pagination) {
         const top = paginationTopSelector ? document.querySelector(paginationTopSelector) : null;
 
@@ -126,11 +127,18 @@ export default class FetchForm {
           ? document.querySelector(paginationBottomSelector)
           : null;
 
-        if (top) top.innerHTML = data.pagination;
-        if (bottom) bottom.innerHTML = data.pagination;
+        if (top) {
+          top.innerHTML = data.pagination;
+          initPagination(top);
+        }
+
+        if (bottom) {
+          bottom.innerHTML = data.pagination;
+          initPagination(bottom);
+        }
       }
 
-      // filters summary / badges backend
+      // Filtres summary
       if (data.filtersSummary) {
         const summary = document.querySelector(
           this.form.dataset.filtersTarget || "#filters-summary"
@@ -141,13 +149,8 @@ export default class FetchForm {
         }
       }
 
-      // refresh UI global
       window.dispatchEvent(new Event("ui:updated"));
-
-      // badges frontend (si présent)
-      if (window.__filterBadges?.updateBadges) {
-        window.__filterBadges.updateBadges();
-      }
+      window.__filterBadges?.updateBadges();
     } catch (e) {
       if (e.name !== "AbortError") {
         console.error("[FetchForm]", e);

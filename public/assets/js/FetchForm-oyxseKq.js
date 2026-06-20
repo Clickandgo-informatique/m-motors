@@ -7,54 +7,41 @@ export default class FetchForm {
     this.form = form;
     this.isLoading = false;
     this.abortController = new AbortController();
-
     this.isReady = false;
-    this._timeout = null;
 
     this.init();
   }
 
   init() {
-    // Submit classique intercepté
     this.form.addEventListener("submit", e => {
       e.preventDefault();
       this.send();
     });
 
-    /**
-     * IMPORTANT FIX :
-     * On ne dépend plus du form.change (cassé par DOM Symfony / render controller)
-     * On écoute globalement et on filtre via form.contains()
-     */
-    document.addEventListener("change", e => {
-      if (!this.isReady) return;
-      if (!this.form.contains(e.target)) return;
+    let timeout = null;
 
-      this.scheduleSend();
+    this.form.addEventListener("change", () => {
+      if (!this.isReady) {
+        return;
+      }
+
+      // IMPORTANT :
+      // tout changement de filtre reset la pagination
+      const pageInput = this.form.querySelector("input[name='page']");
+      if (pageInput) {
+        pageInput.value = 1;
+      }
+
+      clearTimeout(timeout);
+
+      timeout = setTimeout(() => {
+        this.send();
+      }, 120);
     });
 
-    /**
-     * Même logique pour input (sliders / champs texte rapides)
-     */
-    document.addEventListener("input", e => {
-      if (!this.isReady) return;
-      if (!this.form.contains(e.target)) return;
-
-      this.scheduleSend();
-    });
-
-    // petit délai pour éviter les triggers init
     setTimeout(() => {
       this.isReady = true;
-    }, 200);
-  }
-
-  scheduleSend() {
-    clearTimeout(this._timeout);
-
-    this._timeout = setTimeout(() => {
-      this.send();
-    }, 120);
+    }, 300);
   }
 
   async send() {
@@ -62,7 +49,6 @@ export default class FetchForm {
       return;
     }
 
-    // annule requête précédente
     this.abortController?.abort();
     this.abortController = new AbortController();
 
@@ -70,7 +56,6 @@ export default class FetchForm {
     this.form.dataset.loading = "1";
 
     const url = this.form.dataset.fetchUrl;
-
     const target = document.querySelector(this.form.dataset.target);
 
     if (!target) {
@@ -80,7 +65,6 @@ export default class FetchForm {
     }
 
     try {
-      // construction params GET
       const formData = new FormData(this.form);
       const params = new URLSearchParams();
 
@@ -95,7 +79,7 @@ export default class FetchForm {
 
       const data = await response.json();
 
-      // résultats
+      // results
       if (data.results) {
         target.innerHTML = data.results;
       } else if (data.list) {
@@ -103,34 +87,29 @@ export default class FetchForm {
       }
 
       // pagination top
-      const paginationTopSelector = this.form.dataset.paginationTop;
-
-      if (paginationTopSelector && data.paginationTop) {
-        const top = document.querySelector(paginationTopSelector);
+      const topSelector = this.form.dataset.paginationTop;
+      if (topSelector && data.paginationTop) {
+        const top = document.querySelector(topSelector);
         if (top) top.innerHTML = data.paginationTop;
       }
 
       // pagination bottom
-      const paginationBottomSelector = this.form.dataset.paginationBottom;
-
-      if (paginationBottomSelector && data.paginationBottom) {
-        const bottom = document.querySelector(paginationBottomSelector);
+      const bottomSelector = this.form.dataset.paginationBottom;
+      if (bottomSelector && data.paginationBottom) {
+        const bottom = document.querySelector(bottomSelector);
         if (bottom) bottom.innerHTML = data.paginationBottom;
       }
 
-      // fallback pagination legacy
+      // compat legacy
       if (data.pagination) {
-        const top = paginationTopSelector ? document.querySelector(paginationTopSelector) : null;
-
-        const bottom = paginationBottomSelector
-          ? document.querySelector(paginationBottomSelector)
-          : null;
+        const top = topSelector ? document.querySelector(topSelector) : null;
+        const bottom = bottomSelector ? document.querySelector(bottomSelector) : null;
 
         if (top) top.innerHTML = data.pagination;
         if (bottom) bottom.innerHTML = data.pagination;
       }
 
-      // filters summary / badges backend
+      // filters summary
       if (data.filtersSummary) {
         const summary = document.querySelector(
           this.form.dataset.filtersTarget || "#filters-summary"
@@ -141,13 +120,12 @@ export default class FetchForm {
         }
       }
 
-      // refresh UI global
-      window.dispatchEvent(new Event("ui:updated"));
-
-      // badges frontend (si présent)
-      if (window.__filterBadges?.updateBadges) {
-        window.__filterBadges.updateBadges();
-      }
+      // IMPORTANT :
+      // les badges doivent être mis à jour après DOM injection
+      window.requestAnimationFrame(() => {
+        window.__filterBadges?.updateBadges?.();
+        window.dispatchEvent(new Event("ui:updated"));
+      });
     } catch (e) {
       if (e.name !== "AbortError") {
         console.error("[FetchForm]", e);

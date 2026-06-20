@@ -1,3 +1,4 @@
+
 <div class="connection">
     {% if app.user %}
         <p class="connected">
@@ -40,8 +41,12 @@
 {% set currentRoute = app.request.attributes.get('_route') %}
 
 {% set vehiclesRoutes =
-    currentRoute starts with 'vehicle'
-    or currentRoute starts with 'vehicles_'
+    currentRoute starts with 'vehicles_index'
+    or currentRoute starts with 'vehicle_show'
+%}
+
+{% set vehiclesModelsRoutes =
+    currentRoute starts with 'vehicles_models'
 %}
 
 {% set customersRoutes =
@@ -100,7 +105,7 @@
 
                 <a
                     href="{{ path('vehicles_models') }}"
-                    class="{{ currentRoute == 'vehicles_models' ? 'active' : '' }}"
+                    class="{{ vehiclesModelsRoutes ? 'active' : '' }}"
                 >
                     <i class="fa-solid fa-book"></i>
                     Catalogue fabricants
@@ -137,7 +142,7 @@
         <li>
 
             <a
-                href="{{path('about_us')}}"
+                href="{{ path('about_us') }}"
                 class="{{ currentRoute == 'about_us' ? 'active' : '' }}"
             >
                 <i class="fa-solid fa-users"></i>
@@ -149,7 +154,7 @@
         <li>
 
             <a
-                href="{{path('contact_us')}}"
+                href="{{ path('contact_us') }}"
                 class="{{ currentRoute == 'contact_us' ? 'active' : '' }}"
             >
                 <i class="fa-regular fa-envelope"></i>

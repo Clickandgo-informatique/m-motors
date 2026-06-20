@@ -6,79 +6,86 @@
 
 <div class="vehicles-page">
 
-    <div class="vehicles-layout">
+    {# FORM GLOBAL UNIQUE (SOURCE DE VERITE) #}
+    <form
+        method="get"
+        action="{{ path('vehicles_index') }}"
+        data-module="fetch-form"
+        data-fetch-url="{{ path('vehicles_ajax_list') }}"
+        data-target="#vehicles-results"
+        data-fetch-mode="json"
+        data-filters-target="#filters-summary"
+        data-pagination-top="#vehicles-pagination-top"
+        data-pagination-bottom="#vehicles-pagination-bottom"
+        class="fetch-form"
+    >
 
-        <aside class="vehicles-filters" id="filters-drawer">
+        <div class="vehicles-layout">
 
-            <div class="filters-drawer-header">
-                <button
-                    type="button"
-                    id="filters-drawer-close"
-                    class="filters-drawer-close"
-                    aria-label="fermer"
-                >
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+            {# SIDEBAR = DANS LE FORM (OBLIGATOIRE) #}
+            <aside class="vehicles-filters" id="filters-drawer">
 
-            <div class="vehicles-filters-content">
-                {{ render(controller('App\\Controller\\VehiclesFilterController::sidebarFilters')) }}
-            </div>
+                <div class="filters-drawer-header">
+                    <button type="button" id="filters-drawer-close" class="filters-drawer-close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
 
-        </aside>
+                <div class="vehicles-filters-content">
+                    {{ render(controller('App\\Controller\\VehiclesFilterController::sidebarFilters')) }}
+                </div>
 
-        <main class="vehicles-main">
+            </aside>
 
-            <h1 class="text-center">
-                <i class="fa-solid fa-car-side"></i>
-                catalogue véhicules
-            </h1>
+            <main class="vehicles-main">
 
-            <div class="vehicles-active-filters">
+                <h1 class="text-center">
+                    <i class="fa-solid fa-car-side"></i>
+                    Catalogue véhicules
+                </h1>
+
+                {# BADGES #}
                 <div id="filters-summary"></div>
-            </div>
 
-{# Formulaire de recherche #}
-            {% include 'Components/Forms/_fetch_form.html.twig' with {
-                action: path('vehicles_index'),
-                fetchUrl: path('vehicles_ajax_search'),
-                target: '#vehicles-results',
-                filtersTarget: '.vehicles-filters',
-                paginationTop: '#vehicles-pagination-top',
-                paginationBottom: '#vehicles-pagination-bottom',
-                autocompleteUrl: path('vehicles_ajax_search'),
-                resultDiv: 'autocomplete-results',
-                name: 'q',
-                placeholder: 'Rechercher un véhicule par marque, modèle, status',
-                linkMode: '1',
-                fetchMode: 'json',
-                editRouteTemplate: path('vehicle_edit', { id: 0 }),
-                baseUrl: path('vehicles_index'),
-                target:'',
-                ajaxModal:true,
-                autocomplete:true,
-                itemUrl: path('vehicle_edit', { id: 0 }),
+                {# SEARCH COMPONENT (inputs inclus dans le form) #}
+                {% include 'Components/Forms/_fetch_form.html.twig' with {
+                    action: path('vehicles_index'),
+                    baseUrl: path('vehicles_index'),
+                    fetchUrl: path('vehicles_ajax_list'),
+                    target: '#vehicles-results',
+                    filtersTarget: '#filters-summary',
+                    paginationTop: '#vehicles-pagination-top',
+                    paginationBottom: '#vehicles-pagination-bottom',
+                    autocompleteUrl: path('vehicles_ajax_search'),
+                    resultDiv: 'autocomplete-results',
+                    name: 'q',
+                    placeholder: 'Rechercher un véhicule...',
+                    linkMode: '1',
+                    fetchMode: 'json',
+                    ajaxModal: true,
+                    autocomplete: true
+                } %}
 
-            } %}
+                {# PAGINATION TOP #}
+                <div id="vehicles-pagination-top">
+                    {% include "vehicles/_pagination_info.html.twig" with { vehicles: vehicles } %}
+                </div>
 
-           
-		{# Pagination haut #}
-		<div class="pagination-wrapper" id="vehicles-pagination-top">
-			{% include "vehicles/_pagination_info.html.twig" with { vehicles:vehicles } %}
-		</div>
+                {# RESULTS #}
+                <div id="vehicles-results">
+                    {% include 'vehicles/_vehicles_gallery_items.html.twig' %}
+                </div>
 
-            <div id="vehicles-results">
-                {% include 'vehicles/_vehicles_gallery_items.html.twig' %}
-            </div>
+                {# PAGINATION BOTTOM #}
+                <div id="vehicles-pagination-bottom">
+                    {% include "vehicles/_pagination_info.html.twig" with { vehicles: vehicles } %}
+                </div>
 
-		{# Pagination bas #}
-		<div class="pagination-wrapper" id="vehicles-pagination-bottom">
-			{% include "vehicles/_pagination_info.html.twig" with { vehicles:vehicles } %}
-		</div>            
+            </main>
 
-        </main>
+        </div>
 
-    </div>
+    </form>
 
 </div>
 
@@ -87,4 +94,5 @@
 <button class="filters-fab" id="filters-fab">
     <i class="fa-solid fa-sliders"></i>
 </button>
+
 {% endblock %}

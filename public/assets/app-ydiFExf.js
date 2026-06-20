@@ -118,7 +118,7 @@ function initSliders(root = document) {
  */
 function initBadges(root = document) {
   const container = root.querySelector("#filters-summary");
-  const form = root.querySelector("[data-module='fetch-form']");
+  const form = root.querySelector("#filters-form");
 
   if (!container || !form) return;
 
@@ -156,6 +156,10 @@ function initAjaxManager() {
  * - fonctionne après AJAX sans réattachement
  */
 function initPagination() {
+  if (document.body.dataset.paginationInitialized === "1") return;
+
+  document.body.dataset.paginationInitialized = "1";
+
   document.addEventListener("click", e => {
     const link = e.target.closest("[data-page]");
     if (!link) return;
@@ -195,7 +199,7 @@ function initApp() {
   initSliders();
 
   // Pagination unique (important : ne pas dupliquer ailleurs)
-  initPagination();
+  //initPagination();
 
   initBadges();
   initFiltersDrawer();
@@ -218,6 +222,7 @@ EventBus.on("ui:updated", ({ target }) => {
   initSliders(root);
 
   refreshUI(root);
+  initPagination();
 });
 
 /**

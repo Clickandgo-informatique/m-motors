@@ -21,76 +21,69 @@ class VehiclesFilterController extends AbstractController
         PaginatorInterface $paginator
     ): Response {
 
-        $data = $request->query->all();
-        $filters = $this->normalizeFilters($data['filters'] ?? []);
-        $searchTerm = $data['q'] ?? null;
+        $filters = $this->normalizeFilters($request->query->all('filters') ?? []);
+        $searchTerm = $request->query->get('q', '');
 
-        $view = $filters['view'] ?? 'grid';
+        $page = max(1, $request->query->getInt('page', 1));
 
-        $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
-
-        $vehicles = $paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1),
-            12
+        $query = $vehicleRepo->getFilteredQueryBuilder(
+            $filters,
+            $searchTerm,
+            $this->getUser()
         );
 
-        $context = $this->buildFiltersContext($vehicleRepo);
+        $vehicles = $paginator->paginate($query, $page, 12);
 
-        return $this->render('vehicles/index.html.twig', array_merge($context, [
-            'vehicles' => $vehicles,
-            'view' => $view,
-            'filters' => $filters,
-            'filterLabels' => $this->hydrateFilterLabels($vehicleRepo, $filters),
-            'searchTerm' => $searchTerm,
-
-            // état sliders
-            'priceMin' => $filters['priceMin'] ?? null,
-            'priceMax' => $filters['priceMax'] ?? null,
-        ]));
+        return $this->render('vehicles/index.html.twig', array_merge(
+            $this->buildFiltersContext($vehicleRepo),
+            [
+                'vehicles' => $vehicles,
+                'filters' => $filters,
+                'filterLabels' => $this->hydrateFilterLabels($vehicleRepo, $filters),
+                'searchTerm' => $searchTerm,
+                'priceMin' => $filters['priceMin'] ?? null,
+                'priceMax' => $filters['priceMax'] ?? null,
+            ]
+        ));
     }
 
-    #[Route('/ajax/list', name: 'vehicles_ajax_list', methods: ['GET', 'POST'])]
+    #[Route('/ajax/list', name: 'vehicles_ajax_list', methods: ['GET'])]
     public function list(
         Request $request,
         VehicleRepository $vehicleRepo,
         PaginatorInterface $paginator
     ): Response {
 
-        $data = array_merge(
-            $request->query->all(),
-            $request->request->all()
+        $filters = $this->normalizeFilters($request->query->all('filters') ?? []);
+        $searchTerm = $request->query->get('q');
+
+        $page = max(1, $request->query->getInt('page', 1));
+
+        $query = $vehicleRepo->getFilteredQueryBuilder(
+            $filters,
+            $searchTerm,
+            $this->getUser()
         );
 
-        $filters = $this->normalizeFilters($data['filters'] ?? []);
-        $searchTerm = $data['q'] ?? null;
-        $page = max(1, (int) ($data['page'] ?? 1));
-
-        $view = $filters['view'] ?? 'grid';
-
-        $query = $vehicleRepo->getFilteredQueryBuilder($filters, $searchTerm);
-
-        $vehicles = $paginator->paginate($query, $page, 10);
-
-        $context = $this->buildFiltersContext($vehicleRepo);
+        $vehicles = $paginator->paginate($query, $page, 12);
 
         return $this->json([
             'list' => $this->renderView('vehicles/_vehicles_gallery_items.html.twig', [
                 'vehicles' => $vehicles,
-                'view' => $view
             ]),
 
-            'pagination' => $this->renderView('vehicles/_pagination_info.html.twig', [
-                'vehicles' => $vehicles
+            'paginationTop' => $this->renderView('vehicles/_pagination_info.html.twig', [
+                'vehicles' => $vehicles,
             ]),
 
-            'filters' => $this->renderView('vehicles/_vehicles_filters.html.twig', $context),
+            'paginationBottom' => $this->renderView('vehicles/_pagination_info.html.twig', [
+                'vehicles' => $vehicles,
+            ]),
 
             'filtersSummary' => $this->renderView('vehicles/_filters_summary.html.twig', [
                 'filters' => $filters
             ]),
 
-            // état sliders côté front
             'priceMin' => $filters['priceMin'] ?? null,
             'priceMax' => $filters['priceMax'] ?? null,
         ]);
@@ -119,6 +112,16 @@ class VehiclesFilterController extends AbstractController
             'items' => $items
         ]);
     }
+
+    #[Route('/_sidebar/filters', name: 'vehicles_sidebar_filters', methods: ['GET'])]
+    public function sidebarFilters(VehicleRepository $vehicleRepo): Response
+    {
+        return $this->render(
+            'vehicles/_vehicles_filters.html.twig',
+            $this->buildFiltersContext($vehicleRepo)
+        );
+    }
+
     private function buildFiltersContext(VehicleRepository $vehicleRepo): array
     {
         $years = $vehicleRepo->getRegistrationYears();
@@ -143,18 +146,23 @@ class VehiclesFilterController extends AbstractController
 
     private function normalizeFilters(array $filters): array
     {
-        // PRICE
+        $filters = $filters ?? [];
+
         $min = $filters['priceMin'] ?? null;
         $max = $filters['priceMax'] ?? null;
 
-        $filters['priceMin'] = (is_numeric($min)) ? (int) $min : null;
-        $filters['priceMax'] = (is_numeric($max)) ? (int) $max : null;
+        $filters['priceMin'] = is_numeric($min) ? (int) $min : null;
+        $filters['priceMax'] = is_numeric($max) ? (int) $max : null;
 
-        if ($filters['priceMin'] !== null && $filters['priceMax'] !== null && $filters['priceMin'] > $filters['priceMax']) {
-            [$filters['priceMin'], $filters['priceMax']] = [$filters['priceMax'], $filters['priceMin']];
+        if (
+            $filters['priceMin'] !== null &&
+            $filters['priceMax'] !== null &&
+            $filters['priceMin'] > $filters['priceMax']
+        ) {
+            [$filters['priceMin'], $filters['priceMax']] =
+                [$filters['priceMax'], $filters['priceMin']];
         }
 
-        // YEARS (IMPORTANT FIX BUG -1 / 0)
         $yMin = $filters['registrationYearMin'] ?? null;
         $yMax = $filters['registrationYearMax'] ?? null;
 
@@ -170,17 +178,36 @@ class VehiclesFilterController extends AbstractController
                 [$filters['registrationYearMax'], $filters['registrationYearMin']];
         }
 
+        //Kilométrage
+        $kmMin = $filters['mileageMin'] ?? null;
+        $kmMax = $filters['mileageMax'] ?? null;
+
+        $filters['mileageMin'] = is_numeric($kmMin)
+            ? (int) $kmMin
+            : null;
+
+        $filters['mileageMax'] = is_numeric($kmMax)
+            ? (int) $kmMax
+            : null;
+
+        if (
+            $filters['mileageMin'] !== null &&
+            $filters['mileageMax'] !== null &&
+            $filters['mileageMin'] > $filters['mileageMax']
+        ) {
+            [$filters['mileageMin'], $filters['mileageMax']] = [
+                $filters['mileageMax'],
+                $filters['mileageMin']
+            ];
+        }
+
         return $filters;
     }
 
-    /**
-     * Transforme les IDs de filtres en labels lisibles pour l'UI
-     */
     private function hydrateFilterLabels(VehicleRepository $vehicleRepo, array $filters): array
     {
         $labels = [];
 
-        // Marques
         if (!empty($filters['brand'])) {
             $labels['brand'] = $vehicleRepo
                 ->createQueryBuilder('v')
@@ -193,10 +220,8 @@ class VehiclesFilterController extends AbstractController
                 ->getSingleColumnResult();
         }
 
-        // Statuts
         if (!empty($filters['status'])) {
             $map = [];
-
             foreach (VehicleStatus::cases() as $status) {
                 $map[$status->value] = $status->label();
             }
@@ -208,14 +233,5 @@ class VehiclesFilterController extends AbstractController
         }
 
         return $labels;
-    }
-    /**
-     * Fragment utilisé pour recharger uniquement la sidebar filtres
-     * via AJAX / Symfony fragment renderer
-     */
-    #[Route('/_sidebar/filters', name: 'vehicles_sidebar_filters', methods: ['GET'])]
-    public function sidebarFilters(VehicleRepository $vehicleRepo): Response
-    {
-        return $this->render('vehicles/_vehicles_filters.html.twig', $this->buildFiltersContext($vehicleRepo));
     }
 }

@@ -1,8 +1,16 @@
+/**
+ * Pagination AJAX stable
+ * - aucune logique complexe
+ * - déclenche simplement change sur fetch-form
+ * - compatible re-render AJAX
+ */
 export default function initPagination(root = document) {
   const bind = container => {
     container.querySelectorAll("[data-pagination]").forEach(pagination => {
       pagination.querySelectorAll("[data-page]").forEach(link => {
-        if (link.dataset.bound === "1") return;
+        if (link.dataset.bound === "1") {
+          return;
+        }
 
         link.dataset.bound = "1";
 
@@ -10,10 +18,13 @@ export default function initPagination(root = document) {
           e.preventDefault();
 
           const form = document.querySelector("[data-module='fetch-form']");
-          if (!form) return;
+
+          if (!form) {
+            return;
+          }
 
           /**
-           * SOURCE UNIQUE : input hidden page
+           * input page unique
            */
           let input = form.querySelector("input[name='page']");
 
@@ -26,13 +37,24 @@ export default function initPagination(root = document) {
 
           input.value = link.dataset.page;
 
+          /**
+           * déclenche fetchForm
+           */
           form.dispatchEvent(new Event("change", { bubbles: true }));
         });
       });
     });
   };
 
+  /**
+   * initial bind
+   */
   bind(root);
 
-  window.addEventListener("ui:updated", () => bind(document));
+  /**
+   * rebind simple après AJAX
+   */
+  window.addEventListener("ui:updated", () => {
+    bind(document);
+  });
 }

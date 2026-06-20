@@ -118,7 +118,7 @@ function initSliders(root = document) {
  */
 function initBadges(root = document) {
   const container = root.querySelector("#filters-summary");
-  const form = root.querySelector("[data-module='fetch-form']");
+  const form = root.querySelector("#filters-form");
 
   if (!container || !form) return;
 
@@ -195,7 +195,7 @@ function initApp() {
   initSliders();
 
   // Pagination unique (important : ne pas dupliquer ailleurs)
-  initPagination();
+  // initPagination();
 
   initBadges();
   initFiltersDrawer();
@@ -216,6 +216,7 @@ EventBus.on("ui:updated", ({ target }) => {
   initFavorites(root);
   initCollections(root);
   initSliders(root);
+  initPagination();
 
   refreshUI(root);
 });

@@ -1,3 +1,5 @@
+import initPagination from "./Pagination.js";
+
 export default class FetchForm {
   constructor(form) {
     if (!(form instanceof HTMLFormElement)) {
@@ -7,62 +9,41 @@ export default class FetchForm {
     this.form = form;
     this.isLoading = false;
     this.abortController = new AbortController();
-
     this.isReady = false;
-    this._timeout = null;
 
     this.init();
   }
 
   init() {
-    // Submit classique intercepté
+    // Empêche le submit classique et déclenche la requête AJAX
     this.form.addEventListener("submit", e => {
       e.preventDefault();
       this.send();
     });
 
-    /**
-     * IMPORTANT FIX :
-     * On ne dépend plus du form.change (cassé par DOM Symfony / render controller)
-     * On écoute globalement et on filtre via form.contains()
-     */
-    document.addEventListener("change", e => {
-      if (!this.isReady) return;
-      if (!this.form.contains(e.target)) return;
+    let timeout = null;
 
-      this.scheduleSend();
+    // Déclenche une requête lors des changements de champs
+    this.form.addEventListener("change", () => {
+      if (!this.isReady) return;
+
+      clearTimeout(timeout);
+
+      timeout = setTimeout(() => {
+        this.send();
+      }, 120);
     });
 
-    /**
-     * Même logique pour input (sliders / champs texte rapides)
-     */
-    document.addEventListener("input", e => {
-      if (!this.isReady) return;
-      if (!this.form.contains(e.target)) return;
-
-      this.scheduleSend();
-    });
-
-    // petit délai pour éviter les triggers init
+    // Petit délai pour éviter les triggers initiaux
     setTimeout(() => {
       this.isReady = true;
-    }, 200);
-  }
-
-  scheduleSend() {
-    clearTimeout(this._timeout);
-
-    this._timeout = setTimeout(() => {
-      this.send();
-    }, 120);
+    }, 300);
   }
 
   async send() {
-    if (this.isLoading) {
-      return;
-    }
+    if (this.isLoading) return;
 
-    // annule requête précédente
+    // Annule une requête précédente si encore en cours
     this.abortController?.abort();
     this.abortController = new AbortController();
 
@@ -71,6 +52,7 @@ export default class FetchForm {
 
     const url = this.form.dataset.fetchUrl;
 
+    // Zone de rendu principale
     const target = document.querySelector(this.form.dataset.target);
 
     if (!target) {
@@ -80,9 +62,18 @@ export default class FetchForm {
     }
 
     try {
-      // construction params GET
+      // Construction des paramètres GET depuis le formulaire
       const formData = new FormData(this.form);
       const params = new URLSearchParams();
+
+      // Mise à jour de l'URL du navigateur sans rechargement
+      const browserUrl = `${window.location.origin}${
+        window.location.pathname
+      }?${params.toString()}`;
+
+      window.history.replaceState({}, "", browserUrl);
+
+      window.history.pushState({}, "", browserUrl);
 
       formData.forEach((value, key) => {
         params.append(key, value);
@@ -95,42 +86,54 @@ export default class FetchForm {
 
       const data = await response.json();
 
-      // résultats
+      // Mise à jour des résultats
       if (data.results) {
         target.innerHTML = data.results;
       } else if (data.list) {
         target.innerHTML = data.list;
       }
 
-      // pagination top
+      // Sélecteurs pagination
       const paginationTopSelector = this.form.dataset.paginationTop;
-
-      if (paginationTopSelector && data.paginationTop) {
-        const top = document.querySelector(paginationTopSelector);
-        if (top) top.innerHTML = data.paginationTop;
-      }
-
-      // pagination bottom
       const paginationBottomSelector = this.form.dataset.paginationBottom;
 
-      if (paginationBottomSelector && data.paginationBottom) {
-        const bottom = document.querySelector(paginationBottomSelector);
-        if (bottom) bottom.innerHTML = data.paginationBottom;
+      // Pagination haute
+      if (paginationTopSelector && data.paginationTop) {
+        const top = document.querySelector(paginationTopSelector);
+        if (top) {
+          top.innerHTML = data.paginationTop;
+          initPagination(top); // ← ré‑initialisation
+        }
       }
 
-      // fallback pagination legacy
+      // Pagination basse
+      if (paginationBottomSelector && data.paginationBottom) {
+        const bottom = document.querySelector(paginationBottomSelector);
+        if (bottom) {
+          bottom.innerHTML = data.paginationBottom;
+          initPagination(bottom); // ← ré‑initialisation
+        }
+      }
+
+      // Compatibilité anciens formats
       if (data.pagination) {
         const top = paginationTopSelector ? document.querySelector(paginationTopSelector) : null;
-
         const bottom = paginationBottomSelector
           ? document.querySelector(paginationBottomSelector)
           : null;
 
-        if (top) top.innerHTML = data.pagination;
-        if (bottom) bottom.innerHTML = data.pagination;
+        if (top) {
+          top.innerHTML = data.pagination;
+          initPagination(top);
+        }
+
+        if (bottom) {
+          bottom.innerHTML = data.pagination;
+          initPagination(bottom);
+        }
       }
 
-      // filters summary / badges backend
+      // Mise à jour des filtres si nécessaire
       if (data.filtersSummary) {
         const summary = document.querySelector(
           this.form.dataset.filtersTarget || "#filters-summary"
@@ -141,13 +144,11 @@ export default class FetchForm {
         }
       }
 
-      // refresh UI global
+      // Déclenchement global pour réinitialisation des composants UI
       window.dispatchEvent(new Event("ui:updated"));
 
-      // badges frontend (si présent)
-      if (window.__filterBadges?.updateBadges) {
-        window.__filterBadges.updateBadges();
-      }
+      // Mise à jour éventuelle des badges de filtres
+      window.__filterBadges?.updateBadges();
     } catch (e) {
       if (e.name !== "AbortError") {
         console.error("[FetchForm]", e);
