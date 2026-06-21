@@ -16,7 +16,7 @@
 @import "./card.css";
 @import "./flashbag.css";
 @import "./sidebar.css";
-@import "./range.css";
+@import "./double-sliders.css";
 @import "./filters-form.css";
 @import "./switch.css";
 @import "./grid.css";
@@ -27,11 +27,11 @@
 @import "./vehicles-filters-layout.css";
 @import "./featured-gallery.css";
 @import "./vehicles-layout.css";
+@import "./vehicles-grid.css";
 @import "./dashboard.css";
 @import "./dossier-card.css";
 @import "./vehicle-model-card.css";
 @import "./cookie-banner.css";
-
 
 /* BASE GLOBALE */
 

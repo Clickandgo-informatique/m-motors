@@ -1,6 +1,4 @@
-{# =========================
-   KILOMETRAGE SLIDER
-========================= #}
+{# Kilométrage #}
 
 <div class="mileage-range double-slider-wrapper">
 
@@ -18,27 +16,34 @@
         </div>
     </div>
 
-    <div class="double-slider"
-         data-module="range-selector"
-         data-filter="mileage"
-         data-min="0"
-         data-max="300000"
-         data-step="10000"
-         data-target-min="#mileage-min-value"
-         data-target-max="#mileage-max-value"
-         data-input-min="filters[mileageMin]"
-         data-input-max="filters[mileageMax]">
-    </div>
+    <div
+        class="double-slider"
+        data-module="range-selector"
+        data-filter="mileage"
+        data-min="0"
+        data-max="300000"
+        data-step="10000"
+        data-target-min="#mileage-min-value"
+        data-target-max="#mileage-max-value"
+        data-input-min="filters[mileageMin]"
+        data-input-max="filters[mileageMax]"
+    ></div>
 
-    <input type="hidden" name="filters[mileageMin]" value="0">
-    <input type="hidden" name="filters[mileageMax]" value="300000">
+    <input
+        type="hidden"
+        name="filters[mileageMin]"
+        value="0"
+    >
+
+    <input
+        type="hidden"
+        name="filters[mileageMax]"
+        value="300000"
+    >
 
 </div>
 
-
-{# =========================
-   PRICE SLIDER
-========================= #}
+{# Prix #}
 
 <div class="price-range double-slider-wrapper">
 
@@ -56,27 +61,34 @@
         </div>
     </div>
 
-    <div class="double-slider"
-         data-module="range-selector"
-         data-filter="price"
-         data-min="{{ priceMinGlobal ?? 0 }}"
-         data-max="{{ priceMaxGlobal ?? 100000 }}"
-         data-step="100"
-         data-target-min="[data-price-min-display]"
-         data-target-max="[data-price-max-display]"
-         data-input-min="filters[priceMin]"
-         data-input-max="filters[priceMax]">
-    </div>
+    <div
+        class="double-slider"
+        data-module="range-selector"
+        data-filter="price"
+        data-min="{{ priceMinGlobal ?? 0 }}"
+        data-max="{{ priceMaxGlobal ?? 100000 }}"
+        data-step="100"
+        data-target-min="[data-price-min-display]"
+        data-target-max="[data-price-max-display]"
+        data-input-min="filters[priceMin]"
+        data-input-max="filters[priceMax]"
+    ></div>
 
-    <input type="hidden" name="filters[priceMin]" value="{{ priceMin ?? priceMinGlobal ?? 0 }}">
-    <input type="hidden" name="filters[priceMax]" value="{{ priceMax ?? priceMaxGlobal ?? 100000 }}">
+    <input
+        type="hidden"
+        name="filters[priceMin]"
+        value="{{ priceMin ?? priceMinGlobal ?? 0 }}"
+    >
+
+    <input
+        type="hidden"
+        name="filters[priceMax]"
+        value="{{ priceMax ?? priceMaxGlobal ?? 100000 }}"
+    >
 
 </div>
 
-
-{# =========================
-   ANNEES SLIDER
-========================= #}
+{# Années #}
 
 {% set yearMin = registrationYearsMin is defined and registrationYearsMin is not null ? registrationYearsMin : null %}
 {% set yearMax = registrationYearsMax is defined and registrationYearsMax is not null ? registrationYearsMax : null %}
@@ -98,20 +110,30 @@
         </div>
     </div>
 
-    <div class="double-slider"
-         data-module="range-selector"
-         data-filter="year"
-         data-min="{{ yearMin }}"
-         data-max="{{ yearMax }}"
-         data-step="1"
-         data-target-min="#year-min-value"
-         data-target-max="#year-max-value"
-         data-input-min="filters[registrationYearMin]"
-         data-input-max="filters[registrationYearMax]">
-    </div>
+    <div
+        class="double-slider"
+        data-module="range-selector"
+        data-filter="year"
+        data-min="{{ yearMin }}"
+        data-max="{{ yearMax }}"
+        data-step="1"
+        data-target-min="#year-min-value"
+        data-target-max="#year-max-value"
+        data-input-min="filters[registrationYearMin]"
+        data-input-max="filters[registrationYearMax]"
+    ></div>
 
-    <input type="hidden" name="filters[registrationYearMin]" value="{{ yearMin }}">
-    <input type="hidden" name="filters[registrationYearMax]" value="{{ yearMax }}">
+    <input
+        type="hidden"
+        name="filters[registrationYearMin]"
+        value="{{ yearMin }}"
+    >
+
+    <input
+        type="hidden"
+        name="filters[registrationYearMax]"
+        value="{{ yearMax }}"
+    >
 
 </div>
 

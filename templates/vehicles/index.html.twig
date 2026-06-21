@@ -17,13 +17,13 @@
         data-filters-target="#filters-summary"
         data-pagination-top="#vehicles-pagination-top"
         data-pagination-bottom="#vehicles-pagination-bottom"
-        class="fetch-form"
+        class="fetch-form vehicles-fetch-form"
     >
 
         <div class="vehicles-layout">
 
             {# SIDEBAR = DANS LE FORM (OBLIGATOIRE) #}
-            <aside class="vehicles-filters" id="filters-drawer">
+            <aside id="filters-drawer" class="vehicles-filters vehicles-filters--catalog" >
 
                 <div class="filters-drawer-header">
                     <button type="button" id="filters-drawer-close" class="filters-drawer-close">
@@ -37,7 +37,7 @@
 
             </aside>
 
-            <main class="vehicles-main">
+            <main class="vehicles-main vehicles-main--catalog">
 
                 <h1 class="text-center">
                     <i class="fa-solid fa-car-side"></i>
@@ -72,7 +72,7 @@
                 </div>
 
                 {# RESULTS #}
-                <div id="vehicles-results">
+                <div id="vehicles-results" class="vehicles-grid">
                     {% include 'vehicles/_vehicles_gallery_items.html.twig' %}
                 </div>
 

@@ -1,26 +1,9 @@
-{% set fetchUrl = fetchUrl|default(action) %}
-{% set target = target|default('') %}
-{% set fetchMode = fetchMode|default('html') %}
-{% set filtersTarget = filtersTarget|default('') %}
-{% set paginationTop = paginationTop|default('') %}
-{% set paginationBottom = paginationBottom|default('') %}
 {% set linkMode = linkMode|default(0) %}
 {% set hiddenName = hiddenName|default(name ~ 'Id') %}
 
-<form
-    method="get"
-    action="{{ action }}"
-    data-module="fetch-form"
-    data-fetch-url="{{ fetchUrl }}"
-    data-target="{{ target }}"
-    data-fetch-mode="{{ fetchMode }}"
-    data-filters-target="{{ filtersTarget }}"
-    data-pagination-top="{{ paginationTop }}"
-    data-pagination-bottom="{{ paginationBottom }}"
-    class="fetch-form"
->
+<div class="autocomplete">
 
-    <div class="form-row dropdown-wrapper">
+    <div class="dropdown-wrapper">
 
         <input
             type="text"
@@ -42,8 +25,19 @@
             class="js-autocomplete-hidden"
         >
 
-        <div id="{{ resultDiv }}" class="dropdown-results"></div>
+        <button
+                type="button"
+                class="search-reset"
+                data-reset-filters               
+            >
+                <i class="fa-solid fa-rotate-left"></i>
+        </button>
+
+        <ul
+            id="{{ resultDiv }}"
+            class="dropdown-results"
+        ></ul>
 
     </div>
 
-</form>
+</div>
