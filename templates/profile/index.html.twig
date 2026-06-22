@@ -2,7 +2,6 @@
 
 {% block title %}
     {% set user = app.user %}
-
     Profil de
     {{ user
         ? (user.nickname
@@ -19,6 +18,7 @@
 
 {% block body %}
 
+
 {% set user = app.user %}
 
 <div class="container profile-page">
@@ -27,6 +27,7 @@
         <i class="fa-regular fa-address-card"></i>
         Mon profil
     </h1>
+<div class="form-ui">
 
     <div class="profile-card">
 
@@ -140,5 +141,5 @@
     </div>
 
 </div>
-
+</div>
 {% endblock %}

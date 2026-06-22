@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+
+<div class="form-ui">
 	<h2>Activation de l’authentification à deux facteurs (TOTP)</h2>
 
 	{% if totpEnabled %}
@@ -12,4 +14,6 @@
 	{% endif %}
 
 	<a href="{{ path('app_profile') }}">Retour au profil</a>
+</div>
+
 {% endblock %}

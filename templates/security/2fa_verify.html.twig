@@ -6,7 +6,11 @@
 
 {% block body %}
 	<h1 class="text-center">
-		<i class="fa-solid fa-shield-halved"></i>Validation de la double authentification</h2>
+		<i class="fa-solid fa-shield-halved title-icon"></i>Validation de la double authentification</h2>
+
+	<form method="POST" action="{{ path('2fa_check') }}" id="form-2fa" class="form-ui">
+
+{# Affichage QR-Code #}
 
 	{% if user.google2FASecret %}
 		<p class="text-center">Scannez ce QR Code avec votre application d'authentification si nécessaire :</p>
@@ -15,8 +19,9 @@
 		</div>
 	{% endif %}
 
-	<form method="POST" action="{{ path('2fa_check') }}" id="form-2fa">
-		<label class="text-center" for="totp_code">Entrez le code généré par votre application pour vous connecter :</label>
+
+		<p class="text-center">Entrez ici le code généré par votre application pour vous connecter :</p>
+		
 		<div class="form-row six-digits-code-wrapper">
 			<input type="text" id="totp_code" class="totp_code text-center" name="totp_code" maxlength="6" required placeholder="Code à 6 chiffres" pattern="\d{6}">
 		</div>

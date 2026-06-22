@@ -1,5 +1,5 @@
-.dossier-right {
-  max-width: 800px;
+.dossier-grid{
+  margin: 10px auto;
 }
 .dossier-cards {
   display: flex;

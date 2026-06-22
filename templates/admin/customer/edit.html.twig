@@ -12,6 +12,7 @@
 
 		{{ customer is defined ? '<i class="fa-solid fa-pen-to-square"></i> modifier un client' : '<i class="fa-solid fa-person-circle-plus"></i> Créer un client'}}</h1>
 
+<div class="form-ui">
 	{{ form_start(form) }}
 
 	<div class="form-row">
@@ -94,6 +95,7 @@
 
 	<button type="submit" class=""><i class="fa-regular fa-floppy-disk"></i> {{ customer is defined ? 'Mettre à jour' : 'Créer' }}</button>
 	{{ form_end(form) }}
+</div>
 
 	{# Tableau des dossiers client existants #}
 	{% if customer is defined and customer.dossiers|length >0 %}
