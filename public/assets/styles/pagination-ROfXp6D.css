@@ -79,7 +79,7 @@
     gap: var(--space-xs);
   }
 
-  /* tailles générales */
+  /* On réduit les tailles générales */
   .pagination a {
     min-width: 32px;
     height: 32px;
@@ -92,41 +92,30 @@
     height: 32px;
   }
 
-  /* cacher complètement les accès texte longs */
+  /* On masque les accès directs */
   .pagination-first,
   .pagination-last {
-    display: none !important;
+    display: none;
   }
 
-  /* prev / next => on supprime totalement le texte */
+  /* On garde prev/next en icônes uniquement */
   .pagination-prev,
   .pagination-next {
-    position: relative;
-    font-size: 0 !important;
-    color: transparent !important;
+    font-size: 0;
     padding: 0;
     min-width: 32px;
     width: 32px;
   }
 
-  .pagination-prev::before,
-  .pagination-next::before {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 16px;
-    color: var(--text-primary);
-    line-height: 1;
-  }
-
   .pagination-prev::before {
     content: "←";
+    font-size: 16px;
+    line-height: 1;
   }
 
   .pagination-next::before {
     content: "→";
+    font-size: 16px;
+    line-height: 1;
   }
 }

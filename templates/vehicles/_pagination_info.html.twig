@@ -9,31 +9,31 @@
 
     <div class="pagination" data-pagination>
 
-        {% if vehicles.currentPageNumber > 1 %}
-            <a href="#" data-page="1">« Première</a>
-            <a href="#" data-page="{{ vehicles.currentPageNumber - 1 }}">← Précédent</a>
-        {% endif %}
+    {% if vehicles.currentPageNumber > 1 %}
+        <a href="#" class="pagination-first" data-page="1">« Première</a>
+        <a href="#" class="pagination-prev" data-page="{{ vehicles.currentPageNumber - 1 }}">← Précédent</a>
+    {% endif %}
 
-        {% set start = vehicles.currentPageNumber - 2 %}
-        {% set end = vehicles.currentPageNumber + 2 %}
+    {% set start = vehicles.currentPageNumber - 2 %}
+    {% set end = vehicles.currentPageNumber + 2 %}
 
-        {% if start < 1 %}{% set start = 1 %}{% endif %}
-        {% if end > vehicles.pageCount %}{% set end = vehicles.pageCount %}{% endif %}
+    {% if start < 1 %}{% set start = 1 %}{% endif %}
+    {% if end > vehicles.pageCount %}{% set end = vehicles.pageCount %}{% endif %}
 
-        {% for i in start..end %}
-            <a href="#"
-               class="{{ i == vehicles.currentPageNumber ? 'active' : '' }}"
-               data-page="{{ i }}">
-                {{ i }}
-            </a>
-        {% endfor %}
+    {% for i in start..end %}
+        <a href="#"
+           class="pagination-page {{ i == vehicles.currentPageNumber ? 'is-active' : '' }}"
+           data-page="{{ i }}">
+            {{ i }}
+        </a>
+    {% endfor %}
 
-        {% if vehicles.currentPageNumber < vehicles.pageCount %}
-            <a href="#" data-page="{{ vehicles.currentPageNumber + 1 }}">Suivant →</a>
-            <a href="#" data-page="{{ vehicles.pageCount }}">Dernière »</a>
-        {% endif %}
+    {% if vehicles.currentPageNumber < vehicles.pageCount %}
+        <a href="#" class="pagination-next" data-page="{{ vehicles.currentPageNumber + 1 }}">Suivant →</a>
+        <a href="#" class="pagination-last" data-page="{{ vehicles.pageCount }}">Dernière »</a>
+    {% endif %}
 
-    </div>
+</div>
 
 {% else %}
 

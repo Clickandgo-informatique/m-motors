@@ -14,31 +14,31 @@
 
     <div class="pagination" data-pagination>
 
-        {% if vm.currentPageNumber > 1 %}
-            <a href="#" data-page="1">« Première</a>
-            <a href="#" data-page="{{ vm.currentPageNumber - 1 }}">← Précédent</a>
-        {% endif %}
+    {% if vm.currentPageNumber > 1 %}
+        <a href="#" class="pagination-first" data-page="1">« Première</a>
+        <a href="#" class="pagination-prev" data-page="{{ vm.currentPageNumber - 1 }}">← Précédent</a>
+    {% endif %}
 
-        {% set start = vm.currentPageNumber - 2 %}
-        {% set end = vm.currentPageNumber + 2 %}
+    {% set start = vm.currentPageNumber - 2 %}
+    {% set end = vm.currentPageNumber + 2 %}
 
-        {% if start < 1 %}{% set start = 1 %}{% endif %}
-        {% if end > vm.pageCount %}{% set end = vm.pageCount %}{% endif %}
+    {% if start < 1 %}{% set start = 1 %}{% endif %}
+    {% if end > vm.pageCount %}{% set end = vm.pageCount %}{% endif %}
 
-        {% for i in start..end %}
-            <a href="#"
-               class="{{ i == vm.currentPageNumber ? 'active' : '' }}"
-               data-page="{{ i }}">
-                {{ i }}
-            </a>
-        {% endfor %}
+    {% for i in start..end %}
+        <a href="#"
+           class="pagination-page {{ i == vm.currentPageNumber ? 'is-active' : '' }}"
+           data-page="{{ i }}">
+            {{ i }}
+        </a>
+    {% endfor %}
 
-        {% if vm.currentPageNumber < vm.pageCount %}
-            <a href="#" data-page="{{ vm.currentPageNumber + 1 }}">Suivant →</a>
-            <a href="#" data-page="{{ vm.pageCount }}">Dernière »</a>
-        {% endif %}
+    {% if vm.currentPageNumber < vm.pageCount %}
+        <a href="#" class="pagination-next" data-page="{{ vm.currentPageNumber + 1 }}">Suivant →</a>
+        <a href="#" class="pagination-last" data-page="{{ vm.pageCount }}">Dernière »</a>
+    {% endif %}
 
-    </div>
+</div>
 
 {% else %}
 
