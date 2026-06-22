@@ -1,49 +1,71 @@
 {% extends 'base.html.twig' %}
-{% block title %}M-Motors: Catalogue des modèles véhicules
-{% endblock %}
+
+{% block title %}M-Motors: Catalogue des modèles véhicules{% endblock %}
 
 {% block body %}
 
+<div class="vehicles-models-page">
 
-	<h1 class="text-center"><i class="fa-solid fa-book title-icon"></i>Catalogue des modèles de véhicules</h1>
+    <form
+        method="get"
+        action="{{ path('vehicles_models') }}"
+        data-module="fetch-form"
+        data-fetch-url="{{ path('vehicles_models_ajax') }}"
+        data-target="#vehicle-model-results"
+        data-fetch-mode="json"
+        data-pagination-top="#vehicles-models-pagination-top"
+        data-pagination-bottom="#vehicles-models-pagination-bottom"
+        data-autocomplete="true"
+        class="fetch-form vehicles-models-fetch-form"
+    >
 
-	{# Formulaire de recherche #}
-	{% include "Components/Forms/_fetch_form.html.twig" with {
-		action: path('vehicles_models'),
-		fetchUrl: path('vehicles_models_ajax'),
-		baseUrl: path('vehicles_models'),    
-		name: "q",
-		hiddenName: "vehicle[vehicleModelSearch]",    
-		resultDiv: '#vehicle-model-results',
-		placeholder: "Rechercher par marque ou modèle",
-		autocompleteUrl: path('vehicle_model_search'),    
-		itemUrl: path('vehicle_model_edit', { id: '__ID__' }),
-		target: '#vehicle-model-results',
-		fetchMode: 'json',
-		filtersTarget: '',
-		paginationTop: '#vehicles-models-pagination-top',
-		paginationBottom: '#vehicles-models-pagination-bottom',
-		ajaxModal: true,
-		autocomplete: true,
-		linkMode:'1'
-} %}
+        <h1 class="text-center">
+            <i class="fa-solid fa-book title-icon"></i>
+            Catalogue des modèles de véhicules
+        </h1>
 
-		{# Pagination haut #}
-		<div class="pagination-wrapper" id="vehicles-models-pagination-top">
-			{% include "vehicles_models/_pagination_info.html.twig" with { vm:vm } %}
-		</div>
+        {# SEARCH COMPONENT #}
+        {% include "Components/Forms/_fetch_form.html.twig" with {
+            action: path('vehicles_models'),
+            baseUrl: path('vehicles_models'),
+            fetchUrl: path('vehicles_models_ajax'),
+            name: "q",
+            hiddenName: "vehicle[vehicleModelSearch]",
+            resultDiv: "#vehicle-model-results",
+            placeholder: "Rechercher par marque ou modèle",
+            autocompleteUrl: path('vehicle_model_search'),
+            itemUrl: path('vehicle_model_edit', { id: '__ID__' }),
+            target: "#vehicle-model-results",
+            fetchMode: "json",
+            paginationTop: "#vehicles-models-pagination-top",
+            paginationBottom: "#vehicles-models-pagination-bottom",
+            ajaxModal: true,
+            autocomplete: true,
+            linkMode: "1"
+        } %}
 
-	<a class="btn btn-new" href="{{ path('vehicle_model_new') }}" data-ajax-modal>
-		<i class="fa-solid fa-circle-plus"></i>Ajouter un nouveau modèle de véhicule</a>
-	
-	
-	<div id="vehicle-model-results">
-		{% include "vehicles_models/_table.html.twig" with { vm: vm } %}
-	</div>
+        {# PAGINATION TOP #}
+        <div id="vehicles-models-pagination-top" class="pagination-wrapper">
+            {% include "vehicles_models/_pagination_info.html.twig" with { vm: vm } %}
+        </div>
 
+        <a class="btn btn-new" href="{{ path('vehicle_model_new') }}" data-ajax-modal>
+            <i class="fa-solid fa-circle-plus"></i>
+            Ajouter un nouveau modèle de véhicule
+        </a>
 
-		{# Pagination bas #}
-		<div class="pagination-wrapper" id="vehicles-models-pagination-bottom">
-			{% include "vehicles_models/_pagination_info.html.twig" with { vm:vm } %}
-		</div>
+        {# RESULTS #}
+        <div id="vehicle-model-results">
+            {% include "vehicles_models/_table.html.twig" with { vm: vm } %}
+        </div>
+
+        {# PAGINATION BOTTOM #}
+        <div id="vehicles-models-pagination-bottom" class="pagination-wrapper">
+            {% include "vehicles_models/_pagination_info.html.twig" with { vm: vm } %}
+        </div>
+
+    </form>
+
+</div>
+
 {% endblock %}
