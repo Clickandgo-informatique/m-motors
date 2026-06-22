@@ -282,11 +282,8 @@ class VehicleModelFixtures extends Fixture implements DependentFixtureInterface
         $output->writeln("\nImport terminé.");
     }
 
-    /*
-     * =========================
-     * HELPERS ENTITÉS
-     * =========================
-     */
+     //HELPERS ENTITÉS
+
 
     private function getBrand(
         ObjectManager $em,
@@ -422,11 +419,9 @@ class VehicleModelFixtures extends Fixture implements DependentFixtureInterface
         return $this->gearCache[$name] = $gear;
     }
 
-    /*
-     * =========================
-     * HELPERS UTILS
-     * =========================
-     */
+
+     //HELPERS UTILS
+
 
     private function resetCache(): void
     {
@@ -453,9 +448,8 @@ class VehicleModelFixtures extends Fixture implements DependentFixtureInterface
         return $this->convertEncoding($value);
     }
 
-    /**
-     * Conversion automatique en UTF-8.
-     */
+    //Conversion automatique en UTF-8.
+     
     private function convertEncoding(?string $value): ?string
     {
         if ($value === null) {

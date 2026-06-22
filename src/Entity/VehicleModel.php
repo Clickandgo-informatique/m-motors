@@ -20,11 +20,7 @@ class VehicleModel
     #[ORM\Column]
     private ?int $id = null;
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONS
-    |--------------------------------------------------------------------------
-    */
+    // RELATIONS
 
     #[ORM\ManyToOne(inversedBy: "vehicleModels")]
     #[ORM\JoinColumn(nullable: false)]
@@ -56,11 +52,7 @@ class VehicleModel
     #[ORM\OneToMany(mappedBy: "vehicleModel", targetEntity: Vehicle::class, orphanRemoval: true)]
     private Collection $vehicles;
 
-    /*
-    |--------------------------------------------------------------------------
-    | DONNÉES TECHNIQUES
-    |--------------------------------------------------------------------------
-    */
+    // DONNÉES TECHNIQUES
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Assert\Regex(
@@ -81,11 +73,7 @@ class VehicleModel
     #[ORM\Column(nullable: true)]
     private ?int $co2 = null;
 
-    /*
-    |--------------------------------------------------------------------------
-    | HOMOLOGATION
-    |--------------------------------------------------------------------------
-    */
+    // HOMOLOGATION
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $cnit = null;
@@ -102,32 +90,27 @@ class VehicleModel
     #[ORM\Column(type: "integer", nullable: true)]
     private ?int $massMax = null;
 
-    /*
-    |--------------------------------------------------------------------------
-    | STOCK (NON PERSISTÉ)
-    |--------------------------------------------------------------------------
-    */
+    //STOCK (NON PERSISTÉ)
 
     private ?int $availableStock = null;
     private ?int $availableForSale = null;
     private ?int $availableForRent = null;
 
-    /*
-    |--------------------------------------------------------------------------
-    | CONSTRUCTEUR
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * Options / équipements
+     */
+    #[ORM\ManyToMany(targetEntity: Feature::class, inversedBy: 'vehicleModels')]
+    private Collection $features;
+
+    //CONSTRUCTEUR
 
     public function __construct()
     {
         $this->vehicles = new ArrayCollection();
+        $this->features = new ArrayCollection();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | STOCK GETTERS / SETTERS
-    |--------------------------------------------------------------------------
-    */
+    //STOCK GETTERS / SETTERS
 
     public function getAvailableStock(): int
     {
@@ -162,11 +145,7 @@ class VehicleModel
         return $this;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | MÉTIER
-    |--------------------------------------------------------------------------
-    */
+    //MÉTIER
 
     public function __toString(): string
     {
@@ -182,11 +161,7 @@ class VehicleModel
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GETTERS / SETTERS SIMPLES
-    |--------------------------------------------------------------------------
-    */
+    //GETTERS / SETTERS SIMPLES
 
     public function getId(): ?int
     {
@@ -259,11 +234,7 @@ class VehicleModel
         return $this;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | VEHICLES
-    |--------------------------------------------------------------------------
-    */
+    //VEHICLES
 
     public function getVehicles(): Collection
     {
@@ -291,11 +262,7 @@ class VehicleModel
         return $this;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | TECH
-    |--------------------------------------------------------------------------
-    */
+    //TECH
 
     public function getEuroNorm(): ?string
     {
@@ -352,11 +319,7 @@ class VehicleModel
         return $this;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HOMOLOGATION
-    |--------------------------------------------------------------------------
-    */
+    //HOMOLOGATION
 
     public function getCnit(): ?string
     {
@@ -410,6 +373,29 @@ class VehicleModel
     public function setMassMax(?int $massMax): static
     {
         $this->massMax = $massMax;
+        return $this;
+    }
+
+    //Options véhicule
+
+    public function getFeatures(): Collection
+    {
+        return $this->features;
+    }
+
+    public function addFeature(Feature $feature): static
+    {
+        if (!$this->features->contains($feature)) {
+            $this->features->add($feature);
+        }
+
+        return $this;
+    }
+
+    public function removeFeature(Feature $feature): static
+    {
+        $this->features->removeElement($feature);
+
         return $this;
     }
 }

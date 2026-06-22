@@ -11,10 +11,7 @@
   padding: 5px;
 }
 .multiselect-selected{
-  min-height: 120px;
-  background: #ffff;
-  border-radius: 5px;
-  margin: 5px;
+  min-height: 200px;
 }
 .available-item {
     padding: 5px;

@@ -182,12 +182,6 @@ class Vehicle
     #[ORM\OneToMany(mappedBy: 'vehicle', targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
-    /**
-     * Options / équipements
-     */
-    #[ORM\ManyToMany(targetEntity: Feature::class, inversedBy: 'vehicles')]
-    private Collection $features;
-
 
     // Constructeur
 
@@ -198,8 +192,7 @@ class Vehicle
         $this->maintenances = new ArrayCollection();
         $this->rentals = new ArrayCollection();
         $this->sales = new ArrayCollection();
-        $this->favorites = new ArrayCollection();
-        $this->features = new ArrayCollection();
+        $this->favorites = new ArrayCollection();        
         $this->badges = new ArrayCollection();
     }
 
@@ -445,31 +438,6 @@ class Vehicle
 
         return $this;
     }
-
-
-    //Options véhicule
-
-    public function getFeatures(): Collection
-    {
-        return $this->features;
-    }
-
-    public function addFeature(Feature $feature): self
-    {
-        if (!$this->features->contains($feature)) {
-            $this->features->add($feature);
-        }
-
-        return $this;
-    }
-
-    public function removeFeature(Feature $feature): self
-    {
-        $this->features->removeElement($feature);
-
-        return $this;
-    }
-
 
     //Véhicule disponible    
     public function isAvailable(): bool
