@@ -1,6 +1,6 @@
 import Dropzone from "./Dropzone.js";
 import Autocomplete from "./Autocomplete.js";
-import {initMultiselect} from "./Multiselect.js";
+import Multiselect from "./Multiselect.js";
 
 export default class AjaxManager {
   constructor() {

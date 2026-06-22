@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-JKFgw3k.css",
+        "path": "\/assets\/styles\/app-aYsKm1i.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -52,11 +52,15 @@
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
-        "path": "\/assets\/js\/AjaxManager-uocwzDn.js",
+        "path": "\/assets\/js\/AjaxManager-9rXOqrH.js",
         "type": "js"
     },
     "\/assets\/js\/Autocomplete.js": {
         "path": "\/assets\/js\/Autocomplete-tILklWR.js",
+        "type": "js"
+    },
+    "\/assets\/js\/Multiselect.js": {
+        "path": "\/assets\/js\/Multiselect-GLAEc1i.js",
         "type": "js"
     },
     "\/assets\/js\/ToggleVehicleFavorite.js": {
@@ -73,10 +77,6 @@
     },
     "\/assets\/js\/cookie-banner.js": {
         "path": "\/assets\/js\/cookie-banner-WXkTDEM.js",
-        "type": "js"
-    },
-    "\/assets\/js\/Multiselect.js": {
-        "path": "\/assets\/js\/Multiselect-DaSLL3U.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {
