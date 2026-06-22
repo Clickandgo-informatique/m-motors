@@ -13,8 +13,6 @@
 .multiselect-selected{
   min-height: 120px;
   background: #ffff;
-  border-radius: 5px;
-  margin: 5px;
 }
 .available-item {
     padding: 5px;

@@ -69,7 +69,20 @@
 		{{ form_row(form.euroNorm) }}
 		{{ form_errors(form) }}
 	</div>
-
+{# Options du modèle de véhicule #}
+	{# Renseigné en Ajax #}
+	<p class="text-center">Liste d'options</p>
+    <div 
+	class="multiselect" 
+	data-multiselect
+	data-url="/api/vehicles/models/{{vm.id}}/features"
+	
+	></div>
+	<input
+    type="hidden"
+    name="vehicle_model[features]"
+    id="vehicle_model_features"
+/>    
 
 	<button type="submit">
 		<i class="fa-solid fa-download"></i>

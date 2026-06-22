@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\BodyType;
 use App\Entity\Brand;
+use App\Entity\Feature;
 use App\Entity\FuelType;
 use App\Entity\GearType;
 use App\Entity\Model;
@@ -47,22 +48,22 @@ class VehicleModelFormType extends AbstractType
             ])
             ->add('variant', EntityType::class, [
                 'label' => 'Variante',
-                'class'=>Variant::class,
-                'choice_label'=>'name',
-                'placeholder'=>'Choisir une variante'
+                'class' => Variant::class,
+                'choice_label' => 'name',
+                'placeholder' => 'Choisir une variante'
 
             ])
             ->add('fuelType', EntityType::class, [
                 'label' => 'Type énergie',
                 'class' => FuelType::class,
                 'choice_label' => 'name',
-                'placeholder'=>'Choisir type d\'énergie'
+                'placeholder' => 'Choisir type d\'énergie'
             ])
             ->add('gearType', EntityType::class, [
                 'label' => 'Boîte vitesse',
                 'class' => GearType::class,
                 'choice_label' => 'name',
-                'placeholder'=>'Choisir le type de transmission'
+                'placeholder' => 'Choisir le type de transmission'
             ])
             ->add('bodyType', EntityType::class, [
                 'label' => 'Type carrosserie',
@@ -70,6 +71,13 @@ class VehicleModelFormType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => 'Choisir un type',
                 'required' => false
+            ])
+            ->add('features', EntityType::class, [
+                'class' => Feature::class,
+                'multiple' => true,
+                'required' => false,
+                'choice_label' => 'label',
+                'attr' => ['hidden' => true]
             ])
         ;
     }

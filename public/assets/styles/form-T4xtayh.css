@@ -9,7 +9,7 @@ form {
   display: flex;
   flex-direction: column;
   max-width: 600px;
-  margin: 10px auto;
+  margin: 0 auto;
   background: var(--surface-1);
   border-radius: var(--radius);
   box-shadow: var(--shadow-light);
