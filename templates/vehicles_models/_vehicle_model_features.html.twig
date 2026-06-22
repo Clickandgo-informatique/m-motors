@@ -1,0 +1,50 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+<h1 class="text-center">
+<i class="fa-solid fa-list title-icon"></i>Liste des options
+</h1>
+
+{% if features is defined and features|length > 0 %}
+
+    <div class="vehicle-model-features-list">
+
+        {% for category in featuresCategories %}
+
+            <details class="vehicle-model-features-category"open>
+
+                <summary>
+                    {{ category.label }}
+                </summary>
+
+                <ul class="vehicle-model-features-category-list">
+
+                    {% for feature in category.features %}
+
+                        <li class="vehicle-model-feature">
+                            <a href="{{path('feature_edit',{id:feature.id})}}"><i class="fa-solid fa-pen-to-square light-icon"></i></a>
+                            - {{ feature.label }} 
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            </details>
+
+        {% endfor %}
+
+    </div>
+
+{% else %}
+
+    <div class="text-center">
+        Aucune option n'est encore enregistrée dans la base
+    </div>
+
+{% endif %}
+
+
+
+{% endblock %}

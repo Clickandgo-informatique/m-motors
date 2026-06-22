@@ -3,8 +3,9 @@
 /* ========================================================= */
 
 form {
-  box-sizing: border-box; 
- 
+  box-sizing: border-box;
+  max-width: 80%;
+  margin: 10px auto;
 }
 
 .form-ui {
@@ -23,6 +24,9 @@ form {
   border: none;
   box-shadow: none;
   background: transparent;
+}
+.vehicle-fetch-form {
+  width: 100%;
 }
 
 /* ========================================================= */

@@ -154,7 +154,7 @@ class VehicleModelController extends AbstractController
             return $this->redirectToRoute('vehicles_models');
         }
 
-        return $this->render('vehicles/_vehicle_model_form.html.twig', [
+        return $this->render('vehicles_models/_vehicle_model_form.html.twig', [
             'form' => $form->createView(),
             'vm' => $vm,
             'title' => $title,
@@ -191,7 +191,7 @@ class VehicleModelController extends AbstractController
             return $this->redirectToRoute('vehicles_models');
         }
 
-        return $this->render('vehicles/_vehicle_model_form.html.twig', [
+        return $this->render('vehicles_models/_vehicle_model_form.html.twig', [
             'form' => $form->createView(),
             'vm' => $vm,
             'title' => $title,

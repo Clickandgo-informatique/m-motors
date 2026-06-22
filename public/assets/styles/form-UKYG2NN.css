@@ -3,8 +3,8 @@
 /* ========================================================= */
 
 form {
-  box-sizing: border-box; 
- 
+  box-sizing: border-box;
+  max-width: 80%;
 }
 
 .form-ui {

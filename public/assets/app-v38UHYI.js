@@ -24,10 +24,6 @@ console.log("app.js initialisé");
  * Réinitialise les flags d'initialisation pour permettre le re-render après AJAX
  */
 function resetInitFlags(root) {
-  root.querySelectorAll("[data-multiselect-initialized]").forEach(el => {
-    el.removeAttribute("data-multiselect-initialized");
-  });
-
   root.querySelectorAll("[data-fetch-form-initialized]").forEach(el => {
     el.removeAttribute("data-fetch-form-initialized");
   });
@@ -183,22 +179,10 @@ function initPagination() {
 
     form.dispatchEvent(new Event("change", { bubbles: true }));
   });
-}
 
-/**
- * Multiselect
- */
-function initMultiselect(root = document) {
-   console.log("initMultiselect");
-  root.querySelectorAll("[data-multiselect]").forEach(wrapper => {
-    if (wrapper.dataset.multiselectInitialized === "1") return;
-
-    wrapper.dataset.multiselectInitialized = "1";
-
-    const multiselect = new Multiselect(wrapper);
-
-    multiselect.initMultiselect();
-  });
+  function initMultiselect() {
+    new Multiselect();
+  }
 }
 
 /**
@@ -206,6 +190,7 @@ function initMultiselect(root = document) {
  */
 function initApp() {
   initSidebar?.();
+
   initDropzones();
   initFavorites();
   initAutocomplete();
@@ -237,7 +222,7 @@ EventBus.on("ui:updated", ({ target }) => {
   initFavorites(root);
   initCollections(root);
   initSliders(root);
-  initMultiselect(root);
+
   refreshUI(root);
 });
 

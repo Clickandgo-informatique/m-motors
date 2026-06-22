@@ -13,6 +13,7 @@
     "\/assets\/js\/EventBus.js",
     "\/assets\/js\/FilterBadges.js",
     "\/assets\/js\/cookie-banner.js",
+    "\/assets\/js\/Multiselect.js",
     "@symfony\/stimulus-bundle",
     "@hotwired\/stimulus",
     "\/assets\/@symfony\/stimulus-bundle\/controllers.js",

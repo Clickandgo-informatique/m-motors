@@ -189,7 +189,6 @@ function initPagination() {
  * Multiselect
  */
 function initMultiselect(root = document) {
-   console.log("initMultiselect");
   root.querySelectorAll("[data-multiselect]").forEach(wrapper => {
     if (wrapper.dataset.multiselectInitialized === "1") return;
 

@@ -24,6 +24,9 @@ form {
   box-shadow: none;
   background: transparent;
 }
+.vehicles-fetch-form {
+  width: 100%;
+}
 
 /* ========================================================= */
 /* FIELDSET + LEGEND */

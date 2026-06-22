@@ -51,10 +51,3 @@
 .vehicle-model-feature{
     margin-left: 10px;
 }
-.vehicle-model-features-list{
-    display:flex;
-    justify-content: center;
-    flex-direction: column;
-max-width: fit-content;
-margin: 10px auto;
-}

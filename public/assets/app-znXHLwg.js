@@ -14,7 +14,7 @@ import EventBus from "./js/EventBus.js";
 import FilterBadges from "./js/FilterBadges.js";
 import initFiltersDrawer from "./js/sidebar.js";
 import "./js/cookie-banner.js";
-import Multiselect from "./js/Multiselect.js";
+import initMultiselect from "./js/Multiselect.js";
 
 window.Autocomplete = Autocomplete;
 
@@ -24,10 +24,6 @@ console.log("app.js initialisé");
  * Réinitialise les flags d'initialisation pour permettre le re-render après AJAX
  */
 function resetInitFlags(root) {
-  root.querySelectorAll("[data-multiselect-initialized]").forEach(el => {
-    el.removeAttribute("data-multiselect-initialized");
-  });
-
   root.querySelectorAll("[data-fetch-form-initialized]").forEach(el => {
     el.removeAttribute("data-fetch-form-initialized");
   });
@@ -186,22 +182,6 @@ function initPagination() {
 }
 
 /**
- * Multiselect
- */
-function initMultiselect(root = document) {
-   console.log("initMultiselect");
-  root.querySelectorAll("[data-multiselect]").forEach(wrapper => {
-    if (wrapper.dataset.multiselectInitialized === "1") return;
-
-    wrapper.dataset.multiselectInitialized = "1";
-
-    const multiselect = new Multiselect(wrapper);
-
-    multiselect.initMultiselect();
-  });
-}
-
-/**
  * Initialisation globale de l'application
  */
 function initApp() {
@@ -237,7 +217,7 @@ EventBus.on("ui:updated", ({ target }) => {
   initFavorites(root);
   initCollections(root);
   initSliders(root);
-  initMultiselect(root);
+
   refreshUI(root);
 });
 

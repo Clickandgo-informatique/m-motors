@@ -1,0 +1,23 @@
+{% extends "base.html.twig" %}
+{% block title %}M-Motors: Gestion des options des véhicules{% endblock %}
+{% block body %}
+
+<h1 class="text-center"><i class="fa-solid fa-pen-to-square title-icon"></i>{{title}}</h1>
+
+<div class="form-ui">
+{{ form_start(form) }}
+
+<div class="form-row">
+{{ form_row(form.category) }}
+</div>
+
+<div class="form-row">
+{{ form_row(form.label) }}
+</div>
+
+<button type="submit"><i class="fa-solid fa-floppy-disk"></i>Enregistrer</button>
+
+{{ form_end(form) }}
+</div>
+
+{% endblock %}
