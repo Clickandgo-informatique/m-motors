@@ -51,7 +51,7 @@ class VehicleFeaturesController extends AbstractController
                     'id' => $feature->getId(),
                     'label' => $feature->getLabel(),
                 ],
-                $vehicle->getFeatures()->toArray()
+                $vehicle->getVehicleModel()->getFeatures()->toArray()
             ),
             'available' => array_map(
                 fn(Feature $feature) => [

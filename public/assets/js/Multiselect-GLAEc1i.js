@@ -1,3 +1,5 @@
+console.log("classe multiselect initialisée");
+
 export default class Multiselect {
   constructor(wrapper) {
     this.wrapper = wrapper;
@@ -7,15 +9,15 @@ export default class Multiselect {
 
     this.selectedItems = [];
     this.availableItems = [];
-
-    this.hiddenInput = document.querySelector("#vehicle_model_features");
   }
 
   // création de la structure html du multiselect
   createMultiselect() {
+    // conteneur des éléments sélectionnés
     this.selectedItemsDiv = document.createElement("div");
     this.selectedItemsDiv.classList.add("multiselect-selected");
 
+    // conteneur des éléments disponibles
     this.availableItemsDiv = document.createElement("div");
     this.availableItemsDiv.classList.add("multiselect-available");
 
@@ -60,15 +62,6 @@ export default class Multiselect {
     this.availableItemsDiv.appendChild(ul);
   }
 
-  // actualisation du champ caché
-  updateHiddenInput() {
-    if (!this.hiddenInput) {
-      return;
-    }
-
-    this.hiddenInput.value = this.selectedItems.map(item => item.id).join(",");
-  }
-
   // initialisation du composant
   async initMultiselect() {
     this.createMultiselect();
@@ -76,14 +69,13 @@ export default class Multiselect {
     await this.fetchData();
 
     this.fillAvailableItems();
-
-    this.updateHiddenInput();
   }
 }
 
 // initialisation de tous les multiselects présents dans un conteneur
 export function initMultiselect(root = document) {
   root.querySelectorAll("[data-multiselect]").forEach(wrapper => {
+    // évite une double initialisation
     if (wrapper.dataset.multiselectInitialized === "1") {
       return;
     }

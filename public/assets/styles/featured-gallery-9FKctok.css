@@ -1,11 +1,10 @@
 #featured-vehicles-gallery-wrapper {
-  display: flex;
+  display: grid;
   gap:20px;
   flex-direction: row;
   max-width: 1200px;
   overflow-y: auto;
   margin: 10px auto;
-  padding: 10px;
 }
 
 #featured-vehicles-gallery-wrapper .cards-grid {
