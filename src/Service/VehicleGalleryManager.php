@@ -37,6 +37,7 @@ class VehicleGalleryManager
             $image = new Image();
             $image->setVehicle($vehicle);
             $image->setFilename($result['filename']);
+            $image->setThumbnail($result['thumbnail']);
             $image->setOriginalName($file->getClientOriginalName());
             $image->setMimeType($file->getMimeType() ?? 'image/webp');
             $image->setSize($file->getSize() ?? 0);

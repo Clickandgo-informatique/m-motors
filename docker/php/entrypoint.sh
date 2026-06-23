@@ -11,6 +11,13 @@ if [ -d "$APP_DIR/var" ]; then
     chown -R www-data:www-data "$APP_DIR/var"
 fi
 
+# Correction des permissions du dossier public/uploads
+mkdir -p "$APP_DIR/public/uploads"
+mkdir -p "$APP_DIR/public/uploads/vehicles"
+
+chown -R www-data:www-data "$APP_DIR/public/uploads"
+chmod -R 775 "$APP_DIR/public/uploads"
+
 # Correction des permissions du vendor si déjà présent
 if [ -d "$APP_DIR/vendor" ]; then
     chown -R www-data:www-data "$APP_DIR/vendor"
