@@ -157,9 +157,9 @@
 
                 <div class="vehicle-features-list flex-3">
 
-                    {% if vehicle.features|length > 0 %}
+                    {% if vehicle.vehicleModel.features|length > 0 %}
 
-                        {% for feature in vehicle.features|sort((a, b) => a.label <=> b.label) %}
+                        {% for feature in vehicle.vehicleModel.features|sort((a, b) => a.label <=> b.label) %}
                             {{ feature.label }}{% if not loop.last %}, {% endif %}
                         {% endfor %}
 
