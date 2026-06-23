@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Feature;
-use App\Entity\Vehicle;
+use App\Entity\VehicleModel;
 use App\Form\FeatureFormType;
 use App\Form\VehicleFeaturesFormType;
 use App\Repository\FeatureCategoryRepository;
@@ -37,7 +37,7 @@ class VehicleFeaturesController extends AbstractController
         methods: ['GET']
     )]
     public function apiFeatures(
-        Vehicle $vehicle,
+        VehicleModel $vehicleModel,
         FeatureRepository $featureRepository
     ): JsonResponse {
 
@@ -51,7 +51,7 @@ class VehicleFeaturesController extends AbstractController
                     'id' => $feature->getId(),
                     'label' => $feature->getLabel(),
                 ],
-                $vehicle->getVehicleModel()->getFeatures()->toArray()
+                $vehicleModel->getFeatures()->toArray()
             ),
             'available' => array_map(
                 fn(Feature $feature) => [
@@ -70,13 +70,13 @@ class VehicleFeaturesController extends AbstractController
     )]
     public function editVehicleFeatures(
         Request $request,
-        Vehicle $vehicle,
+        VehicleModel $vehicleModel,
         EntityManagerInterface $em
     ): Response {
 
         $form = $this->createForm(
             VehicleFeaturesFormType::class,
-            $vehicle
+            $vehicleModel
         );
 
         $form->handleRequest($request);
@@ -92,7 +92,7 @@ class VehicleFeaturesController extends AbstractController
             );
 
             return $this->redirectToRoute('vehicles_show', [
-                'id' => $vehicle->getId(),
+                'id' => $vehicleModel->getId(),
             ]);
         }
 
@@ -100,7 +100,7 @@ class VehicleFeaturesController extends AbstractController
             'vehicles_models/_vehicle_features.html.twig',
             [
                 'form' => $form->createView(),
-                'vehicle' => $vehicle,
+                'vehicle' => $vehicleModel,
             ]
         );
     }
@@ -144,11 +144,17 @@ class VehicleFeaturesController extends AbstractController
             ]
         );
     }
+    #[Route(
+        '/admin/features/new',
+        name: 'feature_new',
+        methods: ['GET', 'POST']
+    )]
     public function newFeature(
         Request $request,
-        Feature $feature,
         EntityManagerInterface $em
     ): Response {
+
+        $feature = new Feature();
 
         $form = $this->createForm(
             FeatureFormType::class,
@@ -158,7 +164,6 @@ class VehicleFeaturesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $feature = new Feature();
 
             $em->persist($feature);
             $em->flush();

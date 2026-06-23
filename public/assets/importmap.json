@@ -28,7 +28,11 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
+<<<<<<< HEAD
+        "path": "\/assets\/styles\/app-zzz134h.css",
+=======
         "path": "\/assets\/styles\/app-n6htd1N.css",
+>>>>>>> master
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -60,7 +64,7 @@
         "type": "js"
     },
     "\/assets\/js\/Multiselect.js": {
-        "path": "\/assets\/js\/Multiselect-PUyOcRO.js",
+        "path": "\/assets\/js\/Multiselect-mFfJg1x.js",
         "type": "js"
     },
     "\/assets\/js\/ToggleVehicleFavorite.js": {

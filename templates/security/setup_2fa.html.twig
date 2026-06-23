@@ -7,7 +7,7 @@
 {% block body %}
 	<h1 class="text-center">
 		<i class="fa-solid fa-shield-halved"></i>Configurer la double authentification</h1>
-
+<div class="form-ui">
 	{% if qrCodeSvg %}
 		<p class="text-center">Scannez ce QR Code avec Google Authenticator :</p>
 		<div class="qrCode-2fa-verify text-center">
@@ -31,4 +31,5 @@
 			Valider
 		</button>
 	</form>
+	</div>
 {% endblock %}

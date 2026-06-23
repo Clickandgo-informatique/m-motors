@@ -38,6 +38,7 @@
                 <div class="dossier-card-grid">
 
                     {% if dossier.vehicle.images|length > 0 %}
+                    
         <div class="dossier-item dossier-item-image">
             <img
                 src="{{ asset('uploads/' ~ dossier.vehicle.images|first.imagePath) }}"

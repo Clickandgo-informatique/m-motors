@@ -1,15 +1,9 @@
 .dashboard-wrapper {
   display: grid;
-<<<<<<< HEAD
   grid-template-columns: 280px 1fr;
   gap: 2rem; 
-=======
-  grid-template-columns: 280px auto;
-  gap: 20px;
->>>>>>> master
   margin: 10px;
   align-items: start;
-  justify-content: center;
 }
 
 @media screen and (max-width: 992px) {
