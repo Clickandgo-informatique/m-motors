@@ -7,7 +7,7 @@ use App\Entity\Brand;
 use App\Entity\FuelType;
 use App\Entity\User;
 use App\Entity\Vehicle;
-use App\Entity\VehicleStatus;
+use App\Enum\VehicleStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,13 +19,15 @@ class VehicleRepository extends ServiceEntityRepository
         parent::__construct($registry, Vehicle::class);
     }
 
-    /**
-     * Query principale pagination (KNP SAFE)
-     */
+    //Query principale pagination (KNP SAFE)
+
     public function getFilteredQueryBuilder(
         array $filters = [],
         ?string $searchTerm = null,
-        ?User $user = null
+        ?User $user = null,
+        bool $availableOnly = false
+
+
     ): QueryBuilder {
         $qb = $this->createQueryBuilder('v')
             ->select('v')
@@ -37,11 +39,17 @@ class VehicleRepository extends ServiceEntityRepository
             ->leftJoin('v.dossiers', 'd')
             ->leftJoin('d.financing', 'f');
 
-        /**
-         * IMPORTANT FIX PAGINATION:
-         * évite duplication SQL + COUNT incorrect
-         */
+        //PAGINATION:évite duplication SQL + COUNT incorrect
+
         $qb->groupBy('v.id');
+
+        if ($availableOnly) {
+            $qb->andWhere('v.status IN (:availableStatuses)')
+                ->setParameter('availableStatuses', [
+                    VehicleStatus::AVAILABLE_FOR_SALE->value,
+                    VehicleStatus::AVAILABLE_FOR_RENT->value,
+                ]);
+        }
 
         $normalize = function ($value): array {
             if ($value === null || $value === '') {
@@ -154,9 +162,9 @@ class VehicleRepository extends ServiceEntityRepository
 
         return $qb->orderBy('v.id', 'DESC');
     }
-    /**
-     * AUTOCOMPLETE
-     */
+
+    //AUTOCOMPLETE
+
     public function searchForAutocomplete(
         array $filters = [],
         ?string $searchTerm = null,
@@ -193,9 +201,7 @@ class VehicleRepository extends ServiceEntityRepository
         }, $vehicles);
     }
 
-    /* =========================
-       FILTER DATASETS
-    ========================= */
+    //FILTER DATASETS
 
     public function getUsedBrands(): array
     {

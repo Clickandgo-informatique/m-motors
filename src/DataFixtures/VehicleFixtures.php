@@ -120,6 +120,7 @@ class VehicleFixtures extends Fixture implements DependentFixtureInterface
         $featuredVehicles = array_slice($vehicles, 0, 10);
 
         foreach ($featuredVehicles as $vehicle) {
+            $vehicle->setStatus(VehicleStatus::AVAILABLE_FOR_SALE);
             $vehicle->setIsFeatured(true);
         }
 
