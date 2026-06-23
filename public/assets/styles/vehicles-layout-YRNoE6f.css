@@ -11,10 +11,6 @@
   align-items: start;
 }
 
-.vehicle-show {
-  max-width: 1200px;
-}
-
 .vehicle-left,
 .vehicle-right {
   min-width: 0;
@@ -95,19 +91,12 @@
   visibility: visible;
 }
 
-/* responsive */
 @media (max-width: 991px) {
   .vehicles-layout {
     grid-template-columns: 1fr;
   }
 
-  /* IMPORTANT : reset ordre grid (order ne sert à rien ici) */
-  .vehicle-left {
-    grid-row: 2;
-  }
-
   .vehicle-right {
-    grid-row: 1;
     position: static;
     width: 100%;
     display: block;
@@ -174,7 +163,6 @@
   }
 }
 
-/* zoom */
 .image-zoom-overlay {
   position: fixed;
   inset: 0;
