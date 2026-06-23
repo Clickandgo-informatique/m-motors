@@ -162,7 +162,7 @@
 </div>
             </div>
 
-            {% set allFeatures = vehicle.features|map(f => f.label) %}
+            {% set allFeatures = vehicle.vehicleModel.features|map(f => f.label) %}
             {% set maxVisible = 5 %}
             {% set visibleFeatures = allFeatures|slice(0, maxVisible) %}
             {% set hiddenCount = allFeatures|length - maxVisible %}

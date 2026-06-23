@@ -20,11 +20,8 @@ class VehicleModel
     #[ORM\Column]
     private ?int $id = null;
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONS
-    |--------------------------------------------------------------------------
-    */
+    // RELATIONS
+
 
     #[ORM\ManyToOne(inversedBy: "vehicleModels")]
     #[ORM\JoinColumn(nullable: false)]
