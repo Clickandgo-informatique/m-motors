@@ -4,10 +4,14 @@
 {% endblock %}
 
 {% block body %}
+
+<div class="form-ui">
 	<h1>{{ customer.firstName }}
 		{{ customer.lastName }}</h1>
 	<p>Email :
 		{{ customer.email }}</p>
 	<a href="{{ path('customer_edit', {'id': customer.id}) }}" data-ajax-modal>Éditer</a>
 	<a href="{{ path('customer_list') }}">Retour à la liste</a>
+</div>
+
 {% endblock %}

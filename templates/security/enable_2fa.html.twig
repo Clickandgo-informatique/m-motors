@@ -5,18 +5,20 @@
 {% endblock %}
 
 {% block body %}
+<div class="form-ui">
 	<h2 class="text-center">Activez la double authentification</h2>
 
-	<p>
+	<p class="text-center">
 		Scannez ce QR Code avec votre application Google Authenticator (ou autre application compatible TOTP).
 	</p>
 
 	<img class="qrCode" src="{{ qrCode|raw }}" alt="QR Code Google Authenticator">
 
-	<p>
+	<p class="text-center">
 		Ensuite, utilisez l'application pour générer vos codes de connexion.
 	</p>
 
 	<a href="{{ path('app_main') }}" class="btn btn-primary">
 		<i class="fa-solid fa-home"></i>Retour à l'accueil</a>
 {% endblock %}
+</div>

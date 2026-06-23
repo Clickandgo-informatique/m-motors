@@ -1,21 +1,23 @@
-{{ form_start(form) }}
-
-<div class="form-row">
-	{{ form_row(form.type) }}
-</div>
-
+<div class="form-ui">
+	{{ form_start(form) }}
 
 	<div class="form-row">
-	{{ form_row(form.leasingType) }}
+		{{ form_row(form.type) }}
 	</div>
 
-	<div class="form-row">
-	{{ form_row(form.annualMileage) }}
-	</div>
 
-	<div class="form-row">{{ form_row(form.monthlyPayment) }}</div>
+		<div class="form-row">
+		{{ form_row(form.leasingType) }}
+		</div>
+
+		<div class="form-row">
+		{{ form_row(form.annualMileage) }}
+		</div>
+
+		<div class="form-row">{{ form_row(form.monthlyPayment) }}</div>
 
 
-<button class="btn btn-primary"><i class="fa-solid fa-check"></i>Valider</button>
+	<button class="btn btn-primary"><i class="fa-solid fa-check"></i>Valider</button>
 
 {{ form_end(form) }}
+</div>

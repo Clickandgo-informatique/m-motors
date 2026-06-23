@@ -1,9 +1,13 @@
 .dossier-grid {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 320px auto;
   gap: 20px;
   align-items: start;
+<<<<<<< HEAD
   margin: 10px;
+=======
+  justify-content: center;
+>>>>>>> master
 }
 
 .dossier-left {

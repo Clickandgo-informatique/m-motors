@@ -28,7 +28,9 @@
     </div>
 </div>
 
-{# DISPONIBILITÉ #}
+{# DISPONIBILITÉ conditionné par rôles #}
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+
 <details>
     <summary>
         <i class="fa-solid fa-circle-check"></i>
@@ -49,7 +51,7 @@
         {% endfor %}
     </ul>
 </details>
-
+{% endif %}
 {# FINANCEMENT #}
 <details>
     <summary>

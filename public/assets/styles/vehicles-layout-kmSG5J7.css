@@ -1,0 +1,248 @@
+/* vehicles layout */
+
+.vehicles-page {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.vehicle-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 20px;
+  align-items: start;
+}
+
+.vehicles-main {
+  flex: 1;
+  min-width: 0;
+}
+.vehicle-main-image {
+  cursor: zoom-in;
+}
+
+.vehicles-main--catalog {
+  flex: 1;
+  min-width: 0;
+}
+/* gauche = infos */
+.vehicle-left {
+  flex: 1 1 500px;
+  min-width: 0;
+  max-width: 500px;
+}
+
+/* droite = galerie */
+.vehicle-right {
+  flex: 0 1 420px;
+  width: 100%;
+  max-width: 420px;
+  position: sticky;
+  top: 20px;
+}
+
+.vehicles-active-filters {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: 12px;
+}
+
+/* sidebar */
+
+.vehicles-filters {
+  width: 260px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 20px;
+
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: var(--surface-1);
+  padding: 16px;
+  margin-left: 0;
+}
+
+/* scrollbar */
+
+.vehicles-filters::-webkit-scrollbar {
+  width: 6px;
+}
+
+.vehicles-filters::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+/* header drawer */
+
+.filters-drawer-header {
+  display: none;
+}
+
+/* fab */
+
+.filters-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+
+  width: 56px;
+  height: 56px;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: var(--color-primary);
+  color: #fff;
+
+  cursor: pointer;
+
+  box-shadow: var(--shadow-heavy);
+  z-index: 99999;
+}
+
+/* backdrop */
+
+.filters-backdrop {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.45);
+
+  opacity: 0;
+  visibility: hidden;
+
+  transition: 0.25s;
+
+  z-index: 1100;
+}
+
+.filters-backdrop.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* responsive */
+
+@media (max-width: 991px) {
+  .vehicles-layout {
+    grid-template-columns: 1fr;
+  }
+  .vehicle-right {
+    position: static;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .vehicles-filters {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 90%;
+    max-width: 400px;
+    height: 100dvh;
+
+    display: flex;
+    flex-direction: column;
+
+    transform: translateX(100%);
+    transition: 0.25s;
+
+    background: var(--surface-1);
+
+    z-index: 1200;
+
+    visibility: hidden;
+    pointer-events: none;
+
+    max-height: none;
+  }
+
+  .vehicles-filters.is-open {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .filters-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    flex: 0 0 auto;
+
+    padding: 12px;
+    border-bottom: 1px solid var(--border-light);
+    background: var(--surface-1);
+  }
+
+  .filters-drawer-close {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    background: transparent;
+
+    color: var(--text-primary);
+    cursor: pointer;
+
+    font-size: 20px;
+  }
+
+  .vehicles-filters-content {
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 12px;
+  }
+
+  .filters-fab {
+    display: flex;
+  }
+}
+.image-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.image-zoom-overlay.is-active {
+  display: flex;
+}
+
+#image-zoom-target {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+}
+
+.image-zoom-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: 0;
+  font-size: 32px;
+  color: white;
+  cursor: pointer;
+}

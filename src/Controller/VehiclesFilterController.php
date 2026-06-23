@@ -29,7 +29,8 @@ class VehiclesFilterController extends AbstractController
         $query = $vehicleRepo->getFilteredQueryBuilder(
             $filters,
             $searchTerm,
-            $this->getUser()
+            $this->getUser(),
+            availableOnly: true
         );
 
         $vehicles = $paginator->paginate($query, $page, 12);
@@ -62,7 +63,8 @@ class VehiclesFilterController extends AbstractController
         $query = $vehicleRepo->getFilteredQueryBuilder(
             $filters,
             $searchTerm,
-            $this->getUser()
+            $this->getUser(),
+            availableOnly: true
         );
 
         $vehicles = $paginator->paginate($query, $page, 12);
