@@ -1,54 +1,59 @@
 #!/bin/sh
 set -e
 
-# Répertoire de l'application dans le container
 APP_DIR="/var/www"
 
 echo "Starting entrypoint..."
 
-# Correction des permissions Symfony pour le cache et les logs
+# permissions Symfony
 if [ -d "$APP_DIR/var" ]; then
     chown -R www-data:www-data "$APP_DIR/var"
 fi
 
-# Correction des permissions du dossier public/uploads
-mkdir -p "$APP_DIR/public/uploads"
+# uploads
 mkdir -p "$APP_DIR/public/uploads/vehicles"
-
 chown -R www-data:www-data "$APP_DIR/public/uploads"
 chmod -R 775 "$APP_DIR/public/uploads"
 
-# Correction des permissions du vendor si déjà présent
+# vendor permissions
 if [ -d "$APP_DIR/vendor" ]; then
     chown -R www-data:www-data "$APP_DIR/vendor"
 fi
 
-# Installation automatique des dépendances si vendor absent ou incomplet
+# composer install si besoin
 if [ ! -d "$APP_DIR/vendor" ] || [ ! -f "$APP_DIR/vendor/autoload.php" ]; then
     echo "vendor missing, running composer install"
     cd "$APP_DIR"
     composer install --no-interaction --optimize-autoloader
 fi
 
-# Export du mot de passe PostgreSQL pour psql / pg_isready
-export PGPASSWORD="$POSTGRES_PASSWORD"
+# postgres env safe defaults
+POSTGRES_HOST="${POSTGRES_HOST:-db}"
+POSTGRES_USER="${POSTGRES_USER:-app}"
+POSTGRES_DB="${POSTGRES_DB:-app}"
 
-# Attente de disponibilité de PostgreSQL
 echo "waiting for postgres..."
-until pg_isready -h db -p 5432 -U "$POSTGRES_USER"; do
+
+# attente postgres SANS password prompt
+until pg_isready -h "$POSTGRES_HOST" -p 5432 -U "$POSTGRES_USER" >/dev/null 2>&1; do
     sleep 1
 done
 
 echo "postgres is ready"
 
-# Création de la base de test si elle n'existe pas
+# IMPORTANT: pas de prompt interactif psql
+export PGPASSWORD="${POSTGRES_PASSWORD:-app}"
+
 echo "ensuring test database exists"
 
-psql -h db -U "$POSTGRES_USER" -d postgres -tAc \
-"SELECT 1 FROM pg_database WHERE datname='m_motors_test'" | grep -q 1 || \
-psql -h db -U "$POSTGRES_USER" -d postgres -c "CREATE DATABASE m_motors_test"
+psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d postgres -v ON_ERROR_STOP=1 <<EOF
+SELECT 'CREATE DATABASE m_motors_test'
+WHERE NOT EXISTS (
+    SELECT FROM pg_database WHERE datname = 'm_motors_test'
+)\gexec
+EOF
 
 echo "test database ready"
 
-# Exécution de la commande principale du container (php-fpm ou autre)
+# run container command
 exec "$@"
