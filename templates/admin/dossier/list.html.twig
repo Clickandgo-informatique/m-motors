@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-M-motors: Admin - Dossiers
+	M-motors: Admin - Dossiers
 {% endblock %}
 
 {% block body %}
@@ -14,8 +14,8 @@ M-motors: Admin - Dossiers
 
 		{# <a href="{{path('dossier_create')}}"><i class="fa-solid fa-circle-plus"></i>Ajouter un dossier</a> #}
 
-{# Formulaire de recherche #}
-{% include "Components/Forms/_fetch_form.html.twig" with {
+		{# Formulaire de recherche #}
+		{% include "Components/Forms/_fetch_form.html.twig" with {
     action: path('admin_dossier_list'),
     fetchUrl: path('dossiers_ajax_search'),
     baseUrl: path('admin_dossier_list'),
@@ -35,6 +35,18 @@ M-motors: Admin - Dossiers
     linkMode: '1',	
 } %}
 
+		{# Bouton de création de dossier #}
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+			<form
+				action="" method="post">
+				{# {{ path('dossier_create', { id: vehicle.id, type: 'purchase' }) }} #}
+				<button type="submit" class="btn btn-primary btn-sm">
+					<i class="fa-solid fa-folder-plus"></i>
+					Créer un dossier ...
+				</button>
+			</form>
+		{% endif %}
+
 		{# Pagination haut #}
 		<div class="pagination-wrapper" id="dossiers-pagination-top">
 			{% include "dossier/_pagination_info.html.twig" with { dossiers: dossiers } %}
@@ -48,7 +60,7 @@ M-motors: Admin - Dossiers
 		<div class="pagination-wrapper" id="dossiers-pagination-bottom">
 			{% include "dossier/_pagination_info.html.twig" with { dossiers: dossiers } %}
 		</div>
-	
+
 
 	</div>
 

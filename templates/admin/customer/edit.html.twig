@@ -4,98 +4,100 @@
 {% endblock %} #}
 
 {% block body %}
-	<div class="text-center btn btn-primary">
-		<a href="{{ path('customer_list') }}">
+	<div class="text-center ">
+		<a class="btn btn-primary" href="{{ path('customer_list') }}">
 			<i class="fa-solid fa-table-list"></i>Retour à la liste clients</a>
 	</div>
 	<h1 class="text-center">
 
 		{{ customer is defined ? '<i class="fa-solid fa-pen-to-square"></i> modifier un client' : '<i class="fa-solid fa-person-circle-plus"></i> Créer un client'}}</h1>
 
-<div class="form-ui">
-	{{ form_start(form) }}
+	<div class="form-ui">
+		{{ form_start(form) }}
 
-	<div class="form-row">
-		<div class="form-group">
-			{{ form_row(form.customerCode) }}
-		</div>
-		<div class="form-group">
-			{{ form_row(form.createdAt, {
+		<div class="form-row">
+			<div class="form-group">
+				{{ form_row(form.customerCode) }}
+			</div>
+			<div class="form-group">
+				{{ form_row(form.createdAt, {
     attr: { class: 'text-muted' }}) }}
-		</div>
-		<div class="form-group">
-			{{ form_row(form.updatedAt, {
+			</div>
+			<div class="form-group">
+				{{ form_row(form.updatedAt, {
     attr: { class: 'text-muted' }}) }}
+			</div>
 		</div>
+
+		<div class="form-row">
+
+			<div class="form-group">
+				{{ form_label(form.lastName) }}
+				{{ form_widget(form.lastName) }}
+				{{ form_errors(form.lastName) }}
+			</div>
+			<div class="form-group">
+				{{ form_label(form.firstName) }}
+				{{ form_widget(form.firstName) }}
+				{{ form_errors(form.firstName) }}
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="form-group">
+				{{ form_label(form.email) }}
+				{{ form_widget(form.email) }}
+				{{ form_errors(form.email) }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-group">
+				{{ form_label(form.phoneNumber1) }}
+				{{ form_widget(form.phoneNumber1) }}
+				{{ form_errors(form.phoneNumber1) }}
+			</div>
+			<div class="form-group">
+				{{ form_label(form.phoneNumber2) }}
+				{{ form_widget(form.phoneNumber2) }}
+				{{ form_errors(form.phoneNumber2) }}
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="form-group">
+				{{ form_label(form.address) }}
+				{{ form_widget(form.address) }}
+				{{ form_errors(form.address) }}
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="form-group flex-1">
+				{{ form_label(form.zipcode) }}
+				{{ form_widget(form.zipcode) }}
+				{{ form_errors(form.zipcode) }}
+			</div>
+			<div class="form-group flex-3">
+				{{ form_label(form.city) }}
+				{{ form_widget(form.city) }}
+				{{ form_errors(form.city) }}
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="form-group">
+				{{ form_label(form.addressDetails) }}
+				{{ form_widget(form.addressDetails) }}
+				{{ form_errors(form.addressDetails) }}
+			</div>
+		</div>
+
+
+		<button type="submit" class="">
+			<i class="fa-regular fa-floppy-disk"></i>
+			{{ customer is defined ? 'Mettre à jour' : 'Créer' }}</button>
+		{{ form_end(form) }}
 	</div>
-
-	<div class="form-row">
-
-		<div class="form-group">
-			{{ form_label(form.lastName) }}
-			{{ form_widget(form.lastName) }}
-			{{ form_errors(form.lastName) }}
-		</div>
-		<div class="form-group">
-			{{ form_label(form.firstName) }}
-			{{ form_widget(form.firstName) }}
-			{{ form_errors(form.firstName) }}
-		</div>
-	</div>
-
-	<div class="form-row">
-		<div class="form-group">
-			{{ form_label(form.email) }}
-			{{ form_widget(form.email) }}
-			{{ form_errors(form.email) }}
-		</div>
-	</div>
-	<div class="form-row">
-		<div class="form-group">
-			{{ form_label(form.phoneNumber1) }}
-			{{ form_widget(form.phoneNumber1) }}
-			{{ form_errors(form.phoneNumber1) }}
-		</div>
-		<div class="form-group">
-			{{ form_label(form.phoneNumber2) }}
-			{{ form_widget(form.phoneNumber2) }}
-			{{ form_errors(form.phoneNumber2) }}
-		</div>
-	</div>
-
-	<div class="form-row">
-		<div class="form-group">
-			{{ form_label(form.address) }}
-			{{ form_widget(form.address) }}
-			{{ form_errors(form.address) }}
-		</div>
-	</div>
-
-	<div class="form-row">
-		<div class="form-group flex-1">
-			{{ form_label(form.zipcode) }}
-			{{ form_widget(form.zipcode) }}
-			{{ form_errors(form.zipcode) }}
-		</div>
-		<div class="form-group flex-3">
-			{{ form_label(form.city) }}
-			{{ form_widget(form.city) }}
-			{{ form_errors(form.city) }}
-		</div>
-	</div>
-
-	<div class="form-row">
-		<div class="form-group">
-			{{ form_label(form.addressDetails) }}
-			{{ form_widget(form.addressDetails) }}
-			{{ form_errors(form.addressDetails) }}
-		</div>
-	</div>
-
-
-	<button type="submit" class=""><i class="fa-regular fa-floppy-disk"></i> {{ customer is defined ? 'Mettre à jour' : 'Créer' }}</button>
-	{{ form_end(form) }}
-</div>
 
 	{# Tableau des dossiers client existants #}
 	{% if customer is defined and customer.dossiers|length >0 %}
