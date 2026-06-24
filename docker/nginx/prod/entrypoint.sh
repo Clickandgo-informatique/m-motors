@@ -1,16 +1,20 @@
 #!/bin/sh
+set -e
 
 echo ">>> Starting Nginx..."
 
-# Toujours démarrer nginx même sans cert
-nginx -g "daemon on;"
+SSL_DIR="/etc/letsencrypt/live/app.m-motors.clickandgo-informatique.com"
 
-# Attendre certbot
-echo ">>> waiting for certificates..."
-sleep 5
+rm -f /etc/nginx/conf.d/default.conf
 
-nginx -s reload
+if [ -f "$SSL_DIR/fullchain.pem" ] && [ -f "$SSL_DIR/privkey.pem" ]; then
+    echo ">>> SSL certificate found"
+    cp /etc/nginx/conf.d/ssl.conf.disabled /etc/nginx/conf.d/default.conf
+else
+    echo ">>> No certificate found, HTTP mode"
+    cp /etc/nginx/conf.d/default.conf.disabled /etc/nginx/conf.d/default.conf
+fi
 
-echo ">>> Nginx ready"
+nginx -t
 
-tail -f /var/log/nginx/access.log
+exec nginx -g "daemon off;"
