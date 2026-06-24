@@ -16,9 +16,6 @@ services:
     entrypoint: ["/usr/local/bin/entrypoint.sh"]
     command: ["php-fpm"]
     environment:
-      POSTGRES_USER: app
-      POSTGRES_PASSWORD: app
-      POSTGRES_DB: app
       DATABASE_URL: "postgresql://app:app@db:5432/app?serverVersion=16&charset=utf8"
 
   nginx:
@@ -30,18 +27,19 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./:/var/www/
-      - letsencrypt:/etc/letsencrypt
-      - certbot-www:/var/www/certbot
+      - /home/ubuntu/m-motors:/var/www
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/www/certbot:/var/www/certbot
     depends_on:
       - php
+      - certbot
 
   certbot:
     image: certbot/certbot
     container_name: certbot
     volumes:
-      - letsencrypt:/etc/letsencrypt
-      - certbot-www:/var/www/certbot
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/www/certbot:/var/www/certbot
     entrypoint: >
       sh -c "
         while true; do
@@ -50,7 +48,7 @@ services:
             -d app.m-motors.clickandgo-informatique.com \
             --email mail@clickandgo-informatique.com \
             --agree-tos --non-interactive || true;
-          echo '>>> Certbot OK';
+          echo 'certbot ok';
           sleep 12h;
         done
       "
@@ -71,9 +69,6 @@ services:
 
 volumes:
   pgdata:
-  vendor:
-  letsencrypt:
-  certbot-www:
 
 networks:
   default:
