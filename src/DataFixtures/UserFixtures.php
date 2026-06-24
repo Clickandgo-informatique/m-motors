@@ -81,13 +81,13 @@ class UserFixtures extends Fixture
 
         $client = new User();
 
-        $client->setEmail('client@mail.com')
+        $client->setEmail('user@mail.com')
 
-            ->setNickname('Client_Demo')
+            ->setNickname('User_Demo')
 
             ->setRoles(['ROLE_USER'])
             ->setPassword(
-                $this->passwordHasher->hashPassword($client, 'Client2026!')
+                $this->passwordHasher->hashPassword($client, 'User2026!')
             );
 
         $customer = new Customer();
