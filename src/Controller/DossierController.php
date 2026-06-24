@@ -45,7 +45,7 @@ class DossierController extends AbstractController
     }
 
     // création dossier depuis véhicule côté user
-    #[Route('/dossier/create/{id<\d+>}/{type}', name: 'dossier_create', methods: ['POST'])]
+    #[Route('/dossier/create/{id<\d+>}/{type}', name: 'dossier_create', methods: ['GET', 'POST'])]
     public function createFromVehicle(
         Vehicle $vehicle,
         string $type,
@@ -58,7 +58,7 @@ class DossierController extends AbstractController
 
         if (!$dossierType) {
             $this->addFlash('error', 'type de dossier invalide');
-            return $this->redirectToRoute('vehicle_gallery');
+            return $this->redirectToRoute('vehicles_index');
         }
 
         $customer = $user->getCustomer();
@@ -70,14 +70,14 @@ class DossierController extends AbstractController
 
         if ($vehicle->isLocked()) {
             $this->addFlash('error', 'véhicule indisponible');
-            return $this->redirectToRoute('vehicle_gallery');
+            return $this->redirectToRoute('vehicles_index');
         }
 
         try {
             $dossier = $service->createFromVehicle($customer, $vehicle, $dossierType);
         } catch (\Throwable $e) {
             $this->addFlash('error', 'erreur création dossier');
-            return $this->redirectToRoute('vehicle_gallery');
+            return $this->redirectToRoute('vehicles_index');
         }
 
         $this->addFlash('success', 'dossier créé');
@@ -88,7 +88,7 @@ class DossierController extends AbstractController
     }
 
     // création dossier admin depuis véhicule
-    #[Route('/admin/dossier/create/{id<\d+>}/{type}', name: 'admin_dossier_create', methods: ['POST'])]
+    #[Route('/admin/dossier/create/{id<\d+>}/{type}', name: 'admin_dossier_create', methods: ['GET', 'POST'])]
     public function adminCreateFromVehicle(
         Vehicle $vehicle,
         string $type,
@@ -102,43 +102,69 @@ class DossierController extends AbstractController
         $dossierType = DossierType::tryFrom($type);
 
         if (!$dossierType) {
-            $this->addFlash('error', 'type invalide');
-            return $this->redirectToRoute('vehicle_gallery');
+            $this->addFlash(
+                'error',
+                'création administrateur impossible : type de dossier invalide'
+            );
+
+            return $this->redirectToRoute('vehicles_index');
         }
 
         $customerId = $request->request->get('customerId');
 
         if (!$customerId) {
-            $this->addFlash('error', 'client manquant');
-            return $this->redirectToRoute('vehicle_gallery');
+            $this->addFlash(
+                'error',
+                'création administrateur impossible : aucun client sélectionné'
+            );
+
+            return $this->redirectToRoute('vehicles_index');
         }
 
         $customer = $this->em->getRepository(Customer::class)->find($customerId);
 
         if (!$customer) {
-            $this->addFlash('error', 'client introuvable');
-            return $this->redirectToRoute('vehicle_gallery');
+            $this->addFlash(
+                'error',
+                'création administrateur impossible : client introuvable'
+            );
+
+            return $this->redirectToRoute('vehicles_index');
         }
 
         if ($vehicle->isLocked()) {
-            $this->addFlash('error', 'véhicule indisponible');
-            return $this->redirectToRoute('vehicle_gallery');
+            $this->addFlash(
+                'error',
+                'création administrateur impossible : véhicule indisponible'
+            );
+
+            return $this->redirectToRoute('vehicles_index');
         }
 
         try {
-            $dossier = $service->createFromVehicle($customer, $vehicle, $dossierType);
+            $dossier = $service->createFromVehicle(
+                $customer,
+                $vehicle,
+                $dossierType
+            );
         } catch (\Throwable $e) {
-            $this->addFlash('error', 'erreur création dossier');
-            return $this->redirectToRoute('vehicle_gallery');
+            $this->addFlash(
+                'error',
+                'création administrateur impossible : une erreur est survenue lors de la création du dossier'
+            );
+
+            return $this->redirectToRoute('vehicles_index');
         }
 
-        $this->addFlash('success', 'dossier créé');
+        $this->addFlash(
+            'success',
+            'dossier créé avec succès en mode administrateur'
+        );
 
         return $this->redirectToRoute('admin_dossier_show', [
             'id' => $dossier->getId()
         ]);
     }
-
     // liste dossiers user
     #[Route('/dossier/my/list', name: 'dossier_user_list', methods: ['GET'])]
     public function myDossiers(DossierRepository $repository): Response

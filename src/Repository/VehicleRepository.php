@@ -19,16 +19,16 @@ class VehicleRepository extends ServiceEntityRepository
         parent::__construct($registry, Vehicle::class);
     }
 
-    //Query principale pagination (KNP SAFE)
-
+    /**
+     * Query principale utilisée pour pagination + filtres + listing
+     */
     public function getFilteredQueryBuilder(
         array $filters = [],
         ?string $searchTerm = null,
         ?User $user = null,
         bool $availableOnly = false
-
-
     ): QueryBuilder {
+
         $qb = $this->createQueryBuilder('v')
             ->select('v')
             ->leftJoin('v.vehicleModel', 'vm')
@@ -37,12 +37,12 @@ class VehicleRepository extends ServiceEntityRepository
             ->leftJoin('vm.bodyType', 'bt')
             ->leftJoin('vm.fuelType', 'ft')
             ->leftJoin('v.dossiers', 'd')
-            ->leftJoin('d.financing', 'f');
+            ->leftJoin('d.financing', 'f')
+            ->groupBy('v.id');
 
-        //PAGINATION:évite duplication SQL + COUNT incorrect
-
-        $qb->groupBy('v.id');
-
+        /**
+         * restriction disponibilité (front user)
+         */
         if ($availableOnly) {
             $qb->andWhere('v.status IN (:availableStatuses)')
                 ->setParameter('availableStatuses', [
@@ -51,6 +51,9 @@ class VehicleRepository extends ServiceEntityRepository
                 ]);
         }
 
+        /**
+         * helper normalisation input filtres
+         */
         $normalize = function ($value): array {
             if ($value === null || $value === '') {
                 return [];
@@ -87,68 +90,63 @@ class VehicleRepository extends ServiceEntityRepository
                 ->setParameter('fuelTypes', $fuelTypes);
         }
 
-        // FINANCING TYPE
+        // FINANCING FILTERS
         if ($types = $normalize($filters['financingType'] ?? null)) {
             $qb->andWhere('f.type IN (:financingTypes)')
                 ->setParameter('financingTypes', $types);
         }
 
-        // LEASING TYPE
         if ($leasing = $normalize($filters['leasingType'] ?? null)) {
             $qb->andWhere('f.leasingType IN (:leasingTypes)')
                 ->setParameter('leasingTypes', $leasing);
         }
 
-        // FINANCING STATUS
         if ($finStatus = $normalize($filters['financingStatus'] ?? null)) {
             $qb->andWhere('f.status IN (:financingStatus)')
                 ->setParameter('financingStatus', $finStatus);
         }
 
-        // PRICE MIN
+        // PRICE
         if (!empty($filters['priceMin'])) {
             $qb->andWhere('v.price >= :priceMin')
                 ->setParameter('priceMin', (int) $filters['priceMin']);
         }
 
-        // PRICE MAX
         if (!empty($filters['priceMax'])) {
             $qb->andWhere('v.price <= :priceMax')
                 ->setParameter('priceMax', (int) $filters['priceMax']);
         }
 
-        // MILEAGE MIN
+        // MILEAGE
         if (!empty($filters['mileageMin'])) {
             $qb->andWhere('v.mileage >= :mileageMin')
                 ->setParameter('mileageMin', (int) $filters['mileageMin']);
         }
 
-        // MILEAGE MAX
         if (!empty($filters['mileageMax'])) {
             $qb->andWhere('v.mileage <= :mileageMax')
                 ->setParameter('mileageMax', (int) $filters['mileageMax']);
         }
 
-        // YEAR MIN
+        // YEAR
         if (!empty($filters['registrationYearMin'])) {
             $qb->andWhere('v.firstRegistrationDate >= :dateMin')
                 ->setParameter('dateMin', new \DateTime($filters['registrationYearMin'] . '-01-01'));
         }
 
-        // YEAR MAX
         if (!empty($filters['registrationYearMax'])) {
             $qb->andWhere('v.firstRegistrationDate <= :dateMax')
                 ->setParameter('dateMax', new \DateTime($filters['registrationYearMax'] . '-12-31'));
         }
 
-        // FAVORITES
+        // FAVORITES ONLY
         if (!empty($filters['favoritesOnly']) && $user) {
             $qb->join('v.favorites', 'fav')
                 ->andWhere('fav.user = :user')
                 ->setParameter('user', $user);
         }
 
-        // SEARCH
+        // SEARCH GLOBAL
         if (!empty($searchTerm)) {
             $search = '%' . mb_strtolower(trim($searchTerm)) . '%';
 
@@ -163,13 +161,15 @@ class VehicleRepository extends ServiceEntityRepository
         return $qb->orderBy('v.id', 'DESC');
     }
 
-    //AUTOCOMPLETE
-
+    /**
+     * autocomplete véhicules
+     */
     public function searchForAutocomplete(
         array $filters = [],
         ?string $searchTerm = null,
         int $limit = 10
     ): array {
+
         $qb = $this->createQueryBuilder('v')
             ->select('v')
             ->leftJoin('v.vehicleModel', 'vm')
@@ -201,8 +201,9 @@ class VehicleRepository extends ServiceEntityRepository
         }, $vehicles);
     }
 
-    //FILTER DATASETS
-
+    /**
+     * datasets filtres UI
+     */
     public function getUsedBrands(): array
     {
         return $this->getEntityManager()
@@ -241,6 +242,9 @@ class VehicleRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * statistiques globales
+     */
     public function getRegistrationYears(): array
     {
         $result = $this->createQueryBuilder('v')
