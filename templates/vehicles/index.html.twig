@@ -1,54 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}M-motors : Catalogue véhicules{% endblock %}
+{% block title %}M-motors : Catalogue véhicules
+{% endblock %}
 
 {% block body %}
 
-<div class="vehicles-page">
+	<div
+		class="vehicles-page">
 
-    {# FORM GLOBAL UNIQUE (SOURCE DE VERITE) #}
-    <form
-        method="get"
-        action="{{ path('vehicles_index') }}"
-        data-module="fetch-form"
-        data-fetch-url="{{ path('vehicles_ajax_list') }}"
-        data-target="#vehicles-results"
-        data-fetch-mode="json"
-        data-filters-target="#filters-summary"
-        data-pagination-top="#vehicles-pagination-top"
-        data-pagination-bottom="#vehicles-pagination-bottom"
-        class="fetch-form vehicles-fetch-form"
-    >
+		{# FORM GLOBAL UNIQUE (SOURCE DE VERITE) #}
+		<form method="get" action="{{ path('vehicles_index') }}" data-module="fetch-form" data-fetch-url="{{ path('vehicles_ajax_list') }}" data-target="#vehicles-results" data-fetch-mode="json" data-filters-target="#filters-summary" data-pagination-top="#vehicles-pagination-top" data-pagination-bottom="#vehicles-pagination-bottom" class="fetch-form vehicles-fetch-form">
 
-        <div class="vehicles-layout">
+			<div
+				class="vehicles-layout">
 
-            {# SIDEBAR = DANS LE FORM (OBLIGATOIRE) #}
-            <aside id="filters-drawer" class="vehicles-filters vehicles-filters--catalog" >
+				{# SIDEBAR = DANS LE FORM (OBLIGATOIRE) #}
+				<aside id="filters-drawer" class="vehicles-filters vehicles-filters--catalog">
 
-                <div class="filters-drawer-header">
-                    <button type="button" id="filters-drawer-close" class="filters-drawer-close">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
+					<div class="filters-drawer-header">
+						<button type="button" id="filters-drawer-close" class="filters-drawer-close">
+							<i class="fa-solid fa-xmark"></i>
+						</button>
+					</div>
 
-                <div class="vehicles-filters-content">
-                    {{ render(controller('App\\Controller\\VehiclesFilterController::sidebarFilters')) }}
-                </div>
+					<div class="vehicles-filters-content">
+						{{ render(controller('App\\Controller\\VehiclesFilterController::sidebarFilters')) }}
+					</div>
 
-            </aside>
+				</aside>
 
-            <main class="vehicles-main vehicles-main--catalog">
+				<main class="vehicles-main vehicles-main--catalog">
 
-                <h1 class="text-center">
-                    <i class="fa-solid fa-car-side"></i>
-                    Catalogue véhicules
-                </h1>
+					<h1 class="text-center">
+						<i class="fa-solid fa-car-side"></i>
+						Catalogue véhicules
+					</h1>
 
-                {# BADGES #}
-                <div id="filters-summary"></div>
 
-                {# SEARCH COMPONENT (inputs inclus dans le form) #}
-                {% include 'Components/Forms/_fetch_form.html.twig' with {
+					{# SEARCH COMPONENT (inputs inclus dans le form) #}
+					{% include 'Components/Forms/_fetch_form.html.twig' with {
                     action: path('vehicles_index'),
                     baseUrl: path('vehicles_index'),
                     fetchUrl: path('vehicles_ajax_list'),
@@ -66,33 +56,36 @@
                     autocomplete: true
                 } %}
 
-                {# PAGINATION TOP #}
-                <div id="vehicles-pagination-top">
-                    {% include "vehicles/_pagination_info.html.twig" with { vehicles: vehicles } %}
-                </div>
+					{# BADGES #}
+					<div id="filters-summary"></div>
 
-                {# Résultats recherche véhicules #}
-                <div id="vehicles-results" class="vehicles-grid">
-                    {% include 'vehicles/_vehicles_gallery_items.html.twig' %}
-                </div>
+					{# PAGINATION TOP #}
+					<div id="vehicles-pagination-top">
+						{% include "vehicles/_pagination_info.html.twig" with { vehicles: vehicles } %}
+					</div>
 
-                {# PAGINATION BOTTOM #}
-                <div id="vehicles-pagination-bottom">
-                    {% include "vehicles/_pagination_info.html.twig" with { vehicles: vehicles } %}
-                </div>
+					{# Résultats recherche véhicules #}
+					<div id="vehicles-results" class="vehicles-grid">
+						{% include 'vehicles/_vehicles_gallery_items.html.twig' %}
+					</div>
 
-            </main>
+					{# PAGINATION BOTTOM #}
+					<div id="vehicles-pagination-bottom">
+						{% include "vehicles/_pagination_info.html.twig" with { vehicles: vehicles } %}
+					</div>
 
-        </div>
+				</main>
 
-    </form>
+			</div>
 
-</div>
+		</form>
 
-<div class="filters-backdrop" id="filters-backdrop"></div>
+	</div>
 
-<button class="filters-fab" id="filters-fab">
-    <i class="fa-solid fa-sliders"></i>
-</button>
+	<div class="filters-backdrop" id="filters-backdrop"></div>
+
+	<button class="filters-fab" id="filters-fab">
+		<i class="fa-solid fa-sliders"></i>
+	</button>
 
 {% endblock %}

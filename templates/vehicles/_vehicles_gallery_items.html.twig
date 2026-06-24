@@ -1,199 +1,168 @@
+{% for vehicle in vehicles %}
+	<div class="vehicle-card card
+		                {% if not vehicle.status.isAvailable
+		                    and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))
+		                %}
+		                    is-unavailable
+		                {% endif %}
+		            " data-ajax-modal="true" data-url="
+			                {{ is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')
+			                    ? path('vehicle_edit', {id: vehicle.id})
+			                    : path('vehicle_show', {id: vehicle.id}) }}
+			            ">
 
-    {% for vehicle in vehicles %}
-        <div
-            class="vehicle-card card
-                {% if not vehicle.status.isAvailable
-                    and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))
-                %}
-                    is-unavailable
-                {% endif %}
-            "
-            data-ajax-modal="true"
-            data-url="
-                {{ is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')
-                    ? path('vehicle_edit', {id: vehicle.id})
-                    : path('vehicle_show', {id: vehicle.id}) }}
-            "
-        >
+		<div class="vehicle-card-header">
 
-            <div class="vehicle-card-header">
+			<span class="vehicle-brand" data-label="Marque">
+				{{ vehicle.vehicleModel.brand.name }}
+			</span>
 
-                <span class="vehicle-brand" data-label="Marque">
-                    {{ vehicle.vehicleModel.brand.name }}
-                </span>
+			<span class="vehicle-model" data-label="Modèle">
+				{{ vehicle.vehicleModel.model.name }}
+			</span>
 
-                <span class="vehicle-model" data-label="Modèle">
-                    {{ vehicle.vehicleModel.model.name }}
-                </span>
+		</div>
 
-            </div>
+		<div class="vehicle-image-wrapper">
+			{% if vehicle.images|length > 0 %}
+				<img src="{{ asset('uploads/' ~ vehicle.images|first.imagePath) }}" alt="{{ vehicle.vehicleModel.brand.name }} {{ vehicle.vehicleModel.model.name }}" class="vehicle-image" loading="lazy">
+			{% endif %}
 
-            <div class="vehicle-image-wrapper">
-                {% if vehicle.images|length > 0 %}
-             <img src="{{ asset('uploads/' ~ vehicle.images|first.imagePath) }}"
-                    alt="{{ vehicle.vehicleModel.brand.name }} {{ vehicle.vehicleModel.model.name }}"
-                    class="vehicle-image"
-                    loading="lazy"
-                >
-                {% endif %}
+			<button data-action="toggle-favorite" data-url="/vehicle/{{ vehicle.id }}/favorite" class="favorite-btn" aria-pressed="false" data-label="Favori">
+				<i class="fa-regular fa-heart" data-icon></i>
+			</button>
 
-                <button
-                    data-action="toggle-favorite"
-                    data-url="/vehicle/{{ vehicle.id }}/favorite"
-                    class="favorite-btn"
-                    aria-pressed="false"
-                    data-label="Favori"
-                >
-                    <i class="fa-regular fa-heart" data-icon></i>
-                </button>
-
-                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-                    <div class="vehicle-status-badges">
-					{% if not vehicle.status.isAvailable %}					
-					    <span class="badge badge-sm bg-danger" data-label="Action">
-                        Indisponible
-                    	</span>
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+				<div class="vehicle-status-badges">
+					{% if not vehicle.status.isAvailable %}
+						<span class="badge badge-sm bg-danger" data-label="Action">
+							Indisponible
+						</span>
 					{% endif %}
-					
-                        <span
-                            class="badge badge-sm bg-{{ vehicle.status.badge }} "
-                            data-label="Statut"
-                        >
-                            {{ vehicle.status.label }}
-                        </span>
-                    </div>
-                {% endif %}
 
-            </div>
+					<span class="badge badge-sm bg-{{ vehicle.status.badge }} " data-label="Statut">
+						{{ vehicle.status.label }}
+					</span>
+				</div>
+			{% endif %}
 
-           <div class="vehicle-card-actions">
+		</div>
 
-    {% if vehicle.status.isAvailable %}
+		<div class="vehicle-card-actions">
 
-        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+			{% if vehicle.status.isAvailable %}
 
-            <a
-                href="{{ path('admin_dossier_create', {
-                    id: vehicle.id,
-                    type: vehicle.usageType.value == 'rent' ? 'rental' : 'purchase'
-                }) }}"
-                data-ajax-modal="true"
-                class="btn btn-primary"
-            >
-                <i class="fa-solid fa-folder-plus"></i>
-                Choisir ...
-            </a>
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-        {% else %}
+					<a href="{{ path('admin_dossier_create', { id: vehicle.id, type: vehicle.usageType.value == 'rent' ? 'rental' : 'purchase' }) }}" data-ajax-modal="true" class="btn btn-primary">
+						<i class="fa-solid fa-folder-plus"></i>
+						Choisir ...
+					</a>
 
-            {% if app.user %}
+				{% else %}
 
-                <form
-                    action="{{ path('dossier_create', {
-                        id: vehicle.id,
-                        type: 'purchase'
-                    }) }}"
-                    method="post"
-                >
-                    <button type="submit" class="btn btn-primary btn-sm">
-                        <i class="fa-solid fa-folder-plus"></i>
-                        Choisir ...
-                    </button>
-                </form>
+					{% if app.user %}
 
-            {% else %}
+						<form action="{{ path('dossier_create', { id: vehicle.id, type: 'purchase' }) }}" method="post">
+							<button type="submit" class="btn btn-primary btn-sm">
+								<i class="fa-solid fa-folder-plus"></i>
+								Choisir ...
+							</button>
+						</form>
 
-                <a
-                    href="{{ path('app_login') }}"
-                    class="btn btn-primary btn-sm"
-                >
-                    <i class="fa-solid fa-user"></i>
-                    Se connecter pour choisir
-                </a>
+					{% else %}
 
-            {% endif %}
+						<a href="{{ path('app_login') }}" class="btn btn-primary btn-sm">
+							<i class="fa-solid fa-user"></i>
+							Se connecter pour choisir
+						</a>
 
-        {% endif %}
+					{% endif %}
 
-    {% endif %}
+				{% endif %}
 
-</div>
+			{% endif %}
 
-            <div class="vehicle-card-body">
+		</div>
 
-              <div class="table-wrapper">
-                <table class="vehicle-specs">
-                    <tbody>
+		<div class="vehicle-card-body">
 
-                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-                            <tr>
-                                <th>Immatriculation</th>
-                                <td data-label="Immatriculation">
-                                    {{ vehicle.registrationNumber }}
-                                </td>
-                            </tr>
-                        {% endif %}
+			<div class="table-wrapper">
+				<table class="vehicle-specs">
+					<tbody>
 
-                        <tr>
-                            <th>Kilométrage</th>
-                            <td data-label="Kilométrage">
-                                {{ vehicle.mileage|number_format(0, ',', ' ') }} km
-                            </td>
-                        </tr>
+						{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+							<tr>
+								<th>Immatriculation</th>
+								<td data-label="Immatriculation">
+									{{ vehicle.registrationNumber }}
+								</td>
+							</tr>
+						{% endif %}
 
-                        <tr>
-                            <th>Carrosserie</th>
-                            <td data-label="Carrosserie">
-                                {{ vehicle.vehicleModel.bodyType.name }}
-                            </td>
-                        </tr>
+						<tr>
+							<th>Kilométrage</th>
+							<td data-label="Kilométrage">
+								{{ vehicle.mileage|number_format(0, ',', ' ') }}
+								km
+							</td>
+						</tr>
 
-                        <tr>
-                            <th>Énergie</th>
-                            <td data-label="Énergie">
-                                {{ vehicle.vehicleModel.fuelType.name }}
-                            </td>
-                        </tr>
+						<tr>
+							<th>Carrosserie</th>
+							<td data-label="Carrosserie">
+								{{ vehicle.vehicleModel.bodyType.name }}
+							</td>
+						</tr>
 
-                        <tr>
-                            <th>Prix</th>
-                            <td data-label="Prix">
-                                {{ vehicle.price|number_format(0, ',', ' ') }} €
-                            </td>
-                        </tr>
+						<tr>
+							<th>Énergie</th>
+							<td data-label="Énergie">
+								{{ vehicle.vehicleModel.fuelType.name }}
+							</td>
+						</tr>
 
-                        <tr>
-                            <th>Mois/Année</th>
-                            <td data-label="Mois/Année">
-                                {{ vehicle.firstRegistrationDate|date('m/Y') }}
-                            </td>
-                        </tr>
+						<tr>
+							<th>Prix</th>
+							<td data-label="Prix">
+								{{ vehicle.price|number_format(0, ',', ' ') }}
+								€
+							</td>
+						</tr>
 
-                    </tbody>
-                </table>
-</div>
-            </div>
+						<tr>
+							<th>Mois/Année</th>
+							<td data-label="Mois/Année">
+								{{ vehicle.firstRegistrationDate|date('m/Y') }}
+							</td>
+						</tr>
 
-            {% set allFeatures = vehicle.vehicleModel.features|map(f => f.label) %}
-            {% set maxVisible = 5 %}
-            {% set visibleFeatures = allFeatures|slice(0, maxVisible) %}
-            {% set hiddenCount = allFeatures|length - maxVisible %}
+					</tbody>
+				</table>
+			</div>
+		</div>
 
-            <p class="vehicle-features" data-label="Options">
-                Options ({{ allFeatures|length }}):
-                {{ visibleFeatures|join(', ') }}
+		{% set allFeatures = vehicle.vehicleModel.features|map(f => f.label) %}
+		{% set maxVisible = 5 %}
+		{% set visibleFeatures = allFeatures|slice(0, maxVisible) %}
+		{% set hiddenCount = allFeatures|length - maxVisible %}
 
-                {% if hiddenCount > 0 %}
-                    +{{ hiddenCount }} autres…
-                {% endif %}
-            </p>
+		<p class="vehicle-features" data-label="Options">
+			Options ({{ allFeatures|length }}):
+			{{ visibleFeatures|join(', ') }}
 
-        </div>
+			{% if hiddenCount > 0 %}
+				+{{ hiddenCount }}
+				autres…
+			{% endif %}
+		</p>
 
-    {% else %}
+	</div>
 
-        <div class="text-center text-muted">
-            Aucun véhicule trouvé
-        </div>
+{% else %}
 
-    {% endfor %}
+	<div class="text-center text-muted">
+		Aucun véhicule trouvé
+	</div>
+
+{% endfor %}

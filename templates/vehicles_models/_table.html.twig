@@ -2,11 +2,10 @@
     <table class="table-utac">
         <thead>
             <tr>
-                <th></th>
-                <th>Id</th>
-                <th>Carrosserie</th>
+                <th></th>               
                 <th>Marque</th>
                 <th>Modèle</th>
+                <th>Carrosserie</th>
                 <th>Variante</th>
                 <th>CNIT</th>
                 <th>CO₂</th>
@@ -24,15 +23,7 @@
                     <a href="{{ path('vehicle_model_edit', {id: vmod.id}) }}" data-ajax-modal="true">
                         <i class="fa-regular fa-pen-to-square"></i>
                     </a>
-                </td>
-
-                <td data-label="Id">
-                    {{ vmod.id }}
-                </td>
-
-                <td data-label="Carrosserie">
-                    {{ vmod.bodyType.name }}
-                </td>
+                </td>      
 
                 <td data-label="Marque">
                     {{ vmod.brand.name }}
@@ -41,6 +32,11 @@
                 <td data-label="Modèle">
                     {{ vmod.variant.model.name ?? '-' }}
                 </td>
+
+                <td data-label="Carrosserie">
+                    {{ vmod.bodyType.name }}
+                </td>
+
 
                 <td data-label="Variante">
                     {{ vmod.variant.name ?? '-' }}

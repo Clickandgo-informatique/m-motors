@@ -1,2 +1,4 @@
-templates/
-*.twig
+public/build
+vendor
+var
+node_modules

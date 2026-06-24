@@ -1,6 +1,7 @@
 {
     "printWidth": 100,
     "twigPrintWidth": 100,
+    "tabWidth": 4,
     "plugins": [
         "prettier-plugin-twig-melody"
     ]
