@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
+use App\Enum\DossierStatus;
 use App\Enum\DossierType;
 use App\EventListener\DossierFinancingListener;
 use App\Repository\DossierRepository;
@@ -52,8 +53,12 @@ class Dossier
     /**
      * statut du workflow dossier
      */
-    #[ORM\Column(length: 50)]
-    private string $status = 'draft';
+    #[ORM\Column(enumType: DossierStatus::class)]
+    private DossierStatus $status = DossierStatus::DRAFT;
+
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DossierWorkflowLog::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $workflowLogs;
+
 
     /**
      * date de finalisation du dossier
@@ -82,6 +87,32 @@ class Dossier
     public function __construct()
     {
         $this->documents = new ArrayCollection();
+        $this->workflowLogs = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, DossierWorkflowLog>
+     */
+    public function getWorkflowLogs(): Collection
+    {
+        return $this->workflowLogs;
+    }
+
+    public function addWorkflowLog(DossierWorkflowLog $log): self
+    {
+        if (!$this->workflowLogs->contains($log)) {
+            $this->workflowLogs->add($log);
+            $log->setDossier($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWorkflowLog(DossierWorkflowLog $log): self
+    {
+        $this->workflowLogs->removeElement($log);
+
+        return $this;
     }
 
     public function getId(): ?int
@@ -122,12 +153,12 @@ class Dossier
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): DossierStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(DossierStatus $status): self
     {
         $this->status = $status;
         return $this;
@@ -211,43 +242,9 @@ class Dossier
         return $this;
     }
 
-    /**
-     * label statut pour UI
-     */
-    public function getStatusLabel(): string
-    {
-        return match ($this->status) {
-            'draft' => 'brouillon',
-            'vehicle_selected' => 'Véhicule selectionné',
-            'documents_pending' => 'Documents à fournir',
-            'documents_review' => 'Documents en validation',
-            'financing_review' => 'Financement en cours',
-            'completed' => 'Terminé',
-            'cancelled' => 'Annulé',
-            default => $this->status,
-        };
-    }
 
-    /**
-     * badge statut UI
-     */
-    public function getStatusBadge(): string
-    {
-        return match ($this->status) {
-            'draft' => 'secondary',
-            'vehicle_selected' => 'info',
-            'documents_pending' => 'warning',
-            'documents_review' => 'warning',
-            'financing_review' => 'primary',
-            'completed' => 'success',
-            'cancelled' => 'danger',
-            default => 'secondary',
-        };
-    }
 
-    /**
-     * helper métier : vérifie si financement existant
-     */
+    /* helper métier : vérifie si financement existant */
     public function hasFinancing(): bool
     {
         return $this->financing !== null;

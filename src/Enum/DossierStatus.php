@@ -3,31 +3,21 @@
 namespace App\Enum;
 
 /**
- * statuts métier d’un dossier véhicule
+ * statuts métier du workflow dossier
  *
- * représente l’ensemble du cycle de vie :
- * création, validation, paiement, livraison, clôture
+ * ces valeurs doivent correspondre exactement
+ * aux places définies dans dossier_workflow.yaml
  */
 enum DossierStatus: string
 {
-    // initialisation
-    case CREATED = 'created';
-    case IN_PROGRESS = 'in_progress';
-
-        // validation admin
-    case PENDING_VALIDATION = 'pending_validation';
-    case VALIDATED = 'validated';
-    case REJECTED = 'rejected';
-
-        // paiement
-    case PENDING_PAYMENT = 'pending_payment';
-    case PARTIALLY_PAID = 'partially_paid';
-    case PAID = 'paid';
-
-        // finalisation
-    case READY_FOR_DELIVERY = 'ready_for_delivery';
-    case DELIVERED = 'delivered';
-    case CLOSED = 'closed';
+    case DRAFT = 'draft';
+    case VEHICLE_SELECTED = 'vehicle_selected';
+    case DOCUMENTS_PENDING = 'documents_pending';
+    case DOCUMENTS_REVIEW = 'documents_review';
+    case FINANCING_REVIEW = 'financing_review';
+    case ORDER_SIGNED = 'order_signed';
+    case COMPLETED = 'completed';
+    case CANCELLED = 'cancelled';
 
     /**
      * libellé affiché en interface
@@ -35,20 +25,14 @@ enum DossierStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::CREATED => 'créé',
-            self::IN_PROGRESS => 'en cours',
-
-            self::PENDING_VALIDATION => 'en attente de validation',
-            self::VALIDATED => 'validé',
-            self::REJECTED => 'refusé',
-
-            self::PENDING_PAYMENT => 'en attente de paiement',
-            self::PARTIALLY_PAID => 'paiement partiel',
-            self::PAID => 'payé',
-
-            self::READY_FOR_DELIVERY => 'prêt à livrer',
-            self::DELIVERED => 'livré',
-            self::CLOSED => 'clôturé',
+            self::DRAFT => 'Brouillon',
+            self::VEHICLE_SELECTED => 'Véhicule sélectionné',
+            self::DOCUMENTS_PENDING => 'Documents à fournir',
+            self::DOCUMENTS_REVIEW => 'Documents en validation',
+            self::FINANCING_REVIEW => 'Financement en cours',
+            self::ORDER_SIGNED => 'Commande signée',
+            self::COMPLETED => 'Terminé',
+            self::CANCELLED => 'Annulé',
         };
     }
 
@@ -58,43 +42,31 @@ enum DossierStatus: string
     public function icon(): string
     {
         return match ($this) {
-            self::CREATED => 'fa-solid fa-file-circle-plus',
-            self::IN_PROGRESS => 'fa-solid fa-spinner',
-
-            self::PENDING_VALIDATION => 'fa-solid fa-hourglass-half',
-            self::VALIDATED => 'fa-solid fa-check',
-            self::REJECTED => 'fa-solid fa-xmark',
-
-            self::PENDING_PAYMENT => 'fa-solid fa-credit-card',
-            self::PARTIALLY_PAID => 'fa-solid fa-coins',
-            self::PAID => 'fa-solid fa-circle-check',
-
-            self::READY_FOR_DELIVERY => 'fa-solid fa-truck',
-            self::DELIVERED => 'fa-solid fa-flag-checkered',
-            self::CLOSED => 'fa-solid fa-lock',
+            self::DRAFT => 'fa-solid fa-file-circle-plus',
+            self::VEHICLE_SELECTED => 'fa-solid fa-car',
+            self::DOCUMENTS_PENDING => 'fa-solid fa-file-circle-exclamation',
+            self::DOCUMENTS_REVIEW => 'fa-solid fa-magnifying-glass',
+            self::FINANCING_REVIEW => 'fa-solid fa-money-check-dollar',
+            self::ORDER_SIGNED => 'fa-solid fa-signature',
+            self::COMPLETED => 'fa-solid fa-circle-check',
+            self::CANCELLED => 'fa-solid fa-ban',
         };
     }
 
     /**
-     * badge ui bootstrap associé au statut
+     * badge ui associé au statut
      */
     public function badge(): string
     {
         return match ($this) {
-            self::CREATED => 'secondary',
-            self::IN_PROGRESS => 'info',
-
-            self::PENDING_VALIDATION => 'warning',
-            self::VALIDATED => 'primary',
-            self::REJECTED => 'danger',
-
-            self::PENDING_PAYMENT => 'warning',
-            self::PARTIALLY_PAID => 'info',
-            self::PAID => 'success',
-
-            self::READY_FOR_DELIVERY => 'primary',
-            self::DELIVERED => 'success',
-            self::CLOSED => 'dark',
+            self::DRAFT => 'secondary',
+            self::VEHICLE_SELECTED => 'info',
+            self::DOCUMENTS_PENDING => 'warning',
+            self::DOCUMENTS_REVIEW => 'warning',
+            self::FINANCING_REVIEW => 'primary',
+            self::ORDER_SIGNED => 'primary',
+            self::COMPLETED => 'success',
+            self::CANCELLED => 'danger',
         };
     }
 
@@ -103,15 +75,9 @@ enum DossierStatus: string
      */
     public function isActive(): bool
     {
-        return in_array($this, [
-            self::CREATED,
-            self::IN_PROGRESS,
-            self::PENDING_VALIDATION,
-            self::VALIDATED,
-            self::PENDING_PAYMENT,
-            self::PARTIALLY_PAID,
-            self::PAID,
-            self::READY_FOR_DELIVERY,
+        return !in_array($this, [
+            self::COMPLETED,
+            self::CANCELLED,
         ], true);
     }
 
@@ -121,82 +87,68 @@ enum DossierStatus: string
     public function isFinal(): bool
     {
         return in_array($this, [
-            self::DELIVERED,
-            self::CLOSED,
+            self::COMPLETED,
+            self::CANCELLED,
         ], true);
     }
 
     /**
-     * indique si le dossier est bloqué
+     * indique si le dossier est annulé
      */
-    public function isBlocked(): bool
+    public function isCancelled(): bool
     {
-        return in_array($this, [
-            self::REJECTED,
-            self::PENDING_PAYMENT,
-        ], true);
+        return $this === self::CANCELLED;
     }
 
     /**
-     * indique si le dossier est payé (totalement ou partiellement)
+     * indique si le dossier est terminé avec succès
      */
-    public function isPaid(): bool
+    public function isCompleted(): bool
     {
-        return in_array($this, [
-            self::PARTIALLY_PAID,
-            self::PAID,
-        ], true);
+        return $this === self::COMPLETED;
     }
 
     /**
-     * vérifie si une transition est possible vers un autre statut
+     * vérifie si une transition est théoriquement possible
+     * selon le workflow métier
      */
     public function canTransitionTo(self $target): bool
     {
         return match ($this) {
-
-            self::CREATED => in_array($target, [
-                self::IN_PROGRESS,
-                self::PENDING_VALIDATION,
+            self::DRAFT => in_array($target, [
+                self::VEHICLE_SELECTED,
+                self::CANCELLED,
             ], true),
 
-            self::IN_PROGRESS => in_array($target, [
-                self::PENDING_VALIDATION,
-                self::REJECTED,
+            self::VEHICLE_SELECTED => in_array($target, [
+                self::DOCUMENTS_PENDING,
+                self::CANCELLED,
             ], true),
 
-            self::PENDING_VALIDATION => in_array($target, [
-                self::VALIDATED,
-                self::REJECTED,
+            self::DOCUMENTS_PENDING => in_array($target, [
+                self::DOCUMENTS_REVIEW,
+                self::CANCELLED,
             ], true),
 
-            self::VALIDATED => in_array($target, [
-                self::PENDING_PAYMENT,
+            self::DOCUMENTS_REVIEW => in_array($target, [
+                self::DOCUMENTS_PENDING,
+                self::FINANCING_REVIEW,
+                self::CANCELLED,
             ], true),
 
-            self::PENDING_PAYMENT => in_array($target, [
-                self::PARTIALLY_PAID,
-                self::PAID,
+            self::FINANCING_REVIEW => in_array($target, [
+                self::DOCUMENTS_REVIEW,
+                self::ORDER_SIGNED,
+                self::CANCELLED,
             ], true),
 
-            self::PARTIALLY_PAID => in_array($target, [
-                self::PAID,
+            self::ORDER_SIGNED => in_array($target, [
+                self::COMPLETED,
+                self::CANCELLED,
             ], true),
 
-            self::PAID => in_array($target, [
-                self::READY_FOR_DELIVERY,
-            ], true),
-
-            self::READY_FOR_DELIVERY => in_array($target, [
-                self::DELIVERED,
-            ], true),
-
-            self::DELIVERED => in_array($target, [
-                self::CLOSED,
-            ], true),
-
-            self::CLOSED => false,
-            self::REJECTED => false,
+            self::COMPLETED,
+            self::CANCELLED => false,
         };
     }
 }

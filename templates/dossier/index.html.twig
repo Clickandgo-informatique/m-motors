@@ -14,6 +14,7 @@
 			<thead>
 				<tr>
 					<th>Référence</th>
+					<th>Véhicule</th>
 					<th>Type</th>
 					<th>Statut</th>
 					<th>Date</th>
@@ -24,8 +25,9 @@
 			<tbody>
 				{% for dossier in dossiers %}
 					<tr>
-						<td data-label="Référence">{{ dossier.reference }}</td>
-						<td data-label="Type">{{ dossier.type }}</td>
+						<td data-label="Référence">{{ dossier.dossierCode }}</td>
+						<td data-label="Référence">{{ dossier.vehicle.vehicleModel }}</td>
+						<td data-label="Type">{{ dossier.type.label }}</td>
 						<td data-label="Statut">
 							<span class="badge bg-{{ dossier.status.badge }}">
 								{{ dossier.status.label }}
@@ -34,7 +36,7 @@
 						<td data-label="Créé le">{{ dossier.createdAt|date('d/m/Y') }}</td>
 						<td>
 							<a href="{{ path('dossier_show', {id: dossier.id}) }}" class="btn btn-sm btn-primary">
-								Voir
+								<i class="fa-solid fa-folder-open"></i>Voir
 							</a>
 						</td>
 					</tr>

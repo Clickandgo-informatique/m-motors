@@ -5,6 +5,7 @@ namespace App\Service\Dossier;
 use App\Entity\Dossier;
 use App\Entity\DossierWorkflowLog;
 use App\Entity\User;
+use App\Enum\DossierStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -26,8 +27,8 @@ class DossierWorkflowAuditService
     public function log(
         Dossier $dossier,
         string $transition,
-        string $fromStatus,
-        string $toStatus
+        DossierStatus $fromStatus,
+        DossierStatus $toStatus
     ): void {
         $user = $this->security->getUser();
 
@@ -40,8 +41,8 @@ class DossierWorkflowAuditService
         $log = new DossierWorkflowLog();
         $log->setDossier($dossier);
         $log->setTransition($transition);
-        $log->setFromStatus($fromStatus);
-        $log->setToStatus($toStatus);
+        $log->setFromStatus($fromStatus->value);
+        $log->setToStatus($toStatus->value);
         $log->setUserId($userId);
 
         $this->em->persist($log);

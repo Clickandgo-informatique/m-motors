@@ -6,54 +6,68 @@
 {% block body %}
 
 	<div class="container mt-4">
+		<div class="dossier-grid">
 
-	{# Barre de progression des dossiers #}
-	{% include "dossier/_progress_timeline.html.twig" %}
+			<div
+				class="dossier-left">
+				{# Barre de progression des dossiers #}
+				{% include "dossier/_progress_timeline.html.twig" %}
+			</div>
+			<div class="dossier-right">
+				<div class="card">
+					<div class="card-body">
+						<h1>Dossier
+							{{ dossier.dossierCode }}</h1>
 
-		<h1>Dossier
-			{{ dossier.reference }}</h1>
+						<p>
+							statut :
+							{% if dossier.status == 'draft' %}
+								<span class="badge bg-secondary">brouillon</span>
+							{% elseif dossier.status == 'pending' %}
+								<span class="badge bg-warning">en attente</span>
+							{% elseif dossier.status == 'active' %}
+								<span class="badge bg-success">actif</span>
+							{% elseif dossier.status == 'cancelled' %}
+								<span class="badge bg-danger">annulé</span>
+							{% else %}
+								<span class="badge bg-light">{{ dossier.status.label }}</span>
+							{% endif %}
+						</p>
+					</div>
+					<hr>
 
-		<p>
-			Statut :
-			<span class="badge bg-{{ dossier.status.badge }}">
-				{{ dossier.status.label }}
-			</span>
-		</p>
+					<div class="card">
+						<div class="card-body">
 
-		<hr>
+							<p>
+								<strong>Client :</strong>
+								{{ dossier.customer }}</p>
+							<p>
+								<strong>Véhicule :</strong>
+								{{ dossier.vehicle.fullName }}</p>
+							<p>
+								<strong>Type :</strong>
+								{{ dossier.type.name }}</p>
 
-		<div class="card">
-			<div class="card-body">
+							<p>
+								<strong>Créé le :</strong>
+								{{ dossier.createdAt|date('d/m/Y H:i') }}</p>
 
-				<p>
-					<strong>Client :</strong>
-					{{ dossier.customer }}</p>
-				<p>
-					<strong>Véhicule :</strong>
-					{{ dossier.vehicle }}</p>
-				<p>
-					<strong>Type :</strong>
-					{{ dossier.type }}</p>
+							{% if dossier.completedAt %}
+								<p>
+									<strong>Terminé le :</strong>
+									{{ dossier.completedAt|date('d/m/Y H:i') }}</p>
+							{% endif %}
 
-				<p>
-					<strong>Créé le :</strong>
-					{{ dossier.createdAt|date('d/m/Y H:i') }}</p>
+							{% if dossier.cancelledAt %}
+								<p>
+									<strong>Annulé le :</strong>
+									{{ dossier.cancelledAt|date('d/m/Y H:i') }}</p>
+							{% endif %}
 
-				{% if dossier.completedAt %}
-					<p>
-						<strong>Terminé le :</strong>
-						{{ dossier.completedAt|date('d/m/Y H:i') }}</p>
-				{% endif %}
-
-				{% if dossier.cancelledAt %}
-					<p>
-						<strong>Annulé le :</strong>
-						{{ dossier.cancelledAt|date('d/m/Y H:i') }}</p>
-				{% endif %}
-
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
-
-	</div>
-
-{% endblock %}
+	{% endblock %}
