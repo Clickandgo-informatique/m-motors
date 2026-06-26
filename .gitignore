@@ -24,6 +24,7 @@
 /public/bundles/
 /public/uploads/dossiers/
 /public/uploads/vehicles/
+/public/uploads/vehicles_assigned_images/
 
 ### Composer ###
 .composer/
