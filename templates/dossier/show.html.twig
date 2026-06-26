@@ -1,11 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon dossier
+{% block title %}M-motors: Dossier client
 {% endblock %}
 
 {% block body %}
 
 	<div class="container mt-4">
+
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+			<a href="{{ path('admin_dossier_list') }}" class="btn">
+				<i class="fa-solid fa-list"></i>
+				Revenir à la liste de dossiers
+			</a>
+		{% else %}
+			<a href="{{ path('dossier_user_list') }}" class="btn">
+				<i class="fa-solid fa-list"></i>
+				Revenir à la liste de dossiers
+			</a>
+
+		{% endif %}
+
 		<div class="dossier-grid">
 
 			<div
@@ -20,9 +34,9 @@
 							{{ dossier.dossierCode }}</h1>
 
 						<p>
-							statut :
+							Statut :
 							{% if dossier.status == 'draft' %}
-								<span class="badge bg-secondary">brouillon</span>
+								<span class="badge bg-primary">brouillon</span>
 							{% elseif dossier.status == 'pending' %}
 								<span class="badge bg-warning">en attente</span>
 							{% elseif dossier.status == 'active' %}
@@ -30,8 +44,16 @@
 							{% elseif dossier.status == 'cancelled' %}
 								<span class="badge bg-danger">annulé</span>
 							{% else %}
-								<span class="badge bg-light">{{ dossier.status.label }}</span>
+								<span class="badge bg-primary">{{ dossier.status.label }}</span>
 							{% endif %}
+						</p>
+
+						<p>
+							Type :
+							<span class="badge bg-{{ dossier.type.badge() }}">
+								<i class="fa-solid {{ dossier.type.icon() }}"></i>
+								{{ dossier.type.label() }}
+							</span>
 						</p>
 					</div>
 					<hr>
@@ -45,9 +67,6 @@
 							<p>
 								<strong>Véhicule :</strong>
 								{{ dossier.vehicle.fullName }}</p>
-							<p>
-								<strong>Type :</strong>
-								{{ dossier.type.name }}</p>
 
 							<p>
 								<strong>Créé le :</strong>

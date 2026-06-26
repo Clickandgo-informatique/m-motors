@@ -13,6 +13,7 @@
 
 			<thead>
 				<tr>
+					<th></th>
 					<th>Référence</th>
 					<th>Véhicule</th>
 					<th>Type</th>
@@ -25,6 +26,12 @@
 			<tbody>
 				{% for dossier in dossiers %}
 					<tr>
+						<td>
+							<div class="dossier-item dossier-item-image">
+								<img src="{{ asset('uploads/' ~ dossier.vehicle.images|first.imagePath) }}" alt="{{ dossier.vehicle.vehicleModel.brand.name }} {{ dossier.vehicle.vehicleModel.model.name }}" class="vehicle-image-thumbnail" loading="lazy">
+							</div>
+						</td>
+
 						<td data-label="Référence">{{ dossier.dossierCode }}</td>
 						<td data-label="Référence">{{ dossier.vehicle.vehicleModel }}</td>
 						<td data-label="Type">{{ dossier.type.label }}</td>

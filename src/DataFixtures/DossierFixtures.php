@@ -143,6 +143,7 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
                 return;
 
             case 'cancelled':
+                $this->workflowService->applySafe($dossier, 'select_vehicle');
                 $this->workflowService->applySafe($dossier, 'cancel');
                 return;
         }

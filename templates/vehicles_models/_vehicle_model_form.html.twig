@@ -1,95 +1,80 @@
 {% block body %}
 
-<h1 class="text-center">
-    {% if mode == 'edit' %}
-        <i class="fa-solid fa-pen-to-square"></i>
-    {% else %}
-        <i class="fa-solid fa-circle-plus"></i>
-    {% endif %}
-    {{ title }}
-</h1>
-</div>
-<div class="form-ui">
-	{{ form_start(form, { attr: { 'data-ajax-form': true } }) }}
+	<h1 class="text-center">
+		{% if mode == 'edit' %}
+			<i class="fa-solid fa-pen-to-square"></i>
+		{% else %}
+			<i class="fa-solid fa-circle-plus"></i>
+		{% endif %}
+		{{ title }}
+	</h1>
 
-	<div class="form-row">
-		{{ form_row(form.brand) }}
-		{{ form_row(form.bodyType) }}
-		{{ form_errors(form) }}
+	<div class="form-ui">
+		{{ form_start(form, { attr: { 'data-ajax-form': true } }) }}
+
+		<div class="form-row">
+			{{ form_row(form.brand) }}
+			{{ form_row(form.bodyType) }}
+			{{ form_errors(form) }}
+		</div>
+
+		<div class="form-row">
+			{{ form_row(form.model) }}
+			{{ form_errors(form) }}
+		</div>
+
+		<div class="form-row">
+			{{ form_row(form.variant) }}
+			{{ form_row(form.homologationDate) }}
+			{{ form_errors(form) }}
+		</div>
+
+		<div class="form-row">
+			{{ form_row(form.fuelType) }}
+			{{ form_row(form.gearType) }}
+			{{ form_errors(form) }}
+		</div>
+
+		<div class="form-row">
+			{{ form_row(form.powerHp) }}
+			{{ form_row(form.powerFiscal) }}
+			{{ form_row(form.consumption) }}
+			{{ form_errors(form) }}
+		</div>
+
+		<div class="form-row">
+			{{ form_row(form.massMin) }}
+			{{ form_row(form.massMax) }}
+			{{ form_row(form.co2) }}
+			{{ form_errors(form) }}
+		</div>
+
+		<div class="form-row">
+			{{ form_row(form.cnit) }}
+			{{ form_errors(form) }}
+		</div>
+
+		<div class="form-row">
+			{{ form_row(form.utacCode) }}
+			{{ form_errors(form) }}
+		</div>
+
+		<div class="form-row">
+			{{ form_row(form.euroNorm) }}
+			{{ form_errors(form) }}
+		</div>
+
+		<p class="text-center">liste d'options</p>
+
+		<div class="multiselect" data-multiselect data-url="{% if form.vars.data.id %} {{ path('api_vehicle_model_features', { id: form.vars.data.id }) }} {% else %} {{ path('api_features') }} {% endif %}"></div>
+		<input type="hidden" name="vehicle_model[features]" id="vehicle_model_features"/>
+
+		<button type="submit">
+			<i class="fa-solid fa-download"></i>
+			Enregistrer
+		</button>
+
+		{{ form_end(form) }}
 	</div>
 
-	<div class="form-row">
-		{{ form_row(form.model) }}
-		{{ form_errors(form) }}
-	</div>
-
-	<div class="form-row">
-		{{ form_row(form.variant) }}
-		{{ form_errors(form) }}
-		{{ form_row(form.homologationDate) }}
-		{{ form_errors(form) }}
-	</div>
-
-	<div class="form-row">
-		{{ form_row(form.fuelType) }}
-		{{ form_errors(form) }}
-		{{ form_row(form.gearType) }}
-		{{ form_errors(form) }}
-	</div>
-
-	<div class="form-row">
-		{{ form_row(form.powerHp) }}
-		{{ form_errors(form) }}
-		{{ form_row(form.powerFiscal) }}
-		{{ form_errors(form) }}
-		{{ form_row(form.consumption) }}
-		{{ form_errors(form) }}
-	</div>
-
-	<div class="form-row">
-		{{ form_row(form.massMin) }}
-		{{ form_errors(form) }}
-		{{ form_row(form.massMax) }}
-		{{ form_errors(form) }}
-		{{ form_row(form.co2) }}
-		{{ form_errors(form) }}
-	</div>
-
-	<div class="form-row">
-		{{ form_row(form.cnit) }}
-		{{ form_errors(form) }}
-	</div>
-
-	<div class="form-row">
-		{{ form_row(form.utacCode) }}
-		{{ form_errors(form) }}
-	</div>
-
-	<div class="form-row">
-		{{ form_row(form.euroNorm) }}
-		{{ form_errors(form) }}
-	</div>
-{# Options du modèle de véhicule #}
-	{# Renseigné en Ajax #}
-	<p class="text-center">Liste d'options</p>
-    <div 
-	class="multiselect" 
-	data-multiselect
-	data-url="/api/vehicles/models/{{vm.id}}/features"
-	
-	></div>
-	<input
-    type="hidden"
-    name="vehicle_model[features]"
-    id="vehicle_model_features"
-/>    
-
-	<button type="submit">
-		<i class="fa-solid fa-download"></i>
-		Enregistrer
-	</button>
-
-	{{ form_end(form) }}
-	
-</div>
 {% endblock %}

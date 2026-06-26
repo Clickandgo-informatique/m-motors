@@ -1,4 +1,4 @@
-{# timeline basée sur workflow logs (crm source de vérité) #}
+{# timeline CRM stable basée sur audit #}
 
 {% set logs = dossier.workflowLogs|sort((a, b) => a.createdAt <=> b.createdAt) %}
 
@@ -11,9 +11,25 @@
         label: 'Véhicule sélectionné',
         icon: 'fa-solid fa-car'
     },
+    'request_documents': {
+        label: 'Documents demandés',
+        icon: 'fa-solid fa-folder-open'
+    },
+    'submit_documents': {
+        label: 'Documents soumis',
+        icon: 'fa-solid fa-upload'
+    },
+    'validate_documents': {
+        label: 'Documents validés',
+        icon: 'fa-solid fa-circle-check'
+    },
     'approve_financing': {
         label: 'Financement validé',
         icon: 'fa-solid fa-handshake'
+    },
+    'sign_order': {
+        label: 'Commande signée',
+        icon: 'fa-solid fa-pen-nib'
     },
     'cancel': {
         label: 'Dossier annulé',

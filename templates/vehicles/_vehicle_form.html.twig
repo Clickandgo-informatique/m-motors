@@ -1,8 +1,12 @@
 {% block body %}
 
+	{{ form_start(form) }}
+
 	<div class="page-container vehicle-edit">
 		<h1 class="text-center">
-			<i class="fa-solid fa-pen-to-square"></i>Modifier une fiche véhicule</h1>
+			<i class="fa-solid fa-pen-to-square"></i>
+			Modifier une fiche véhicule
+		</h1>
 
 		<div
 			class="vehicle-layout">
@@ -10,29 +14,46 @@
 			{# Colonne gauche : formulaire #}
 			<div class="vehicle-left">
 
-				{{ form_start(form, {
-                attr: {
-                    'data-search-form': path('vehicle_model_search'),
-                    'data-query-param': 'q',
-                    'data-dropdown-class': 'dropdown-results',
-                    'data-item-class': 'dropdown-item',
-                    'data-link-class': 'dropdown-link',
-                    'data-no-results-class': 'dropdown-no-results',
-                    'data-item-url': '/vehicles/models/__ID__/edit',
-                    'data-ajax-form': 'true'
-                }
-            }) }}
-
 				<div class="card vehicle-form-card">
 
 					<div class="card-body">
 
-						{% if vehicle.vehicleModel and vehicle.vehicleModel.brand and vehicle.vehicleModel.model %}
-							<h4 class="text-center">
-								<strong>{{ vehicle.vehicleModel.brand.name }}</strong>
-								{{ vehicle.vehicleModel.model.name }}
-							</h4>
-						{% endif %}
+						<div class="card-header">
+							{% if vehicle.vehicleModel and vehicle.vehicleModel.brand and vehicle.vehicleModel.model %}
+
+								<h1 class="form-row">
+									{{ vehicle.vehicleModel.brand.name }}
+								</h1>
+
+								<h2 class="form-row">
+									{{ vehicle.vehicleModel.model.name }}
+								</h2>
+
+							{% endif %}
+						</div>
+
+						{# Usage type #}
+						<div class="form-row">
+							<div class="usage-type-selector">
+
+								{{ form_label(form.usageType) }}
+
+								<div class="usage-type-options">
+									{% for option in form.usageType %}
+										<label class="usage-card usage-confirm">
+											{{ form_widget(option) }}
+
+											<span class="usage-card-content">
+												{{ option.vars.label|raw }}
+											</span>
+										</label>
+									{% endfor %}
+								</div>
+
+								{{ form_errors(form.usageType) }}
+
+							</div>
+						</div>
 
 						<details open>
 							<summary>Données techniques</summary>
@@ -63,7 +84,8 @@
                                             autocomplete: 'off',
                                             'data-autocomplete': 'true',
                                             'data-result-div': '#vehicle-model-results',
-                                            'data-hidden-target': '#vehicle_vehicleModel'
+                                            'data-hidden-target': '#vehicle_vehicleModel',
+											'link-mode':'1'
                                         }
                                     }) }}
 
@@ -202,6 +224,13 @@
 
 			</div>
 
+		</div>
+
+		<div class="form-actions">
+			<button type="submit" class="btn btn-primary">
+				<i class="fa-solid fa-floppy-disk"></i>
+				Enregistrer
+			</button>
 		</div>
 
 	</div>

@@ -3,9 +3,8 @@
 namespace App\Service\Dossier;
 
 use App\Entity\Customer;
-use App\Entity\Vehicle;
 use App\Entity\Dossier;
-use App\Entity\DossierWorkflowLog;
+use App\Entity\Vehicle;
 use App\Enum\DossierType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -17,73 +16,66 @@ class DossierCreationService
         private DossierCodeGenerator $codeGenerator
     ) {}
 
+    /**
+     * Crée un dossier à partir d'un véhicule.
+     *
+     * Si un dossier existe déjà pour le même client, le même véhicule et le
+     * même type, il est simplement retourné.
+     */
     public function createFromVehicle(
         Customer $customer,
         Vehicle $vehicle,
         DossierType $type
     ): array {
-        // vérifie si le véhicule est bloqué
+        // vérifie si le véhicule est disponible
         if ($vehicle->isLocked()) {
             throw new AccessDeniedHttpException('véhicule indisponible');
         }
 
-        // vérifie si le type de dossier est autorisé pour ce véhicule
+        // vérifie que le type de dossier est compatible avec le véhicule
         $this->assertAllowedType($vehicle, $type);
 
-        // recherche d’un dossier existant
-        $existing = $this->em->getRepository(Dossier::class)
-            ->findOneBy([
-                'customer' => $customer,
-                'vehicle' => $vehicle,
-                'type' => $type
-            ]);
+        // évite les doublons
+        $existing = $this->em->getRepository(Dossier::class)->findOneBy([
+            'customer' => $customer,
+            'vehicle' => $vehicle,
+            'type' => $type,
+        ]);
 
-        // si déjà existant, on retourne sans recréer
-        if ($existing) {
+        if ($existing !== null) {
             return [
                 'dossier' => $existing,
-                'created' => false
+                'created' => false,
             ];
         }
 
-        // création du dossier
+        // crée le dossier
         $dossier = new Dossier();
 
         $dossier
             ->setCustomer($customer)
             ->setVehicle($vehicle)
-            ->setType($type);
-
-        // génération du code dossier
-        $dossier->setDossierCode(
-            $this->codeGenerator->generate()
-        );
+            ->setType($type)
+            ->setDossierCode(
+                $this->codeGenerator->generate()
+            );
 
         $this->em->persist($dossier);
-
-        // log initial pour alimenter la timeline
-        $log = new DossierWorkflowLog();
-
-        $log = new DossierWorkflowLog();
-
-        $log
-            ->setDossier($dossier)
-            ->setTransition('create')
-            ->setFromStatus('new')
-            ->setToStatus('created');
-
-        $this->em->persist($log);
-
         $this->em->flush();
 
         return [
             'dossier' => $dossier,
-            'created' => true
+            'created' => true,
         ];
     }
 
-    private function assertAllowedType(Vehicle $vehicle, DossierType $type): void
-    {
+    /**
+     * Vérifie que le type de dossier est autorisé pour le véhicule.
+     */
+    private function assertAllowedType(
+        Vehicle $vehicle,
+        DossierType $type
+    ): void {
         $allowed = $vehicle->getUsageType()->allowedDossierTypes();
 
         if (!in_array($type, $allowed, true)) {

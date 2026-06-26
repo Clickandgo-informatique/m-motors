@@ -1,7 +1,7 @@
 <div class="connection">
 	{% if app.user %}
 		<p class="connected">
-			<span class="connection-status">Vous êtes connecté en tant que</span>&nbsp;
+			<span class="connection-status">Vous êtes connecté.e en tant que</span>&nbsp;
 
 			{% if app.user.nickname %}
 				<span class="user-nickname">
@@ -118,37 +118,52 @@
 
 		{% endif %}
 
-		<li>
+		{% if is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') and not is_granted('ROLE_MANAGER') %}
 
-			<a href="{{ path('about_us') }}" class="{{ currentRoute == 'about_us' ? 'active' : '' }}">
-				<i class="fa-solid fa-users"></i>
-				À propos
-			</a>
-
-		</li>
-
-		<li>
-
-			<a href="{{ path('contact_us') }}" class="{{ currentRoute == 'contact_us' ? 'active' : '' }}">
-				<i class="fa-regular fa-envelope"></i>
-				Contact
-			</a>
-
-		</li>
-
-		{% if app.user %}
 
 			<li>
 
-				<a href="{{ path('app_profile') }}" class="{{ currentRoute == 'app_profile' ? 'active' : '' }}">
-					<i class="fa-regular fa-address-card"></i>
-					Mon profil
+				<a href="{{ path('about_us') }}" class="{{ currentRoute == 'about_us' ? 'active' : '' }}">
+					<i class="fa-solid fa-users"></i>
+					À propos
 				</a>
 
 			</li>
 
-		{% endif %}
+			<li>
 
-	</ul>
+				<a href="{{ path('contact_us') }}" class="{{ currentRoute == 'contact_us' ? 'active' : '' }}">
+					<i class="fa-regular fa-envelope"></i>
+					Contact
+				</a>
 
+			</li>
+
+			{% if app.user %}
+
+				<li>
+
+					<a href="{{ path('app_profile') }}" class="{{ currentRoute == 'app_profile' ? 'active' : '' }}">
+						<i class="fa-regular fa-address-card"></i>
+						Mon profil
+					</a>
+				</li>
+				<li>
+					<a href="{{ path('dossier_user_list') }}" class="{% if currentRoute == 'dossier_user_list' %}is-active{% endif %}">
+						<i class="fa-solid fa-folder-open"></i>
+						<span>Mes dossiers</span>
+					</a>
+				</li>
+
+			{% endif %}
+
+			<li>
+				<a href="{{path('app_cgv')}}" class="{{ currentRoute == 'app_cgv' ? 'active' : '' }}">
+					<i class="fa-solid fa-file-contract"></i>
+					C.G.V
+				</a>
+			</li>
+
+		</ul>
+	{% endif %}
 </div>

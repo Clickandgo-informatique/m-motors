@@ -1,9 +1,10 @@
-{# modale unique de création de dossier depuis un véhicule #}
 {% block body %}
 	<div class="form-ui">
 		<div class="modal-header">
 			<h1 class="modal-title text-center">
-				<i class="fa-solid fa-folder title-icon"></i>Créer un dossier</h1>
+				<i class="fa-solid fa-folder title-icon"></i>
+				Créer un dossier
+			</h1>
 
 			<button type="button" data-modal-close class="modal-close"></button>
 		</div>
@@ -15,49 +16,68 @@
 				{{ vehicle.vehicleModel.model.name }}
 			</h3>
 
-			<p>
-				type :
-				{{ type == 'rental' ? 'location' : 'achat' }}
-			</p>
-
-			<form method="post" action="{{ path('dossier_create', { id: vehicle.id, type: type }) }}">
+			<form method="post" action="{{ path('dossier_create', { id: vehicle.id }) }}">
 
 				<input
 				type="hidden" name="_token" value="{{ csrf_token('create_dossier') }}">
 
-				{# type de dossier #}
-				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-					<div class="form-row">
-						<label>Type de dossier</label>
+				{# TYPE DE DOSSIER #}
+				<div class="form-row">
+					<label>Type de dossier</label>
+
+					{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
 						<select name="type" class="form-control">
-							<option value="rental" {{ type == 'rental' ? 'selected' : '' }}>location</option>
-							<option value="purchase" {{ type == 'purchase' ? 'selected' : '' }}>achat</option>
+							<option value="rental" {% if type == 'rental' %} selected {% endif %}>
+								Location
+							</option>
+							<option value="purchase" {% if type == 'purchase' %} selected {% endif %}>
+								Achat
+							</option>
 						</select>
-					</div>
-				{% else %}
 
-					<input type="hidden" name="type" value="{{ type }}">
+					{% else %}
 
-				{% endif %}
+						{% if vehicle.usageType.value == 'both' %}
 
-				{# client #}
+							<select name="type" class="form-control" required>
+								<option value="rental">Location</option>
+								<option value="purchase">Achat</option>
+							</select>
+
+						{% else %}
+
+							<input type="hidden" name="type" value="{{ vehicle.usageType.value == 'rent' ? 'rental' : 'purchase' }}">
+
+							<p>
+								type :
+								<strong>
+									{{ vehicle.usageType.value == 'rent' ? 'location' : 'achat' }}
+								</strong>
+							</p>
+
+						{% endif %}
+
+					{% endif %}
+				</div>
+
+				{# CLIENT #}
 				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-					<label>client</label>
+					<label>Client</label>
 
 					{% include 'Components/Forms/_fetch_form.html.twig' with {
-                action: path('customer_search'),
-                fetchUrl: path('customer_search'),
-                autocompleteUrl: path('customer_search'),
-                resultDiv: 'customer_results',
-                name: 'q',
-                placeholder: 'rechercher un client',
-                linkMode: '0',
-                fetchMode: 'json',
-                hiddenName: 'customerId',
-                baseUrl: '/customer/'
-            } %}
+                    action: path('customer_search'),
+                    fetchUrl: path('customer_search'),
+                    autocompleteUrl: path('customer_search'),
+                    resultDiv: 'customer_results',
+                    name: 'q',
+                    placeholder: 'rechercher un client',
+                    linkMode: '0',
+                    fetchMode: 'json',
+                    hiddenName: 'customerId',
+                    baseUrl: '/customer/'
+                } %}
 
 				{% else %}
 
@@ -73,14 +93,16 @@
 				<div class="modal-footer-actions">
 
 					<button type="submit" class="btn btn-success">
-						<i class="fa-solid fa-check"></i>Confirmer
+						<i class="fa-solid fa-check"></i>
+						Confirmer
 					</button>
 
 					<button type="button" class="btn btn-cancel" data-modal-close>
-						<i class="fa-solid fa-cancel"></i>Annuler
+						Annuler
 					</button>
 
 				</div>
+
 			</form>
 		</div>
 	</div>

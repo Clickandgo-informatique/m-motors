@@ -77,6 +77,7 @@ class VehicleModelFormType extends AbstractType
                 'multiple' => true,
                 'required' => false,
                 'choice_label' => 'label',
+                'label' => false,
                 'attr' => ['hidden' => true]
             ])
         ;

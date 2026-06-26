@@ -53,7 +53,7 @@ class Vehicle
      * Type d’usage du véhicule (vente, location, les deux)
      */
     #[ORM\Column(enumType: VehicleUsageType::class)]
-    private VehicleUsageType $usageType;
+    private ?VehicleUsageType $usageType=null;
 
     public function getUsageType(): VehicleUsageType
     {

@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Workflow\Registry;
 
 class DossierController extends AbstractController
 {
@@ -45,39 +46,33 @@ class DossierController extends AbstractController
     }
 
     // ouverture de la modale de création de dossier depuis un véhicule
-    #[Route('/dossier/create/modal/{id<\d+>}/{type}', name: 'dossier_create_modal', methods: ['GET'])]
+    #[Route('/dossier/create/modal/{id<\d+>}', name: 'dossier_create_modal', methods: ['GET'])]
     public function createModal(
-        Vehicle $vehicle,
-        string $type
+        Vehicle $vehicle
+
     ): Response {
         $this->getAppUser();
 
-        $dossierType = DossierType::tryFrom($type);
-
-        if (!$dossierType) {
-            throw $this->createNotFoundException('type de dossier invalide');
-        }
 
         return $this->render('dossier/_create_modal.html.twig', [
             'vehicle' => $vehicle,
-            'type' => $type
+
         ]);
     }
 
     // création dossier depuis véhicule (user et admin)
-    #[Route('/dossier/create/{id<\d+>}/{type}', name: 'dossier_create', methods: ['POST'])]
+    #[Route('/dossier/create/{id<\d+>}/', name: 'dossier_create', methods: ['POST'])]
     public function createFromVehicle(
         Vehicle $vehicle,
-        string $type,
         Request $request,
         DossierCreationService $service
     ): Response {
 
         $user = $this->getAppUser();
 
-        $dossierType = DossierType::tryFrom($type);
-
-        if (!$dossierType) {
+        try {
+            $dossierType = DossierType::from($request->request->get('type'));
+        } catch (\ValueError) {
             $this->addFlash('error', 'type de dossier invalide');
             return $this->redirectToRoute('vehicles_index');
         }
@@ -152,22 +147,21 @@ class DossierController extends AbstractController
 
     // affichage d'un dossier utilisateur
     #[Route('/dossier/{id<\d+>}', name: 'dossier_show', methods: ['GET'])]
-    public function show(Dossier $dossier): Response
+    public function show(DossierRepository $repo, int $id, Registry $workflowRegistry): Response
     {
+        $dossier = $repo->findWithLogs($id);
+
         $this->denyAccessUnlessGranted('DOSSIER_VIEW', $dossier);
 
-        $logs = $dossier->getWorkflowLogs()->toArray();
+        $workflow = $workflowRegistry->get($dossier);
 
-        usort($logs, fn($a, $b) => $a->getCreatedAt() <=> $b->getCreatedAt());
+        $marking = $workflow->getMarking($dossier);
 
-        $lastLog = end($logs);
-
-        $currentStatus = $lastLog ? $lastLog->getToStatus() : 'draft';
+        $currentStatus = array_keys($marking->getPlaces())[0] ?? 'draft';
 
         return $this->render('dossier/show.html.twig', [
             'dossier' => $dossier,
             'currentStatus' => $currentStatus,
-            'logs' => $logs
         ]);
     }
 
@@ -210,7 +204,7 @@ class DossierController extends AbstractController
 
         $workflowLogs = $repo->findByDossier($dossier->getId());
 
-        return $this->render('admin/dossier/show.html.twig', [
+        return $this->render('dossier/show.html.twig', [
             'dossier' => $dossier,
             'workflowLogs' => $workflowLogs
         ]);

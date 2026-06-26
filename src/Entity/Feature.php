@@ -29,17 +29,15 @@ class Feature
     #[ORM\JoinColumn(nullable: false)]
     private ?FeatureCategory $category = null;
 
-    #[ORM\ManyToMany(targetEntity: Vehicle::class, mappedBy: 'features')]
-    private Collection $vehicles;
+    #[ORM\ManyToMany(targetEntity: VehicleModel::class, mappedBy: 'features')]
+    private Collection $vehicleModels;
 
     public function __construct()
     {
-        $this->vehicles = new ArrayCollection();
+        $this->vehicleModels = new ArrayCollection();
     }
 
-    // =========================
     // GETTERS / SETTERS
-    // =========================
 
     public function getId(): ?int
     {
@@ -84,12 +82,10 @@ class Feature
      */
     public function getVehicles(): Collection
     {
-        return $this->vehicles;
+        return $this->vehicleModels;
     }
 
-    // =========================
     // AUTO-GENERATION DU CODE
-    // =========================
 
     #[ORM\PrePersist]
     public function generateCode(): void

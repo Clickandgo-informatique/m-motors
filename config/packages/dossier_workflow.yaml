@@ -26,3 +26,41 @@ framework:
         select_vehicle:
           from: draft
           to: vehicle_selected
+
+        request_documents:
+          from: vehicle_selected
+          to: documents_pending
+
+        submit_documents:
+          from: documents_pending
+          to: documents_review
+
+        validate_documents:
+          from: documents_review
+          to: financing_review
+
+        reject_documents:
+          from: documents_review
+          to: documents_pending
+
+        approve_financing:
+          from: financing_review
+          to: order_signed
+
+        reject_financing:
+          from: financing_review
+          to: cancelled
+
+        sign_order:
+          from: order_signed
+          to: completed
+
+        cancel:
+          from:
+            - draft
+            - vehicle_selected
+            - documents_pending
+            - documents_review
+            - financing_review
+            - order_signed
+          to: cancelled

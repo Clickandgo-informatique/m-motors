@@ -3,17 +3,16 @@
 namespace App\Form;
 
 use App\Entity\Color;
-use App\Entity\Feature;
 use App\Entity\FuelType;
 use App\Entity\GearType;
 use App\Entity\Supplier;
 use App\Entity\Vehicle;
 use App\Enum\VehicleStatus;
+use App\Enum\VehicleUsageType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
@@ -27,27 +26,45 @@ class VehicleFormType extends AbstractType
     {
         $builder
 
-            //Statut du véhicule (enum)
+            // Statut véhicule
             ->add('status', EnumType::class, [
                 'class' => VehicleStatus::class,
                 'label' => 'Statut',
                 'choice_label' => fn(VehicleStatus $status) => $status->label(),
+                'choice_value' => fn(?VehicleStatus $status) => $status?->value,
                 'attr' => [
                     'class' => 'form-select',
                 ],
             ])
 
-            // ID réel envoyé à Symfony (champ caché)
-            ->add('vehicleModel', HiddenType::class, [
-                'label' => false
+            // Usage véhicule (enum stable + sans logique Twig)
+            ->add('usageType', EnumType::class, [
+                'class' => VehicleUsageType::class,
+                'label' => 'Mode de vente',
+
+                'expanded' => true,
+                'multiple' => false,
+
+                'choice_label' => fn(VehicleUsageType $type) => sprintf(
+                    '<i class="%s"></i> %s',
+                    $type->icon(),
+                    $type->label()
+                ),
+
+                'choice_value' => fn(?VehicleUsageType $type) => $type?->value,
+                'label_html' => true,
             ])
 
-            //Champ autocomplete
+            // ID modèle véhicule
+            ->add('vehicleModel', HiddenType::class, [
+                'label' => false,
+            ])
+
+            // Autocomplete modèle
             ->add('vehicleModelSearch', TextType::class, [
                 'mapped' => false,
                 'required' => true,
                 'label' => 'Modèle du véhicule',
-
                 'attr' => [
                     'placeholder' => 'Rechercher un modèle',
                     'data-autocomplete' => 'true',
@@ -61,11 +78,9 @@ class VehicleFormType extends AbstractType
             ->add('vin', TextType::class, [
                 'label' => 'VIN'
             ])
+
             ->add('firstRegistrationDate', DateTimeType::class, [
                 'label' => 'Date 1ère immatriculation',
-                'attr' => [
-                    'class' => 'text-right',
-                ],
             ])
 
             ->add('registrationNumber', TextType::class, [
@@ -74,17 +89,11 @@ class VehicleFormType extends AbstractType
 
             ->add('mileage', IntegerType::class, [
                 'label' => 'Kilométrage',
-                'attr' => [
-                    'class' => 'text-right',
-                ],
             ])
 
             ->add('price', MoneyType::class, [
                 'label' => 'Prix',
                 'currency' => false,
-                'attr' => [
-                    'class' => 'text-right',
-                ],
             ])
 
             ->add('fuelType', EntityType::class, [
