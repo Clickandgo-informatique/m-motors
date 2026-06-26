@@ -1,50 +1,82 @@
 {% for vehicle in vehicles %}
-	<div class="vehicle-card card
-		                {% if not vehicle.status.isAvailable
-		                    and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER'))
-		                %}
-		                    is-unavailable
-		                {% endif %}
-		            " data-ajax-modal="true" data-url="
-			                {{ is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')
-			                    ? path('vehicle_edit', {id: vehicle.id})
-			                    : path('vehicle_show', {id: vehicle.id}) }}
-			            ">
+	<div class="card vehicle-card
+																	{% if not vehicle.status.isAvailable and (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')) %}
+																	is-unavailable
+																	{% endif %}
+																">
+		<div
+			class="vehicle-card-header">
+			{# lien vers la fiche véhicule (navigation principale) #}
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')  %}
 
-		<div class="vehicle-card-header">
+				<a href="{{ path('vehicle_edit', {id: vehicle.id}) }}" class="vehicle-card-link-overlay" aria-label="voir le véhicule" data-ajax-modal>
+					<i class="fa-solid fa-eye"></i>ouvrir fiche</a>
 
-			<span class="vehicle-brand" data-label="Marque">
+			{% else %}
+
+				<a href="{{ path('vehicle_show', {id: vehicle.id}) }}" class="vehicle-card-link-overlay" aria-label="voir le véhicule" data-ajax-modal>
+					<i class="fa-solid fa-eye"></i>Voir</a>
+
+			{% endif %}
+
+
+			<span class="vehicle-brand" data-label="marque">
 				{{ vehicle.vehicleModel.brand.name }}
 			</span>
 
-			<span class="vehicle-model" data-label="Modèle">
+			<span class="vehicle-model" data-label="modèle">
 				{{ vehicle.vehicleModel.model.name }}
 			</span>
-
 		</div>
 
 		<div class="vehicle-image-wrapper">
+
 			{% if vehicle.images|length > 0 %}
 				<img src="{{ asset('uploads/' ~ vehicle.images|first.imagePath) }}" alt="{{ vehicle.vehicleModel.brand.name }} {{ vehicle.vehicleModel.model.name }}" class="vehicle-image" loading="lazy">
 			{% endif %}
 
-			<button data-action="toggle-favorite" data-url="/vehicle/{{ vehicle.id }}/favorite" class="favorite-btn" aria-pressed="false" data-label="Favori">
+			<button data-action="toggle-favorite" data-url="/vehicle/{{ vehicle.id }}/favorite" class="favorite-btn" aria-pressed="false" data-label="favori">
 				<i class="fa-regular fa-heart" data-icon></i>
 			</button>
 
-			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-				<div class="vehicle-status-badges">
+			<div
+				class="vehicle-status-badges">
+
+				{# badge visible pour tous : mode d'usage du véhicule #}
+				{% if vehicle.usageType.value == 'sale' %}
+					<span class="badge badge-sm bg-primary" data-label="type">
+						<i class="fa-solid fa-cart-shopping"></i>
+						Vente
+					</span>
+
+				{% elseif vehicle.usageType.value == 'rent' %}
+					<span class="badge badge-sm bg-info" data-label="type">
+						<i class="fa-solid fa-key"></i>
+						Location
+					</span>
+
+				{% elseif vehicle.usageType.value == 'both' %}
+					<span class="badge badge-sm bg-success" data-label="type">
+						<i class="fa-solid fa-arrows-left-right"></i>
+						Vente &amp; Location
+					</span>
+				{% endif %}
+
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+
 					{% if not vehicle.status.isAvailable %}
-						<span class="badge badge-sm bg-danger" data-label="Action">
+						<span class="badge badge-sm bg-danger" data-label="action">
 							Indisponible
 						</span>
 					{% endif %}
 
-					<span class="badge badge-sm bg-{{ vehicle.status.badge }} " data-label="Statut">
+					<span class="badge badge-sm bg-{{ vehicle.status.badge }}" data-label="statut">
 						{{ vehicle.status.label }}
 					</span>
-				</div>
-			{% endif %}
+
+				{% endif %}
+
+			</div>
 
 		</div>
 
@@ -52,37 +84,30 @@
 
 			{% if vehicle.status.isAvailable %}
 
-				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+				{% if app.user %}
 
-					<a href="{{ path('admin_dossier_create', { id: vehicle.id, type: vehicle.usageType.value == 'rent' ? 'rental' : 'purchase' }) }}" data-ajax-modal="true" class="btn btn-primary">
-						<i class="fa-solid fa-folder-plus"></i>
-						Choisir ...
+					<a href="{{ path('dossier_create_modal', { id: vehicle.id, type: vehicle.usageType.value == 'rent' ? 'rental' : 'purchase' }) }}" class="btn btn-primary{% if not (is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER')) %} btn-sm{% endif %}" data-ajax-modal>
+
+						{% if vehicle.usageType.value == 'rent' %}
+							<i class="fa-solid fa-key"></i>
+							Louer ce véhicule
+						{% else %}
+							<i class="fa-solid fa-cart-shopping"></i>
+							Acheter ce véhicule
+						{% endif %}
+
 					</a>
 
 				{% else %}
 
-					{% if app.user %}
-
-						<form action="{{ path('dossier_create', { id: vehicle.id, type: 'purchase' }) }}" method="post">
-							<button type="submit" class="btn btn-primary btn-sm">
-								<i class="fa-solid fa-folder-plus"></i>
-								Choisir ...
-							</button>
-						</form>
-
-					{% else %}
-
-						<a href="{{ path('app_login') }}" class="btn btn-primary btn-sm">
-							<i class="fa-solid fa-user"></i>
-							Se connecter pour choisir
-						</a>
-
-					{% endif %}
+					<a href="{{ path('app_login') }}" class="btn btn-primary btn-sm">
+						<i class="fa-solid fa-user"></i>
+						Se connecter pour continuer
+					</a>
 
 				{% endif %}
 
 			{% endif %}
-
 		</div>
 
 		<div class="vehicle-card-body">
@@ -93,46 +118,46 @@
 
 						{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 							<tr>
-								<th>Immatriculation</th>
-								<td data-label="Immatriculation">
+								<th>immatriculation</th>
+								<td>
 									{{ vehicle.registrationNumber }}
 								</td>
 							</tr>
 						{% endif %}
 
 						<tr>
-							<th>Kilométrage</th>
-							<td data-label="Kilométrage">
+							<th>kilométrage</th>
+							<td>
 								{{ vehicle.mileage|number_format(0, ',', ' ') }}
 								km
 							</td>
 						</tr>
 
 						<tr>
-							<th>Carrosserie</th>
-							<td data-label="Carrosserie">
+							<th>carrosserie</th>
+							<td>
 								{{ vehicle.vehicleModel.bodyType.name }}
 							</td>
 						</tr>
 
 						<tr>
-							<th>Énergie</th>
-							<td data-label="Énergie">
+							<th>énergie</th>
+							<td>
 								{{ vehicle.vehicleModel.fuelType.name }}
 							</td>
 						</tr>
 
 						<tr>
-							<th>Prix</th>
-							<td data-label="Prix">
+							<th>prix</th>
+							<td>
 								{{ vehicle.price|number_format(0, ',', ' ') }}
 								€
 							</td>
 						</tr>
 
 						<tr>
-							<th>Mois/Année</th>
-							<td data-label="Mois/Année">
+							<th>mois/année</th>
+							<td>
 								{{ vehicle.firstRegistrationDate|date('m/Y') }}
 							</td>
 						</tr>
@@ -140,6 +165,7 @@
 					</tbody>
 				</table>
 			</div>
+
 		</div>
 
 		{% set allFeatures = vehicle.vehicleModel.features|map(f => f.label) %}
@@ -147,8 +173,8 @@
 		{% set visibleFeatures = allFeatures|slice(0, maxVisible) %}
 		{% set hiddenCount = allFeatures|length - maxVisible %}
 
-		<p class="vehicle-features" data-label="Options">
-			Options ({{ allFeatures|length }}):
+		<p class="vehicle-features">
+			options ({{ allFeatures|length }}) :
 			{{ visibleFeatures|join(', ') }}
 
 			{% if hiddenCount > 0 %}
@@ -162,7 +188,7 @@
 {% else %}
 
 	<div class="text-center text-muted">
-		Aucun véhicule trouvé
+		aucun véhicule trouvé
 	</div>
 
 {% endfor %}

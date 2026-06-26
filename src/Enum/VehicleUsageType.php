@@ -11,19 +11,18 @@ enum VehicleUsageType: string
     public function label(): string
     {
         return match ($this) {
-            self::SALE => 'Vente',
+            self::SALE => 'Achat',
             self::RENT => 'Location',
-            self::BOTH => 'Vente & Location',
+            self::BOTH => 'Achat & Location',
         };
     }
 
-    // Retourne les types de dossiers autorisés pour ce mode d'usage véhicule.        
-    public function allowedDossierTypes(): array
+    public function icon(): string
     {
         return match ($this) {
-            self::SALE => [DossierType::PURCHASE],
-            self::RENT => [DossierType::RENTAL],
-            self::BOTH => [DossierType::PURCHASE, DossierType::RENTAL],
+            self::SALE => 'fa-solid fa-cart-shopping',
+            self::RENT => 'fa-solid fa-key',
+            self::BOTH => 'fa-solid fa-arrows-left-right',
         };
     }
 }

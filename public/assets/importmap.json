@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-J0Ec61i.js",
+        "path": "\/assets\/app-gJfOJRa.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-OCvCk-W.css",
+        "path": "\/assets\/styles\/app-YTVFCej.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -52,7 +52,7 @@
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
-        "path": "\/assets\/js\/AjaxManager-o6ha5Nk.js",
+        "path": "\/assets\/js\/AjaxManager-Z6gHohF.js",
         "type": "js"
     },
     "\/assets\/js\/Autocomplete.js": {
@@ -60,7 +60,7 @@
         "type": "js"
     },
     "\/assets\/js\/Multiselect.js": {
-        "path": "\/assets\/js\/Multiselect-mFfJg1x.js",
+        "path": "\/assets\/js\/Multiselect-Peui5Cv.js",
         "type": "js"
     },
     "\/assets\/js\/ToggleVehicleFavorite.js": {
@@ -77,6 +77,10 @@
     },
     "\/assets\/js\/cookie-banner.js": {
         "path": "\/assets\/js\/cookie-banner-WXkTDEM.js",
+        "type": "js"
+    },
+    "\/assets\/js\/usage-type-confirmation.js": {
+        "path": "\/assets\/js\/usage-type-confirmation-pxFiuMo.js",
         "type": "js"
     },
     "@hotwired\/stimulus": {

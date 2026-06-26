@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Workflow\Registry;
 
 class DossierController extends AbstractController
 {
@@ -26,7 +27,7 @@ class DossierController extends AbstractController
         private EntityManagerInterface $em
     ) {}
 
-    // retourne l'utilisateur connecté typé
+    // retourne l'utilisateur connecté typé user
     private function getAppUser(): User
     {
         $user = $this->getUser();
@@ -44,128 +45,85 @@ class DossierController extends AbstractController
         return $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MANAGER');
     }
 
-    // création dossier depuis véhicule côté user
-    #[Route('/dossier/create/{id<\d+>}/{type}', name: 'dossier_create', methods: ['GET', 'POST'])]
+    // ouverture de la modale de création de dossier depuis un véhicule
+    #[Route('/dossier/create/modal/{id<\d+>}', name: 'dossier_create_modal', methods: ['GET'])]
+    public function createModal(
+        Vehicle $vehicle
+
+    ): Response {
+        $this->getAppUser();
+
+
+        return $this->render('dossier/_create_modal.html.twig', [
+            'vehicle' => $vehicle,
+
+        ]);
+    }
+
+    // création dossier depuis véhicule (user et admin)
+    #[Route('/dossier/create/{id<\d+>}/', name: 'dossier_create', methods: ['POST'])]
     public function createFromVehicle(
         Vehicle $vehicle,
-        string $type,
         Request $request,
         DossierCreationService $service
     ): Response {
+
         $user = $this->getAppUser();
 
-        $dossierType = DossierType::tryFrom($type);
-
-        if (!$dossierType) {
+        try {
+            $dossierType = DossierType::from($request->request->get('type'));
+        } catch (\ValueError) {
             $this->addFlash('error', 'type de dossier invalide');
             return $this->redirectToRoute('vehicles_index');
         }
 
-        $customer = $user->getCustomer();
+        // cas admin ou manager : client fourni par le formulaire
+        if ($this->isAdminOrManager()) {
 
-        if (!$customer) {
-            $this->addFlash('error', 'aucun client associé');
-            return $this->redirectToRoute('app_profile');
-        }
+            $customerId = $request->request->get('customerId');
 
-        if ($vehicle->isLocked()) {
-            $this->addFlash('error', 'véhicule indisponible');
-            return $this->redirectToRoute('vehicles_index');
+            if (!$customerId) {
+                $this->addFlash('error', 'aucun client sélectionné');
+                return $this->redirectToRoute('vehicles_index');
+            }
+
+            $customer = $this->em->getRepository(Customer::class)->find($customerId);
+
+            if (!$customer) {
+                $this->addFlash('error', 'client introuvable');
+                return $this->redirectToRoute('vehicles_index');
+            }
+        } else {
+            // cas user : client lié au compte
+            $customer = $user->getCustomer();
+
+            if (!$customer) {
+                $this->addFlash('error', 'aucun client associé');
+                return $this->redirectToRoute('app_profile');
+            }
         }
 
         try {
-            $dossier = $service->createFromVehicle($customer, $vehicle, $dossierType);
+            $result = $service->createFromVehicle($customer, $vehicle, $dossierType);
+
+            $dossier = $result['dossier'];
+
+            if ($result['created']) {
+                $this->addFlash('success', 'Le dossier a été créé avec succès.');
+            } else {
+                $this->addFlash('info', 'Un dossier existe déjà pour ce véhicule.');
+            }
         } catch (\Throwable $e) {
             $this->addFlash('error', 'erreur création dossier');
             return $this->redirectToRoute('vehicles_index');
         }
-
-        $this->addFlash('success', 'dossier créé');
 
         return $this->redirectToRoute('dossier_show', [
             'id' => $dossier->getId()
         ]);
     }
 
-    // création dossier admin depuis véhicule
-    #[Route('/admin/dossier/create/{id<\d+>}/{type}', name: 'admin_dossier_create', methods: ['GET', 'POST'])]
-    public function adminCreateFromVehicle(
-        Vehicle $vehicle,
-        string $type,
-        Request $request,
-        DossierCreationService $service
-    ): Response {
-        if (!$this->isAdminOrManager()) {
-            throw $this->createAccessDeniedException();
-        }
-
-        $dossierType = DossierType::tryFrom($type);
-
-        if (!$dossierType) {
-            $this->addFlash(
-                'error',
-                'création administrateur impossible : type de dossier invalide'
-            );
-
-            return $this->redirectToRoute('vehicles_index');
-        }
-
-        $customerId = $request->request->get('customerId');
-
-        if (!$customerId) {
-            $this->addFlash(
-                'error',
-                'création administrateur impossible : aucun client sélectionné'
-            );
-
-            return $this->redirectToRoute('vehicles_index');
-        }
-
-        $customer = $this->em->getRepository(Customer::class)->find($customerId);
-
-        if (!$customer) {
-            $this->addFlash(
-                'error',
-                'création administrateur impossible : client introuvable'
-            );
-
-            return $this->redirectToRoute('vehicles_index');
-        }
-
-        if ($vehicle->isLocked()) {
-            $this->addFlash(
-                'error',
-                'création administrateur impossible : véhicule indisponible'
-            );
-
-            return $this->redirectToRoute('vehicles_index');
-        }
-
-        try {
-            $dossier = $service->createFromVehicle(
-                $customer,
-                $vehicle,
-                $dossierType
-            );
-        } catch (\Throwable $e) {
-            $this->addFlash(
-                'error',
-                'création administrateur impossible : une erreur est survenue lors de la création du dossier'
-            );
-
-            return $this->redirectToRoute('vehicles_index');
-        }
-
-        $this->addFlash(
-            'success',
-            'dossier créé avec succès en mode administrateur'
-        );
-
-        return $this->redirectToRoute('admin_dossier_show', [
-            'id' => $dossier->getId()
-        ]);
-    }
-    // liste dossiers user
+    // liste des dossiers utilisateur connecté
     #[Route('/dossier/my/list', name: 'dossier_user_list', methods: ['GET'])]
     public function myDossiers(DossierRepository $repository): Response
     {
@@ -187,24 +145,34 @@ class DossierController extends AbstractController
         ]);
     }
 
-    // show dossier user
+    // affichage d'un dossier utilisateur
     #[Route('/dossier/{id<\d+>}', name: 'dossier_show', methods: ['GET'])]
-    public function show(Dossier $dossier): Response
+    public function show(DossierRepository $repo, int $id, Registry $workflowRegistry): Response
     {
+        $dossier = $repo->findWithLogs($id);
+
         $this->denyAccessUnlessGranted('DOSSIER_VIEW', $dossier);
 
+        $workflow = $workflowRegistry->get($dossier);
+
+        $marking = $workflow->getMarking($dossier);
+
+        $currentStatus = array_keys($marking->getPlaces())[0] ?? 'draft';
+
         return $this->render('dossier/show.html.twig', [
-            'dossier' => $dossier
+            'dossier' => $dossier,
+            'currentStatus' => $currentStatus,
         ]);
     }
 
-    // list admin dossiers
+    // liste admin des dossiers avec pagination
     #[Route('/admin/dossier/list', name: 'admin_dossier_list', methods: ['GET'])]
     public function adminList(
         DossierRepository $repository,
         PaginatorInterface $paginator,
         Request $request
     ): Response {
+
         if (!$this->isAdminOrManager()) {
             throw $this->createAccessDeniedException();
         }
@@ -223,25 +191,26 @@ class DossierController extends AbstractController
         ]);
     }
 
-    // show admin dossier
+    // affichage dossier admin avec logs workflow
     #[Route('/admin/dossier/{id<\d+>}', name: 'admin_dossier_show', methods: ['GET'])]
     public function adminShow(
         Dossier $dossier,
         DossierWorkflowLogRepository $repo
     ): Response {
+
         if (!$this->isAdminOrManager()) {
             throw $this->createAccessDeniedException();
         }
 
         $workflowLogs = $repo->findByDossier($dossier->getId());
 
-        return $this->render('admin/dossier/show.html.twig', [
+        return $this->render('dossier/show.html.twig', [
             'dossier' => $dossier,
             'workflowLogs' => $workflowLogs
         ]);
     }
 
-    // new admin dossier
+    // création dossier admin manuel
     #[Route('/admin/dossier/new', name: 'admin_dossier_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
@@ -275,13 +244,14 @@ class DossierController extends AbstractController
         ]);
     }
 
-    // edit admin dossier
+    // edition dossier admin
     #[Route('/admin/dossier/{id<\d+>}/edit', name: 'admin_dossier_edit', methods: ['GET', 'POST'])]
     public function edit(
         DossierRepository $repo,
         int $id,
         Request $request
     ): Response {
+
         if (!$this->isAdminOrManager()) {
             throw $this->createAccessDeniedException();
         }
@@ -317,17 +287,18 @@ class DossierController extends AbstractController
         return $this->render('admin/dossier/edit.html.twig', [
             'dossier' => $dossier,
             'form' => $form->createView(),
-            'title' => 'Modifier un dossier'
+            'title' => 'modifier un dossier'
         ]);
     }
 
-    // ajax search dossiers
+    // recherche ajax dossiers + autocomplete
     #[Route('/dossiers/ajax-search', name: 'dossiers_ajax_search', methods: ['GET', 'POST'])]
     public function search(
         Request $request,
         DossierRepository $repo,
         PaginatorInterface $paginator
     ): JsonResponse {
+
         $data = json_decode($request->getContent(), true) ?: $request->query->all();
 
         $searchTerm = trim((string) ($data['q'] ?? ''));
@@ -336,6 +307,7 @@ class DossierController extends AbstractController
         $isAutocomplete = $request->query->getBoolean('autocomplete');
 
         if ($isAutocomplete) {
+
             if (mb_strlen($searchTerm) < 2) {
                 return $this->json(['items' => []]);
             }

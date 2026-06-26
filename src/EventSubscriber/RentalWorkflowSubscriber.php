@@ -35,7 +35,7 @@ class RentalWorkflowSubscriber implements EventSubscriberInterface
         $workflow = $this->workflowRegistry->get($vehicle, 'vehicle');
 
         if ($workflow->can($vehicle, 'vehicle_rent')) {
-            $workflow->apply($vehicle, 'vehicle_rent');            
+            $workflow->apply($vehicle, 'vehicle_rent');
         }
     }
 
@@ -61,7 +61,7 @@ class RentalWorkflowSubscriber implements EventSubscriberInterface
         $workflow = $this->workflowRegistry->get($vehicle, 'vehicle');
 
         if ($workflow->can($vehicle, 'vehicle_return')) {
-            $workflow->apply($vehicle, 'vehicle_return');            
+            $workflow->apply($vehicle, 'vehicle_return');
         }
     }
 }

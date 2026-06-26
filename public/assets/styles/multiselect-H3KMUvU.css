@@ -1,0 +1,118 @@
+#multiselect-wrapper {
+    display: flex;
+    width: 100%;
+    padding: 5px;
+    margin: 10px;
+}
+
+[data-multiselect] {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.multiselect-selected,
+.multiselect-available {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 220px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.multiselect-available {
+    display: flex;
+    flex-direction: column;
+}
+
+.multiselect-search {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    margin-bottom: 10px;
+    background: #f9fafb;
+    transition: border 0.15s ease, background 0.15s ease;
+}
+
+.multiselect-search:focus {
+    border-color: #93c5fd;
+    background: #ffffff;
+}
+
+.list-wrapper {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.available-item {
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 6px;
+    background: #f9fafb;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border 0.15s ease, transform 0.05s ease;
+}
+
+.available-item:hover {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+}
+
+.available-item:active {
+    transform: scale(0.98);
+}
+
+.chips-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+    font-size: 13px;
+    color: #1e3a8a;
+    line-height: 1;
+}
+
+.chip span {
+    white-space: nowrap;
+}
+
+.chip-remove {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    color: #1e3a8a;
+    padding: 0;
+    margin-left: 2px;
+    transition: color 0.15s ease;
+}
+
+.chip-remove:hover {
+    color: #ef4444;
+}
+
+.multiselect-selected {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}

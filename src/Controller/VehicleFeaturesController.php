@@ -6,7 +6,6 @@ use App\Entity\Feature;
 use App\Entity\VehicleModel;
 use App\Form\FeatureFormType;
 use App\Form\VehicleFeaturesFormType;
-use App\Repository\FeatureCategoryRepository;
 use App\Repository\FeatureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,17 +17,41 @@ use Symfony\Component\Routing\Attribute\Route;
 class VehicleFeaturesController extends AbstractController
 {
     #[Route(
-        '/admin/vehicles/models/features/',
+        '/api/features',
+        name: 'api_features',
+        methods: ['GET']
+    )]
+    public function allFeatures(FeatureRepository $featureRepository): JsonResponse
+    {
+        $features = $featureRepository->findBy([], ['label' => 'ASC']);
+
+        return $this->json([
+            'selected' => [],
+            'available' => array_map(
+                fn(Feature $feature) => [
+                    'id' => $feature->getId(),
+                    'label' => $feature->getLabel(),
+                ],
+                $features
+            ),
+        ]);
+    }
+    #[Route(
+        '/admin/vehicles/models/features',
         name: 'vehicle_model_features_index',
         methods: ['GET']
     )]
-    public function index(FeatureRepository $featureRepository, FeatureCategoryRepository $featureCategoryRepo)
-    {
-
+    public function index(
+        FeatureRepository $featureRepository
+    ): Response {
         $features = $featureRepository->findBy([], ['label' => 'ASC']);
-        $featuresCategories = $featureCategoryRepo->findBy([], ['label' => 'ASC']);
 
-        return $this->render('vehicles_models/_vehicle_model_features.html.twig', ['features' => $features, 'featuresCategories' => $featuresCategories]);
+        return $this->render(
+            'vehicles_models/_vehicle_model_features.html.twig',
+            [
+                'features' => $features
+            ]
+        );
     }
 
     #[Route(
@@ -40,10 +63,7 @@ class VehicleFeaturesController extends AbstractController
         VehicleModel $vehicleModel,
         FeatureRepository $featureRepository
     ): JsonResponse {
-
-        $allFeatures = $featureRepository->findBy([], [
-            'label' => 'ASC'
-        ]);
+        $allFeatures = $featureRepository->findBy([], ['label' => 'ASC']);
 
         return $this->json([
             'selected' => array_map(
@@ -73,7 +93,6 @@ class VehicleFeaturesController extends AbstractController
         VehicleModel $vehicleModel,
         EntityManagerInterface $em
     ): Response {
-
         $form = $this->createForm(
             VehicleFeaturesFormType::class,
             $vehicleModel
@@ -82,13 +101,11 @@ class VehicleFeaturesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            // inutile de persist sur une entité déjà existante
             $em->flush();
 
             $this->addFlash(
                 'message',
-                'La liste des options du véhicule a été mise à jour avec succès.'
+                'la liste des options du véhicule a été mise à jour avec succès.'
             );
 
             return $this->redirectToRoute('vehicles_show', [
@@ -104,6 +121,7 @@ class VehicleFeaturesController extends AbstractController
             ]
         );
     }
+
     #[Route(
         '/admin/features/{id<\d+>}/edit',
         name: 'feature_edit',
@@ -114,7 +132,6 @@ class VehicleFeaturesController extends AbstractController
         Feature $feature,
         EntityManagerInterface $em
     ): Response {
-
         $form = $this->createForm(
             FeatureFormType::class,
             $feature
@@ -123,13 +140,11 @@ class VehicleFeaturesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            // inutile de persist sur une entité déjà existante
             $em->flush();
 
             $this->addFlash(
                 'message',
-                'La liste des options a été mise à jour avec succès.'
+                'l’option a été mise à jour avec succès.'
             );
 
             return $this->redirectToRoute('vehicle_model_features_index');
@@ -140,10 +155,11 @@ class VehicleFeaturesController extends AbstractController
             [
                 'form' => $form->createView(),
                 'feature' => $feature,
-                'title' => 'Modifier une option véhicule'
+                'title' => 'modifier une option véhicule'
             ]
         );
     }
+
     #[Route(
         '/admin/features/new',
         name: 'feature_new',
@@ -153,7 +169,6 @@ class VehicleFeaturesController extends AbstractController
         Request $request,
         EntityManagerInterface $em
     ): Response {
-
         $feature = new Feature();
 
         $form = $this->createForm(
@@ -164,13 +179,12 @@ class VehicleFeaturesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $em->persist($feature);
             $em->flush();
 
             $this->addFlash(
                 'message',
-                'L\'option a été enregistrée avec succès.'
+                'l’option a été enregistrée avec succès.'
             );
 
             return $this->redirectToRoute('vehicle_model_features_index');
@@ -181,7 +195,7 @@ class VehicleFeaturesController extends AbstractController
             [
                 'form' => $form->createView(),
                 'feature' => $feature,
-                'title' => 'Ajouter une option véhicule'
+                'title' => 'ajouter une option véhicule'
             ]
         );
     }

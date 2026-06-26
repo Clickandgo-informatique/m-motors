@@ -9,12 +9,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
- * Service d’audit des transitions du workflow Dossier.
+ * service d’audit du workflow dossier
  *
- * Objectif :
- * - tracer toutes les transitions Symfony Workflow
- * - enregistrer from/to status
- * - associer éventuellement l'utilisateur connecté
+ * rôle :
+ * - créer un log de transition
+ * - aucune logique métier
+ * - aucune gestion de transaction
  */
 class DossierWorkflowAuditService
 {
@@ -23,6 +23,9 @@ class DossierWorkflowAuditService
         private Security $security
     ) {}
 
+    /**
+     * crée un log de transition workflow
+     */
     public function log(
         Dossier $dossier,
         string $transition,
@@ -31,13 +34,10 @@ class DossierWorkflowAuditService
     ): void {
         $user = $this->security->getUser();
 
-        $userId = null;
-
-        if ($user instanceof User) {
-            $userId = $user->getId();
-        }
+        $userId = $user instanceof User ? $user->getId() : null;
 
         $log = new DossierWorkflowLog();
+
         $log->setDossier($dossier);
         $log->setTransition($transition);
         $log->setFromStatus($fromStatus);
@@ -45,6 +45,5 @@ class DossierWorkflowAuditService
         $log->setUserId($userId);
 
         $this->em->persist($log);
-        $this->em->flush();
     }
 }

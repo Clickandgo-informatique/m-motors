@@ -3,41 +3,51 @@
 namespace App\Service\Dossier;
 
 use App\Entity\Dossier;
-use App\Service\Dossier\DossierWorkflowAuditService;
-use App\Service\Financing\DossierFinancingService;
 use Symfony\Component\Workflow\WorkflowInterface;
 
-
+/**
+ * service central du workflow dossier
+ *
+ * rôle :
+ * - déclencher les transitions
+ * - déléguer les effets au workflow Symfony
+ * - aucune logique métier cachée
+ */
 class DossierWorkflowService
 {
     public function __construct(
         private WorkflowInterface $dossierStateMachine,
-        private DossierFinancingService $financingService,
-        private DossierWorkflowGuard $guard,
-        private DossierWorkflowAuditService $audit
+        private DossierWorkflowGuard $guard
     ) {}
+
     /**
-     * Applique une transition du workflow dossier.
-     *
-     * Règle :
-     * - toute transition est validée par le guard central
-     * - aucune logique implicite ici
-     * - le workflow Symfony est la seule source d'exécution
+     * applique une transition
      */
     public function apply(Dossier $dossier, string $transition): void
     {
         $this->guard->assertCan($dossier, $transition);
-        $from = $dossier->getStatus();
-        $this->dossierStateMachine->apply($dossier, $transition);
-        $to = $dossier->getStatus();
-        $this->financingService->syncFromDossier($dossier);
 
-        $this->audit->log(
-            $dossier,
-            $transition,
-            $from,
-            $to
-        );
+        $this->dossierStateMachine->apply($dossier, $transition);
+    }
+
+    /**
+     * vérifie si une transition est possible
+     */
+    public function can(Dossier $dossier, string $transition): bool
+    {
+        return $this->dossierStateMachine->can($dossier, $transition);
+    }
+
+    /**
+     * application sécurisée
+     */
+    public function applySafe(Dossier $dossier, string $transition): void
+    {
+        if (!$this->can($dossier, $transition)) {
+            return;
+        }
+
+        $this->apply($dossier, $transition);
     }
 
     public function selectVehicle(Dossier $dossier): void
@@ -75,70 +85,13 @@ class DossierWorkflowService
         $this->apply($dossier, 'reject_financing');
     }
 
-    public function cancel(Dossier $dossier): void
-    {
-        $this->apply($dossier, 'cancel');
-    }
-
-    /**
-     * IMPORTANT :
-     * Cette méthode NE DOIT PAS déclencher de transition.
-     * Elle retourne uniquement une intention métier.
-     */
-    public function refreshDossierStatus(Dossier $dossier): ?string
-    {
-        $documents = $dossier->getDocuments();
-
-        if ($documents->isEmpty()) {
-            return null;
-        }
-
-        foreach ($documents as $document) {
-            if ($document->getStatus()->value === 'uploaded') {
-                return 'submit_documents';
-            }
-        }
-
-        return null;
-    }
-
-    public function getCompletionRate(Dossier $dossier): int
-    {
-        $documents = $dossier->getDocuments();
-
-        if ($documents->isEmpty()) {
-            return 0;
-        }
-
-        $total = count($documents);
-        $valid = 0;
-
-        foreach ($documents as $document) {
-            if (
-                method_exists($document->getStatus(), 'isFinal')
-                && $document->getStatus()->isFinal()
-            ) {
-                $valid++;
-            }
-        }
-
-        return (int) round(($valid / $total) * 100);
-    }
-    public function can(Dossier $dossier, string $transition): bool
-    {
-        return $this->dossierStateMachine->can($dossier, $transition);
-    }
-
-    public function applySafe(Dossier $dossier, string $transition): void
-    {
-        if (!$this->can($dossier, $transition)) {
-            return;
-        }
-
-        $this->apply($dossier, $transition);
-    }
     public function signOrder(Dossier $dossier): void
     {
         $this->apply($dossier, 'sign_order');
+    }
+
+    public function cancel(Dossier $dossier): void
+    {
+        $this->apply($dossier, 'cancel');
     }
 }

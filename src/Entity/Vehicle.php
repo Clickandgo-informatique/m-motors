@@ -53,7 +53,7 @@ class Vehicle
      * Type d’usage du véhicule (vente, location, les deux)
      */
     #[ORM\Column(enumType: VehicleUsageType::class)]
-    private VehicleUsageType $usageType;
+    private ?VehicleUsageType $usageType=null;
 
     public function getUsageType(): VehicleUsageType
     {
@@ -192,7 +192,7 @@ class Vehicle
         $this->maintenances = new ArrayCollection();
         $this->rentals = new ArrayCollection();
         $this->sales = new ArrayCollection();
-        $this->favorites = new ArrayCollection();        
+        $this->favorites = new ArrayCollection();
         $this->badges = new ArrayCollection();
     }
 
@@ -556,5 +556,11 @@ class Vehicle
         $this->badges->removeElement($badge);
 
         return $this;
+    }
+    public function getFullName(): string
+    {
+        return $this->vehicleModel->getBrand()->getName()
+            . ' ' .
+            $this->vehicleModel->getModel()->getName();
     }
 }

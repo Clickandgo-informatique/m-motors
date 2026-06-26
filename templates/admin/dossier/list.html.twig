@@ -37,14 +37,13 @@
 
 		{# Bouton de création de dossier #}
 		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-			<form
-				action="" method="post">
-				{# {{ path('dossier_create', { id: vehicle.id, type: 'purchase' }) }} #}
+			{# <form
+				action="{{ path('dossier_create') }}" method="post">				
 				<button type="submit" class="btn btn-primary btn-sm">
 					<i class="fa-solid fa-folder-plus"></i>
 					Créer un dossier ...
 				</button>
-			</form>
+			</form> #}
 		{% endif %}
 
 		{# Pagination haut #}
@@ -52,6 +51,7 @@
 			{% include "dossier/_pagination_info.html.twig" with { dossiers: dossiers } %}
 		</div>
 
+		{# Section résultats Ajax #}
 		<div id="dossiers-search-results" class="dossier-search-results">
 			{% include "dossier/_dossiers_table.html.twig" with { dossiers: dossiers } %}
 		</div>

@@ -66,18 +66,21 @@ class VehicleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $em->persist($vehicle);
             $em->flush();
 
             $this->addFlash('success', 'Véhicule modifié.');
 
             return $this->redirectToRoute('vehicles_index');
         }
-        return $this->render('vehicles/edit.html.twig', [
+        return $this->render('vehicles/_vehicle_form.html.twig', [
             'form' => $form,
             'vehicle' => $vehicle,
             'title' => "Modifier un véhicule"
         ]);
     }
+
+    //Affichage d'un véhicule
     #[Route('/{id<\d+>}/show', name: 'vehicle_show', methods: ['GET', 'POST'])]
     public function show(
         Vehicle $vehicle,

@@ -143,4 +143,18 @@ class DossierRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
     }
+    public function findWithLogs(int $id): ?Dossier
+    {
+        return $this->createQueryBuilder('d')
+            ->leftJoin('d.workflowLogs', 'l')
+            ->addSelect('l')
+            ->leftJoin('d.vehicle', 'v')
+            ->addSelect('v')
+            ->leftJoin('d.customer', 'c')
+            ->addSelect('c')
+            ->where('d.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

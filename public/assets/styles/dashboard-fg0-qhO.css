@@ -1,0 +1,14 @@
+.dashboard-wrapper {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem; 
+  margin: 10px;
+  align-items: start;
+  justify-content: center;
+}
+
+@media screen and (max-width: 992px) {
+  .dashboard-wrapper {
+    grid-template-columns: 1fr;
+  }
+}

@@ -107,4 +107,26 @@ enum DossierType: string
             true
         );
     }
+
+    /**
+     * couleur badge UI (bootstrap ou custom)
+     */
+    public function badge(): string
+    {
+        return match ($this) {
+            self::PURCHASE => 'primary',
+            self::RENTAL => 'info',
+        };
+    }
+
+    /**
+     * icône fontawesome associée
+     */
+    public function icon(): string
+    {
+        return match ($this) {
+            self::PURCHASE => 'fa-cart-shopping',
+            self::RENTAL => 'fa-key',
+        };
+    }
 }

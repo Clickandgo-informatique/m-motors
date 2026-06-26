@@ -1,0 +1,170 @@
+/* boutons globaux */
+
+button,
+.btn {
+    display: flex;
+    padding: var(--space-s) var(--space-m);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    font-family: var(--font-family);
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+}
+
+/* bouton primaire */
+
+button.primary,
+.btn-primary {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border-color: var(--btn-primary-bg);
+    margin: 10px auto;
+}
+
+button.primary:hover,
+button.primary:focus,
+button.primary:active,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+button[type="submit"]:hover,
+button[type="submit"]:focus,
+button[type="submit"]:active {
+    background: var(--btn-primary-bg-hover);
+    border-color: var(--btn-primary-bg-hover);
+    color: var(--btn-primary-text);
+}
+
+button.primary:focus,
+.btn-primary:focus,
+button[type="submit"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--focus-bg), 0 0 0 4px var(--focus-border);
+}
+
+a.btn-primary,
+a.btn-primary:visited,
+a.btn-primary:hover,
+a.btn-primary:focus,
+a.btn-primary:active {
+    color: var(--btn-primary-text);
+    text-decoration: none;
+}
+
+/* bouton secondaire */
+
+button.secondary,
+.btn-secondary {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border-color: var(--border-color);
+}
+
+button.secondary:hover,
+button.secondary:focus,
+button.secondary:active,
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active {
+    background: var(--btn-secondary-bg-hover);
+    border-color: var(--border-color);
+    color: var(--btn-secondary-text);
+}
+
+button.secondary:focus,
+.btn-secondary:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--focus-bg), 0 0 0 4px var(--focus-border);
+}
+
+a.btn-secondary,
+a.btn-secondary:visited,
+a.btn-secondary:hover,
+a.btn-secondary:focus,
+a.btn-secondary:active {
+    color: var(--btn-secondary-text);
+    text-decoration: none;
+}
+
+/* bouton désactivé */
+
+button:disabled,
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* icônes */
+
+a i,
+button i {
+    margin-right: 10px;
+    font-size: 1.2rem;
+    background: transparent;
+    text-decoration: none;
+}
+
+/* bouton suppression */
+
+.btn-delete {
+    color: red;
+    font-size: 1.8rem;
+    background: transparent;
+}
+
+/* bouton annulation */
+
+.btn-cancel {
+    background: red;
+    color: white;
+    opacity: 0.7;
+}
+
+/* bouton google */
+
+.btn-google {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: white;
+    color: #444;
+    border: 1px solid #dadce0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    min-width: 300px;
+}
+
+.btn-google:hover {
+    background: #f7f7f7;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.google-icon {
+    display: block;
+}
+
+/* conteneur boutons connexion */
+
+.connection-buttons {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.btn-submit {
+    min-width: 300px;
+}

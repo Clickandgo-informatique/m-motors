@@ -14,10 +14,10 @@ class DossierFinancingListener
         }
 
         $financing = new Financing();
-        $financing->setDossier($dossier);
         $financing->setStatus('pending');
         $financing->setType('cash');
 
         $dossier->setFinancing($financing);
+        $financing->setDossier($dossier);
     }
 }

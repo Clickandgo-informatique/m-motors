@@ -1,59 +1,92 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon dossier
+{% block title %}M-motors: Dossier client
 {% endblock %}
 
 {% block body %}
 
 	<div class="container mt-4">
 
-	{# Barre de progression des dossiers #}
-	{% include "dossier/_progress_timeline.html.twig" %}
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+			<a href="{{ path('admin_dossier_list') }}" class="btn">
+				<i class="fa-solid fa-list"></i>
+				Revenir à la liste de dossiers
+			</a>
+		{% else %}
+			<a href="{{ path('dossier_user_list') }}" class="btn">
+				<i class="fa-solid fa-list"></i>
+				Revenir à la liste de dossiers
+			</a>
 
-		<h1>Dossier
-			{{ dossier.reference }}</h1>
+		{% endif %}
 
-		<p>
-			Statut :
-			<span class="badge bg-{{ dossier.status.badge }}">
-				{{ dossier.status.label }}
-			</span>
-		</p>
+		<div class="dossier-grid">
 
-		<hr>
+			<div
+				class="dossier-left">
+				{# Barre de progression des dossiers #}
+				{% include "dossier/_progress_timeline.html.twig" %}
+			</div>
+			<div class="dossier-right">
+				<div class="card">
+					<div class="card-body">
+						<h1>Dossier
+							{{ dossier.dossierCode }}</h1>
 
-		<div class="card">
-			<div class="card-body">
+						<p>
+							Statut :
+							{% if dossier.status == 'draft' %}
+								<span class="badge bg-primary">brouillon</span>
+							{% elseif dossier.status == 'pending' %}
+								<span class="badge bg-warning">en attente</span>
+							{% elseif dossier.status == 'active' %}
+								<span class="badge bg-success">actif</span>
+							{% elseif dossier.status == 'cancelled' %}
+								<span class="badge bg-danger">annulé</span>
+							{% else %}
+								<span class="badge bg-primary">{{ dossier.status.label }}</span>
+							{% endif %}
+						</p>
 
-				<p>
-					<strong>Client :</strong>
-					{{ dossier.customer }}</p>
-				<p>
-					<strong>Véhicule :</strong>
-					{{ dossier.vehicle }}</p>
-				<p>
-					<strong>Type :</strong>
-					{{ dossier.type }}</p>
+						<p>
+							Type :
+							<span class="badge bg-{{ dossier.type.badge() }}">
+								<i class="fa-solid {{ dossier.type.icon() }}"></i>
+								{{ dossier.type.label() }}
+							</span>
+						</p>
+					</div>
+					<hr>
 
-				<p>
-					<strong>Créé le :</strong>
-					{{ dossier.createdAt|date('d/m/Y H:i') }}</p>
+					<div class="card">
+						<div class="card-body">
 
-				{% if dossier.completedAt %}
-					<p>
-						<strong>Terminé le :</strong>
-						{{ dossier.completedAt|date('d/m/Y H:i') }}</p>
-				{% endif %}
+							<p>
+								<strong>Client :</strong>
+								{{ dossier.customer }}</p>
+							<p>
+								<strong>Véhicule :</strong>
+								{{ dossier.vehicle.fullName }}</p>
 
-				{% if dossier.cancelledAt %}
-					<p>
-						<strong>Annulé le :</strong>
-						{{ dossier.cancelledAt|date('d/m/Y H:i') }}</p>
-				{% endif %}
+							<p>
+								<strong>Créé le :</strong>
+								{{ dossier.createdAt|date('d/m/Y H:i') }}</p>
 
+							{% if dossier.completedAt %}
+								<p>
+									<strong>Terminé le :</strong>
+									{{ dossier.completedAt|date('d/m/Y H:i') }}</p>
+							{% endif %}
+
+							{% if dossier.cancelledAt %}
+								<p>
+									<strong>Annulé le :</strong>
+									{{ dossier.cancelledAt|date('d/m/Y H:i') }}</p>
+							{% endif %}
+
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
-
-	</div>
-
-{% endblock %}
+	{% endblock %}

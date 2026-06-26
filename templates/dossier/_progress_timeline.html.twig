@@ -1,73 +1,83 @@
-{# templates/dossier/_progress_timeline.html.twig #}
+{# timeline CRM stable basée sur audit #}
 
-{% set steps = [
-    {
-        key: 'draft',
-        label: 'Création',
+{% set logs = dossier.workflowLogs|sort((a, b) => a.createdAt <=> b.createdAt) %}
+
+{% set labels = {
+    'create': {
+        label: 'Dossier créé',
         icon: 'fa-solid fa-file-circle-plus'
     },
-    {
-        key: 'in_progress',
-        label: 'En cours',
-        icon: 'fa-solid fa-spinner'
+    'select_vehicle': {
+        label: 'Véhicule sélectionné',
+        icon: 'fa-solid fa-car'
     },
-    {
-        key: 'validated',
-        label: 'Validé',
+    'request_documents': {
+        label: 'Documents demandés',
+        icon: 'fa-solid fa-folder-open'
+    },
+    'submit_documents': {
+        label: 'Documents soumis',
+        icon: 'fa-solid fa-upload'
+    },
+    'validate_documents': {
+        label: 'Documents validés',
         icon: 'fa-solid fa-circle-check'
     },
-    {
-        key: 'rejected',
-        label: 'Refusé',
+    'approve_financing': {
+        label: 'Financement validé',
+        icon: 'fa-solid fa-handshake'
+    },
+    'sign_order': {
+        label: 'Commande signée',
+        icon: 'fa-solid fa-pen-nib'
+    },
+    'cancel': {
+        label: 'Dossier annulé',
         icon: 'fa-solid fa-circle-xmark'
     }
-] %}
-
-{% set currentStatus = dossier.status %}
+} %}
 
 <div class="card mb-3">
-    <div class="card-body">
+	<div class="card-body">
 
-        <h5 class="mb-3">Progression du dossier</h5>
+		<h5 class="mb-3">Timeline du dossier</h5>
 
-        <ul class="timeline list-unstyled m-0">
+		<ul class="timeline list-unstyled m-0">
 
-            {% for step in steps %}
+			{% for log in logs %}
 
-                {% set isActive = (step.key == currentStatus) %}
+				{% set config = labels[log.transition] ?? {
+                    label: log.transition,
+                    icon: 'fa-solid fa-circle'
+                } %}
 
-                {% set isCompleted = false %}
+				<li class="timeline-item">
 
-                {# logique simple de progression linéaire #}
-                {% if currentStatus == 'in_progress' and step.key == 'draft' %}
-                    {% set isCompleted = true %}
-                {% elseif currentStatus == 'validated' and step.key in ['draft', 'in_progress'] %}
-                    {% set isCompleted = true %}
-                {% elseif currentStatus == 'rejected' and step.key in ['draft', 'in_progress'] %}
-                    {% set isCompleted = true %}
-                {% endif %}
+					<div class="timeline-icon">
+						<i class="{{ config.icon }}"></i>
+					</div>
 
-                <li class="timeline-item {{ isActive ? 'active' : '' }} {{ isCompleted ? 'completed' : '' }}">
+					<div class="timeline-content">
 
-                    <div class="timeline-icon">
-                        <i class="{{ step.icon }}"></i>
-                    </div>
+						<strong>{{ config.label }}</strong>
 
-                    <div class="timeline-content">
-                        <strong>{{ step.label }}</strong>
+						<div class="text-muted small">
+							{{ log.createdAt|date('d/m/Y H:i') }}
+						</div>
 
-                        {% if isActive %}
-                            <span class="badge bg-primary">Actuel</span>
-                        {% elseif isCompleted %}
-                            <span class="badge bg-success">Terminé</span>
-                        {% endif %}
-                    </div>
+						<div class="text-muted small">
+							{{ log.fromStatus }}
+							→
+							{{ log.toStatus }}
+						</div>
 
-                </li>
+					</div>
 
-            {% endfor %}
+				</li>
 
-        </ul>
+			{% endfor %}
 
-    </div>
+		</ul>
+
+	</div>
 </div>

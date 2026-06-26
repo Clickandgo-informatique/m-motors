@@ -1,41 +1,40 @@
-
 <div class="connection">
-    {% if app.user %}
-        <p class="connected">
-            <span>Vous êtes connecté en tant que</span>&nbsp;
+	{% if app.user %}
+		<p class="connected">
+			<span class="connection-status">Vous êtes connecté.e en tant que</span>&nbsp;
 
-            {% if app.user.nickname %}
-                <span class="user-nickname">
-                    <i class="fa-regular fa-circle-user"></i>
-                    {{ app.user.nickname }}
-                </span>
-            {% else %}
-                <span class="user-email">
-                    <i class="fa-regular fa-circle-user"></i>
-                    {{ app.user.email }}
-                </span>
-            {% endif %}
-        </p>
+			{% if app.user.nickname %}
+				<span class="user-nickname">
+					<i class="fa-regular fa-circle-user"></i>
+					{{ app.user.nickname }}
+				</span>
+			{% else %}
+				<span class="user-email">
+					<i class="fa-regular fa-circle-user"></i>
+					{{ app.user.email }}
+				</span>
+			{% endif %}
+		</p>
 
-        <a href="{{ path('app_logout') }}">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            Se déconnecter
-        </a>
-    {% else %}
-        <p class="not-connected">
-            Vous n'êtes pas encore connecté.e
-        </p>
+		<a href="{{ path('app_logout') }}">
+			<i class="fa-solid fa-arrow-right-from-bracket logout-icon"></i>
+			<span class="logout-text">Se déconnecter</span>
+		</a>
+	{% else %}
+		<p class="not-connected">
+			Vous n'êtes pas encore connecté.e
+		</p>
 
-        <a href="{{ path('app_login') }}">
-            <i class="fa-solid fa-right-to-bracket"></i>
-            Se connecter
-        </a>
+		<a href="{{ path('app_login') }}">
+			<i class="fa-solid fa-right-to-bracket"></i>
+			Se connecter
+		</a>
 
-        <a href="{{ path('app_register') }}">
-            <i class="fa-solid fa-user-plus"></i>
-            S'inscrire
-        </a>
-    {% endif %}
+		<a href="{{ path('app_register') }}">
+			<i class="fa-solid fa-user-plus"></i>
+			S'inscrire
+		</a>
+	{% endif %}
 </div>
 
 {% set currentRoute = app.request.attributes.get('_route') %}
@@ -59,126 +58,112 @@
 
 <div class="navbar-links">
 
-    <ul>
+	<ul>
+		<li>
+			<a href="{{ path('app_home') }}" class="{{ currentRoute == 'app_home' ? 'active' : '' }}">
+				<i class="fa-regular fa-house"></i>
+				Accueil
+			</a>
+		</li>
 
-        <li>
+		<li>
 
-            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-                <a
-                    href="{{ path('admin_dashboard') }}"
-                    class="{{ currentRoute == 'admin_dashboard' ? 'active' : '' }}"
-                >
-                    <i class="fa-solid fa-tachograph-digital"></i>
-                    Dashboard administration
-                </a>
+				<a href="{{ path('admin_dashboard') }}" class="{{ currentRoute == 'admin_dashboard' ? 'active' : '' }}">
+					<i class="fa-solid fa-tachograph-digital"></i>
+					Dashboard administration
+				</a>
+			{% endif %}
 
-            {% else %}
+		</li>
 
-                <a
-                    href="{{ path('app_home') }}"
-                    class="{{ currentRoute == 'app_home' ? 'active' : '' }}"
-                >
-                    <i class="fa-regular fa-house"></i>
-                    Accueil
-                </a>
+		<li>
 
-            {% endif %}
+			<a href="{{ path('vehicles_index') }}" class="{{ vehiclesRoutes ? 'active' : '' }}">
+				<i class="fa-solid fa-car-side"></i>
+				Catalogue véhicules
+			</a>
 
-        </li>
+		</li>
 
-        <li>
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
 
-            <a
-                href="{{ path('vehicles_index') }}"
-                class="{{ vehiclesRoutes ? 'active' : '' }}"
-            >
-                <i class="fa-solid fa-car-side"></i>
-                Catalogue véhicules
-            </a>
+			<li>
 
-        </li>
+				<a href="{{ path('vehicles_models') }}" class="{{ vehiclesModelsRoutes ? 'active' : '' }}">
+					<i class="fa-solid fa-book"></i>
+					Catalogue fabricants
+				</a>
 
-        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+			</li>
 
-            <li>
+			<li>
 
-                <a
-                    href="{{ path('vehicles_models') }}"
-                    class="{{ vehiclesModelsRoutes ? 'active' : '' }}"
-                >
-                    <i class="fa-solid fa-book"></i>
-                    Catalogue fabricants
-                </a>
+				<a href="{{ path('customer_list') }}" class="{{ customersRoutes ? 'active' : '' }}">
+					<i class="fa-regular fa-address-book"></i>
+					Clients
+				</a>
 
-            </li>
+			</li>
 
-            <li>
+			<li>
 
-                <a
-                    href="{{ path('customer_list') }}"
-                    class="{{ customersRoutes ? 'active' : '' }}"
-                >
-                    <i class="fa-regular fa-address-book"></i>
-                    Clients
-                </a>
+				<a href="{{ path('admin_dossier_list') }}" class="{{ dossiersRoutes ? 'active' : '' }}">
+					<i class="fa-solid fa-folder-open"></i>
+					Dossiers
+				</a>
 
-            </li>
+			</li>
 
-            <li>
+		{% endif %}
 
-                <a
-                    href="{{ path('admin_dossier_list') }}"
-                    class="{{ dossiersRoutes ? 'active' : '' }}"
-                >
-                    <i class="fa-solid fa-folder-open"></i>
-                    Dossiers
-                </a>
+		{% if is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') and not is_granted('ROLE_MANAGER') %}
 
-            </li>
 
-        {% endif %}
+			<li>
 
-        <li>
+				<a href="{{ path('about_us') }}" class="{{ currentRoute == 'about_us' ? 'active' : '' }}">
+					<i class="fa-solid fa-users"></i>
+					À propos
+				</a>
 
-            <a
-                href="{{ path('about_us') }}"
-                class="{{ currentRoute == 'about_us' ? 'active' : '' }}"
-            >
-                <i class="fa-solid fa-users"></i>
-                À propos
-            </a>
+			</li>
 
-        </li>
+			<li>
 
-        <li>
+				<a href="{{ path('contact_us') }}" class="{{ currentRoute == 'contact_us' ? 'active' : '' }}">
+					<i class="fa-regular fa-envelope"></i>
+					Contact
+				</a>
 
-            <a
-                href="{{ path('contact_us') }}"
-                class="{{ currentRoute == 'contact_us' ? 'active' : '' }}"
-            >
-                <i class="fa-regular fa-envelope"></i>
-                Contact
-            </a>
+			</li>
 
-        </li>
+			{% if app.user %}
 
-        {% if app.user %}
+				<li>
 
-            <li>
+					<a href="{{ path('app_profile') }}" class="{{ currentRoute == 'app_profile' ? 'active' : '' }}">
+						<i class="fa-regular fa-address-card"></i>
+						Mon profil
+					</a>
+				</li>
+				<li>
+					<a href="{{ path('dossier_user_list') }}" class="{% if currentRoute == 'dossier_user_list' %}is-active{% endif %}">
+						<i class="fa-solid fa-folder-open"></i>
+						<span>Mes dossiers</span>
+					</a>
+				</li>
 
-                <a
-                    href="{{ path('app_profile') }}"
-                    class="{{ currentRoute == 'app_profile' ? 'active' : '' }}"
-                >
-                    <i class="fa-regular fa-address-card"></i>
-                    Mon profil
-                </a>
+			{% endif %}
 
-            </li>
+			<li>
+				<a href="{{path('app_cgv')}}" class="{{ currentRoute == 'app_cgv' ? 'active' : '' }}">
+					<i class="fa-solid fa-file-contract"></i>
+					C.G.V
+				</a>
+			</li>
 
-        {% endif %}
-
-    </ul>
-
+		</ul>
+	{% endif %}
 </div>

@@ -3,35 +3,38 @@
 namespace App\EventSubscriber;
 
 use App\Entity\Dossier;
+use App\Service\Dossier\DossierWorkflowAuditService;
 use App\Service\Financing\DossierFinancingService;
 use App\Service\VehicleWorkflowService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Workflow\Event\Event;
+use Symfony\Component\Workflow\Event\TransitionEvent;
+use Symfony\Component\Workflow\WorkflowEvents;
 
 /**
- * Subscriber des transitions du workflow dossier.
+ * subscriber du workflow dossier
  *
- * Règle :
- * - aucune logique de transition ici
- * - uniquement des effets de bord métier
- * - doit rester idempotent (appel multiple sans effet négatif)
+ * rôle :
+ * - exécuter les effets de bord métier uniquement
+ * - la persistance des logs est centralisée dans l'audit service
  */
 class DossierWorkflowSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private VehicleWorkflowService $vehicleWorkflow,
-        private DossierFinancingService $financingService
+        private DossierFinancingService $financingService,
+        private DossierWorkflowAuditService $audit
     ) {}
 
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.dossier.transition' => 'onTransition',
+            WorkflowEvents::TRANSITION => 'onTransition',
         ];
     }
 
-    public function onTransition(Event $event): void
+    public function onTransition(TransitionEvent $event): void
     {
+        dd('workflow hit');
         $dossier = $event->getSubject();
 
         if (!$dossier instanceof Dossier) {
@@ -40,36 +43,30 @@ class DossierWorkflowSubscriber implements EventSubscriberInterface
 
         $transition = $event->getTransition()->getName();
 
+        $from = implode(',', array_keys($event->getMarking()->getPlaces()));
+        $to = $dossier->getStatus()->value;
+
+        // log CRM (source unique)
+        $this->audit->log(
+            $dossier,
+            $transition,
+            $from,
+            $to
+        );
+
         $vehicle = $dossier->getVehicle();
 
-        /*
-         * Sécurité :
-         * si pas de véhicule lié, aucune action métier possible
-         */
-        if (!$vehicle && in_array($transition, ['select_vehicle', 'cancel'], true)) {
-            return;
-        }
-
-        /*
-         * SELECT VEHICLE
-         */
-        if ($transition === 'select_vehicle') {
+        if ($transition === 'select_vehicle' && $vehicle) {
             $this->vehicleWorkflow->reserve($vehicle);
             return;
         }
 
-        /*
-         * FINANCING APPROVAL
-         */
         if ($transition === 'approve_financing') {
             $this->financingService->approve($dossier);
             return;
         }
 
-        /*
-         * CANCEL DOSSIER
-         */
-        if ($transition === 'cancel') {
+        if ($transition === 'cancel' && $vehicle) {
             $this->vehicleWorkflow->return($vehicle);
         }
     }
