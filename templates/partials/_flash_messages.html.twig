@@ -3,11 +3,11 @@
 
 		<div class="flash flash-{{ label }}">
 
-			<span class="flash-message">
+			<div class="flash-message">
 				{{ message }}
-			</span>
+			</div>
 
-			<button class="flash-close" onclick="this.parentElement.remove()">
+			<button type="button" class="flash-close" onclick="this.parentElement.remove()" aria-label="Fermer">
 				&times;
 			</button>
 

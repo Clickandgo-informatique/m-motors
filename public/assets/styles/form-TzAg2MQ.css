@@ -229,6 +229,6 @@ button[type="submit"].form-delete-btn,
 }
 #password-indicators {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     width: 100%;
 }
