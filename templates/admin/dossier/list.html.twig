@@ -1,66 +1,58 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-	M-motors: Admin - Dossiers
+	m-motors: admin - dossiers
 {% endblock %}
 
 {% block body %}
 
 	<div class="container mt-4">
+
 		<h1 class="text-center">
 			<i class="fa-regular fa-folder-open title-icon"></i>
-			Administration des dossiers
+			administration des dossiers
 		</h1>
 
-		{# <a href="{{path('dossier_create')}}"><i class="fa-solid fa-circle-plus"></i>Ajouter un dossier</a> #}
-
-		{# Formulaire de recherche #}
 		{% include "Components/Forms/_fetch_form.html.twig" with {
-    action: path('admin_dossier_list'),
-    fetchUrl: path('dossiers_ajax_search'),
-    baseUrl: path('admin_dossier_list'),
-    name: 'q',
-	hiddenName:'',
-    resultDiv: 'autocomplete-results',
-    placeholder: 'Rechercher un dossier par référence, nom client, modèle de véhicule ...',
-    autocompleteUrl: path('dossiers_ajax_search'),	
-    target: '#dossiers-search-results',
-    fetchMode: 'json',
-    filtersTarget: '#dossiers-filters',
-    paginationTop: '#dossiers-pagination-top',
-    paginationBottom: '#dossiers-pagination-bottom',
-    autocomplete: true,
-    highlight: true,
-    noResultsClass: 'dropdown-no-results',
-    linkMode: '1',	
-} %}
+        action: path('admin_dossier_list'),
+        fetchUrl: path('dossiers_ajax_search'),
+        baseUrl: path('admin_dossier_list'),
+        name: 'q',
+        hiddenName: '',
+        resultDiv: 'autocomplete-results',
+        placeholder: 'rechercher un dossier par référence, client, véhicule',
+        autocompleteUrl: path('dossiers_ajax_search'),
+        target: '#dossiers-search-results',
+        fetchMode: 'json',
+        filtersTarget: '#dossiers-filters',
+        paginationTop: '#dossiers-pagination-top',
+        paginationBottom: '#dossiers-pagination-bottom',
+        autocomplete: true,
+        highlight: true,
+        noResultsClass: 'dropdown-no-results',
+        linkMode: '1'
+    } %}
 
-		{# Bouton de création de dossier #}
 		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-			{# <form
-				action="{{ path('dossier_create') }}" method="post">				
+			<form action="{{ path('admin_dossier_new') }}" method="post" data-ajax-modal>
 				<button type="submit" class="btn btn-primary btn-sm">
 					<i class="fa-solid fa-folder-plus"></i>
-					Créer un dossier ...
+					créer un dossier
 				</button>
-			</form> #}
+			</form>
 		{% endif %}
 
-		{# Pagination haut #}
-		<div class="pagination-wrapper" id="dossiers-pagination-top">
+		<div id="dossiers-pagination-top" class="pagination-wrapper">
 			{% include "dossier/_pagination_info.html.twig" with { dossiers: dossiers } %}
 		</div>
 
-		{# Section résultats Ajax #}
 		<div id="dossiers-search-results" class="dossier-search-results">
 			{% include "dossier/_dossiers_table.html.twig" with { dossiers: dossiers } %}
 		</div>
 
-		{# Pagination bas #}
-		<div class="pagination-wrapper" id="dossiers-pagination-bottom">
+		<div id="dossiers-pagination-bottom" class="pagination-wrapper">
 			{% include "dossier/_pagination_info.html.twig" with { dossiers: dossiers } %}
 		</div>
-
 
 	</div>
 

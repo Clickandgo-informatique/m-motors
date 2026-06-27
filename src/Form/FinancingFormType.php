@@ -9,16 +9,14 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class FinancingFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-
-            /**
-             * type principal financement
-             */
             ->add('type', ChoiceType::class, [
                 'choices' => [
                     'Comptant' => 'cash',
@@ -26,63 +24,66 @@ class FinancingFormType extends AbstractType
                     'Leasing' => 'leasing',
                 ],
                 'placeholder' => false,
-                'empty_data' => 'cash',
                 'required' => true,
-                'label' => 'Type de financement',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'le type de financement est obligatoire'
+                    ])
+                ],
             ])
 
-            /**
-             * sous-type leasing (uniquement si type = leasing côté UI)
-             */
             ->add('leasingType', ChoiceType::class, [
                 'choices' => [
                     'LOA' => 'loa',
                     'LLD' => 'lld',
                 ],
-                'required' => false,
-                'placeholder' => 'Choisir un type de leasing',
                 'label' => 'Type de leasing',
+                'placeholder' => 'Choisissez un type de leasing',
+                'required' => false,
             ])
 
-            /**
-             * statut financement
-             */
             ->add('status', ChoiceType::class, [
                 'choices' => [
                     'En attente' => 'pending',
                     'Approuvé' => 'approved',
                     'Refusé' => 'rejected',
                 ],
-                'placeholder' => false,
-                'empty_data' => 'pending',
                 'required' => true,
-                'label' => 'Statut',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'le statut est obligatoire'
+                    ])
+                ],
+                'label' => 'Statut dossier'
             ])
 
-            /**
-             * montant financement
-             */
             ->add('amount', MoneyType::class, [
                 'currency' => 'EUR',
                 'required' => false,
-                'label' => 'Montant financé',
+                'constraints' => [
+                    new GreaterThanOrEqual([
+                        'value' => 0,
+                        'message' => 'le montant doit être positif'
+                    ])
+                ],
+                'label' => 'Montant'
             ])
 
-            /**
-             * durée financement
-             */
             ->add('durationMonths', NumberType::class, [
                 'required' => false,
-                'label' => 'Durée en mois',
+                'constraints' => [
+                    new GreaterThanOrEqual([
+                        'value' => 1,
+                        'message' => 'la durée doit être supérieure à 0'
+                    ])
+                ],
+                'label' => 'Durée en mois'
             ])
 
-            /**
-             * mensualité
-             */
             ->add('monthlyPayment', MoneyType::class, [
                 'currency' => 'EUR',
                 'required' => false,
-                'label' => 'Mensualité',
+                'label' => 'Mensualité (€)'
             ]);
     }
 

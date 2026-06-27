@@ -10,6 +10,7 @@ use App\Enum\FinancingType;
 use App\Service\CustomerCodeGenerator;
 use App\Service\Dossier\DossierWorkflowService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
@@ -21,7 +22,7 @@ use Doctrine\Persistence\ObjectManager;
  * - toujours passer par workflowService
  * - financement géré uniquement via l'entité Financing
  */
-class DossierFixtures extends Fixture implements DependentFixtureInterface
+class DossierFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
     public function __construct(
         private CustomerCodeGenerator $codeGenerator,
@@ -47,6 +48,9 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
             'cancelled',
         ];
 
+        $completedForced = 0;
+        $maxCompleted = 5;
+
         for ($i = 0; $i < 30; $i++) {
 
             $customer = $customers[array_rand($customers)];
@@ -64,17 +68,9 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
                 $this->codeGenerator->generateDossierCode($customer)
             );
 
-            /**
-             * création automatique du financing via listener
-             * (DossierFinancingListener)
-             */
             $manager->persist($dossier);
             $manager->flush();
 
-            /**
-             * on configure le financing directement ici
-             * (source unique de vérité = Financing)
-             */
             $financing = $dossier->getFinancing();
 
             if ($financing) {
@@ -94,16 +90,19 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
 
             $manager->flush();
 
-            $scenario = $scenarios[array_rand($scenarios)];
+            if ($completedForced < $maxCompleted) {
+                $scenario = 'completed';
+                $completedForced++;
+            } else {
+                $scenario = $scenarios[array_rand($scenarios)];
+            }
+
             $this->applyScenario($dossier, $scenario);
 
             $manager->flush();
         }
     }
 
-    /**
-     * application des scénarios via workflow symfony uniquement
-     */
     private function applyScenario(Dossier $dossier, string $scenario): void
     {
         switch ($scenario) {
@@ -156,5 +155,9 @@ class DossierFixtures extends Fixture implements DependentFixtureInterface
             CustomerFixtures::class,
             VehicleFixtures::class,
         ];
+    }
+    public static function getGroups(): array
+    {
+        return ['dossier'];
     }
 }

@@ -21,18 +21,15 @@ class VehiclesFilterController extends AbstractController
         PaginatorInterface $paginator
     ): Response {
 
-        // normalisation des filtres GET
         $filters = $this->normalizeFilters($request->query->all('filters') ?? []);
         $searchTerm = $request->query->get('q', '');
         $page = max(1, $request->query->getInt('page', 1));
 
-        // détection rôle admin/manager
         $isAdminOrManager =
             $this->isGranted('ROLE_ADMIN') ||
             $this->isGranted('ROLE_MANAGER') ||
             $this->isGranted('ROLE_SUPER_ADMIN');
 
-        // construction requête véhicules
         $query = $vehicleRepo->getFilteredQueryBuilder(
             $filters,
             $searchTerm,
@@ -62,18 +59,15 @@ class VehiclesFilterController extends AbstractController
         PaginatorInterface $paginator
     ): Response {
 
-        // filtres AJAX
         $filters = $this->normalizeFilters($request->query->all('filters') ?? []);
         $searchTerm = $request->query->get('q');
         $page = max(1, $request->query->getInt('page', 1));
 
-        // détection rôle admin/manager
         $isAdminOrManager =
             $this->isGranted('ROLE_ADMIN') ||
             $this->isGranted('ROLE_MANAGER') ||
             $this->isGranted('ROLE_SUPER_ADMIN');
 
-        // requête véhicules AJAX
         $query = $vehicleRepo->getFilteredQueryBuilder(
             $filters,
             $searchTerm,
@@ -84,27 +78,22 @@ class VehiclesFilterController extends AbstractController
         $vehicles = $paginator->paginate($query, $page, 12);
 
         return $this->json([
-            // liste véhicules HTML
             'list' => $this->renderView('vehicles/_vehicles_gallery_items.html.twig', [
                 'vehicles' => $vehicles,
             ]),
 
-            // pagination haut
             'paginationTop' => $this->renderView('vehicles/_pagination_info.html.twig', [
                 'vehicles' => $vehicles,
             ]),
 
-            // pagination bas
             'paginationBottom' => $this->renderView('vehicles/_pagination_info.html.twig', [
                 'vehicles' => $vehicles,
             ]),
 
-            // résumé filtres actifs
             'filtersSummary' => $this->renderView('vehicles/_filters_summary.html.twig', [
                 'filters' => $filters
             ]),
 
-            // bornes prix
             'priceMin' => $filters['priceMin'] ?? null,
             'priceMax' => $filters['priceMax'] ?? null,
         ]);
@@ -117,19 +106,32 @@ class VehiclesFilterController extends AbstractController
         UrlGeneratorInterface $urlGenerator
     ): Response {
 
-        // autocomplete véhicules (attention: pas filtré actuellement)
         $items = $vehicleRepo->searchForAutocomplete(
             [],
             (string) $request->query->get('q', ''),
             10
         );
 
-        // ajout URL admin édition
+        $isAdminOrManager =
+            $this->isGranted('ROLE_ADMIN') ||
+            $this->isGranted('ROLE_MANAGER') ||
+            $this->isGranted('ROLE_SUPER_ADMIN');
+
         foreach ($items as &$item) {
-            $item['url'] = $urlGenerator->generate(
-                'vehicle_edit',
-                ['id' => $item['id']]
-            );
+            if ($isAdminOrManager) {
+                $item['url'] = $urlGenerator->generate(
+                    'vehicle_edit',
+                    ['id' => $item['id']]
+                );
+            } else {
+                $item['url'] = $urlGenerator->generate(
+                    'vehicle_show',
+                    [
+                        'id' => $item['id'],
+                        'mode' => 'user'
+                    ]
+                );
+            }
         }
 
         return $this->json([
@@ -140,7 +142,6 @@ class VehiclesFilterController extends AbstractController
     #[Route('/_sidebar/filters', name: 'vehicles_sidebar_filters', methods: ['GET'])]
     public function sidebarFilters(VehicleRepository $vehicleRepo): Response
     {
-        // contexte filtres sidebar
         return $this->render(
             'vehicles/_vehicles_filters.html.twig',
             $this->buildFiltersContext($vehicleRepo)
@@ -149,22 +150,18 @@ class VehiclesFilterController extends AbstractController
 
     private function buildFiltersContext(VehicleRepository $vehicleRepo): array
     {
-        // dataset filtres dynamiques
         $years = $vehicleRepo->getRegistrationYears();
 
         return [
             'brands' => $vehicleRepo->getUsedBrands(),
             'bodyTypes' => $vehicleRepo->getUsedBodyTypes(),
             'fuelTypes' => $vehicleRepo->getUsedFuelTypes(),
-
             'registrationYearsMin' => $years['min'] ?? null,
             'registrationYearsMax' => $years['max'] ?? null,
-
             'statuses' => array_map(fn($s) => [
                 'value' => $s->value,
                 'label' => $s->label(),
             ], VehicleStatus::cases()),
-
             'priceMinGlobal' => $vehicleRepo->getMinPrice(),
             'priceMaxGlobal' => $vehicleRepo->getMaxPrice(),
         ];
@@ -172,9 +169,6 @@ class VehiclesFilterController extends AbstractController
 
     private function normalizeFilters(array $filters): array
     {
-        $filters = $filters ?? [];
-
-        // prix
         $filters['priceMin'] = is_numeric($filters['priceMin'] ?? null)
             ? (int) $filters['priceMin']
             : null;
@@ -183,7 +177,6 @@ class VehiclesFilterController extends AbstractController
             ? (int) $filters['priceMax']
             : null;
 
-        // correction inversion prix
         if ($filters['priceMin'] && $filters['priceMax'] && $filters['priceMin'] > $filters['priceMax']) {
             [$filters['priceMin'], $filters['priceMax']] = [
                 $filters['priceMax'],
@@ -191,7 +184,6 @@ class VehiclesFilterController extends AbstractController
             ];
         }
 
-        // années immatriculation
         $filters['registrationYearMin'] = is_numeric($filters['registrationYearMin'] ?? null)
             ? (int) $filters['registrationYearMin']
             : null;
@@ -200,7 +192,6 @@ class VehiclesFilterController extends AbstractController
             ? (int) $filters['registrationYearMax']
             : null;
 
-        // kilométrage
         $filters['mileageMin'] = is_numeric($filters['mileageMin'] ?? null)
             ? (int) $filters['mileageMin']
             : null;
@@ -216,7 +207,6 @@ class VehiclesFilterController extends AbstractController
     {
         $labels = [];
 
-        // labels marques sélectionnées
         if (!empty($filters['brand'])) {
             $labels['brand'] = $vehicleRepo
                 ->createQueryBuilder('v')
@@ -229,7 +219,6 @@ class VehiclesFilterController extends AbstractController
                 ->getSingleColumnResult();
         }
 
-        // labels statuts
         if (!empty($filters['status'])) {
             $map = [];
             foreach (VehicleStatus::cases() as $status) {

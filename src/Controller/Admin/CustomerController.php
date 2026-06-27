@@ -26,44 +26,40 @@ class CustomerController extends AbstractController
     #[Route('/list', name: 'customer_list', methods: ['GET'])]
     public function list(CustomerRepository $repository): Response
     {
-        // Autoriser ROLE_ADMIN ou ROLE_MANAGER
         if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_MANAGER')) {
             throw $this->createAccessDeniedException('Accès réservé aux administrateurs et managers.');
         }
 
         $customers = $repository->findBy([], ['lastName' => 'ASC']);
+
         return $this->render('admin/customer/list.html.twig', [
             'customers' => $customers,
         ]);
     }
 
     /**
-     * Création d'un nouveau client
+     * Création d'un client
      */
     #[Route('/new', name: 'customer_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,
         CustomerCodeGenerator $codeGenerator,
-        EntityManagerInterface $em,
         UserPasswordHasherInterface $passwordHasher
     ): Response {
-
         $customer = new Customer();
         $form = $this->createForm(CustomerFormType::class, $customer);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // 1. GENERATE CUSTOMER CODE
             $code = $codeGenerator->generateCustomerCode($customer->getLastName());
             $customer->setCustomerCode($code);
 
-            // 2. CREATE USER
             $user = new User();
             $user->setEmail($customer->getEmail());
             $user->setRoles(['ROLE_CUSTOMER']);
 
-            // 3. PASSWORD INIT BASED ON CODE
             $plainPassword = sprintf(
                 '%s-%s',
                 $code,
@@ -74,19 +70,16 @@ class CustomerController extends AbstractController
                 $passwordHasher->hashPassword($user, $plainPassword)
             );
 
-            // 4. LINK
             $customer->setUser($user);
 
-            // 5. PERSIST
-            $em->persist($user);
-            $em->persist($customer);
-            $em->flush();
+            $this->em->persist($user);
+            $this->em->persist($customer);
+            $this->em->flush();
 
-            // FLASH (admin only)
             $this->addFlash(
                 'success',
                 sprintf(
-                    'Client créé. Code: %s | Mot de passe initial: %s',
+                    'Client créé. Code: %s | Mot de passe: %s',
                     $code,
                     $plainPassword
                 )
@@ -100,14 +93,14 @@ class CustomerController extends AbstractController
         ]);
     }
 
-
-    // Édition d'un client existant
-
+    /**
+     * Edition client
+     */
     #[Route('/{id}/edit', name: 'customer_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Customer $customer): Response
     {
         if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_MANAGER')) {
-            throw $this->createAccessDeniedException('Accès réservé aux administrateurs et managers.');
+            throw $this->createAccessDeniedException();
         }
 
         $form = $this->createForm(CustomerFormType::class, $customer);
@@ -115,7 +108,9 @@ class CustomerController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->em->flush();
+
             $this->addFlash('success', 'Client modifié avec succès.');
+
             return $this->redirectToRoute('customer_list');
         }
 
@@ -125,19 +120,20 @@ class CustomerController extends AbstractController
         ]);
     }
 
-
-    // Suppression d'un client
-
+    /**
+     * Suppression client
+     */
     #[Route('/{id}/delete', name: 'customer_delete', methods: ['POST'])]
     public function delete(Request $request, Customer $customer): Response
     {
         if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_MANAGER')) {
-            throw $this->createAccessDeniedException('Accès réservé aux administrateurs et managers.');
+            throw $this->createAccessDeniedException();
         }
 
         if ($this->isCsrfTokenValid('delete' . $customer->getId(), $request->request->get('_token'))) {
             $this->em->remove($customer);
             $this->em->flush();
+
             $this->addFlash('success', 'Client supprimé avec succès.');
         }
 
@@ -145,13 +141,13 @@ class CustomerController extends AbstractController
     }
 
     /**
-     * Affichage d’un client
+     * Affichage client
      */
     #[Route('/{id<\d+>}', name: 'customer_show', methods: ['GET'])]
     public function show(Customer $customer): Response
     {
         if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_MANAGER')) {
-            throw $this->createAccessDeniedException('Accès réservé aux administrateurs et managers.');
+            throw $this->createAccessDeniedException();
         }
 
         return $this->render('admin/customer/show.html.twig', [
@@ -159,49 +155,40 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    //Recherche d'un client pour autocomplete (dossier...)
-    #[Route('/search', name: 'customer_search', methods: ['GET'])]
-    public function searchCustomer(
-        Request $request,
-        CustomerRepository $customerRepository
-    ): JsonResponse {
+    /**
+     * API CRM AUTOCOMPLETE (UTILISÉ PAR DOSSIER)
+     */
+    #[Route('/api/customers/search', name: 'api_customers_search', methods: ['GET'])]
+    public function searchCustomers(Request $request): JsonResponse
+    {
+        $term = trim((string) $request->query->get('q', ''));
 
-        $query = trim((string) (
-            $request->query->get('q')
-
-        ));
-
-        if (mb_strlen($query) < 2) {
-            return new JsonResponse([]);
+        if (mb_strlen($term) < 2) {
+            return $this->json([]);
         }
 
-        $queryLower = mb_strtolower($query);
+        $repo = $this->em->getRepository(Customer::class);
 
-        $customers = $customerRepository->createQueryBuilder('c')
-            ->where('LOWER(c.lastName) LIKE :q')
-            ->orWhere('LOWER(c.firstName) LIKE :q')
+        $qb = $repo->createQueryBuilder('c')
+            ->where('LOWER(c.firstName) LIKE :q')
+            ->orWhere('LOWER(c.lastName) LIKE :q')
             ->orWhere('LOWER(c.email) LIKE :q')
             ->orWhere('LOWER(c.customerCode) LIKE :q')
-            ->setParameter('q', '%' . $queryLower . '%')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('q', '%' . mb_strtolower($term) . '%')
+            ->setMaxResults(10);
 
-        $items = [];
+        $results = $qb->getQuery()->getResult();
 
-        foreach ($customers as $customer) {
-            $items[] = [
-                'id' => (int) $customer->getId(),
-                'label' => sprintf(
-                    '[%s] %s %s (%s) ',
-                    $customer->getCustomerCode(),
-                    $customer->getFirstName(),
-                    $customer->getLastName(),
-                    $customer->getEmail(),
-                )
-            ];
-        }
+        $data = array_map(fn(Customer $c) => [
+            'id' => $c->getId(),
+            'text' => sprintf(
+                '[%s] %s %s',
+                $c->getCustomerCode(),
+                $c->getFirstName(),
+                $c->getLastName()
+            ),
+        ], $results);
 
-        return new JsonResponse(['items' => $items]);
+        return $this->json($data);
     }
 }

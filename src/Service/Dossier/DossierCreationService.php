@@ -27,15 +27,12 @@ class DossierCreationService
         Vehicle $vehicle,
         DossierType $type
     ): array {
-        // vérifie si le véhicule est disponible
         if ($vehicle->isLocked()) {
             throw new AccessDeniedHttpException('véhicule indisponible');
         }
 
-        // vérifie que le type de dossier est compatible avec le véhicule
         $this->assertAllowedType($vehicle, $type);
 
-        // évite les doublons
         $existing = $this->em->getRepository(Dossier::class)->findOneBy([
             'customer' => $customer,
             'vehicle' => $vehicle,
@@ -49,16 +46,13 @@ class DossierCreationService
             ];
         }
 
-        // crée le dossier
         $dossier = new Dossier();
 
         $dossier
             ->setCustomer($customer)
             ->setVehicle($vehicle)
             ->setType($type)
-            ->setDossierCode(
-                $this->codeGenerator->generate()
-            );
+            ->setDossierCode($this->codeGenerator->generate());
 
         $this->em->persist($dossier);
         $this->em->flush();
@@ -78,7 +72,16 @@ class DossierCreationService
     ): void {
         $allowed = $vehicle->getUsageType()->allowedDossierTypes();
 
-        if (!in_array($type, $allowed, true)) {
+        if (!is_array($allowed)) {
+            throw new \LogicException('allowedDossierTypes doit retourner un tableau');
+        }
+
+        $allowedValues = array_map(
+            fn($t) => $t instanceof DossierType ? $t->value : $t,
+            $allowed
+        );
+
+        if (!in_array($type->value, $allowedValues, true)) {
             throw new AccessDeniedHttpException(
                 'type de dossier non autorisé pour ce véhicule'
             );

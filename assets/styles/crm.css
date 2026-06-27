@@ -1,0 +1,20 @@
+.crm-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    z-index: 9999;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.crm-item {
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.crm-item:hover {
+    background: #f2f2f2;
+}

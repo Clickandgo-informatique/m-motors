@@ -1,74 +1,49 @@
-{# timeline CRM stable basée sur audit #}
-
 {% set logs = dossier.workflowLogs|sort((a, b) => a.createdAt <=> b.createdAt) %}
+{% set statuses = statuses|reduce((carry, s) => carry|merge({ (s.value): s }), {}) %}
 
-{% set labels = {
-    'create': {
-        label: 'Dossier créé',
-        icon: 'fa-solid fa-file-circle-plus'
-    },
-    'select_vehicle': {
-        label: 'Véhicule sélectionné',
-        icon: 'fa-solid fa-car'
-    },
-    'request_documents': {
-        label: 'Documents demandés',
-        icon: 'fa-solid fa-folder-open'
-    },
-    'submit_documents': {
-        label: 'Documents soumis',
-        icon: 'fa-solid fa-upload'
-    },
-    'validate_documents': {
-        label: 'Documents validés',
-        icon: 'fa-solid fa-circle-check'
-    },
-    'approve_financing': {
-        label: 'Financement validé',
-        icon: 'fa-solid fa-handshake'
-    },
-    'sign_order': {
-        label: 'Commande signée',
-        icon: 'fa-solid fa-pen-nib'
-    },
-    'cancel': {
-        label: 'Dossier annulé',
-        icon: 'fa-solid fa-circle-xmark'
-    }
-} %}
+{% set current = statuses[currentStatus] ?? null %}
 
 <div class="card mb-3">
 	<div class="card-body">
 
-		<h5 class="mb-3">Timeline du dossier</h5>
+		<h5 class="mb-3">Suivi du dossier</h5>
 
 		<ul class="timeline list-unstyled m-0">
 
-			{% for log in logs %}
+			{% for status in statuses %}
 
-				{% set config = labels[log.transition] ?? {
-                    label: log.transition,
-                    icon: 'fa-solid fa-circle'
-                } %}
+				{% set reached = false %}
+				{% set isCurrent = current and status.value == current.value %}
 
-				<li class="timeline-item">
+				{# check si cette étape est atteinte via logs #}
+				{% for log in logs %}
+					{% if log.toStatus == status.value %}
+						{% set reached = true %}
+					{% endif %}
+				{% endfor %}
+
+				<li class="timeline-item
+											{{ reached ? 'done' : '' }}
+											{{ isCurrent ? 'active' : '' }}
+											{{ current and current.isFinal() and isCurrent ? 'final' : '' }}
+										">
 
 					<div class="timeline-icon">
-						<i class="{{ config.icon }}"></i>
+						<i class="{{ status.icon() }}"></i>
 					</div>
 
 					<div class="timeline-content">
 
-						<strong>{{ config.label }}</strong>
+						<strong>{{ status.label() }}</strong>
 
 						<div class="text-muted small">
-							{{ log.createdAt|date('d/m/Y H:i') }}
-						</div>
-
-						<div class="text-muted small">
-							{{ log.fromStatus }}
-							→
-							{{ log.toStatus }}
+							{% if isCurrent %}
+								Étape actuelle
+							{% elseif reached %}
+								Terminé
+							{% else %}
+								En attente
+							{% endif %}
 						</div>
 
 					</div>

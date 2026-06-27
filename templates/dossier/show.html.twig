@@ -31,7 +31,11 @@
 				<div class="card">
 					<div class="card-body">
 						<h1>Dossier
-							{{ dossier.dossierCode }}</h1>
+						</h1>
+						<a href="{{path('admin_dossier_edit',{id:dossier.id})}}" data-ajax-modal>
+							<i class="fa-regular fa-folder-open"></i>Ouvrir</a>
+						<h5>{{ dossier.dossierCode }}</h5>
+
 
 						<p>
 							Statut :

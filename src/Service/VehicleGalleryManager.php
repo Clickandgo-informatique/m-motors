@@ -19,7 +19,7 @@ class VehicleGalleryManager
      *
      * @param UploadedFile[] $files
      */
-    public function uploadImages(Vehicle $vehicle, array $files, string $destination = 'vehicles'): void
+    public function uploadImages(Vehicle $vehicle, array $files, string $destination = 'vehicles_assigned_images'): void
     {
         if (empty($files)) {
             return;
@@ -57,7 +57,7 @@ class VehicleGalleryManager
     /**
      * Supprime une image (DB + fichiers)
      */
-    public function deleteImage(Image $image, string $destination = 'vehicles'): void
+    public function deleteImage(Image $image, string $destination = 'vehicles_assigned_images'): void
     {
         $this->imageProcessor->delete($image->getFilename(), $destination);
 

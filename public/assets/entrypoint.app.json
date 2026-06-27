@@ -14,6 +14,8 @@
     "\/assets\/js\/FilterBadges.js",
     "\/assets\/js\/cookie-banner.js",
     "\/assets\/js\/Multiselect.js",
+    "\/assets\/js\/crm-search.js",
+    "\/assets\/js\/dossier-financing-toggle.js",
     "\/assets\/js\/usage-type-confirmation.js",
     "@symfony\/stimulus-bundle",
     "@hotwired\/stimulus",

@@ -1,6 +1,6 @@
 {
     "app": {
-        "path": "\/assets\/app-gJfOJRa.js",
+        "path": "\/assets\/app-O-NRaFi.js",
         "type": "js"
     },
     "\/assets\/stimulus_bootstrap.js": {
@@ -28,7 +28,7 @@
         "type": "js"
     },
     "\/assets\/styles\/app.css": {
-        "path": "\/assets\/styles\/app-6C_I7M2.css",
+        "path": "\/assets\/styles\/app-j5Ad0Ef.css",
         "type": "css"
     },
     "\/assets\/js\/sidebar.js": {
@@ -36,7 +36,7 @@
         "type": "js"
     },
     "\/assets\/js\/rangeSelector.js": {
-        "path": "\/assets\/js\/rangeSelector-oScFfmG.js",
+        "path": "\/assets\/js\/rangeSelector-aNpsnbE.js",
         "type": "js"
     },
     "\/assets\/js\/Dropzone.js": {
@@ -48,11 +48,11 @@
         "type": "js"
     },
     "\/assets\/js\/FetchForm.js": {
-        "path": "\/assets\/js\/FetchForm-8PCt_Gv.js",
+        "path": "\/assets\/js\/FetchForm-r_e3DyY.js",
         "type": "js"
     },
     "\/assets\/js\/AjaxManager.js": {
-        "path": "\/assets\/js\/AjaxManager-Z6gHohF.js",
+        "path": "\/assets\/js\/AjaxManager-zIywCYL.js",
         "type": "js"
     },
     "\/assets\/js\/Autocomplete.js": {
@@ -61,6 +61,10 @@
     },
     "\/assets\/js\/Multiselect.js": {
         "path": "\/assets\/js\/Multiselect-Peui5Cv.js",
+        "type": "js"
+    },
+    "\/assets\/js\/dossier-financing-toggle.js": {
+        "path": "\/assets\/js\/dossier-financing-toggle-BTOEO61.js",
         "type": "js"
     },
     "\/assets\/js\/ToggleVehicleFavorite.js": {
@@ -72,11 +76,15 @@
         "type": "js"
     },
     "\/assets\/js\/FilterBadges.js": {
-        "path": "\/assets\/js\/FilterBadges-zt5kLQO.js",
+        "path": "\/assets\/js\/FilterBadges-UyeukUq.js",
         "type": "js"
     },
     "\/assets\/js\/cookie-banner.js": {
         "path": "\/assets\/js\/cookie-banner-WXkTDEM.js",
+        "type": "js"
+    },
+    "\/assets\/js\/crm-search.js": {
+        "path": "\/assets\/js\/crm-search-kIRG0n6.js",
         "type": "js"
     },
     "\/assets\/js\/usage-type-confirmation.js": {
@@ -96,7 +104,7 @@
         "type": "js"
     },
     "FetchForm": {
-        "path": "\/assets\/js\/FetchForm-8PCt_Gv.js",
+        "path": "\/assets\/js\/FetchForm-r_e3DyY.js",
         "type": "js"
     }
 }

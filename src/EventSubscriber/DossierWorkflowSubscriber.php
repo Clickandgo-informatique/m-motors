@@ -34,7 +34,7 @@ class DossierWorkflowSubscriber implements EventSubscriberInterface
 
     public function onTransition(TransitionEvent $event): void
     {
-        dd('workflow hit');
+      
         $dossier = $event->getSubject();
 
         if (!$dossier instanceof Dossier) {

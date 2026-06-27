@@ -8,6 +8,7 @@ use App\Entity\Financing;
 use App\Entity\User;
 use App\Entity\Vehicle;
 use App\Enum\DossierType;
+use App\Enum\DossierStatus;
 use App\Form\DossierFormType;
 use App\Repository\DossierRepository;
 use App\Repository\DossierWorkflowLogRepository;
@@ -27,7 +28,6 @@ class DossierController extends AbstractController
         private EntityManagerInterface $em
     ) {}
 
-    // retourne l'utilisateur connecté typé user
     private function getAppUser(): User
     {
         $user = $this->getUser();
@@ -39,35 +39,27 @@ class DossierController extends AbstractController
         return $user;
     }
 
-    // vérifie si admin ou manager
     private function isAdminOrManager(): bool
     {
         return $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MANAGER');
     }
 
-    // ouverture de la modale de création de dossier depuis un véhicule
     #[Route('/dossier/create/modal/{id<\d+>}', name: 'dossier_create_modal', methods: ['GET'])]
-    public function createModal(
-        Vehicle $vehicle
-
-    ): Response {
+    public function createModal(Vehicle $vehicle): Response
+    {
         $this->getAppUser();
-
 
         return $this->render('dossier/_create_modal.html.twig', [
             'vehicle' => $vehicle,
-
         ]);
     }
 
-    // création dossier depuis véhicule (user et admin)
     #[Route('/dossier/create/{id<\d+>}/', name: 'dossier_create', methods: ['POST'])]
     public function createFromVehicle(
         Vehicle $vehicle,
         Request $request,
         DossierCreationService $service
     ): Response {
-
         $user = $this->getAppUser();
 
         try {
@@ -77,10 +69,8 @@ class DossierController extends AbstractController
             return $this->redirectToRoute('vehicles_index');
         }
 
-        // cas admin ou manager : client fourni par le formulaire
         if ($this->isAdminOrManager()) {
-
-            $customerId = $request->request->get('customerId');
+            $customerId = $request->request->get('customer');
 
             if (!$customerId) {
                 $this->addFlash('error', 'aucun client sélectionné');
@@ -94,7 +84,6 @@ class DossierController extends AbstractController
                 return $this->redirectToRoute('vehicles_index');
             }
         } else {
-            // cas user : client lié au compte
             $customer = $user->getCustomer();
 
             if (!$customer) {
@@ -106,14 +95,20 @@ class DossierController extends AbstractController
         try {
             $result = $service->createFromVehicle($customer, $vehicle, $dossierType);
 
-            $dossier = $result['dossier'];
+            $dossier = $result['dossier'] ?? null;
 
-            if ($result['created']) {
-                $this->addFlash('success', 'Le dossier a été créé avec succès.');
-            } else {
-                $this->addFlash('info', 'Un dossier existe déjà pour ce véhicule.');
+            if (!$dossier instanceof Dossier) {
+                $this->addFlash('error', 'erreur création dossier');
+                return $this->redirectToRoute('vehicles_index');
             }
-        } catch (\Throwable $e) {
+
+            $this->addFlash(
+                $result['created'] ? 'success' : 'info',
+                $result['created']
+                    ? 'Le dossier a été créé avec succès.'
+                    : 'Un dossier existe déjà pour ce véhicule.'
+            );
+        } catch (\Throwable) {
             $this->addFlash('error', 'erreur création dossier');
             return $this->redirectToRoute('vehicles_index');
         }
@@ -123,7 +118,6 @@ class DossierController extends AbstractController
         ]);
     }
 
-    // liste des dossiers utilisateur connecté
     #[Route('/dossier/my/list', name: 'dossier_user_list', methods: ['GET'])]
     public function myDossiers(DossierRepository $repository): Response
     {
@@ -135,50 +129,50 @@ class DossierController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $dossiers = $repository->findBy(
-            ['customer' => $customer],
-            ['createdAt' => 'DESC']
-        );
-
         return $this->render('dossier/index.html.twig', [
-            'dossiers' => $dossiers
+            'dossiers' => $repository->findBy(
+                ['customer' => $customer],
+                ['createdAt' => 'DESC']
+            )
         ]);
     }
 
-    // affichage d'un dossier utilisateur
     #[Route('/dossier/{id<\d+>}', name: 'dossier_show', methods: ['GET'])]
-    public function show(DossierRepository $repo, int $id, Registry $workflowRegistry): Response
-    {
+    public function show(
+        DossierRepository $repo,
+        int $id,
+        Registry $workflowRegistry
+    ): Response {
         $dossier = $repo->findWithLogs($id);
 
         $this->denyAccessUnlessGranted('DOSSIER_VIEW', $dossier);
 
         $workflow = $workflowRegistry->get($dossier);
-
         $marking = $workflow->getMarking($dossier);
 
-        $currentStatus = array_keys($marking->getPlaces())[0] ?? 'draft';
+        $currentStatus = array_key_first($marking->getPlaces()) ?? 'draft';
 
         return $this->render('dossier/show.html.twig', [
             'dossier' => $dossier,
             'currentStatus' => $currentStatus,
+            'workflowLogs' => $dossier->getWorkflowLogs() ?? [],
+            'statuses' => DossierStatus::cases(),
         ]);
     }
 
-    // liste admin des dossiers avec pagination
     #[Route('/admin/dossier/list', name: 'admin_dossier_list', methods: ['GET'])]
     public function adminList(
         DossierRepository $repository,
         PaginatorInterface $paginator,
         Request $request
     ): Response {
-
         if (!$this->isAdminOrManager()) {
             throw $this->createAccessDeniedException();
         }
 
         $query = $repository->createQueryBuilder('d')
-            ->orderBy('d.createdAt', 'DESC');
+            ->orderBy('d.createdAt', 'DESC')
+            ->getQuery();
 
         $dossiers = $paginator->paginate(
             $query,
@@ -191,26 +185,23 @@ class DossierController extends AbstractController
         ]);
     }
 
-    // affichage dossier admin avec logs workflow
     #[Route('/admin/dossier/{id<\d+>}', name: 'admin_dossier_show', methods: ['GET'])]
     public function adminShow(
         Dossier $dossier,
         DossierWorkflowLogRepository $repo
     ): Response {
-
         if (!$this->isAdminOrManager()) {
             throw $this->createAccessDeniedException();
         }
 
-        $workflowLogs = $repo->findByDossier($dossier->getId());
-
         return $this->render('dossier/show.html.twig', [
             'dossier' => $dossier,
-            'workflowLogs' => $workflowLogs
+            'workflowLogs' => $repo->findByDossier($dossier->getId()),
+            'currentStatus' => null,
+            'statuses' => DossierStatus::cases(),
         ]);
     }
 
-    // création dossier admin manuel
     #[Route('/admin/dossier/new', name: 'admin_dossier_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
@@ -227,6 +218,7 @@ class DossierController extends AbstractController
         }
 
         $form = $this->createForm(DossierFormType::class, $dossier);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -240,18 +232,17 @@ class DossierController extends AbstractController
 
         return $this->render('admin/dossier/edit.html.twig', [
             'form' => $form->createView(),
-            'title' => 'créer un dossier'
+            'title' => 'Créer un dossier',
+            'dossier' => $dossier
         ]);
     }
 
-    // edition dossier admin
     #[Route('/admin/dossier/{id<\d+>}/edit', name: 'admin_dossier_edit', methods: ['GET', 'POST'])]
     public function edit(
         DossierRepository $repo,
         int $id,
         Request $request
     ): Response {
-
         if (!$this->isAdminOrManager()) {
             throw $this->createAccessDeniedException();
         }
@@ -287,51 +278,26 @@ class DossierController extends AbstractController
         return $this->render('admin/dossier/edit.html.twig', [
             'dossier' => $dossier,
             'form' => $form->createView(),
-            'title' => 'modifier un dossier'
+            'title' => 'Modifier un dossier'
         ]);
     }
 
-    // recherche ajax dossiers + autocomplete
     #[Route('/dossiers/ajax-search', name: 'dossiers_ajax_search', methods: ['GET', 'POST'])]
-    public function search(
+    public function ajaxSearch(
         Request $request,
         DossierRepository $repo,
         PaginatorInterface $paginator
     ): JsonResponse {
+        $data = json_decode($request->getContent(), true) ?? $request->query->all();
 
-        $data = json_decode($request->getContent(), true) ?: $request->query->all();
-
-        $searchTerm = trim((string) ($data['q'] ?? ''));
+        $search = trim((string) ($data['q'] ?? ''));
         $page = (int) ($data['page'] ?? 1);
 
-        $isAutocomplete = $request->query->getBoolean('autocomplete');
+        $qb = $search && mb_strlen($search) >= 2
+            ? $repo->searchForPaginator($search)
+            : $repo->createQueryBuilder('d')->orderBy('d.createdAt', 'DESC');
 
-        if ($isAutocomplete) {
-
-            if (mb_strlen($searchTerm) < 2) {
-                return $this->json(['items' => []]);
-            }
-
-            $results = $repo->findForAutocomplete($searchTerm);
-
-            $items = [];
-
-            foreach ($results as $dossier) {
-                $items[] = [
-                    'id' => (int) $dossier['id'],
-                    'label' => $dossier['dossierCode'] ?? '',
-                    'url' => $this->generateUrl('admin_dossier_edit', [
-                        'id' => (int) $dossier['id']
-                    ])
-                ];
-            }
-
-            return $this->json(['items' => $items]);
-        }
-
-        $query = $repo->searchForPaginator($searchTerm);
-
-        $dossiers = $paginator->paginate($query, $page, 20);
+        $dossiers = $paginator->paginate($qb, $page, 20);
 
         return $this->json([
             'results' => $this->renderView('dossier/_dossiers_table.html.twig', [
@@ -343,8 +309,6 @@ class DossierController extends AbstractController
             'paginationBottom' => $this->renderView('dossier/_pagination_info.html.twig', [
                 'dossiers' => $dossiers
             ]),
-            'totalItems' => $dossiers->getTotalItemCount(),
-            'currentPage' => $dossiers->getCurrentPageNumber()
         ]);
     }
 }
