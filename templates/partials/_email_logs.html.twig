@@ -1,0 +1,65 @@
+<div class="card">
+	<h2>
+		<i class="fa-solid fa-envelope"></i>
+		Emails envoyés
+	</h2>
+
+	{% if emailLogs is not empty %}
+		<div class="table-wrapper">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Type</th>
+						<th>Objet</th>
+						<th>Destinataire</th>
+						<th>Statut</th>
+						<th>Envoyé le</th>
+					</tr>
+				</thead>
+
+				<tbody>
+
+					{% for email in emailLogs %}
+						<tr>
+
+							<td data-label="Type">
+								<i class="{{ email.type.icon }}"></i>
+								{{ email.type.label }}
+							</td>
+
+							<td data-label="Objet">
+								{{ email.subject }}
+							</td>
+
+							<td data-label="Destinataire">
+								<i class="fa-solid fa-at"></i>
+								{{ email.recipient }}
+							</td>
+
+							<td data-label="Statut">
+								<span class="badge badge-{{ email.status.value }}">
+									<i class="{{ email.status.icon }}"></i>
+									{{ email.status.label }}
+								</span>
+							</td>
+
+							<td data-label="Envoyé le">
+								<i class="fa-regular fa-clock"></i>
+								{{ email.sentAt|date('d/m/Y H:i') }}
+							</td>
+
+						</tr>
+					{% endfor %}
+
+				</tbody>
+			</table>
+		</div>
+	{% else %}
+
+		<p class="text-muted">
+			<i class="fa-regular fa-envelope-open"></i>
+			Aucun email envoyé.
+		</p>
+
+	{% endif %}
+</div>

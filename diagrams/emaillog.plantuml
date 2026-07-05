@@ -1,0 +1,46 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam rectangle {
+    BorderColor #183A63
+    BackgroundColor #EAF2FB
+}
+skinparam ArrowColor #183A63
+
+title Architecture du module de gestion des emails
+
+actor Client
+
+rectangle "Application M-Motors" {
+
+    rectangle "Création d'un dossier" as Dossier
+
+    rectangle "Workflow Symfony" as Workflow
+
+    rectangle "EmailService" as EmailService
+
+    database "EmailLog" as EmailLog
+}
+
+cloud "Serveur SMTP" as SMTP
+
+database "PostgreSQL" as DB
+
+rectangle "Back Office\nAdministration" as Admin
+
+Client --> Dossier
+
+Dossier --> Workflow
+
+Workflow --> EmailService
+
+EmailService --> SMTP : Envoi du mail
+
+EmailService --> EmailLog : Journalisation
+
+EmailLog --> DB : Persistance
+
+Admin --> EmailLog : Consultation
+
+@enduml

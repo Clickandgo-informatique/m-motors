@@ -7,7 +7,7 @@
 
 	<div class="container mt-4 table-wrapper">
 
-		<h1>Mes dossiers</h1>
+		<h1 class="text-center"><i class="fa-regular fa-folder title-icon"></i>Mes dossiers</h1>
 
 		<table class="table table-striped mt-3">
 
@@ -23,7 +23,9 @@
 				</tr>
 			</thead>
 
+			{% if dossiers is defined and dossiers|length >0 %}
 			<tbody>
+			
 				{% for dossier in dossiers %}
 					<tr>
 						<td>
@@ -49,6 +51,9 @@
 					</tr>
 				{% endfor %}
 			</tbody>
+				{% else %}
+					<p class="text-center">Il n'existe encore aucun dossier.</p>
+				{% endif %}
 
 		</table>
 

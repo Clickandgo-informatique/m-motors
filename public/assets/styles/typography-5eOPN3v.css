@@ -58,7 +58,8 @@ ol li {
     color: var(--text-secondary);
 }
 
-.text-center {  
+.text-center {
+    display: inline-flex;
     text-align: center;
     margin: 10px auto;
 }

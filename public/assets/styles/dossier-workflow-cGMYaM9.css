@@ -5,14 +5,14 @@
     margin: 20px auto;
     align-items: start;
     justify-content: center;
-    padding: 0 10px;
 }
 .dossier-right {
   min-width: 0 ;
 }
 .dossier-left {
     position: sticky;
-    top: 20px; 
+    top: 20px;
+    justify-self: end;
 }
 
 .workflow-steps {

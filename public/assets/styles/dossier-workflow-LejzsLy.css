@@ -1,18 +1,19 @@
 .dossier-grid {
     display: grid;
     grid-template-columns: 320px 1fr;
-    gap: 5px;   
+    gap: 20px;   
     margin: 20px auto;
-    align-items: start;
+    padding: 0 20px;
     justify-content: center;
-    padding: 0 10px;
+    align-items: start;
 }
 .dossier-right {
   min-width: 0 ;
 }
 .dossier-left {
     position: sticky;
-    top: 20px; 
+    top: 20px;
+    justify-self: end;
 }
 
 .workflow-steps {

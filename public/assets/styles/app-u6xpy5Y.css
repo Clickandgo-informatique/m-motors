@@ -1,0 +1,59 @@
+@import "reset-XQl7hhL.css";
+@import "variables-HjYNvbL.css";
+@import "typography-WK3OhSe.css";
+@import "layout-xqPwabC.css";
+@import "form-p8Vx5SB.css";
+@import "button-0qHkv5H.css";
+@import "checkbox-kNdxc6D.css";
+@import "header-tTqEzPr.css";
+@import "navbar-De5IaQp.css";
+@import "table-h5r0I1d.css";
+@import "pagination-hpdtBCS.css";
+@import "dropdown-0KXI5A-.css";
+@import "modal-jYKU195.css";
+@import "badge-wO3DaN6.css";
+@import "footer-0x0TEN2.css";
+@import "card-9OLMOil.css";
+@import "flashbag--D8Xm83.css";
+@import "sidebar-GpoN0m3.css";
+@import "double-sliders-70YwrFc.css";
+@import "filters-form-k75Su_C.css";
+@import "switch-Gcvicgt.css";
+@import "grid-IOxLlRi.css";
+@import "dropzone-KfWRIiB.css";
+@import "details-bnOMUpA.css";
+@import "dossier-workflow-zNzko39.css";
+@import "dossier-workflow-timeline-46gVJer.css";
+@import "vehicles-filters-layout--Afexc9.css";
+@import "featured-gallery-fLKMRsS.css";
+@import "vehicles-layout-Jm3SKBA.css";
+@import "vehicles-grid-DVoW8xn.css";
+@import "dashboard-sdFd4q2.css";
+@import "dossier-card-suDz46p.css";
+@import "vehicle-model-card-X48-sUN.css";
+@import "cookie-banner-EHTid6i.css";
+@import "multiselect-GhVTrF6.css";
+
+/* BASE GLOBALE */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

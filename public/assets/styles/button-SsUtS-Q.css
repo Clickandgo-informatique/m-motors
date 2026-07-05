@@ -24,7 +24,7 @@ button.primary,
     background: var(--btn-primary-bg);
     color: var(--btn-primary-text);
     border-color: var(--btn-primary-bg);
-    margin: 10px auto;
+    margin: 10px;
 }
 
 button.primary:hover,

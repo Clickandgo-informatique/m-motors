@@ -5,92 +5,94 @@
 
 {% block body %}
 
-	<div class="container mt-4">
+	{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
+		<h1 class="text-center"><a href="{{ path('admin_dossier_list') }}" >
+			<i class="fa-solid fa-list title-icon"></i>
+			Revenir à la liste de dossiers
+		</a></h1>
+	{% else %}
+		<h1 class="text-center"><a href="{{ path('dossier_user_list') }}" >
+			<i class="fa-solid fa-list title-icon"></i>
+			Revenir à la liste de dossiers
+		</a></h1>
 
-		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANAGER') %}
-			<a href="{{ path('admin_dossier_list') }}" class="btn">
-				<i class="fa-solid fa-list"></i>
-				Revenir à la liste de dossiers
-			</a>
-		{% else %}
-			<a href="{{ path('dossier_user_list') }}" class="btn">
-				<i class="fa-solid fa-list"></i>
-				Revenir à la liste de dossiers
-			</a>
+	{% endif %}
 
-		{% endif %}
 
-		<div class="dossier-grid">
+	<div class="dossier-grid">
 
-			<div
-				class="dossier-left">
-				{# Barre de progression des dossiers #}
-				{% include "dossier/_progress_timeline.html.twig" %}
-			</div>
-			<div class="dossier-right">
+		<div
+			class="dossier-left">
+			{# Barre de progression des dossiers #}
+			{% include "dossier/_progress_timeline.html.twig" %}
+		</div>
+		<div class="dossier-right">
+			<div class="card">
+				<div class="card-body">
+					<h1>Dossier
+					</h1>
+					<a href="{{path('admin_dossier_edit',{id:dossier.id})}}" data-ajax-modal>
+						<i class="fa-regular fa-folder-open"></i>Ouvrir</a>
+					<h5>{{ dossier.dossierCode }}</h5>
+
+
+					<p>
+						Statut :
+						{% if dossier.status == 'draft' %}
+							<span class="badge bg-primary">brouillon</span>
+						{% elseif dossier.status == 'pending' %}
+							<span class="badge bg-warning">en attente</span>
+						{% elseif dossier.status == 'active' %}
+							<span class="badge bg-success">actif</span>
+						{% elseif dossier.status == 'cancelled' %}
+							<span class="badge bg-danger">annulé</span>
+						{% else %}
+							<span class="badge bg-primary">{{ dossier.status.label }}</span>
+						{% endif %}
+					</p>
+
+					<p>
+						Type :
+						<span class="badge bg-{{ dossier.type.badge() }}">
+							<i class="fa-solid {{ dossier.type.icon() }}"></i>
+							{{ dossier.type.label() }}
+						</span>
+					</p>
+				</div>
+				<hr>
+
 				<div class="card">
 					<div class="card-body">
-						<h1>Dossier
-						</h1>
-						<a href="{{path('admin_dossier_edit',{id:dossier.id})}}" data-ajax-modal>
-							<i class="fa-regular fa-folder-open"></i>Ouvrir</a>
-						<h5>{{ dossier.dossierCode }}</h5>
-
 
 						<p>
-							Statut :
-							{% if dossier.status == 'draft' %}
-								<span class="badge bg-primary">brouillon</span>
-							{% elseif dossier.status == 'pending' %}
-								<span class="badge bg-warning">en attente</span>
-							{% elseif dossier.status == 'active' %}
-								<span class="badge bg-success">actif</span>
-							{% elseif dossier.status == 'cancelled' %}
-								<span class="badge bg-danger">annulé</span>
-							{% else %}
-								<span class="badge bg-primary">{{ dossier.status.label }}</span>
-							{% endif %}
-						</p>
+							<strong>Client :</strong>
+							{{ dossier.customer }}</p>
+						<p>
+							<strong>Véhicule :</strong>
+							{{ dossier.vehicle.fullName }}</p>
 
 						<p>
-							Type :
-							<span class="badge bg-{{ dossier.type.badge() }}">
-								<i class="fa-solid {{ dossier.type.icon() }}"></i>
-								{{ dossier.type.label() }}
-							</span>
-						</p>
-					</div>
-					<hr>
+							<strong>Créé le :</strong>
+							{{ dossier.createdAt|date('d/m/Y H:i') }}</p>
 
-					<div class="card">
-						<div class="card-body">
-
+						{% if dossier.completedAt %}
 							<p>
-								<strong>Client :</strong>
-								{{ dossier.customer }}</p>
+								<strong>Terminé le :</strong>
+								{{ dossier.completedAt|date('d/m/Y H:i') }}</p>
+						{% endif %}
+
+						{% if dossier.cancelledAt %}
 							<p>
-								<strong>Véhicule :</strong>
-								{{ dossier.vehicle.fullName }}</p>
+								<strong>Annulé le :</strong>
+								{{ dossier.cancelledAt|date('d/m/Y H:i') }}</p>
+						{% endif %}
 
-							<p>
-								<strong>Créé le :</strong>
-								{{ dossier.createdAt|date('d/m/Y H:i') }}</p>
-
-							{% if dossier.completedAt %}
-								<p>
-									<strong>Terminé le :</strong>
-									{{ dossier.completedAt|date('d/m/Y H:i') }}</p>
-							{% endif %}
-
-							{% if dossier.cancelledAt %}
-								<p>
-									<strong>Annulé le :</strong>
-									{{ dossier.cancelledAt|date('d/m/Y H:i') }}</p>
-							{% endif %}
-
-						</div>
 					</div>
 				</div>
+
 			</div>
+			{% include "partials/_email_logs.html.twig" %}
 		</div>
+
+
 	{% endblock %}

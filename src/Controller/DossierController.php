@@ -12,6 +12,7 @@ use App\Enum\DossierStatus;
 use App\Form\DossierFormType;
 use App\Repository\DossierRepository;
 use App\Repository\DossierWorkflowLogRepository;
+use App\Repository\EmailLogRepository;
 use App\Service\Dossier\DossierCreationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -188,7 +189,8 @@ class DossierController extends AbstractController
     #[Route('/admin/dossier/{id<\d+>}', name: 'admin_dossier_show', methods: ['GET'])]
     public function adminShow(
         Dossier $dossier,
-        DossierWorkflowLogRepository $repo
+        DossierWorkflowLogRepository $repo,
+        EmailLogRepository $emailLogRepository
     ): Response {
         if (!$this->isAdminOrManager()) {
             throw $this->createAccessDeniedException();
@@ -199,6 +201,7 @@ class DossierController extends AbstractController
             'workflowLogs' => $repo->findByDossier($dossier->getId()),
             'currentStatus' => null,
             'statuses' => DossierStatus::cases(),
+            'emailLogs'=>$emailLogRepository->findLatestByDossier($dossier->getId(),10)
         ]);
     }
 
