@@ -2,13 +2,16 @@ dc = docker compose
 php = $(dc) exec php
 console = $(dc) exec php bin/console
 composer = $(dc) exec php composer
+dc_prod = docker compose -f docker-compose.yml -f docker-compose.prod.yml
+php_prod = $(dc_prod) exec php
+console_prod = $(dc_prod) exec php bin/console
 
 .PHONY: up down restart build logs ps bash \
 	composer-install composer-update composer-require \
 	cache-clear cache-warmup debug-router debug-container \
 	db-create db-drop db-reset fixtures db-fixtures \
 	migration migrate migration-clean migration-reset \
-	db-fresh validate-schema debug-entities \
+	db-fresh db-fresh-prod validate-schema debug-entities \
 	tests perm deploy deploy-fast coverage-html coverage-text coverage-clover coverage-cobertura coverage-all
 
 up:
@@ -94,6 +97,12 @@ db-fresh:
 	$(console) make:migration
 	$(console) doctrine:migrations:migrate --no-interaction
 	$(console) doctrine:fixtures:load --no-interaction
+
+db-fresh-prod:
+	$(console_prod) doctrine:database:drop --force --if-exists
+	$(console_prod) doctrine:database:create
+	$(console_prod) doctrine:migrations:migrate --no-interaction
+	$(console_prod) doctrine:fixtures:load --no-interaction
 
 validate-schema:
 	$(console) doctrine:schema:validate
