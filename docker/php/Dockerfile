@@ -1,6 +1,8 @@
 FROM php:8.4-fpm
 
 # Installer les dépendances système nécessaires à Symfony et PHP extensions
+FROM php:8.4-fpm
+
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -14,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-turbo-dev \
     libpng-dev \
     libwebp-dev \
+    && git config --system --add safe.directory /var/www \
     && docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
