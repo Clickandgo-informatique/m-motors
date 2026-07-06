@@ -3,13 +3,13 @@
 namespace App\EventSubscriber;
 
 use App\Entity\Vehicle;
-use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class VehicleUsageTypeSubscriber implements EventSubscriberInterface
 {
-    public function getSubscribedEvents(): array
+    public static function getSubscribedEvents(): array
     {
         return [
             Events::preUpdate,
@@ -31,8 +31,7 @@ class VehicleUsageTypeSubscriber implements EventSubscriberInterface
         $old = $args->getOldValue('usageType');
         $new = $args->getNewValue('usageType');
 
-        if ($old !== $new) {
-        
-        }
+        // ici tu peux ajouter ta logique métier
+        // exemple : audit, logs, contraintes, etc.
     }
 }

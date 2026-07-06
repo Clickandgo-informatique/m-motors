@@ -16,6 +16,8 @@ services:
     entrypoint: ["/usr/local/bin/entrypoint.sh"]
     command: ["php-fpm"]
     environment:
+      APP_ENV: prod
+      APP_DEBUG: 0
       DATABASE_URL: "postgresql://app:app@db:5432/app?serverVersion=16&charset=utf8"
 
   nginx:
