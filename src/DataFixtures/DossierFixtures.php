@@ -4,15 +4,15 @@ namespace App\DataFixtures;
 
 use App\Entity\Customer;
 use App\Entity\Dossier;
-use App\Entity\Vehicle;
 use App\Entity\EmailLog;
+use App\Entity\Vehicle;
 use App\Enum\DossierType;
-use App\Enum\FinancingType;
 use App\Enum\EmailStatus;
 use App\Enum\EmailType;
+use App\Enum\FinancingType;
+use App\Repository\EmailLogRepository;
 use App\Service\CustomerCodeGenerator;
 use App\Service\Dossier\DossierWorkflowService;
-use App\Repository\EmailLogRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
